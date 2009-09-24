@@ -16,7 +16,7 @@ Use your project files / makefiles to build osgWorks. Build the install target t
 
 = Finding OSG =
 
-The !CMake system that comes with osgWorks is designed to automatically find OSG if it's installed on your system in a standard/typical location. If the !CMake system fails to find OSG, it's usually for one of two reasons. Either you have OSG installed in a non-standard location, or you'd like to use OSG from a source tree.
+The CMake system that comes with osgWorks is designed to automatically find OSG if it's installed on your system in a standard/typical location. If the CMake system fails to find OSG, it's usually for one of two reasons. Either you have OSG installed in a non-standard location, or you'd like to use OSG from a source tree.
 
 If you have OSG installed in a non-standard location, specify the top-level install directory with the OSG_ROOT variable (either in the environment, or in CMake). Then select Configure again.
 
@@ -24,4 +24,4 @@ If you are using OSG from a source tree, use the OSG_BUILD_DIR and OSG_SOURCE_DI
 
 In summart:
   * If OSG is in a standard location, you shouldn't need to set any variables. CMake should just find it.
-  * Set either OSG_ROOT (if installed in a non-standard location) or both OSG_BUILD_DIR/OSG_SOURCE_DIR (if using OSG from a source tree). You should never have to set all three.
+  * Set *either* OSG_ROOT (if installed in a non-standard location) *or both* OSG_BUILD_DIR/OSG_SOURCE_DIR (if using OSG from a source tree). You should never have to set all three.
