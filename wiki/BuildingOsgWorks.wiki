@@ -6,8 +6,8 @@ osgWorks depends on !OpenSceneGraph.
 
 = Building =
 
-Like !OpenSceneGraph, osgWorks uses !CMake. To create project files for osgWorks, follow these general steps:
-  * Run the !CMake GUI or ccmake.
+Like !OpenSceneGraph, osgWorks uses CMake. To create project files for osgWorks, follow these general steps:
+  * Run the CMake GUI or ccmake.
   * Specify a build directory, then hit Configure.
   * Hit Configure a second time (all variables must be clear, not red).
   * Hit Generate.
