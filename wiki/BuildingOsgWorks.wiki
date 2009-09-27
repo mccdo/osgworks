@@ -2,15 +2,15 @@
 
 = Dependencies =
 
-osgWorks depends on !OpenSceneGraph. Compatible versions of OSG include v2.8.1, v2.8.2, and current svn head as of September 2009.
+osgWorks depends on !OpenSceneGraph. Compatible versions of OSG include v2.8.1, v2.8.2, and the current svn head as of September 2009.
 
 = Building =
 
 Like !OpenSceneGraph, osgWorks uses CMake. To create project files for osgWorks, follow these general steps:
   * Run the CMake GUI or ccmake.
-  * Specify a build directory, then hit Configure.
-  * Hit Configure a second time (all variables must be clear, not red).
-  * Hit Generate.
+  * Specify a build directory, then select Configure.
+  * Click the Configure button a second time (all variables must be clear, not red).
+  * Click the Generate button.
 
 Use your project files / makefiles to build osgWorks. Build the install target to install osgWorks on your system.
 
@@ -20,8 +20,8 @@ The CMake system that comes with osgWorks is designed to automatically find OSG 
 
 If you have OSG installed in a non-standard location, specify the top-level install directory with the OSG_ROOT variable (either in the environment, or in CMake). Then select Configure again.
 
-If you are using OSG from a source tree, use the OSG_BUILD_DIR and OSG_SOURCE_DIR variables (either in the environment, or in CMake) to specify the root of the builf and source trees, respectively. Then select Configure again.
+If you are using OSG from a source tree, use the OSG_BUILD_DIR and OSG_SOURCE_DIR variables (either in the environment, or in CMake) to specify the root of the build and source trees, respectively. Then select Configure again.
 
-In summart:
+In summary:
   * If OSG is in a standard location, you shouldn't need to set any variables. CMake should just find it.
   * Set *either* OSG_ROOT (if installed in a non-standard location) *or both* OSG_BUILD_DIR/OSG_SOURCE_DIR (if using OSG from a source tree). You should never have to set all three.
