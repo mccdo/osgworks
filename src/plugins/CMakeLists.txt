@@ -1,0 +1,2 @@
+ADD_SUBDIRECTORY( osgwTools )
+ADD_SUBDIRECTORY( skeleton )
