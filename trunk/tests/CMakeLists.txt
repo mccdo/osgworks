@@ -1,0 +1,4 @@
+ADD_SUBDIRECTORY( amt )
+ADD_SUBDIRECTORY( geometryop )
+ADD_SUBDIRECTORY( insert )
+ADD_SUBDIRECTORY( screencap )
