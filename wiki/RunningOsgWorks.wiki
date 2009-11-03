@@ -1,4 +1,4 @@
-#summary Running osgWorks.
+#summary Configuring a system to run an osgWorks-based application
 
 = Set PATH =
 
