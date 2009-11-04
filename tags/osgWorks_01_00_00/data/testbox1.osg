@@ -1,0 +1,162 @@
+Group {
+  name "non-simplifier"
+  nodeMask 0xffffffff
+  cullingActive TRUE
+  num_children 2
+MatrixTransform {
+  DataVariance STATIC
+  nodeMask 0xffffffff
+  cullingActive TRUE
+  referenceFrame RELATIVE
+  Matrix {
+    1 0 0 0
+    0 1 0 0
+    0 0 1 0
+    4 -1 5 1
+  }
+  num_children 1
+  Geode {
+    nodeMask 0xffffffff
+    cullingActive TRUE
+    num_drawables 1
+    Geometry {
+      useDisplayList TRUE
+      useVertexBufferObjects FALSE
+      PrimitiveSets 1
+      {
+        DrawElementsUShort TRIANGLES 30
+        {
+          3 0 4
+          4 1 5
+          5 2 6
+          0 1 4
+          1 2 5
+          10 11 7
+          11 12 8
+          12 13 9
+          8 7 11
+          9 8 12
+        }
+      }
+      VertexArray Vec3Array 14
+      {
+        -3 0 -2
+        0 0 -2
+        3 0 -2
+        -3 0 0
+        -1 0 0
+        1 0 0
+        3 0 0
+        -3 2 0
+        0 2 0
+        3 2 0
+        -3 0 0
+        -1 0 0
+        1 0 0
+        3 0 0
+      }
+      NormalBinding PER_VERTEX
+      NormalArray UniqueID Vec3Array_2 Vec3Array 14
+      {
+        0 -1 0
+        0 -1 0
+        0 -1 0
+        0 -1 0
+        0 -1 0
+        0 -1 0
+        0 -1 0
+        0 0 1
+        0 0 1
+        0 0 1
+        0 0 1
+        0 0 1
+        0 0 1
+        0 0 1
+      }
+      ColorBinding OVERALL
+      ColorArray UniqueID Vec4Array_3 Vec4Array 1
+      {
+        1 1 1 1
+      }
+    }
+  }
+}
+MatrixTransform {
+  DataVariance STATIC
+  nodeMask 0xffffffff
+  cullingActive TRUE
+  referenceFrame RELATIVE
+  Matrix {
+    1 0 0 0
+    0 1 0 0
+    0 0 1 0
+    4 -1 -3 1
+  }
+  num_children 1
+  Geode {
+    nodeMask 0xffffffff
+    cullingActive TRUE
+    num_drawables 1
+    Geometry {
+      useDisplayList TRUE
+      useVertexBufferObjects FALSE
+      PrimitiveSets 1
+      {
+        DrawElementsUShort TRIANGLES 30
+        {
+          3 0 4
+          4 1 5
+          5 2 6
+          0 1 4
+          1 2 5
+          10 11 7
+          11 12 8
+          12 13 9
+          8 7 11
+          9 8 12
+        }
+      }
+      VertexArray Vec3Array 14
+      {
+        -3 0 -2
+        0 0 -2
+        3 0 -2
+        -3 0 0
+        -1 0 0
+        1 0 0
+        3 0 0
+        -3 2 0
+        0 2 0
+        3 2 0
+        -3 0 0
+        -1 0 0
+        1 0 0
+        3 0 0
+      }
+      NormalBinding PER_VERTEX
+      NormalArray UniqueID Vec3Array_2 Vec3Array 14
+      {
+        0 -1 0
+        0 -1 0
+        0 -1 0
+        0 -1 0
+        0 -1 0
+        0 -1 0
+        0 -1 0
+        0 0 1
+        0 0 1
+        0 0 1
+        0 0 1
+        0 0 1
+        0 0 1
+        0 0 1
+      }
+      ColorBinding OVERALL
+      ColorArray UniqueID Vec4Array_3 Vec4Array 1
+      {
+        1 1 1 1
+      }
+    }
+  }
+}
+}
