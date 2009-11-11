@@ -9,6 +9,7 @@ SET( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/Grid.h
     ${HEADER_PATH}/InsertRemove.h
     ${HEADER_PATH}/ParallelVisitor.h
+    ${HEADER_PATH}/ReadFile.h
     ${HEADER_PATH}/RefID.h
     ${HEADER_PATH}/RemoveData.h
     ${HEADER_PATH}/Export.h
@@ -29,6 +30,7 @@ ADD_SHARED_LIBRARY_INTERNAL( ${LIB_NAME}
     Grid.cpp
     InsertRemove.cpp
     ParallelVisitor.cpp
+    ReadFile.cpp
     RefID.cpp
     RemoveData.cpp
     DecimatorOp.cpp
