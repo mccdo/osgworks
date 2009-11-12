@@ -23,7 +23,7 @@ FindFileInPath() : USING C:\Projects\Physics\osgBullet\data\tetra.osg
 C:\Projects\Physics\osgBullet\data\tetra.osg
 }}}
 
-The following command locates the OSG OpenFlight plugin:
+The following command locates the OSG !OpenFlight plugin:
 {{{
 C:\Users\pmartz>osgwwhich osgdb_openflight.dll
 C:\Program Files\OpenSceneGraph\bin\osgPlugins-2.8.2\osgdb_openflight.dll
