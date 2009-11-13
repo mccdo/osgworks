@@ -29,6 +29,36 @@
 
 
 
+std::string
+createLibraryName( std::string simpleName )
+{
+#if defined( WIN32 ) || defined( _WIN32 )
+    return( std::string( "osg" ) +
+        std::string( osgGetSOVersion() ) +
+        std::string( "-" ) +
+        simpleName +
+        std::string( ".dll" ) );
+#else
+    return( std::string( "lib" ) +
+        simpleName +
+        std::string( "." ) +
+        std::string( osgGetVersion() ) +
+        std::string( ".dylib" ) );
+#endif
+}
+
+void
+locatePlugin( const std::string& target )
+{
+    std::string fullName = osgDB::findLibraryFile( target );
+    if( fullName == std::string( "" ) )
+    {
+        osg::notify( osg::ALWAYS ) << "Can't find: " << target << std::endl;
+        return;
+    }
+    osg::notify( osg::ALWAYS ) << fullName << std::endl;
+}
+
 void
 locateSharedLibrary( const std::string& target )
 {
@@ -70,9 +100,11 @@ main( int argc,
 
     arguments.getApplicationUsage()->setApplicationName( arguments.getApplicationName() );
     arguments.getApplicationUsage()->setDescription( arguments.getApplicationName() + " locates data files and shared libraries using OSG's search algorithms." );
-    arguments.getApplicationUsage()->setCommandLineUsage( arguments.getApplicationName() + " [options] filename ..." );
+    arguments.getApplicationUsage()->setCommandLineUsage( arguments.getApplicationName() + " [options] [filename [...] ]" );
 
     arguments.getApplicationUsage()->addCommandLineOption( "-v/--version", "Display the osgWorks version string." );
+    arguments.getApplicationUsage()->addCommandLineOption( "-p/--plugin <ext>", "Locate a plugin to support the extension <ext>, e.g., \"flt\"." );
+    arguments.getApplicationUsage()->addCommandLineOption( "-l/--library <libname>", "Locate the library indicated with <libName>, e.g., \"osgUtil\"." );
 
     if( arguments.read( "-h" ) || arguments.read( "--help" ) )
     {
@@ -85,6 +117,20 @@ main( int argc,
     {
         osg::notify( osg::ALWAYS ) << osgwTools::getVersionString() << std::endl << std::endl;
     }
+
+    std::string param;
+    if( arguments.read( "-p", param ) || arguments.read( "--plugin", param ) )
+    {
+        std::string plugin( osgDB::Registry::instance()->createLibraryNameForExtension( param ) );
+        osg::notify( osg::ALWAYS ) << "Using plugin name: \"" << plugin << "\"." << std::endl;
+        locateSharedLibrary( plugin );
+    }    
+
+    if( arguments.read( "-l", param ) || arguments.read( "--library", param ) )
+    {
+        std::string library( createLibraryName( param ) );
+        locateSharedLibrary( library );
+    }    
 
 
     int idx;
