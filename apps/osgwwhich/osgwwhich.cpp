@@ -47,6 +47,23 @@ createLibraryName( std::string simpleName )
 #endif
 }
 
+#if 0
+// Lifted from OSG's FileUtils.cpp.
+// Returns the path string except for numToShorten directories stripped off the end
+std::string GetShortenedPath(std::string path, int numToShorten)
+{
+    unsigned int i = path.length() - 1;
+    if(path[i] == '/') i--;
+    while(i > 1 && numToShorten)
+    {
+        if(path[i] == '/')
+            numToShorten--;
+        i--;
+    }
+    return path.substr(0,i + 1);
+}
+#endif
+
 void
 locatePlugin( const std::string& target )
 {
@@ -62,7 +79,23 @@ locatePlugin( const std::string& target )
 void
 locateSharedLibrary( const std::string& target )
 {
+
     std::string fullName( osgDB::findLibraryFile( target ) );
+#if defined( APPLE )
+    if( fullName == std::string( "" ) )
+    {
+        // findLibraryFile is kind of hosed on OS X because it
+        // always searches the plugin paths. To fix, we must explicitly
+        // check the non-plugin paths.
+        osgDB::FilePathList filePath0, filePath1;
+        std::string path( getenv( "PATH" ) );
+        osgDB::convertStringPathIntoFilePathList( path, filePath0 );
+        std::string ldLibPath( getenv( "LD_LIBRARY_PATH" ) );
+        osgDB::convertStringPathIntoFilePathList( ldLibPath, filePath1 );
+        filePath0.insert( filePath0.end(), filePath1.begin(), filePath1.end() );
+        fullName = osgDB::findFileInPath( target, filePath0 );
+    }
+#endif
     if( fullName == std::string( "" ) )
     {
         // We didn't find this as a library.
@@ -141,7 +174,9 @@ main( int argc,
             // Argument is not an option. Try to locate it.
             const std::string target( arguments[ idx ] );
             const std::string ext( osgDB::getLowerCaseFileExtension( target ) );
-            if( ( ext == std::string( "dll" ) ) || ( ext == std::string( "dylib" ) ) )
+            if( ( ext == std::string( "dll" ) ) ||
+                ( ext == std::string( "so" ) ) ||
+                ( ext == std::string( "dylib" ) ) )
                 locateSharedLibrary( target );
             else
                 locateDataFile( target );
