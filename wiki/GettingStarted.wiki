@@ -37,16 +37,15 @@ osgWorks version 1.0.0 (10000).
 C:\Program Files\OpenSceneGraph\bin\osg55-osgUtil.dll
 }}}
 
-== Future work ==
-
-As currently implemented, *osgwwhich* is great for locating data files. In order to find a library, you must know the library name format, or even the shared object version number, which makes *osgwwhich* somewhat less useful for locating libraries. In the future, *osgwwhich* will drop the requirement for the full library name, so that you will be able to do:
+If you don't know the library or plugin name format, use the *-l* and *-p* options with the basic library name or plugin extension. For example, the following command finds the osgUtil library:
 {{{
-C:\Users\pmartz>osgwwhich flt
-C:\Program Files\OpenSceneGraph\bin\osgPlugins-2.8.2\osgdb_openflight.dll
+C:\Users\pmartz>osgwwhich -l osgUtil
+C:\Program Files\OpenSceneGraph\bin\osg55-osgUtil.dll
 }}}
 
-And also:
+And the following command finds the DDS plugin:
 {{{
-C:\Users\pmartz>osgwwhich osgUtil
-C:\Program Files\OpenSceneGraph\bin\osg55-osgUtil.dll
+C:\Users\pmartz>osgwwhich -p dds
+Using plugin name: "osgPlugins-2.8.2/osgdb_dds.dll".
+C:\Program Files\OpenSceneGraph\bin\osgPlugins-2.8.2\osgdb_dds.dll
 }}}
