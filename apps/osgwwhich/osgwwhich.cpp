@@ -141,7 +141,7 @@ main( int argc,
             // Argument is not an option. Try to locate it.
             const std::string target( arguments[ idx ] );
             const std::string ext( osgDB::getLowerCaseFileExtension( target ) );
-            if( ( ext == std::string( "dll" ) ) || ( ext == std::string( "so" ) ) )
+            if( ( ext == std::string( "dll" ) ) || ( ext == std::string( "dylib" ) ) )
                 locateSharedLibrary( target );
             else
                 locateDataFile( target );
