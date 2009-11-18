@@ -37,6 +37,7 @@ MACRO( FIND_OSG_INCLUDE THIS_OSG_INCLUDE_DIR THIS_OSG_INCLUDE_FILE )
             /opt/csw # Blastwave
             /opt
             "C:/Program Files/OpenSceneGraph"
+            "C:/Program Files (x86)/OpenSceneGraph"
             ~/Library/Frameworks
             /Library/Frameworks
         PATH_SUFFIXES
@@ -67,6 +68,7 @@ MACRO(FIND_OSG_LIBRARY MYLIBRARY MYLIBRARYNAME)
             /opt/csw
             /opt
             "C:/Program Files/OpenSceneGraph"
+            "C:/Program Files (x86)/OpenSceneGraph"
             /usr/freeware/lib64
         PATH_SUFFIXES
             lib
@@ -89,6 +91,7 @@ MACRO(FIND_OSG_LIBRARY MYLIBRARY MYLIBRARYNAME)
             /opt/csw
             /opt
             "C:/Program Files/OpenSceneGraph"
+            "C:/Program Files (x86)/OpenSceneGraph"
             /usr/freeware/lib64
         PATH_SUFFIXES
             lib
