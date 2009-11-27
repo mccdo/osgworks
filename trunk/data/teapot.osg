@@ -19506,5 +19506,10 @@ Geode {
       0.16428 0 0.986414
       -0.0090929 -0.0176382 0.999803
     }
+    ColorBinding OVERALL
+    ColorArray Vec4Array 1
+    {
+      1 1 1 1
+    }
   }
 }
