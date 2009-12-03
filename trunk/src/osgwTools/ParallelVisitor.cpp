@@ -43,7 +43,7 @@ ParallelVisitor::~ParallelVisitor()
 bool
 ParallelVisitor::compare()
 {
-    return( recurseCompare( _sgA, _sgB ) );
+    return( recurseCompare( _sgA.get(), _sgB.get() ) );
 }
 
 void

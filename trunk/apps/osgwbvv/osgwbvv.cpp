@@ -89,7 +89,7 @@ main( int argc,
     if( doSphere || doBox )
     {
         geode = new osg::Geode;
-        root->addChild( geode );
+        root->addChild( geode.get() );
 
         osg::StateSet* ss = geode->getOrCreateStateSet();
         ss->setAttributeAndModes( new osg::PolygonMode( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE ) );

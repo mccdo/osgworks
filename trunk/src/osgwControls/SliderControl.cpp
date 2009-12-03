@@ -543,7 +543,7 @@ SliderControl::getSliderControlSubgraph()
         _root->addChild(_mt.get());
     }
     
-    return _root;
+    return( _root.get() );
 }
 void
 SliderControl::setCurrentPos(double x)
