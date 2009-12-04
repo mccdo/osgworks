@@ -64,8 +64,8 @@ public:
     void setLoopAnimation( bool loop );
     bool getLoopAnimation() const;
     void update(double reftime);
+
 protected:
-    
     virtual ~SliderControl();
     float _w,_h;
     double _minVal, _maxVal, _time;
