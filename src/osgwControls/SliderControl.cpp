@@ -383,7 +383,7 @@ SliderControl::getSliderControlSubgraph()
             curval->setFont(font);
             curval->setCharacterSizeMode(osgText::Text::SCREEN_COORDS);
             geode->addDrawable(curval);
-            geode->addUpdateCallback(new TextCallback(this));
+            geode->setUpdateCallback(new TextCallback(this));
             geode->getOrCreateStateSet()->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
             //geode->getOrCreateStateSet()->setRenderBinDetails(0,"RenderBin");
             _mt->addChild(geode);
@@ -518,7 +518,7 @@ SliderControl::getSliderControlSubgraph()
 
 
         
-        bar->addEventCallback(new ButtonPickHandler(this));
+        bar->setEventCallback(new ButtonPickHandler(this));
         _root->addChild(bar);
         
         _mt->setDataVariance(osg::Object::DYNAMIC);
@@ -529,7 +529,7 @@ SliderControl::getSliderControlSubgraph()
         {
             sl->setName("slider");
             sl->getOrCreateStateSet()->setMode(GL_NORMALIZE, osg::StateAttribute::ON);
-            sl->addEventCallback(new SliderPickHandler(this));
+            sl->setEventCallback(new SliderPickHandler(this));
             _mt->addChild(sl);
         }
         _matrix = osg::Matrix::scale(osg::Vec3(10.,10.,10.))
@@ -538,7 +538,7 @@ SliderControl::getSliderControlSubgraph()
             //* osg::Matrix::translate(osg::Vec3(6.45,0.,0.))
             ;
         _mt->setMatrix(_matrix);
-        _mt->addUpdateCallback(new SliderCallback(this));
+        _mt->setUpdateCallback( new SliderCallback(this) );
         
         _root->addChild(_mt.get());
     }
