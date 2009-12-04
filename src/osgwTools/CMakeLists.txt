@@ -5,6 +5,7 @@ SET( HEADER_PATH ${PROJECT_SOURCE_DIR}/include/${LIB_NAME} )
 
 SET( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/AbsoluteModelTransform.h
+    ${HEADER_PATH}/CameraConfigObject.h
     ${HEADER_PATH}/FindNamedNode.h
     ${HEADER_PATH}/Grid.h
     ${HEADER_PATH}/InsertRemove.h
@@ -26,6 +27,7 @@ SET( LIB_PUBLIC_HEADERS
 ADD_SHARED_LIBRARY_INTERNAL( ${LIB_NAME}
     ${LIB_PUBLIC_HEADERS}
     AbsoluteModelTransform.cpp
+    CameraConfigObject.cpp
     FindNamedNode.cpp
     Grid.cpp
     InsertRemove.cpp
