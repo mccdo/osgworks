@@ -22,6 +22,7 @@
 #define __OSGWTOOLS_VERSION_H__ 1
 
 #include "osgwTools/Export.h"
+#include <osg/Version>
 #include <string>
 
 
@@ -45,6 +46,14 @@ namespace osgwTools {
         ( OSGWORKS_MAJOR_VERSION * 10000 ) + \
         ( OSGWORKS_MINOR_VERSION * 100 ) + \
         OSGWORKS_SUB_VERSION )
+
+// This macro does the same thing for the OSG version.
+// OSG did not provide a useful compile-time version
+// comparison macro until after the 2.9.6 release.
+#define OSGWORKS_OSG_VERSION ( \
+        ( OPENSCENEGRAPH_MAJOR_VERSION * 10000 ) + \
+        ( OPENSCENEGRAPH_MINOR_VERSION * 100 ) + \
+        OPENSCENEGRAPH_PATCH_VERSION )
 
 // Returns OSGWORKS_VERSION.
 unsigned int OSGWTOOLS_EXPORT getVersionNumber();
