@@ -33,16 +33,26 @@
 #include <vector>
 
 
-bool CCO_readLocalData( osg::Object& obj, osgDB::Input& fr );
-bool CCO_writeLocalData( const osg::Object& obj, osgDB::Output& fw );
-
-osgDB::RegisterDotOsgWrapperProxy CCO_Proxy
+bool CCObject_readLocalData( osg::Object& obj, osgDB::Input& fr );
+bool CCObject_writeLocalData( const osg::Object& obj, osgDB::Output& fw );
+osgDB::RegisterDotOsgWrapperProxy CCObject_Proxy
 (
     new osgwTools::CameraConfigObject,
     "CameraConfigObject",
     "Object CameraConfigObject",
-    CCO_readLocalData,
-    CCO_writeLocalData
+    CCObject_readLocalData,
+    CCObject_writeLocalData
+);
+
+bool CCInfo_readLocalData( osg::Object& obj, osgDB::Input& fr );
+bool CCInfo_writeLocalData( const osg::Object& obj, osgDB::Output& fw );
+osgDB::RegisterDotOsgWrapperProxy CCInfo_Proxy
+(
+    new osgwTools::CameraConfigInfo,
+    "CameraConfigInfo",
+    "Object CameraConfigInfo",
+    CCInfo_readLocalData,
+    CCInfo_writeLocalData
 );
 
 
@@ -50,14 +60,18 @@ bool readMatrix( osg::Matrix& matrix, osgDB::Input& fr, const char* keyword="Mat
 bool writeMatrix( const osg::Matrixd& matrix, osgDB::Output& fw, const char* keyword="Matrix" );
 
 
-void
-readConfigInfo( osgwTools::CameraConfigInfo& cci, osgDB::Input& fr )
+bool
+CCInfo_readLocalData( osg::Object& obj, osgDB::Input& fr )
 {
-    int version;
-    if( fr[0].getStr() == std::string( "Version" ) )
+    osgwTools::CameraConfigInfo& cci = static_cast< osgwTools::CameraConfigInfo& >( obj );
+    bool advance( false );
+
+    unsigned int version( 0 );
+    if( fr.matchSequence( "Version %i" ) )
     {
-        fr[1].getInt( version );
+        fr[1].getUInt( version );
         fr+=2;
+        advance = true;
     }
 
     osg::Matrix m;
@@ -65,21 +79,36 @@ readConfigInfo( osgwTools::CameraConfigInfo& cci, osgDB::Input& fr )
         cci._viewOffset = m;
     if( readMatrix( m, fr, "ProjectionOffset" ))
         cci._projectionOffset = m;
+
+    return( advance );
 }
-void
-writeConfigInfo( const osgwTools::CameraConfigInfo& cci, osgDB::Output& fw )
+bool
+CCInfo_writeLocalData( const osg::Object& obj, osgDB::Output& fw )
 {
-    fw.indent() << "Version " << cci._version << std::endl;
+    const osgwTools::CameraConfigInfo& cci = static_cast< const osgwTools::CameraConfigInfo& >( obj );
+
+    fw.indent() << "Version " << cci.getVersion() << std::endl;
     writeMatrix( cci._viewOffset, fw, "ViewOffset" );
     writeMatrix( cci._projectionOffset, fw, "ProjectionOffset" );
+
+    return( true );
 }
 
-bool CCO_readLocalData( osg::Object& obj, osgDB::Input& fr )
+bool
+CCObject_readLocalData( osg::Object& obj, osgDB::Input& fr )
 {
     osgwTools::CameraConfigObject& cco = static_cast< osgwTools::CameraConfigObject& >( obj );
     bool advance( false );
 
-    if( fr[0].getStr() == std::string( "Size" ) )
+    unsigned int version( 0 );
+    if( fr.matchSequence( "Version %i" ) )
+    {
+        fr[1].getUInt( version );
+        fr+=2;
+        advance = true;
+    }
+
+    if( fr[0].getStr() == std::string( "SlaveCameraCount" ) )
     {
         int sz;
         fr[1].getInt( sz );
@@ -90,21 +119,29 @@ bool CCO_readLocalData( osg::Object& obj, osgDB::Input& fr )
     unsigned int idx;
     for( idx=0; idx<cco._slaveConfigInfo.size(); idx++ )
     {
-        readConfigInfo( cco._slaveConfigInfo[ idx ], fr );
+        osgwTools::CameraConfigInfo* cci = static_cast< osgwTools::CameraConfigInfo* >( fr.readObject() );
+        if( idx > cco._slaveConfigInfo.size() )
+        {
+            osg::notify( osg::WARN ) << "Camera config data contains too many slaves; resizing..." << std::endl;
+            cco._slaveConfigInfo.resize( idx );
+        }
+        cco._slaveConfigInfo[ idx ] = cci;
     }
     
     return( advance );
 }
 
-bool CCO_writeLocalData( const osg::Object& obj, osgDB::Output& fw )
+bool
+CCObject_writeLocalData( const osg::Object& obj, osgDB::Output& fw )
 {
     const osgwTools::CameraConfigObject& cco = static_cast< const osgwTools::CameraConfigObject& >( obj );
 
-    fw.indent() << "Size " << cco._slaveConfigInfo.size() << std::endl;
+    fw.indent() << "Version " << cco.getVersion() << std::endl;
+    fw.indent() << "SlaveCameraCount " << cco._slaveConfigInfo.size() << std::endl;
     unsigned int idx;
     for( idx=0; idx<cco._slaveConfigInfo.size(); idx++ )
     {
-        writeConfigInfo( cco._slaveConfigInfo[ idx ], fw );
+        fw.writeObject( *( cco._slaveConfigInfo[ idx ] ) );
     }
 
     return( true );

@@ -33,17 +33,25 @@
 namespace osgwTools {
 
 
-struct OSGWTOOLS_EXPORT CameraConfigInfo
+class OSGWTOOLS_EXPORT CameraConfigInfo : public osg::Object
 {
+public:
     CameraConfigInfo();
-    ~CameraConfigInfo();
+    CameraConfigInfo( const osgwTools::CameraConfigInfo& rhs, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY );
 
-    unsigned int _version;
+    META_Object( osgwTools, CameraConfigInfo );
 
     osg::Matrix _viewOffset;
     osg::Matrix _projectionOffset;
+
+    unsigned int getVersion() const { return( _version ); }
+
+protected:
+    ~CameraConfigInfo();
+
+    unsigned int _version;
 };
-typedef std::vector< CameraConfigInfo > CameraConfigList;
+typedef std::vector< osg::ref_ptr< CameraConfigInfo > > CameraConfigList;
 
 class OSGWTOOLS_EXPORT CameraConfigObject : public osg::Object
 {
@@ -58,9 +66,16 @@ public:
 
     CameraConfigList _slaveConfigInfo;
 
+    unsigned int getVersion() const { return( _version ); }
+
 protected:
     ~CameraConfigObject();
+
+    unsigned int _version;
 };
+
+bool OSGWTOOLS_EXPORT configureViewer( osgViewer::Viewer& viewer, const std::string& configFile="" );
+
 
 // namespace osgwTools
 }
