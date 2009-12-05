@@ -18,8 +18,20 @@
  *
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
+//
+// This test verifies functionality of osgWorks' Viewer configuration utility.
+// On a dual head system, run (for example):
+//   cameraconfig -c viewerconfig-2x1.osg cessnafire.osg
+// The viewerconfig-2x1.osg file configures the slave cameras to point slightly up
+// and to the right of the center of the view.
+//
+// If you don't specify the -c <configfile> option, osgWorks looks for the env var
+// OSGW_VIEWER_CONFIG and attempts to load the file it specifies.
+//
+
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
+#include <osg/ArgumentParser>
 #include <osgViewer/Viewer>
 
 #include <osgwTools/CameraConfigObject.h>
@@ -28,19 +40,43 @@
 int
 main( int argc, char ** argv )
 {
+    osg::ArgumentParser arguments( &argc, argv );
+
+    arguments.getApplicationUsage()->setApplicationName( arguments.getApplicationName() );
+    arguments.getApplicationUsage()->setDescription( arguments.getApplicationName() + " Example of savine and restoring Viewer slave camera config info." );
+    arguments.getApplicationUsage()->setCommandLineUsage( arguments.getApplicationName() + " [-c <configfile>] filename ..." );
+
+    arguments.getApplicationUsage()->addCommandLineOption( "-c <configfile>", "Specify the viewer config file to load. If not specified, looks for OSGW_VIEWER_CONFIG in the environment." );
+
+    std::string configFile;
+    while( arguments.read( "-c", configFile ) )
+    {
+    }
+
     osgViewer::Viewer viewer;
-    viewer.setSceneData( osgDB::readNodeFile( "cow.osg" ) );
+    viewer.setSceneData( osgDB::readNodeFiles( arguments ) );
+    if( viewer.getSceneData() == NULL )
+        viewer.setSceneData( osgDB::readNodeFile( "cow.osg" ) );
+
+    osgwTools::configureViewer( viewer, configFile );
+
 #if 0
+    // Viewer config file is just a .osg file that contains viewer
+    // slave camera config information. This poses somewhat of a 
+    // chicken-and-egg proglem -- where does the file come from?
+    //
+    // Answer is to configure a viewer manually when write it out,
+    // that's what this section of disabled code does.
+    //
+    // Alternatively, take one of the existing viewer config files
+    // from the data directory and hack it.
+
     viewer.setUpViewAcrossAllScreens();
     viewer.realize();
 
     osg::ref_ptr< osgwTools::CameraConfigObject > cco = new osgwTools::CameraConfigObject;
     cco->take( viewer );
     osgDB::writeObjectFile( *cco, "viewerconfig.osg" );
-#else
-    osg::ref_ptr< osgwTools::CameraConfigObject > cco = 
-        dynamic_cast< osgwTools::CameraConfigObject* >( osgDB::readObjectFile( "viewerconfig.osg" ) );
-    cco->store( viewer );
 #endif
 
     return( viewer.run() );
