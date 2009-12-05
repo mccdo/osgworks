@@ -19,6 +19,8 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osgwTools/CameraConfigObject.h>
+#include <osgwTools/Version.h>
+#include <osgDB/ReadFile>
 #include <osg/Object>
 #include <osgViewer/Viewer>
 #include <osg/Matrixd>
@@ -33,7 +35,13 @@ namespace osgwTools
 
 
 CameraConfigInfo::CameraConfigInfo()
-  : _version( 0 )
+  : _version( 1 )
+{
+}
+CameraConfigInfo::CameraConfigInfo( const osgwTools::CameraConfigInfo& rhs, const osg::CopyOp& copyop )
+  : _version( rhs._version ),
+    _viewOffset( rhs._viewOffset ),
+    _projectionOffset( rhs._projectionOffset )
 {
 }
 CameraConfigInfo::~CameraConfigInfo()
@@ -41,10 +49,12 @@ CameraConfigInfo::~CameraConfigInfo()
 }
 
 CameraConfigObject::CameraConfigObject()
+  : _version( 1 )
 {
 }
 CameraConfigObject::CameraConfigObject( const osgwTools::CameraConfigObject& rhs, const osg::CopyOp& copyop )
-  : _slaveConfigInfo( rhs._slaveConfigInfo )
+  : _version( rhs._version ),
+    _slaveConfigInfo( rhs._slaveConfigInfo )
 {
 }
 CameraConfigObject::~CameraConfigObject()
@@ -64,10 +74,11 @@ CameraConfigObject::take( const osgViewer::Viewer& viewer )
     unsigned int idx;
     for( idx=0; idx<viewer.getNumSlaves(); idx++ )
     {
-        osgwTools::CameraConfigInfo& cci( _slaveConfigInfo[ idx ] );
+        _slaveConfigInfo[ idx ] = new osgwTools::CameraConfigInfo;
+        osgwTools::CameraConfigInfo* cci( _slaveConfigInfo[ idx ].get() );
         const osg::View::Slave& slave = viewer.getSlave( idx );
-        cci._viewOffset = slave._viewOffset;
-        cci._projectionOffset = slave._projectionOffset;
+        cci->_viewOffset = slave._viewOffset;
+        cci->_projectionOffset = slave._projectionOffset;
     }
 }
 
@@ -115,7 +126,11 @@ CameraConfigObject::store( osgViewer::Viewer& viewer )
         unsigned int width, height;
         wsi->getScreenResolution(si, width, height);
 
+#if ( OSGWORKS_OSG_VERSION >= 20900 )
         osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits(ds);
+#else
+        osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
+#endif
         traits->hostName = si.hostName;
         traits->displayNum = si.displayNum;
         traits->screenNum = si.screenNum;
@@ -151,11 +166,42 @@ CameraConfigObject::store( osgViewer::Viewer& viewer )
         camera->setDrawBuffer(buffer);
         camera->setReadBuffer(buffer);
 
-        const osgwTools::CameraConfigInfo& cci = _slaveConfigInfo[ i ];
-        viewer.addSlave(camera.get(), cci._projectionOffset, cci._viewOffset );
+        const osgwTools::CameraConfigInfo* cci = _slaveConfigInfo[ i ].get();
+        viewer.addSlave( camera.get(), cci->_projectionOffset, cci->_viewOffset );
     }
 
     viewer.assignSceneDataToCameras();
+}
+
+bool
+configureViewer( osgViewer::Viewer& viewer, const std::string& configFile )
+{
+    std::string fileName;
+    if( !configFile.empty() )
+        fileName = configFile;
+    else
+    {
+        const char* buffer( getenv( "OSGW_VIEWER_CONFIG" ) );
+        fileName = std::string( buffer );
+    }
+    if( fileName.empty() )
+    {
+        osg::notify( osg::WARN ) << "configureViewer: No Viewer config file." << std::endl;
+        return( false );
+    }
+
+    osg::ref_ptr< osgwTools::CameraConfigObject > cco = 
+        dynamic_cast< osgwTools::CameraConfigObject* >(
+            osgDB::readObjectFile( fileName ) );
+    if( !cco.valid() )
+    {
+        osg::notify( osg::WARN ) << "configureViewer: Can't load config object from \"" << fileName << "\"." << std::endl;
+        return( false );
+    }
+
+    cco->store( viewer );
+
+    return( true );
 }
 
 
