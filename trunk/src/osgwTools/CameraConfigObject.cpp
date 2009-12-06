@@ -186,7 +186,7 @@ configureViewer( osgViewer::Viewer& viewer, const std::string& configFile )
     }
     if( fileName.empty() )
     {
-        osg::notify( osg::WARN ) << "configureViewer: No Viewer config file." << std::endl;
+        osg::notify( osg::NOTICE ) << "configureViewer: No Viewer config file." << std::endl;
         return( false );
     }
 
