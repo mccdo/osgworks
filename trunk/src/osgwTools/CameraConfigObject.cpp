@@ -182,7 +182,8 @@ configureViewer( osgViewer::Viewer& viewer, const std::string& configFile )
     else
     {
         const char* buffer( getenv( "OSGW_VIEWER_CONFIG" ) );
-        fileName = std::string( buffer );
+        if( buffer != NULL )
+            fileName = std::string( buffer );
     }
     if( fileName.empty() )
     {
