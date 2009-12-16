@@ -20,6 +20,7 @@
 
 #include "ReaderWriterSkeleton.h"
 #include "osgwTools/RemoveData.h"
+#include <osgDB/Registry>
 #include <osgDB/ReaderWriter>
 #include <osgDB/FileUtils>
 #include <osgDB/FileNameUtils>
@@ -30,6 +31,7 @@
 ReaderWriterSkeleton::ReaderWriterSkeleton()
 {
     supportsExtension( "skeleton", "Invokes RemoveData visitor to produce a minimal hierarchy skeleton." );
+    supportsExtension( "skel", "Synonym for \"skeleton\"." );
 
     supportsOption( "[~]ALL", "Data to remove." );
     supportsOption( "[~]DEFAULT", "Data to remove." );
@@ -61,7 +63,7 @@ ReaderWriterSkeleton::readNode( const std::string& fileName, const Options* opti
     if( !acceptsExtension( ext ) )
         return ReadResult::FILE_NOT_HANDLED;
 
-    // Get the file name without the ".skeleton" extension.
+    // Get the file name without the ".skel" or ".skeleton" extension.
     const std::string subName = osgDB::getNameLessExtension( fileName );
     if (subName.empty())
         return ReadResult::FILE_NOT_HANDLED;
@@ -100,7 +102,7 @@ ReaderWriterSkeleton::writeNode( const osg::Node& node, const std::string& fileN
     if( !acceptsExtension( ext ) )
         return WriteResult::FILE_NOT_HANDLED;
 
-    // Get the file name without the ".skeleton" extension.
+    // Get the file name without the ".skel" or ".skeleton" extension.
     const std::string subName = osgDB::getNameLessExtension( fileName );
     if (subName.empty())
         return WriteResult::FILE_NOT_HANDLED;
