@@ -32,6 +32,7 @@ ADD_SHARED_LIBRARY_INTERNAL( ${LIB_NAME}
     Grid.cpp
     InsertRemove.cpp
     ParallelVisitor.cpp
+    PluginLoader.cpp
     ReadFile.cpp
     RefID.cpp
     RemoveData.cpp
