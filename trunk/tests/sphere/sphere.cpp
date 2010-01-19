@@ -36,13 +36,13 @@ main( int argc,
 
     osg::ref_ptr< osg::Geode > geode = new osg::Geode;
     geode->addDrawable( osgwTools::makeAltAzSphere( 1., 8, 16 ) );
-    root->addChild( geode );
+    root->addChild( geode.get() );
 
     geode = new osg::Geode;
     geode->addDrawable( osgwTools::makeGeodesicSphere( 1., 2 ) );
     osg::ref_ptr< osg::MatrixTransform > mt( new osg::MatrixTransform( osg::Matrix::translate( 3., 0., 0. ) ) );
-    mt->addChild( geode );
-    root->addChild( mt );
+    mt->addChild( geode.get() );
+    root->addChild( mt.get() );
 
     {
         osg::StateSet* ss = root->getOrCreateStateSet();
