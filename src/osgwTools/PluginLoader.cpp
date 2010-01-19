@@ -20,6 +20,7 @@
 
 #include <osg/Notify>
 #include <osgDB/Registry>
+#include <osgwTools/Version.h>
 
 #include <string>
 #include <ostream>
@@ -44,9 +45,10 @@ public:
         osgDB::Registry::instance()->addFileExtensionAlias( "skel", "skeleton" );
 
         const std::string libName( osgDB::Registry::instance()->createLibraryNameForExtension( "skeleton" ) );
-        osgDB::Registry::LoadStatus stat( osgDB::Registry::instance()->loadLibrary( libName ) );
-
         std::ostream& ostr( osg::notify( osg::INFO ) );
+
+#if( OSGWORKS_OSG_VERSION >= 20800 )
+        osgDB::Registry::LoadStatus stat( osgDB::Registry::instance()->loadLibrary( libName ) );
         ostr << ".skeleton plugin lib name: \"" << libName << "\" ";
         switch( stat ) {
         case osgDB::Registry::NOT_LOADED:
@@ -62,6 +64,12 @@ public:
             ostr << " Unknown load status" << std::endl;
             break;
         }
+#else
+        // No Registry::LoadStatus before OSG v2.8.
+        bool stat( osgDB::Registry::instance()->loadLibrary( libName ) );
+        ostr << ".skeleton plugin lib name: \"" << libName << "\" " <<
+            (stat ? "Loaded" : "Failed to load") << std::endl;
+#endif
     }
     ~PluginLoader()
     {

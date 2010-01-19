@@ -285,7 +285,7 @@ buildGeodesicSphereData( const float radius, const unsigned int subdivisions, os
     {
         osg::Vec3Array* osgV = new osg::Vec3Array;
         osg::Vec3Array* osgN = new osg::Vec3Array;
-        osg::Vec2Array* osgTC = new osg::Vec2Array;
+        osg::Vec3Array* osgTC = new osg::Vec3Array;
         osgV->resize( _numVerts );
         osgN->resize( _numVerts );
         osgTC->resize( _numVerts );
@@ -314,6 +314,7 @@ buildGeodesicSphereData( const float radius, const unsigned int subdivisions, os
             (*osgN)[ idx ].z() = *normPtr++;
             (*osgTC)[ idx ].x() = *tcPtr++;
             (*osgTC)[ idx ].y() = *tcPtr++;
+            (*osgTC)[ idx ].z() = *tcPtr++;
         }
 
         osg::UShortArray* osgIdx = new osg::UShortArray;
@@ -328,7 +329,7 @@ buildGeodesicSphereData( const float radius, const unsigned int subdivisions, os
     }
 
 
-    //delete[] _indices;
+    delete[] _indices;
     delete[] _vertices;
     delete[] _normals;
     delete[] _texCoords;
@@ -345,7 +346,7 @@ osgwTools::makeGeodesicSphere( const float radius, const unsigned int subdivisio
     if( geom == NULL )
         geom = new osg::Geometry;
 
-    bool result = buildGeodesicSphereData( radius, subdivisions, geom );
+    bool result = buildGeodesicSphereData( radius, subdivisions, geom.get() );
     if( !result )
     {
         osg::notify( osg::WARN ) << "makeGeodesicSphere: Error during sphere build." << std::endl;
@@ -387,10 +388,10 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
     normals->resize( totalVerts );
     texCoords->resize( totalVerts );
 
-    geom->setVertexArray( vertices );
-    geom->setNormalArray( normals );
+    geom->setVertexArray( vertices.get() );
+    geom->setNormalArray( normals.get() );
     geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
-    geom->setTexCoordArray( 0, texCoords );
+    geom->setTexCoordArray( 0, texCoords.get() );
 
     // Create the vertices, normals, and tex coords.
     unsigned int idx( 0 );
@@ -446,9 +447,9 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
     fan->resize( numLong*3 );
     for( idx=0; idx<numLong; idx++ )
     {
-        fan->setElement( idx*3, idx );
-        fan->setElement( idx*3+1, numLong + idx + 1 );
-        fan->setElement( idx*3+2, numLong + idx + 2 );
+        (*fan)[ idx*3 ] = idx;
+        (*fan)[ idx*3+1 ] = numLong + idx + 1;
+        (*fan)[ idx*3+2 ] = numLong + idx + 2;
     }
     geom->addPrimitiveSet( fan );
 
@@ -464,13 +465,13 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
         unsigned int longCounter;
         for( longCounter=0; longCounter<numLong; longCounter++ )
         {
-            body->setElement( longCounter*2, baseIdx );
-            body->setElement( longCounter*2+1, baseIdx + numLong+1 );
+            (*body)[ longCounter*2 ] = baseIdx;
+            (*body)[ longCounter*2+1 ] = baseIdx + numLong+1;
             baseIdx++;
         }
         // Close strip
-        body->setElement( longCounter*2, baseIdx );
-        body->setElement( longCounter*2+1, baseIdx + numLong+1 );
+        (*body)[ longCounter*2 ] = baseIdx;
+        (*body)[ longCounter*2+1 ] = baseIdx + numLong+1;
         baseIdx++;
 
         geom->addPrimitiveSet( body );
@@ -482,9 +483,9 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
     for( idx=0; idx<numLong; idx++ )
     {
         // 14 9 8, 13 8 7, 12 7 6, 11 6 5
-        fan->setElement( idx*3, totalVerts - 1 - idx );
-        fan->setElement( idx*3+1, totalVerts - 1 - numLong - idx - 1 );
-        fan->setElement( idx*3+2, totalVerts - 1 - numLong - idx - 2 );
+        (*fan)[ idx*3 ] = totalVerts - 1 - idx;
+        (*fan)[ idx*3+1 ] = totalVerts - 1 - numLong - idx - 1;
+        (*fan)[ idx*3+2 ] = totalVerts - 1 - numLong - idx - 2;
     }
     geom->addPrimitiveSet( fan );
 
@@ -498,7 +499,7 @@ osgwTools::makeAltAzSphere( const float radius, const unsigned int subLat, const
     if( geom == NULL )
         geom = new osg::Geometry;
 
-    bool result = buildAltAzSphereData( radius, subLat, subLong, geom );
+    bool result = buildAltAzSphereData( radius, subLat, subLong, geom.get() );
     if( !result )
     {
         osg::notify( osg::WARN ) << "makeAltAzSphere: Error during sphere build." << std::endl;
