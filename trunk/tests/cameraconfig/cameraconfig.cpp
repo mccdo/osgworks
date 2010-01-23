@@ -60,25 +60,6 @@ main( int argc, char ** argv )
 
     osgwTools::configureViewer( viewer, configFile );
 
-#if 0
-    // Viewer config file is just a .osg file that contains viewer
-    // slave camera config information. This poses somewhat of a 
-    // chicken-and-egg proglem -- where does the file come from?
-    //
-    // Answer is to configure a viewer manually when write it out,
-    // that's what this section of disabled code does.
-    //
-    // Alternatively, take one of the existing viewer config files
-    // from the data directory and hack it.
-
-    viewer.setUpViewAcrossAllScreens();
-    viewer.realize();
-
-    osg::ref_ptr< osgwTools::CameraConfigObject > cco = new osgwTools::CameraConfigObject;
-    cco->take( viewer );
-    osgDB::writeObjectFile( *cco, "viewerconfig.osg" );
-#endif
-
     return( viewer.run() );
 }
 
