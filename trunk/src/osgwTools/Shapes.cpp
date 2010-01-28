@@ -22,7 +22,7 @@
 #include <osg/Geometry>
 
 #include <math.h>
-
+#include <cstring>
 #include <osg/io_utils>
 
 
