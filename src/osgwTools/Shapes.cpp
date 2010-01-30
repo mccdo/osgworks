@@ -359,7 +359,7 @@ osgwTools::makeGeodesicSphere( const float radius, const unsigned int subdivisio
 
 
 bool
-buildAltAzSphereData( const float radius, const unsigned int subLat, const unsigned int subLong, osg::Geometry* geom )
+buildAltAzSphereData( const float radius, const unsigned int subLat, const unsigned int subLong, osg::Geometry* geom, const bool wire )
 {
     unsigned int numLat( subLat );
     unsigned int numLong( subLong );
@@ -381,16 +381,22 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
 
     // Create data arrays and configure the Geometry
     osg::ref_ptr< osg::Vec3Array > vertices( new osg::Vec3Array );
-    osg::ref_ptr< osg::Vec3Array > normals( new osg::Vec3Array );
-    osg::ref_ptr< osg::Vec2Array > texCoords( new osg::Vec2Array );
     vertices->resize( totalVerts );
-    normals->resize( totalVerts );
-    texCoords->resize( totalVerts );
-
     geom->setVertexArray( vertices.get() );
-    geom->setNormalArray( normals.get() );
-    geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
-    geom->setTexCoordArray( 0, texCoords.get() );
+
+    osg::ref_ptr< osg::Vec3Array > normals;
+    osg::ref_ptr< osg::Vec2Array > texCoords;
+    if( !wire )
+    {
+        normals = new osg::Vec3Array;
+        normals->resize( totalVerts );
+        geom->setNormalArray( normals.get() );
+        geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+
+        texCoords = new osg::Vec2Array;
+        texCoords->resize( totalVerts );
+        geom->setTexCoordArray( 0, texCoords.get() );
+    }
 
     {
         osg::Vec4Array* osgC = new osg::Vec4Array;
@@ -422,9 +428,13 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
             v[ 2 ] = baseVec.z();
 
             (*vertices)[ idx ] = ( v * radius );
-            (*normals)[ idx ] = v;
-            (*texCoords)[ idx ].set( s, t );
             //osg::notify( osg::ALWAYS ) << v << std::endl;
+
+            if( !wire )
+            {
+                (*normals)[ idx ] = v;
+                (*texCoords)[ idx ].set( s, t );
+            }
 
             idx++;
         }
@@ -433,9 +443,13 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
             osg::Vec3 v( baseVec );
 
             (*vertices)[ idx ] = ( v * radius );
-            (*normals)[ idx ] = v;
-            (*texCoords)[ idx ].set( 1., t );
             //osg::notify( osg::ALWAYS ) << v << std::endl;
+
+            if( !wire )
+            {
+                (*normals)[ idx ] = v;
+                (*texCoords)[ idx ].set( 1., t );
+            }
 
             idx++;
         }
@@ -443,57 +457,103 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
 
     if( idx != totalVerts )
     {
-        osg::notify( osg::WARN ) << "makeAltAzSphere: Error creating vertices." << std::endl;
+        osg::notify( osg::WARN ) << "AltAzSphere: Error creating vertices." << std::endl;
         osg::notify( osg::WARN ) << "  idx " << idx << " != totalVerts " << totalVerts << std::endl;
     }
 
 
-    // Create indices -- top group of triangles
-    osg::DrawElementsUShort* fan( new osg::DrawElementsUShort( GL_TRIANGLES ) );
-    fan->resize( numLong*3 );
-    for( idx=0; idx<numLong; idx++ )
-    {
-        (*fan)[ idx*3 ] = idx;
-        (*fan)[ idx*3+1 ] = numLong + idx + 1;
-        (*fan)[ idx*3+2 ] = numLong + idx + 2;
-    }
-    geom->addPrimitiveSet( fan );
+    // Create PrimitiveSets.
 
-    // Create indices -- body
-    osg::DrawElementsUShort* body;
-    unsigned int baseIdx( numLong+1 );
-    unsigned int stripIdx;
-    for( stripIdx=0; stripIdx<numLat-2; stripIdx++ )
+    if( !wire )
     {
-        body = new osg::DrawElementsUShort( GL_TRIANGLE_STRIP );
-        body->resize( (numLong+1) * 2 );
+        // Solid -- Use GL_TRIANGLE_STRIPS
 
-        unsigned int longCounter;
-        for( longCounter=0; longCounter<numLong; longCounter++ )
+        // Create indices -- top group of triangles
+        osg::DrawElementsUShort* fan( new osg::DrawElementsUShort( GL_TRIANGLES ) );
+        fan->resize( numLong*3 );
+        for( idx=0; idx<numLong; idx++ )
         {
+            (*fan)[ idx*3 ] = idx;
+            (*fan)[ idx*3+1 ] = numLong + idx + 1;
+            (*fan)[ idx*3+2 ] = numLong + idx + 2;
+        }
+        geom->addPrimitiveSet( fan );
+
+        // Create indices -- body
+        osg::DrawElementsUShort* body;
+        unsigned int baseIdx( numLong+1 );
+        unsigned int stripIdx;
+        for( stripIdx=0; stripIdx<numLat-2; stripIdx++ )
+        {
+            body = new osg::DrawElementsUShort( GL_TRIANGLE_STRIP );
+            body->resize( (numLong+1) * 2 );
+
+            unsigned int longCounter;
+            for( longCounter=0; longCounter<numLong; longCounter++ )
+            {
+                (*body)[ longCounter*2 ] = baseIdx;
+                (*body)[ longCounter*2+1 ] = baseIdx + numLong+1;
+                baseIdx++;
+            }
+            // Close strip
             (*body)[ longCounter*2 ] = baseIdx;
             (*body)[ longCounter*2+1 ] = baseIdx + numLong+1;
             baseIdx++;
+
+            geom->addPrimitiveSet( body );
         }
-        // Close strip
-        (*body)[ longCounter*2 ] = baseIdx;
-        (*body)[ longCounter*2+1 ] = baseIdx + numLong+1;
-        baseIdx++;
 
-        geom->addPrimitiveSet( body );
+        // Create indices -- bottom group of triangles
+        fan = new osg::DrawElementsUShort( GL_TRIANGLES );
+        fan->resize( numLong*3 );
+        for( idx=0; idx<numLong; idx++ )
+        {
+            // 14 9 8, 13 8 7, 12 7 6, 11 6 5
+            (*fan)[ idx*3 ] = totalVerts - 1 - idx;
+            (*fan)[ idx*3+1 ] = totalVerts - 1 - numLong - idx - 1;
+            (*fan)[ idx*3+2 ] = totalVerts - 1 - numLong - idx - 2;
+        }
+        geom->addPrimitiveSet( fan );
     }
-
-    // Create indices -- bottom group of triangles
-    fan = new osg::DrawElementsUShort( GL_TRIANGLES );
-    fan->resize( numLong*3 );
-    for( idx=0; idx<numLong; idx++ )
+    else
     {
-        // 14 9 8, 13 8 7, 12 7 6, 11 6 5
-        (*fan)[ idx*3 ] = totalVerts - 1 - idx;
-        (*fan)[ idx*3+1 ] = totalVerts - 1 - numLong - idx - 1;
-        (*fan)[ idx*3+2 ] = totalVerts - 1 - numLong - idx - 2;
+        // Wire -- Use GL_LINE_LOOP and GL_LINE_STRIP
+
+        // Create indices -- alt (latitude)
+        osg::DrawElementsUShort* deus;
+        unsigned int baseIdx( numLong+1 );
+        unsigned int loopIdx;
+        for( loopIdx=0; loopIdx<numLat-1; loopIdx++ )
+        {
+            deus = new osg::DrawElementsUShort( GL_LINE_LOOP );
+            deus->resize( numLong );
+
+            unsigned int longCounter;
+            for( longCounter=0; longCounter<numLong; longCounter++ )
+            {
+                (*deus)[ longCounter ] = baseIdx++;
+            }
+            // Skip closing vertex.
+            baseIdx++;
+            geom->addPrimitiveSet( deus );
+        }
+
+        // Create indices -- az (longitude)
+        const unsigned int vertsPerLat( numLong+1 );
+        unsigned int longCounter;
+        for( longCounter=0; longCounter<numLong; longCounter++ )
+        {
+            deus = new osg::DrawElementsUShort( GL_LINE_STRIP );
+            deus->resize( numLat+1 );
+
+            unsigned int latIdx;
+            for( latIdx=0; latIdx<numLat+1; latIdx++ )
+            {
+                (*deus)[ latIdx ] = longCounter + (vertsPerLat * latIdx);
+            }
+            geom->addPrimitiveSet( deus );
+        }
     }
-    geom->addPrimitiveSet( fan );
 
     return( true );
 }
@@ -505,7 +565,7 @@ osgwTools::makeAltAzSphere( const float radius, const unsigned int subLat, const
     if( geom == NULL )
         geom = new osg::Geometry;
 
-    bool result = buildAltAzSphereData( radius, subLat, subLong, geom.get() );
+    bool result = buildAltAzSphereData( radius, subLat, subLong, geom.get(), false );
     if( !result )
     {
         osg::notify( osg::WARN ) << "makeAltAzSphere: Error during sphere build." << std::endl;
@@ -513,6 +573,29 @@ osgwTools::makeAltAzSphere( const float radius, const unsigned int subLat, const
     }
     else
         return( geom.release() );
+}
+
+osg::Geometry*
+osgwTools::makeWireAltAzSphere( const float radius, const unsigned int subLat, const unsigned int subLong, osg::Geometry* geometry )
+{
+    osg::ref_ptr< osg::Geometry > geom( geometry );
+    if( geom == NULL )
+        geom = new osg::Geometry;
+
+    bool result = buildAltAzSphereData( radius, subLat, subLong, geom.get(), true );
+    if( !result )
+    {
+        osg::notify( osg::WARN ) << "makeWireAltAzSphere: Error during sphere build." << std::endl;
+        return( NULL );
+    }
+    else
+    {
+        // Disable lighting for wire primitives.
+        geom->getOrCreateStateSet()->setMode( GL_LIGHTING,
+            osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+
+        return( geom.release() );
+    }
 }
 
 
@@ -651,9 +734,6 @@ osgwTools::makeBox( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions
 bool
 buildWireBoxData( const osg::Vec3& halfExtents, osg::Geometry* geom )
 {
-    geom->getOrCreateStateSet()->setMode( GL_LIGHTING,
-        osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
-
     osg::Vec4Array* color( new osg::Vec4Array );
     color->push_back( osg::Vec4( 1., 1., 1., 1. ) );
     geom->setColorArray( color );
@@ -714,5 +794,11 @@ osgwTools::makeWireBox( const osg::Vec3& halfExtents, osg::Geometry* geometry )
         return( NULL );
     }
     else
+    {
+        // Disable lighting for wire primitives.
+        geom->getOrCreateStateSet()->setMode( GL_LIGHTING,
+            osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+
         return( geom.release() );
+    }
 }

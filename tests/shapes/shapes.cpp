@@ -39,26 +39,32 @@ main( int argc,
     osg::ref_ptr< osg::MatrixTransform > mt;
     
     geode = new osg::Geode;
-    geode->addDrawable( osgwTools::makeAltAzSphere( 1., 8, 16 ) );
-    mt = new osg::MatrixTransform( osg::Matrix::translate( -6., 0., 3. ) );
-    root->addChild( mt.get() );
-    mt->addChild( geode.get() );
-
-    geode = new osg::Geode;
     geode->addDrawable( osgwTools::makeGeodesicSphere( 1., 2 ) );
     mt = new osg::MatrixTransform( osg::Matrix::translate( -3., 0., 3. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
 
     geode = new osg::Geode;
+    geode->addDrawable( osgwTools::makeAltAzSphere( 1., 8, 16 ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 0., 0., 3. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
+
+    geode = new osg::Geode;
+    geode->addDrawable( osgwTools::makeWireAltAzSphere( 1., 5, 7 ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 3., 0., 3. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
+
+    geode = new osg::Geode;
     geode->addDrawable( osgwTools::makeBox( osg::Vec3( .75, .75, .75 ), osg::Vec3s( 2, 2, 3 ) ) );
-    mt = new osg::MatrixTransform( osg::Matrix::translate( -6., 0., 0. ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( -3., 0., 0. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
 
     geode = new osg::Geode;
     geode->addDrawable( osgwTools::makeWireBox( osg::Vec3( .75, .75, .75 ) ) );
-    mt = new osg::MatrixTransform( osg::Matrix::translate( -3., 0., 0. ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 0., 0., 0. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
 
