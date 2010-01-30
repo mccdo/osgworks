@@ -392,6 +392,13 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
     geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
     geom->setTexCoordArray( 0, texCoords.get() );
 
+    {
+        osg::Vec4Array* osgC = new osg::Vec4Array;
+        osgC->push_back( osg::Vec4( 1., 1., 1., 1. ) );
+        geom->setColorArray( osgC );
+        geom->setColorBinding( osg::Geometry::BIND_OVERALL );
+    }
+
     // Create the vertices, normals, and tex coords.
     unsigned int idx( 0 );
     unsigned int latCounter;
@@ -575,6 +582,12 @@ buildBoxData( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions, osg:
     geom->setNormalArray( new osg::Vec3Array );
     geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
     geom->setTexCoordArray( 0, new osg::Vec2Array );
+    {
+        osg::Vec4Array* osgC = new osg::Vec4Array;
+        osgC->push_back( osg::Vec4( 1., 1., 1., 1. ) );
+        geom->setColorArray( osgC );
+        geom->setColorBinding( osg::Geometry::BIND_OVERALL );
+    }
 
     // +x
     addPlaneData( osg::Vec3( xMax, yMin, zMin ),
@@ -607,9 +620,9 @@ buildBoxData( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions, osg:
         osg::Vec3( 0., 0., 1. ), geom );
 
     // -z
-    addPlaneData( osg::Vec3( xMax, yMax, zMin ),
+    addPlaneData( osg::Vec3( xMax, yMin, zMin ),
         osg::Vec3( xMin-xMax, 0., 0. ), subX,
-        osg::Vec3( 0., yMin-yMax, 0. ), subY,
+        osg::Vec3( 0., yMax-yMin, 0. ), subY,
         osg::Vec3( 0., 0., -1. ), geom );
 
     return( true );
@@ -638,10 +651,13 @@ osgwTools::makeBox( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions
 bool
 buildWireBoxData( const osg::Vec3& halfExtents, osg::Geometry* geom )
 {
+    geom->getOrCreateStateSet()->setMode( GL_LIGHTING,
+        osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+
     osg::Vec4Array* color( new osg::Vec4Array );
+    color->push_back( osg::Vec4( 1., 1., 1., 1. ) );
     geom->setColorArray( color );
     geom->setColorBinding( osg::Geometry::BIND_OVERALL );
-    color->push_back( osg::Vec4( 1., 1., 1., 1. ) );
 
     osg::Vec3Array* verts( new osg::Vec3Array );
     geom->setVertexArray( verts );

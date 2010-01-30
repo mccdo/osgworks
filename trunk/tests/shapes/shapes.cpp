@@ -19,6 +19,7 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osgViewer/Viewer>
+#include <osgGA/StateSetManipulator>
 #include <osgDB/ReadFile>
 
 #include <osg/MatrixTransform>
@@ -34,25 +35,38 @@ main( int argc,
 {
     osg::ref_ptr< osg::Group > root = new osg::Group;
 
-    osg::ref_ptr< osg::Geode > geode = new osg::Geode;
+    osg::ref_ptr< osg::Geode > geode;
+    osg::ref_ptr< osg::MatrixTransform > mt;
+    
+    geode = new osg::Geode;
     geode->addDrawable( osgwTools::makeAltAzSphere( 1., 8, 16 ) );
-    root->addChild( geode.get() );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( -6., 0., 3. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
 
     geode = new osg::Geode;
     geode->addDrawable( osgwTools::makeGeodesicSphere( 1., 2 ) );
-    osg::ref_ptr< osg::MatrixTransform > mt( new osg::MatrixTransform( osg::Matrix::translate( 3., 0., 0. ) ) );
-    mt->addChild( geode.get() );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( -3., 0., 3. ) );
     root->addChild( mt.get() );
+    mt->addChild( geode.get() );
 
-    {
-        osg::StateSet* ss = root->getOrCreateStateSet();
-        osg::CullFace* cf = new osg::CullFace;
-        ss->setAttributeAndModes( cf );
-        ss->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-        ss->setAttributeAndModes( new osg::PolygonMode( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE ) );
-    }
+    geode = new osg::Geode;
+    geode->addDrawable( osgwTools::makeBox( osg::Vec3( .75, .75, .75 ), osg::Vec3s( 2, 2, 3 ) ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( -6., 0., 0. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
+
+    geode = new osg::Geode;
+    geode->addDrawable( osgwTools::makeWireBox( osg::Vec3( .75, .75, .75 ) ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( -3., 0., 0. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
+
+    osgGA::StateSetManipulator* ssmanip = new osgGA::StateSetManipulator;
+    ssmanip->setStateSet( root->getOrCreateStateSet() );
 
     osgViewer::Viewer viewer;
+    viewer.addEventHandler( ssmanip );
     viewer.setSceneData( root.get() );
     return( viewer.run() );
 }
