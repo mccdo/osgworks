@@ -24,9 +24,9 @@
 #include <osgViewer/Viewer>
 #include <osg/ComputeBoundsVisitor>
 #include <osg/BoundingSphere>
-#include <osg/Geometry>
+#include <osg/MatrixTransform>
 #include <osg/PolygonMode>
-#include <osg/ShapeDrawable>
+#include "osgwTools/Shapes.h"
 
 #include <osg/io_utils>
 
@@ -58,14 +58,14 @@ main( int argc,
 
     bool doBox( false );
     bool doSphere( true );
-    if( arguments.find( "--box" ) >= 0 )
+    if( arguments.find( "--box" ) > 0 )
     {
         doBox = true;
         doSphere = false;
     }
-    if( arguments.find( "--both" ) >= 0 )
+    if( arguments.find( "--both" ) > 0 )
         doBox = doSphere = true;
-    if( arguments.find( "--sphere" ) >= 0 )
+    if( arguments.find( "--sphere" ) > 0 )
         doSphere = true;
     
     if( arguments.read( "-v" ) || arguments.read( "--version" ) )
@@ -85,22 +85,24 @@ main( int argc,
     root->addChild( model.get() );
 
 
+    osg::ref_ptr< osg::MatrixTransform > mt;
     osg::ref_ptr< osg::Geode > geode;
     if( doSphere || doBox )
     {
+        mt = new osg::MatrixTransform;
+        root->addChild( mt.get() );
         geode = new osg::Geode;
-        root->addChild( geode.get() );
+        mt->addChild( geode.get() );
 
-        osg::StateSet* ss = geode->getOrCreateStateSet();
+        osg::StateSet* ss = mt->getOrCreateStateSet();
         ss->setAttributeAndModes( new osg::PolygonMode( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE ) );
         ss->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
     }
     if( doSphere )
     {
         const osg::BoundingSphere bs( model->getBound() );
-        osg::Sphere* sp = new osg::Sphere( bs._center, bs._radius );
-        osg::ShapeDrawable* shape = new osg::ShapeDrawable( sp );
-        geode->addDrawable( shape );
+        mt->setMatrix( osg::Matrix::translate( bs._center ) );
+        geode->addDrawable( osgwTools::makeGeodesicSphere( bs._radius, 1 ) );
 
         osg::notify( osg::ALWAYS ) << "Sphere:" << std::endl;
         osg::notify( osg::ALWAYS ) << "\tCenter\t" << bs._center << std::endl;
@@ -112,10 +114,9 @@ main( int argc,
         model->accept( cbv );
         const osg::BoundingBox bb( cbv.getBoundingBox() );
 
+        mt->setMatrix( osg::Matrix::translate( bb.center() ) );
         osg::Vec3 ext( bb._max - bb._min );
-        osg::Box* box = new osg::Box( bb.center(), ext.x(), ext.y(), ext.z() );
-        osg::ShapeDrawable* shape = new osg::ShapeDrawable( box );
-        geode->addDrawable( shape );
+        geode->addDrawable( osgwTools::makeWireBox( ext * 0.5 ) );
 
         osg::notify( osg::ALWAYS ) << "Box:" << std::endl;
         osg::notify( osg::ALWAYS ) << "\tCenter\t" << bb.center() << std::endl;

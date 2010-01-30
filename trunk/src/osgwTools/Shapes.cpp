@@ -338,7 +338,6 @@ buildGeodesicSphereData( const float radius, const unsigned int subdivisions, os
     return( true );
 }
 
-
 osg::Geometry*
 osgwTools::makeGeodesicSphere( const float radius, const unsigned int subdivisions, osg::Geometry* geometry )
 {
@@ -510,3 +509,194 @@ osgwTools::makeAltAzSphere( const float radius, const unsigned int subLat, const
 }
 
 
+
+
+void
+addPlaneData( const osg::Vec3& corner,
+             const osg::Vec3& u, unsigned short uSteps,
+             const osg::Vec3& v, unsigned short vSteps,
+             const osg::Vec3& normal, osg::Geometry* geom )
+{
+    osg::Vec3Array* vert( static_cast< osg::Vec3Array* >( geom->getVertexArray() ) );
+    osg::Vec3Array* norm( static_cast< osg::Vec3Array* >( geom->getNormalArray() ) );
+    osg::Vec2Array* texc( static_cast< osg::Vec2Array* >( geom->getTexCoordArray( 0 ) ) );
+
+    unsigned short uIdx, vIdx;
+    for( vIdx=0; vIdx<=vSteps; vIdx++ )
+    {
+        const float vPct( (float)vIdx / (float)vSteps );
+        const osg::Vec3 vVec( v * vPct );
+
+        osg::ref_ptr< osg::DrawElementsUInt > deui;
+        if( vIdx < vSteps )
+            deui = new osg::DrawElementsUInt( GL_TRIANGLE_STRIP );
+
+        unsigned int startIdx( vert->size() ), idx( 0 );
+        for( uIdx=0; uIdx<=uSteps; uIdx++ )
+        {
+            const float uPct( (float)uIdx / (float)uSteps );
+            osg::Vec3 vertex( corner + vVec + (u * uPct) );
+
+            vert->push_back( vertex );
+            norm->push_back( normal );
+            texc->push_back( osg::Vec2( uPct, vPct ) );
+            if( deui.valid() )
+            {
+                deui->push_back( startIdx + idx + uSteps + 1 );
+                deui->push_back( startIdx + idx );
+                idx++;
+            }
+        }
+        if( deui.valid() )
+            geom->addPrimitiveSet( deui.get() );
+    }
+}
+
+bool
+buildBoxData( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions, osg::Geometry* geom )
+{
+    if( ( subdivisions.x() <= 0. ) || ( subdivisions.y() <= 0. ) || ( subdivisions.z() <= 0. ) )
+    {
+        osg::notify( osg::WARN ) << "osgwTools: makeBox: Invalid subdivisions." << std::endl;
+        return( false );
+    }
+    const unsigned short subX( (unsigned short)( subdivisions.x() ) );
+    const unsigned short subY( (unsigned short)( subdivisions.y() ) );
+    const unsigned short subZ( (unsigned short)( subdivisions.z() ) );
+
+    const float xMin( -halfExtents[ 0 ] );
+    const float xMax( halfExtents[ 0 ] );
+    const float yMin( -halfExtents[ 1 ] );
+    const float yMax( halfExtents[ 1 ] );
+    const float zMin( -halfExtents[ 2 ] );
+    const float zMax( halfExtents[ 2 ] );
+
+    geom->setVertexArray( new osg::Vec3Array );
+    geom->setNormalArray( new osg::Vec3Array );
+    geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+    geom->setTexCoordArray( 0, new osg::Vec2Array );
+
+    // +x
+    addPlaneData( osg::Vec3( xMax, yMin, zMin ),
+        osg::Vec3( 0., yMax-yMin, 0. ), subY,
+        osg::Vec3( 0., 0., zMax-zMin ), subZ,
+        osg::Vec3( 1., 0., 0. ), geom );
+
+    // -x
+    addPlaneData( osg::Vec3( xMin, yMax, zMin ),
+        osg::Vec3( 0., yMin-yMax, 0. ), subY,
+        osg::Vec3( 0., 0., zMax-zMin ), subZ,
+        osg::Vec3( -1., 0., 0. ), geom );
+
+    // +y
+    addPlaneData( osg::Vec3( xMax, yMax, zMin ),
+        osg::Vec3( xMin-xMax, 0., 0. ), subX,
+        osg::Vec3( 0., 0., zMax-zMin ), subZ,
+        osg::Vec3( 0., 1., 0. ), geom );
+
+    // -y
+    addPlaneData( osg::Vec3( xMin, yMin, zMin ),
+        osg::Vec3( xMax-xMin, 0., 0. ), subX,
+        osg::Vec3( 0., 0., zMax-zMin ), subZ,
+        osg::Vec3( 0., -1., 0. ), geom );
+
+    // +z
+    addPlaneData( osg::Vec3( xMin, yMin, zMax ),
+        osg::Vec3( xMax-xMin, 0., 0. ), subX,
+        osg::Vec3( 0., yMax-yMin, 0. ), subY,
+        osg::Vec3( 0., 0., 1. ), geom );
+
+    // -z
+    addPlaneData( osg::Vec3( xMax, yMax, zMin ),
+        osg::Vec3( xMin-xMax, 0., 0. ), subX,
+        osg::Vec3( 0., yMin-yMax, 0. ), subY,
+        osg::Vec3( 0., 0., -1. ), geom );
+
+    return( true );
+}
+
+osg::Geometry*
+osgwTools::makeBox( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions, osg::Geometry* geometry )
+{
+    osg::ref_ptr< osg::Geometry > geom( geometry );
+    if( geom == NULL )
+        geom = new osg::Geometry;
+
+    bool result = buildBoxData( halfExtents, subdivisions, geom.get() );
+    if( !result )
+    {
+        osg::notify( osg::WARN ) << "makeBox: Error during box build." << std::endl;
+        return( NULL );
+    }
+    else
+        return( geom.release() );
+}
+
+
+
+
+bool
+buildWireBoxData( const osg::Vec3& halfExtents, osg::Geometry* geom )
+{
+    osg::Vec4Array* color( new osg::Vec4Array );
+    geom->setColorArray( color );
+    geom->setColorBinding( osg::Geometry::BIND_OVERALL );
+    color->push_back( osg::Vec4( 1., 1., 1., 1. ) );
+
+    osg::Vec3Array* verts( new osg::Vec3Array );
+    geom->setVertexArray( verts );
+
+    verts->push_back( osg::Vec3( -halfExtents[ 0 ], -halfExtents[ 1 ], -halfExtents[ 2 ] ) );
+    verts->push_back( osg::Vec3( halfExtents[ 0 ], -halfExtents[ 1 ], -halfExtents[ 2 ] ) );
+    verts->push_back( osg::Vec3( halfExtents[ 0 ], halfExtents[ 1 ], -halfExtents[ 2 ] ) );
+    verts->push_back( osg::Vec3( -halfExtents[ 0 ], halfExtents[ 1 ], -halfExtents[ 2 ] ) );
+    verts->push_back( osg::Vec3( -halfExtents[ 0 ], -halfExtents[ 1 ], halfExtents[ 2 ] ) );
+    verts->push_back( osg::Vec3( halfExtents[ 0 ], -halfExtents[ 1 ], halfExtents[ 2 ] ) );
+    verts->push_back( osg::Vec3( halfExtents[ 0 ], halfExtents[ 1 ], halfExtents[ 2 ] ) );
+    verts->push_back( osg::Vec3( -halfExtents[ 0 ], halfExtents[ 1 ], halfExtents[ 2 ] ) );
+
+    osg::ref_ptr< osg::DrawElementsUInt > deui(
+        new osg::DrawElementsUInt( GL_LINE_LOOP ) );
+    deui->push_back( 0 );
+    deui->push_back( 1 );
+    deui->push_back( 2 );
+    deui->push_back( 3 );
+    geom->addPrimitiveSet( deui.get() );
+
+    deui = new osg::DrawElementsUInt( GL_LINE_LOOP );
+    deui->push_back( 4 );
+    deui->push_back( 5 );
+    deui->push_back( 6 );
+    deui->push_back( 7 );
+    geom->addPrimitiveSet( deui.get() );
+
+    deui = new osg::DrawElementsUInt( GL_LINES );
+    deui->push_back( 0 );
+    deui->push_back( 4 );
+    deui->push_back( 1 );
+    deui->push_back( 5 );
+    deui->push_back( 2 );
+    deui->push_back( 6 );
+    deui->push_back( 3 );
+    deui->push_back( 7 );
+    geom->addPrimitiveSet( deui.get() );
+
+    return( true );
+}
+
+osg::Geometry*
+osgwTools::makeWireBox( const osg::Vec3& halfExtents, osg::Geometry* geometry )
+{
+    osg::ref_ptr< osg::Geometry > geom( geometry );
+    if( geom == NULL )
+        geom = new osg::Geometry;
+
+    bool result = buildWireBoxData( halfExtents, geom.get() );
+    if( !result )
+    {
+        osg::notify( osg::WARN ) << "makeWireBox: Error during box build." << std::endl;
+        return( NULL );
+    }
+    else
+        return( geom.release() );
+}
