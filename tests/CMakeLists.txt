@@ -1,6 +1,7 @@
 ADD_SUBDIRECTORY( amt )
 ADD_SUBDIRECTORY( cameraconfig )
 ADD_SUBDIRECTORY( geometryop )
+ADD_SUBDIRECTORY( testvisitors )
 ADD_SUBDIRECTORY( insert )
 ADD_SUBDIRECTORY( screencap )
 ADD_SUBDIRECTORY( shapes )
