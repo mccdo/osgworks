@@ -82,6 +82,17 @@ OSGWTOOLS_EXPORT osg::Geometry* makeBox( const osg::Vec3& halfExtents, const osg
 OSGWTOOLS_EXPORT osg::Geometry* makeWireBox( const osg::Vec3& halfExtents, osg::Geometry* geometry=NULL );
 
 
+// Arrow generation routines
+
+// Makes a unit-length arrow pointing towards +z with base at the origin.
+// Current implementation uses a minimal number of vertices. In the future,
+// this code could use cylinder/cone support routines to provide complete
+// control over approximation.
+// Adds vertex and normal data, with a single white color.
+OSGWTOOLS_EXPORT osg::Geometry* makeArrow( osg::Geometry* geometry=NULL );
+
+
+
 // namespace osgwTools
 }
 
