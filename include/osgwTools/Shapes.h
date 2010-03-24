@@ -66,12 +66,25 @@ OSGWTOOLS_EXPORT osg::Geometry* makeAltAzSphere( const float radius=1., const un
 OSGWTOOLS_EXPORT osg::Geometry* makeWireAltAzSphere( const float radius=1., const unsigned int subLat=8, const unsigned int subLong=16, osg::Geometry* geometry=NULL );
 
 
+// Plane generation routines
+
+// Makes a plane using GL_TRIANGLE_STRIP PrimitiveSets. Dimensions are determined
+// by the u and v vectors. By default, the plane is made of two triangles. However,
+// this can be increased with the subdivisions parameter, which specifices how to
+// subdivide the plane in x, and y. Normal and texture coordinate (unit 0) data
+// are created, with the normal computed as (u^v(. The texture coordinate data
+// is suitable for applying an entire texture map to the plane.
+OSGWTOOLS_EXPORT osg::Geometry* makePlane( const osg::Vec3& corner, const osg::Vec3& u, const osg::Vec3& v, const osg::Vec2s& subdivisions=osg::Vec2s(1,1), osg::Geometry* geometry=NULL );
+
+// TBD wire plane
+
+
 // Box generation routines
 
 // Makes an axis-aligned box using GL_TRIANGLE_STRIP PrimitiveSets. Dimensions
 // are (halfExtents*2). By default, two triangles are on each side of the box, for
 // a total of 12 triangles. However, this can be increased with the subdivisions
-// parameter, which specifices how to subdivide the faces of the sphere in x, y, and z.
+// parameter, which specifices how to subdivide the faces of the box in x, y, and z.
 // Normal and texture coordinate (unit 0) data are created. The texture coordinate data
 // is suitable for applying an entire texture map to each face of the box.
 OSGWTOOLS_EXPORT osg::Geometry* makeBox( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions=osg::Vec3s(1,1,1), osg::Geometry* geometry=NULL );

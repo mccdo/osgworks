@@ -643,6 +643,56 @@ addPlaneData( const osg::Vec3& corner,
 }
 
 bool
+buildPlaneData( const osg::Vec3& corner, const osg::Vec3& u, const osg::Vec3& v, const osg::Vec2s& subdivisions, osg::Geometry* geom )
+{
+    if( ( subdivisions.x() <= 0. ) || ( subdivisions.y() <= 0. ) )
+    {
+        osg::notify( osg::WARN ) << "osgwTools: makePlane: Invalid subdivisions." << std::endl;
+        return( false );
+    }
+    const unsigned short subX( (unsigned short)( subdivisions.x() ) );
+    const unsigned short subY( (unsigned short)( subdivisions.y() ) );
+
+    geom->setVertexArray( new osg::Vec3Array );
+    geom->setNormalArray( new osg::Vec3Array );
+    geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+    geom->setTexCoordArray( 0, new osg::Vec2Array );
+    {
+        osg::Vec4Array* osgC = new osg::Vec4Array;
+        osgC->push_back( osg::Vec4( 1., 1., 1., 1. ) );
+        geom->setColorArray( osgC );
+        geom->setColorBinding( osg::Geometry::BIND_OVERALL );
+    }
+
+    osg::Vec3 normal( u ^ v );
+    normal.normalize();
+    addPlaneData( corner, u, subX, v, subY,
+        normal, geom );
+
+    return( true );
+}
+
+osg::Geometry*
+osgwTools::makePlane( const osg::Vec3& corner, const osg::Vec3& u, const osg::Vec3& v, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    osg::ref_ptr< osg::Geometry > geom( geometry );
+    if( geom == NULL )
+        geom = new osg::Geometry;
+
+    bool result = buildPlaneData( corner, u, v, subdivisions, geom.get() );
+    if( !result )
+    {
+        osg::notify( osg::WARN ) << "makePlane: Error during plane build." << std::endl;
+        return( NULL );
+    }
+    else
+        return( geom.release() );
+}
+
+
+
+
+bool
 buildBoxData( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions, osg::Geometry* geom )
 {
     if( ( subdivisions.x() <= 0. ) || ( subdivisions.y() <= 0. ) || ( subdivisions.z() <= 0. ) )

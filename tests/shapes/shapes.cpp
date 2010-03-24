@@ -74,6 +74,13 @@ main( int argc,
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
 
+    geode = new osg::Geode;
+    geode->addDrawable( osgwTools::makePlane( osg::Vec3( -.75, 0., -1. ),
+        osg::Vec3( 1.5, 0., 0. ), osg::Vec3( 0., 0., 2. ), osg::Vec2s( 2, 3) ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 0., 0., -3. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
+
     osgGA::StateSetManipulator* ssmanip = new osgGA::StateSetManipulator;
     ssmanip->setStateSet( root->getOrCreateStateSet() );
 
