@@ -558,6 +558,140 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
     return( true );
 }
 
+
+bool
+const buildCircleData (float radius, const unsigned int subdivisions, osg::Geometry* geom, const bool wire )
+{
+    unsigned int numSub( subdivisions );
+    unsigned int totalVerts(0);
+    if( numSub < 2 )
+        numSub = 3;
+    if( numSub > 65530 )
+    {
+        // Would create index array too large for use with DrawElementsUShort. Clamp.
+		numSub = 65530; // leave headroom for a few spares
+        osg::notify( osg::WARN ) << "buildCircleData: Clamping subdivisions to " << numSub << std::endl;
+    }
+    totalVerts = ( (numSub+2) ); // +2: Center, and final, closing vertex
+    osg::notify( osg::INFO ) << "buildCircleData: totalVerts: " << totalVerts << std::endl;
+
+    // Create data arrays and configure the Geometry
+    osg::ref_ptr< osg::Vec3Array > vertices( new osg::Vec3Array );
+    vertices->resize( totalVerts );
+    geom->setVertexArray( vertices.get() );
+
+    osg::ref_ptr< osg::Vec3Array > normals;
+    osg::ref_ptr< osg::Vec2Array > texCoords;
+    if( !wire )
+    {
+        normals = new osg::Vec3Array;
+        normals->resize( totalVerts );
+        geom->setNormalArray( normals.get() );
+        geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+
+        texCoords = new osg::Vec2Array;
+        texCoords->resize( totalVerts );
+        geom->setTexCoordArray( 0, texCoords.get() );
+    }
+
+    {
+        osg::Vec4Array* osgC = new osg::Vec4Array;
+        osgC->push_back( osg::Vec4( 1., 1., 1., 1. ) );
+        geom->setColorArray( osgC );
+        geom->setColorBinding( osg::Geometry::BIND_OVERALL );
+    }
+
+    // Create the vertices, normals, and tex coords.
+    unsigned int idx( 0 );
+    unsigned int subCounter;
+    const osg::Vec3 centerVecZero( 0., 0., 0. );
+    const osg::Vec3 normalVec( 0., -1.0, 0. ); // facing out toward -Y direction
+
+	// center: idx=0
+	(*vertices)[ idx ] = centerVecZero;
+    if( !wire )
+    {
+        (*normals)[ idx ] = normalVec;
+        (*texCoords)[ idx ].set( centerVecZero.x(), centerVecZero.y() );
+    } // if
+	idx++;
+
+	// circle-loop
+	for( subCounter=numSub+1; subCounter>0; subCounter-- ) // numsub+1 returns us to the start, duplicating it for a closed circle
+    {
+        const double t( (double)(subCounter-1) / (double)numSub );
+        const double subAngle( (t-0.5) * osg::PI * 2.);
+        const osg::Vec3 baseVec( cos( subAngle ), 0., sin( subAngle ) );
+
+        osg::Vec3 v(baseVec);
+
+        (*vertices)[ idx ] = ( v * radius );
+        //osg::notify( osg::ALWAYS ) << v << std::endl;
+
+        if( !wire )
+        {
+            (*normals)[ idx ] = normalVec;
+			const osg::Vec3 vRad(v * radius);
+            (*texCoords)[ idx ].set( vRad.x(), vRad.y() );
+        } // if
+
+        idx++;
+
+    }
+
+    if( idx != totalVerts )
+    {
+        osg::notify( osg::WARN ) << "buildCircleData: Error creating vertices." << std::endl;
+        osg::notify( osg::WARN ) << "  idx " << idx << " != totalVerts " << totalVerts << std::endl;
+    }
+
+
+    // Create PrimitiveSets.
+
+    if( !wire )
+    {
+        // Solid -- Use GL_TRIANGLE_FAN
+
+        // Create indices -- top group of triangles
+        osg::DrawElementsUShort* fan( new osg::DrawElementsUShort( GL_TRIANGLE_FAN ) );
+        fan->resize( numSub+2 ); // center, 1...n, 1 again to close
+		idx = 0;
+
+		// push center
+        (*fan)[ idx ] = 0;
+		idx++;
+
+		// circle loop
+		for( unsigned int subCount=0; subCount<numSub+1; subCount++ )// numsub+1 gets us start, ring and end (which duplicates start)
+        {
+            (*fan)[ idx ] = idx;
+			idx++;
+        }
+        geom->addPrimitiveSet( fan );
+    } // if !wire
+    else
+    {
+        // Wire -- Use GL_LINE_LOOP
+		// we skip vertex #0 (center) when drawing the LINE_LOOP
+
+        // Create indices
+        osg::DrawElementsUShort* ring;
+        ring = new osg::DrawElementsUShort( GL_LINE_LOOP );
+        ring->resize( numSub+1 );
+        unsigned int loopIdx;
+        for( loopIdx=0; loopIdx<numSub+1; loopIdx++ ) // numsub+1 gets us start, ring and end (which duplicates start)
+        {
+
+            (*ring)[ loopIdx ] = loopIdx + 1; // skipping #0, center
+
+        } // for
+		geom->addPrimitiveSet( ring );
+
+    } // wire
+
+    return( true );
+} // buildCircleData
+
 osg::Geometry*
 osgwTools::makeAltAzSphere( const float radius, const unsigned int subLat, const unsigned int subLong, osg::Geometry* geometry )
 {
@@ -598,6 +732,50 @@ osgwTools::makeWireAltAzSphere( const float radius, const unsigned int subLat, c
     }
 }
 
+
+
+osg::Geometry*
+osgwTools::makeWireCircle( const float radius, const unsigned int subdivisions, osg::Geometry* geometry)
+{
+    osg::ref_ptr< osg::Geometry > geom( geometry );
+    if( geom == NULL )
+        geom = new osg::Geometry;
+
+    bool result = buildCircleData( radius, subdivisions, geom.get(), true );
+    if( !result )
+    {
+        osg::notify( osg::WARN ) << "makeCircle: Error during circle build." << std::endl;
+        return( NULL );
+    } // if
+    else
+    {
+        // Disable lighting for wire primitives.
+        geom->getOrCreateStateSet()->setMode( GL_LIGHTING,
+            osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+
+        return( geom.release() );
+    } // else
+} // osgwTools::makeWireCircle
+
+
+osg::Geometry*
+osgwTools::makeCircle( const float radius, const unsigned int subdivisions, osg::Geometry* geometry)
+{
+    osg::ref_ptr< osg::Geometry > geom( geometry );
+    if( geom == NULL )
+        geom = new osg::Geometry;
+
+    bool result = buildCircleData( radius, subdivisions, geom.get(), false );
+    if( !result )
+    {
+        osg::notify( osg::WARN ) << "makeWireCircle: Error during circle build." << std::endl;
+        return( NULL );
+    } // if
+    else
+    {
+        return( geom.release() );
+    } // else
+} // osgwTools::makeCircle
 
 
 

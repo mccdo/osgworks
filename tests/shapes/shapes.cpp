@@ -81,6 +81,18 @@ main( int argc,
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
 
+    geode = new osg::Geode;
+    geode->addDrawable( osgwTools::makeWireCircle( 1.) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 3., 0., 0. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
+
+    geode = new osg::Geode;
+    geode->addDrawable( osgwTools::makeCircle( 1.) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 3., 0., -3. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
+
     osgGA::StateSetManipulator* ssmanip = new osgGA::StateSetManipulator;
     ssmanip->setStateSet( root->getOrCreateStateSet() );
 
