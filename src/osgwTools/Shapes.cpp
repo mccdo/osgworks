@@ -560,7 +560,7 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
 
 
 bool
-const buildCircleData (float radius, const unsigned int subdivisions, osg::Geometry* geom, const bool wire )
+const buildCircleData (float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geom, const bool wire )
 {
     unsigned int numSub( subdivisions );
     unsigned int totalVerts(0);
@@ -605,7 +605,8 @@ const buildCircleData (float radius, const unsigned int subdivisions, osg::Geome
     unsigned int idx( 0 );
     unsigned int subCounter;
     const osg::Vec3 centerVecZero( 0., 0., 0. );
-    const osg::Vec3 normalVec( 0., -1.0, 0. ); // facing out toward -Y direction
+    osg::Vec3 normalVec( orientation );
+    normalVec.normalize();
 
 	// center: idx=0
 	(*vertices)[ idx ] = centerVecZero;
@@ -616,14 +617,20 @@ const buildCircleData (float radius, const unsigned int subdivisions, osg::Geome
     } // if
 	idx++;
 
-	// circle-loop
-	for( subCounter=numSub+1; subCounter>0; subCounter-- ) // numsub+1 returns us to the start, duplicating it for a closed circle
-    {
-        const double t( (double)(subCounter-1) / (double)numSub );
-        const double subAngle( (t-0.5) * osg::PI * 2.);
-        const osg::Vec3 baseVec( cos( subAngle ), 0., sin( subAngle ) );
+    // Find ideal base vector (at 90 degree angle to normalVec)
+    osg::Vec3 crossVec( 1., 0., 0. );
+    if( normalVec * crossVec > .9 )
+        crossVec = osg::Vec3( 0., 1., 0. );
+    osg::Vec3 baseVec = normalVec ^ crossVec;
+    baseVec.normalize();
 
-        osg::Vec3 v(baseVec);
+	// circle-loop
+	for( subCounter=0; subCounter<=numSub; subCounter++ )
+    {
+        const double t( (double)(subCounter) / (double)numSub );
+        const double subAngle( t * osg::PI * 2.);
+        osg::Matrix m( osg::Matrix::rotate( subAngle, normalVec ) );
+        osg::Vec3 v( baseVec * m );
 
         (*vertices)[ idx ] = ( v * radius );
         //osg::notify( osg::ALWAYS ) << v << std::endl;
@@ -735,13 +742,13 @@ osgwTools::makeWireAltAzSphere( const float radius, const unsigned int subLat, c
 
 
 osg::Geometry*
-osgwTools::makeWireCircle( const float radius, const unsigned int subdivisions, osg::Geometry* geometry)
+osgwTools::makeWireCircle( const float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geometry)
 {
     osg::ref_ptr< osg::Geometry > geom( geometry );
     if( geom == NULL )
         geom = new osg::Geometry;
 
-    bool result = buildCircleData( radius, subdivisions, geom.get(), true );
+    bool result = buildCircleData( radius, subdivisions, orientation, geom.get(), true );
     if( !result )
     {
         osg::notify( osg::WARN ) << "makeCircle: Error during circle build." << std::endl;
@@ -759,13 +766,13 @@ osgwTools::makeWireCircle( const float radius, const unsigned int subdivisions, 
 
 
 osg::Geometry*
-osgwTools::makeCircle( const float radius, const unsigned int subdivisions, osg::Geometry* geometry)
+osgwTools::makeCircle( const float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geometry)
 {
     osg::ref_ptr< osg::Geometry > geom( geometry );
     if( geom == NULL )
         geom = new osg::Geometry;
 
-    bool result = buildCircleData( radius, subdivisions, geom.get(), false );
+    bool result = buildCircleData( radius, subdivisions, orientation, geom.get(), false );
     if( !result )
     {
         osg::notify( osg::WARN ) << "makeWireCircle: Error during circle build." << std::endl;

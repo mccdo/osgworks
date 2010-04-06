@@ -102,10 +102,10 @@ OSGWTOOLS_EXPORT osg::Geometry* makeWireBox( const osg::Vec3& halfExtents, osg::
 // However, this can be increased with the subdivisions parameter.
 // Normal and texture coordinate (unit 0) data are created. The texture coordinate data
 // is suitable for applying an entire texture map to the face of the disk.
-OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const float radius=1., const unsigned int subdivisions=32, osg::Geometry* geometry=NULL );
+OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
 // Makes an axis-aligned wireframe circle using GL_LINE_LOOP PrimitiveSets.
-OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const float radius=1., const unsigned int subdivisions=32, osg::Geometry* geometry=NULL );
+OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
 
 // Arrow generation routines
