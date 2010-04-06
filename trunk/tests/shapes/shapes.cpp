@@ -82,13 +82,13 @@ main( int argc,
     mt->addChild( geode.get() );
 
     geode = new osg::Geode;
-    geode->addDrawable( osgwTools::makeWireCircle( 1.) );
+    geode->addDrawable( osgwTools::makeWireCircle( 1., 7, osg::Vec3( 1., 0., 0. ) ) );
     mt = new osg::MatrixTransform( osg::Matrix::translate( 3., 0., 0. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
 
     geode = new osg::Geode;
-    geode->addDrawable( osgwTools::makeCircle( 1.) );
+    geode->addDrawable( osgwTools::makeCircle( 1., 32, osg::Vec3( 0., -1., 0. )) );
     mt = new osg::MatrixTransform( osg::Matrix::translate( 3., 0., -3. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
