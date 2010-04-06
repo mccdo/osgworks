@@ -564,7 +564,7 @@ const buildCircleData (float radius, const unsigned int subdivisions, osg::Geome
 {
     unsigned int numSub( subdivisions );
     unsigned int totalVerts(0);
-    if( numSub < 2 )
+    if( numSub < 3 )
         numSub = 3;
     if( numSub > 65530 )
     {
