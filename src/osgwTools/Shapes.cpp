@@ -876,6 +876,62 @@ osgwTools::makePlane( const osg::Vec3& corner, const osg::Vec3& u, const osg::Ve
 
 
 
+bool
+buildWirePlaneData( const osg::Vec3& corner, const osg::Vec3& u, const osg::Vec3& v, const osg::Vec2s& subdivisions, osg::Geometry* geom )
+{
+    osg::Vec3Array* verts = new osg::Vec3Array;
+
+    osg::Vec3 end( corner + v );
+    int idx;
+    for( idx=0; idx <= subdivisions.x(); idx++ )
+    {
+        const float percent( (float)idx / (float)(subdivisions.x()) );
+        const osg::Vec3 strut( u * percent );
+        verts->push_back( corner+strut );
+        verts->push_back( end+strut );
+    }
+    end.set( corner + u );
+    for( idx=0; idx <= subdivisions.y(); idx++ )
+    {
+        const float percent( (float)idx / (float)(subdivisions.y()) );
+        const osg::Vec3 strut( v * percent );
+        verts->push_back( corner+strut );
+        verts->push_back( end+strut );
+    }
+
+    osg::Vec4Array* c = new osg::Vec4Array;
+    c->push_back( osg::Vec4( 1., 1., 1., 1. ) );
+
+    geom->setVertexArray( verts );
+    geom->setColorArray( c );
+    geom->setColorBinding( osg::Geometry::BIND_OVERALL );
+
+    geom->addPrimitiveSet( new osg::DrawArrays( GL_LINES, 0, verts->getNumElements() ) );
+
+    geom->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+
+    return( true );
+}
+
+osg::Geometry*
+osgwTools::makeWirePlane( const osg::Vec3& corner, const osg::Vec3& u, const osg::Vec3& v, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    osg::ref_ptr< osg::Geometry > geom( geometry );
+    if( geom == NULL )
+        geom = new osg::Geometry;
+
+    bool result = buildWirePlaneData( corner, u, v, subdivisions, geom.get() );
+    if( !result )
+    {
+        osg::notify( osg::WARN ) << "makeWirePlane: Error during plane build." << std::endl;
+        return( NULL );
+    }
+    else
+        return( geom.release() );
+}
+
+
+
 
 bool
 buildBoxData( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions, osg::Geometry* geom )
