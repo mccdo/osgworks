@@ -16,7 +16,7 @@
 
 *Status:* Release candidate available. Development is on the 1.1 branch.
 
- * *Shapes* - This release adds several convenience routines for creating basic shapes such as boxes, circles, planes, spheres, and arrows. These are intended to be osg::Geometry-based alternatives to using osg::ShapeDrawable. ShapeDrawable preserves meta data about the shape, but the *osgWorks* variants provide direct access to vertex data and are more likely to be supported by OSG plugins and third party OSG-based libraries. Shapes support for drawing planes deprecates the Grid class.
+ * *Shapes* - This release adds several convenience routines for creating basic shapes such as boxes, circles, planes, spheres, and arrows. These are intended to be osg::Geometry-based alternatives to using osg::!ShapeDrawable. !ShapeDrawable preserves meta data about the shape, but the *osgWorks* variants provide direct access to vertex data and are more likely to be supported by OSG plugins and third party OSG-based libraries. Shapes support for drawing planes deprecates the Grid class.
 
  * *Build fixes* - This release contains build fixes for a number of platforms.
 
