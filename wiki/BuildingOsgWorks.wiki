@@ -2,7 +2,7 @@
 
 = Dependencies =
 
-osgWorks depends on !OpenSceneGraph. Compatible versions of OSG include v2.6.1, v2.8.1, v2.8.2, and the current svn head as of December 2009.
+osgWorks depends on !OpenSceneGraph. See the CompatibilityMatrix.
 
 The osgWorks build system requires CMake v2.6.4 or later.
 
