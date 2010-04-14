@@ -31,6 +31,7 @@ namespace osgwTools
 {
 
 
+// Deprecated. Use Shapes.h makeWirePlane instead.
 OSGWTOOLS_EXPORT osg::Geometry* makeGrid( const osg::Vec3& corner, const osg::Vec3& s, const osg::Vec3& t, float stepSize=1.f );
 
 

@@ -76,7 +76,7 @@ OSGWTOOLS_EXPORT osg::Geometry* makeWireAltAzSphere( const float radius=1., cons
 // is suitable for applying an entire texture map to the plane.
 OSGWTOOLS_EXPORT osg::Geometry* makePlane( const osg::Vec3& corner, const osg::Vec3& u, const osg::Vec3& v, const osg::Vec2s& subdivisions=osg::Vec2s(1,1), osg::Geometry* geometry=NULL );
 
-// TBD wire plane
+OSGWTOOLS_EXPORT osg::Geometry* makeWirePlane( const osg::Vec3& corner, const osg::Vec3& u, const osg::Vec3& v, const osg::Vec2s& subdivisions=osg::Vec2s(1,1), osg::Geometry* geometry=NULL );
 
 
 // Box generation routines

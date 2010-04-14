@@ -75,9 +75,16 @@ main( int argc,
     mt->addChild( geode.get() );
 
     geode = new osg::Geode;
-    geode->addDrawable( osgwTools::makePlane( osg::Vec3( -.75, 0., -1. ),
-        osg::Vec3( 1.5, 0., 0. ), osg::Vec3( 0., 0., 2. ), osg::Vec2s( 2, 3) ) );
+    geode->addDrawable( osgwTools::makePlane( osg::Vec3( -.75, 0.25, -1. ),
+        osg::Vec3( 1.5, 0., 0. ), osg::Vec3( 0., -0.25, 2. ), osg::Vec2s( 2, 3) ) );
     mt = new osg::MatrixTransform( osg::Matrix::translate( 0., 0., -3. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
+
+    geode = new osg::Geode;
+    geode->addDrawable( osgwTools::makeWirePlane( osg::Vec3( -.75, -0.25, -1. ),
+        osg::Vec3( 1.5, 0., 0. ), osg::Vec3( 0., 0.25, 2. ), osg::Vec2s( 2, 3) ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 3., 0., -3. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
 
@@ -89,7 +96,7 @@ main( int argc,
 
     geode = new osg::Geode;
     geode->addDrawable( osgwTools::makeCircle( 1., 32, osg::Vec3( 0., -1., 0. )) );
-    mt = new osg::MatrixTransform( osg::Matrix::translate( 3., 0., -3. ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 6., 0., 0. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
 
