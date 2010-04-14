@@ -1,0 +1,31 @@
+#summary Plans for upcoming osgWorks releases
+
+= v2.0 =
+
+*Release date: June-July 2010
+
+*Status:* Not yet started.
+
+There are currently no specific plans for this release, but it will probably contain some support for the upcoming *osgBullet* v2.0.
+
+This release will remove the deprecated Grid class and Grid.cpp/.h.
+
+= v1.1 =
+
+*Release date:* April-May 2010
+
+*Status:* Release candidate available. Development is on the 1.1 branch.
+
+=== Shapes ===
+
+This release adds several convenience routines for creating basic shapes such as boxes, circles, planes, spheres, and arrows. These are intended to be osg::Geometry-based alternatives to using osg::ShapeDrawable. ShapeDrawable preserves meta data about the shape, but the *osgWorks* variants provide direct access to vertex data and are more likely to be supported by OSG plugins and third party OSG-based libraries.
+
+With the introduction of convenience routines to generate planes, the Grid class (in Grid.cpp/.h) is marked deprecated in this release.
+
+=== Build Fixes ===
+
+This release contains build fixes for a number of platforms.
+
+= v1.0 =
+
+*Released 4 Nov 2009*
