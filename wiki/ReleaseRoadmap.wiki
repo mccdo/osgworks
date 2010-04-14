@@ -2,7 +2,7 @@
 
 = v2.0 =
 
-*Release date: June-July 2010
+*Release date:* June-July 2010
 
 *Status:* Not yet started.
 
