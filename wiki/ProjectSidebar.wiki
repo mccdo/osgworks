@@ -1,22 +1,14 @@
- * Download
-
- * [http://code.google.com/p/osgworks/source svn access]
- * [http://code.google.com/p/osgworks/downloads/list Release zips]
-
- * Building
-  * [wiki/Building/BuildingOsgWorks Building osgWorks]
-  * [wiki/Building/CompatibilityMatrix Version compatibility]
-
- * Running
-
- * RunningOsgWorks
- * GettingStarted
-
- * Release Information
-
- * ReleaseRoadmap
- * CompatibilityMatrix
-
-[http://code.google.com/p/osgworks/wiki/WikiContents Wiki]
-
-[http://code.google.com/p/osgworks/issues/list Issues]
+  * Download
+    * [http://code.google.com/p/osgworks/source svn access]
+    * [http://code.google.com/p/osgworks/downloads/list Release zips]
+  * Building
+    * [wiki/Building/BuildingOsgWorks Building osgWorks]
+    * [wiki/Building/CompatibilityMatrix Version compatibility]
+  * Running
+    * RunningOsgWorks
+    * GettingStarted
+  * Release Information
+    * ReleaseRoadmap
+    * CompatibilityMatrix
+  * [http://code.google.com/p/osgworks/wiki/WikiContents Wiki]
+  * [http://code.google.com/p/osgworks/issues/list Issues]
