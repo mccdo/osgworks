@@ -2,7 +2,7 @@
 
 <wiki:toc />
 
-= v1.0 =
+= v1.0 Current Release =
 
 Released 4 Nov 2009, v1.0 is the current stable release.
 
