@@ -1,5 +1,7 @@
 #summary Plans for upcoming osgWorks releases
 
+<wiki:toc />
+
 = v2.0 =
 
 *Release date:* June-July 2010
