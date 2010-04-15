@@ -1,5 +1,7 @@
 #summary Configuring a system to run an osgWorks-based application
 
+<wiki:toc />
+
 = Set PATH =
 
 Set your PATH environment variable so that the operating ststem can find the osgWorks binary files. This is the install location, such as /usr/local/bin or C:\Program Files\osgWorks\bin.
