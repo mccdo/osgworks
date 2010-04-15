@@ -20,7 +20,7 @@ Use this URL to checkout a v1.0 source tree:
 
 == Binaries ==
 
-Sorry, no binary packages are currently available.
+Sorry, binary packages are not currently available.
 
 = v1.1 Release Candidate =
 
@@ -33,6 +33,12 @@ Use this URL to checkout a v1.1-rc1 source tree:
 Development for the v1.1 release is occurring on the 1.1 branch:
 
 `https://osgworks.googlecode.com/svn/branches/1_01-branch`
+
+= svn trunk =
+
+Checkout the latest osgWorks source code from svn:
+
+`https://osgworks.googlecode.com/svn/trunk`
 
 ----
 
