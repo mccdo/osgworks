@@ -1,5 +1,7 @@
 #summary What to do after it's built
 
+<wiki:toc />
+
 = Using osgwwhich =
 
 *osgwwhich* uses the same search algorithm employed by OSG to find data files and shared libraries, and then displays the full path of the specified file. This is useful when you have multiple data files with the same name, as *osgwwhich* tells you the location of the file that OSG would load. It's also useful when you have multiple copies of OSG installed on your system, as osgwwhich tells you the path to the OSG library or plugin.
