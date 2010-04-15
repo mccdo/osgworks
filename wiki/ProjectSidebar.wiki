@@ -1,19 +1,16 @@
-Download
+ * Download
 
  * [http://code.google.com/p/osgworks/source svn access]
  * [http://code.google.com/p/osgworks/downloads/list Release zips]
 
-Building
+ * Building
 
- * BuildingOsgWorks
- * CompatibilityMatrix
-
-Running
+ * Running
 
  * RunningOsgWorks
  * GettingStarted
 
-Release Information
+ * Release Information
 
  * ReleaseRoadmap
  * CompatibilityMatrix
