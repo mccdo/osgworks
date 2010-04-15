@@ -38,4 +38,4 @@ Development for the v1.1 release is occurring on the 1.1 branch:
 
 = All Downloads =
 
-[http://code.google.com/p/osgworks/Downloads/list All files available for sownload.]
+[http://code.google.com/p/osgworks/downloads/list All files available for sownload.]
