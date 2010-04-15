@@ -4,8 +4,8 @@
  * [http://code.google.com/p/osgworks/downloads/list Release zips]
 
  * Building
-  * [Building/BuildingOsgWorks Building osgWorks]
-  * [Building/CompatibilityMatrix Version compatibility]
+  * [wiki/Building/BuildingOsgWorks Building osgWorks]
+  * [wiki/Building/CompatibilityMatrix Version compatibility]
 
  * Running
 
