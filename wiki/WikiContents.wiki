@@ -1,4 +1,5 @@
 = Building osgWorks =
+ * [DownloadPage Get the source code.]
  * [BuildingOsgWorks Build instructions and dependencies.]
  * [CompatibilityMatrix What version of OSG do I need?]
 
