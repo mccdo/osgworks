@@ -18,6 +18,6 @@ Release Information
  * ReleaseRoadmap
  * CompatibilityMatrix
 
-[http://code.google.com/p/osgworks/wiki Wiki]
+[http://code.google.com/p/osgworks/wiki/WikiContents Wiki]
 
 [http://code.google.com/p/osgworks/issues/list Issues]
