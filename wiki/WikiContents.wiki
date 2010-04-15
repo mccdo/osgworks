@@ -1,5 +1,3 @@
-#summary Wiki Table of Contents
-
 = Building osgWorks =
  * [BuildingOsgWorks Build instructions and dependencies.]
  * [CompatibilityMatrix What version of OSG do I need?]
