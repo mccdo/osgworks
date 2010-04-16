@@ -28,9 +28,9 @@ Sorry, binary packages are not currently available.
 
 [http://osgworks.googlecode.com/files/osgWorks_01_01_00_rc2.zip osgWorks_01_01_00_rc2.zip]
 
-Use this URL to checkout a v1.1-rc1 source tree:
+Use this URL to checkout a v1.1-rc2 source tree:
 
-`https://osgworks.googlecode.com/svn/tags/osgWorks_01_01_00-rc1`
+`https://osgworks.googlecode.com/svn/tags/osgWorks_01_01_00-rc2`
 
 Development for the v1.1 release is occurring on the 1.1 branch:
 
