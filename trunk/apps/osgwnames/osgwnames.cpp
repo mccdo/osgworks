@@ -37,13 +37,13 @@ public:
     {
         int idx;
         for( idx=0; idx<_level; idx++ )
-            osg::notify( osg::ALWAYS ) << "  ";
+            osg::notify( osg::NOTICE ) << "  ";
 
         if( !n.getName().empty() )
-            osg::notify( osg::ALWAYS ) << n.getName();
+            osg::notify( osg::NOTICE ) << n.getName();
         else
-            osg::notify( osg::ALWAYS ) << "NULL";
-        osg::notify( osg::ALWAYS ) << " (" << n.className() << ")" << std::endl;
+            osg::notify( osg::NOTICE ) << "NULL";
+        osg::notify( osg::NOTICE ) << " (" << n.className() << ")" << std::endl;
 
         _level++;
         traverse( n );
