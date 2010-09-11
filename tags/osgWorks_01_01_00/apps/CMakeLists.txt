@@ -1,0 +1,4 @@
+ADD_SUBDIRECTORY( osgwbvv )
+ADD_SUBDIRECTORY( osgwcomp )
+ADD_SUBDIRECTORY( osgwnames )
+ADD_SUBDIRECTORY( osgwwhich )
