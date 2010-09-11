@@ -30,8 +30,7 @@ namespace osgwTools
 
 FindNamedNode::FindNamedNode( const std::string& name, const osg::NodeVisitor::TraversalMode travMode )
   : osg::NodeVisitor( travMode ),
-    _name( name ),
-    _method( EXACT_MATCH )
+    _name( name )
 {
 }
 
@@ -46,25 +45,9 @@ FindNamedNode::reset()
 }
 
 void
-FindNamedNode::setMatchMethod( MatchMethod method )
-{
-    _method = method;
-}
-FindNamedNode::MatchMethod
-FindNamedNode::getMatchMethod() const
-{
-    return( _method );
-}
-
-void
 FindNamedNode::apply( osg::Node& node )
 {
-    bool match = (
-        ( ( _method == EXACT_MATCH ) &&
-            ( node.getName() == _name ) ) ||
-        ( ( _method == CONTAINS ) &&
-            ( node.getName().find( _name ) != std::string::npos ) ) );
-    if( match )
+    if( node.getName() == _name )
     {
         NodeAndPath nap( &node, getNodePath() );
         _napl.push_back( nap );

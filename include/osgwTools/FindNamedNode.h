@@ -45,19 +45,10 @@ public:
 
     void reset();
 
-    typedef enum {
-        EXACT_MATCH,
-        CONTAINS
-    } MatchMethod;
-    void setMatchMethod( MatchMethod method );
-    MatchMethod getMatchMethod() const;
-
     void apply( osg::Node& node );
 
 protected:
     std::string _name;
-
-    MatchMethod _method;
 };
 
 // namespace osgwTools

@@ -29,7 +29,7 @@ INCLUDE_DIRECTORIES(
     ${PROJECT_SOURCE_DIR}/include
     ${OSG_INCLUDE_DIRS}
 )
-# HACK: Not sure why this is necessary, but linker can't find osgwToolsd.lib without it.
+# HACK: Not sure why this is necessary, but linket can't find osgwToolsd.lib without it.
 LINK_DIRECTORIES(
     ${EXECUTABLE_OUTPUT_PATH}/Debug
 )
