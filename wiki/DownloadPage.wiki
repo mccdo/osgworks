@@ -2,9 +2,35 @@
 
 <wiki:toc />
 
-= v1.0 Current Release =
+= v1.1 Current Release =
 
-Released 4 Nov 2009, v1.0 is the current stable release.
+Released 11 Sept 2010, v1.1 is the current stable release.
+
+== Source ==
+
+Source packages for v1.1 are available.
+
+[http://osgworks.googlecode.com/files/osgWorks_01_01_00.zip osgWorks_01_01_00.zip]
+
+[http://osgworks.googlecode.com/files/osgWorks_01_01_00.tar.gz osgWorks_01_01_00.tar.gz]
+
+Use this URL to checkout a v1.1 source tree:
+
+`http://osgworks.googlecode.com/svn/tags/osgWorks_01_01_00`
+
+== Binaries ==
+
+Sorry, binary packages are not currently available.
+
+= svn trunk =
+
+Checkout the osgWorks current development source code from svn:
+
+`http://osgworks.googlecode.com/svn/trunk`
+
+= v1.0 =
+
+Released 4 Nov 2009.
 
 == Source ==
 
@@ -21,26 +47,6 @@ Use this URL to checkout a v1.0 source tree:
 == Binaries ==
 
 Sorry, binary packages are not currently available.
-
-= v1.1 Release Candidate =
-
-== Source ==
-
-[http://osgworks.googlecode.com/files/osgWorks_01_01_00_rc2.zip osgWorks_01_01_00_rc2.zip]
-
-Use this URL to checkout a v1.1-rc2 source tree:
-
-`http://osgworks.googlecode.com/svn/tags/osgWorks_01_01_00-rc2`
-
-Development for the v1.1 release is occurring on the 1.1 branch:
-
-`http://osgworks.googlecode.com/svn/branches/1_01-branch`
-
-= svn trunk =
-
-Checkout the latest osgWorks source code from svn:
-
-`http://osgworks.googlecode.com/svn/trunk`
 
 ----
 
