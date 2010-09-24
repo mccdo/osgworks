@@ -23,6 +23,7 @@ SET( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/ScreenCapture.h
     ${HEADER_PATH}/Shapes.h
     ${HEADER_PATH}/SimplifierOp.h
+    ${HEADER_PATH}/Transform.h
     ${HEADER_PATH}/Version.h
 )
 
@@ -48,6 +49,7 @@ ADD_SHARED_LIBRARY_INTERNAL( ${LIB_NAME}
     Shapes.cpp
     SimplifierOp.cpp
     Version.cpp
+    Transform.cpp
 )
 
 TARGET_LINK_LIBRARIES(
