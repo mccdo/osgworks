@@ -65,8 +65,22 @@ AbsoluteModelTransform::computeLocalToWorldMatrix( osg::Matrix& matrix, osg::Nod
         else
         {
             osgUtil::CullVisitor* cv = dynamic_cast< osgUtil::CullVisitor* >( nv );
+#ifdef SCENEVIEW_ANAGLYPHIC_STEREO_SUPPORT
+            // If OSG_STEREO=ON is in the environment, SceneView hides the view matrix
+            // in a stack rather than placing it in a Camera node. Enable this code
+            // (using CMake) to use a less-efficient way to compute the view matrix that
+            // is compatible with SceneView's usage.
+            osg::NodePath np = nv->getNodePath();
+            np.pop_back();
+            osg::Matrix l2w = osg::computeLocalToWorld( np );
+            osg::Matrix invL2w = osg::Matrix::inverse( l2w );
+            view = invL2w * *( cv->getModelViewMatrix() );
+#else
+            // Faster way to determine the view matrix, but not compatible with
+            // SceneView anaglyphic stereo.
             osg::Camera* cam = cv->getCurrentCamera();
             cam->computeLocalToWorldMatrix( view, cv );
+#endif
         }
         matrix = ( _matrix * view );
     }
