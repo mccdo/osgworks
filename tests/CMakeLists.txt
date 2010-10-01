@@ -1,4 +1,5 @@
 ADD_SUBDIRECTORY( amt )
+ADD_SUBDIRECTORY( callbacksupport )
 ADD_SUBDIRECTORY( cameraconfig )
 ADD_SUBDIRECTORY( geometryop )
 ADD_SUBDIRECTORY( testvisitors )
