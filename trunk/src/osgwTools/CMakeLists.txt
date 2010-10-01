@@ -6,6 +6,7 @@ SET( HEADER_PATH ${PROJECT_SOURCE_DIR}/include/${LIB_NAME} )
 SET( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/Export.h
     ${HEADER_PATH}/AbsoluteModelTransform.h
+    ${HEADER_PATH}/CallbackSupport.h
     ${HEADER_PATH}/CameraConfigObject.h
     ${HEADER_PATH}/DecimatorOp.h
     ${HEADER_PATH}/FindNamedNode.h
@@ -29,6 +30,7 @@ SET( LIB_PUBLIC_HEADERS
 ADD_SHARED_LIBRARY_INTERNAL( ${LIB_NAME}
     ${LIB_PUBLIC_HEADERS}
     AbsoluteModelTransform.cpp
+    CallbackSupport.cpp
     CameraConfigObject.cpp
     DecimatorOp.cpp
     FindNamedNode.cpp
