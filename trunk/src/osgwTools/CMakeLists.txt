@@ -12,7 +12,6 @@ SET( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/FindNamedNode.h
     ${HEADER_PATH}/GeometryModifier.h
     ${HEADER_PATH}/GeometryOperation.h
-    ${HEADER_PATH}/RemoveLOD.h
     ${HEADER_PATH}/InsertRemove.h
     ${HEADER_PATH}/ParallelVisitor.h
     ${HEADER_PATH}/Quat.h
@@ -20,6 +19,8 @@ SET( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/ReducerOp.h
     ${HEADER_PATH}/RefID.h
     ${HEADER_PATH}/RemoveData.h
+    ${HEADER_PATH}/RemoveLOD.h
+    ${HEADER_PATH}/RemoveProgram.h
     ${HEADER_PATH}/ScreenCapture.h
     ${HEADER_PATH}/Shapes.h
     ${HEADER_PATH}/SimplifierOp.h
@@ -36,7 +37,6 @@ ADD_SHARED_LIBRARY_INTERNAL( ${LIB_NAME}
     FindNamedNode.cpp
     GeometryModifier.cpp
     GeometryOperation.cpp
-    RemoveLOD.cpp
     InsertRemove.cpp
     ParallelVisitor.cpp
     PluginLoader.cpp
@@ -45,6 +45,8 @@ ADD_SHARED_LIBRARY_INTERNAL( ${LIB_NAME}
     ReducerOp.cpp
     RefID.cpp
     RemoveData.cpp
+    RemoveLOD.cpp
+    RemoveProgram.cpp
     ScreenCapture.cpp
     Shapes.cpp
     SimplifierOp.cpp
