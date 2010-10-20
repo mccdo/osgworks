@@ -12,6 +12,8 @@ SET( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/FindNamedNode.h
     ${HEADER_PATH}/GeometryModifier.h
     ${HEADER_PATH}/GeometryOperation.h
+    ${HEADER_PATH}/CollapseLOD.h
+    ${HEADER_PATH}/NodeUtils.h
     ${HEADER_PATH}/InsertRemove.h
     ${HEADER_PATH}/ParallelVisitor.h
     ${HEADER_PATH}/Quat.h
@@ -37,6 +39,8 @@ ADD_SHARED_LIBRARY_INTERNAL( ${LIB_NAME}
     FindNamedNode.cpp
     GeometryModifier.cpp
     GeometryOperation.cpp
+    CollapseLOD.cpp
+    NodeUtils.cpp
     InsertRemove.cpp
     ParallelVisitor.cpp
     PluginLoader.cpp

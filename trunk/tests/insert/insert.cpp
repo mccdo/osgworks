@@ -19,6 +19,7 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include "osgwTools/InsertRemove.h"
+#include "osgwTools/NodeUtils.h"
 
 #include <osgDB/WriteFile>
 #include <osg/Node>
@@ -174,6 +175,56 @@ testComplexRemove()
     osgDB::writeNodeFile( *root, "complexremove1.dot" );
 }
 
+void
+testSimpleReplace()
+{
+    osg::ref_ptr< osg::Group > root( new osg::Group );
+    root->setName( "root" );
+
+    osg::ref_ptr< osg::Group > parent0( new osg::Group );
+    parent0->setName( "parent0" );
+    root->addChild( parent0.get() );
+    osg::ref_ptr< osg::Group > parent1( new osg::Group );
+    parent1->setName( "parent1" );
+    root->addChild( parent1.get() );
+
+    // original
+	osg::ref_ptr< osg::Group > replaceSource( new osg::Group );
+    replaceSource->setName( "replaceSource" );
+    parent0->addChild( replaceSource.get() );
+    parent1->addChild( replaceSource.get() );
+
+    osg::ref_ptr< osg::Node > child0S( new osg::Node );
+    child0S->setName( "child0S" );
+    replaceSource->addChild( child0S.get() );
+    osg::ref_ptr< osg::Node > child1S( new osg::Node );
+    child1S->setName( "child1S" );
+    replaceSource->addChild( child1S.get() );
+    osg::ref_ptr< osg::Node > child2S( new osg::Node );
+    child2S->setName( "child2S" );
+    replaceSource->addChild( child2S.get() );
+
+	// replacement
+    osg::ref_ptr< osg::Group > replaceTarget( new osg::Group );
+    replaceTarget->setName( "replaceTarget" );
+
+    osg::ref_ptr< osg::Node > child0R( new osg::Node );
+    child0R->setName( "child0R" );
+    replaceTarget->addChild( child0R.get() );
+    osg::ref_ptr< osg::Node > child1R( new osg::Node );
+    child1R->setName( "child1R" );
+    replaceTarget->addChild( child1R.get() );
+    osg::ref_ptr< osg::Node > child2R( new osg::Node );
+    child2R->setName( "child2R" );
+    replaceTarget->addChild( child2R.get() );
+
+
+    osgDB::writeNodeFile( *root, "simplereplace_before.dot" );
+
+    osgwTools::replaceSubgraph( replaceTarget.get(), replaceSource.get() );
+
+    osgDB::writeNodeFile( *root, "simplereplace_after.dot" );
+}
 
 int
 main( int argc, char ** argv )
@@ -185,6 +236,8 @@ main( int argc, char ** argv )
 
     testSimpleRemove();
     testComplexRemove();
+
+	testSimpleReplace();
 
     osg::notify( osg::ALWAYS ) << "Test results written as .dot files. To view them, try:" << std::endl;
     osg::notify( osg::ALWAYS ) << "\tdot -Tpng -O simpleremove1.dot" << std::endl;
