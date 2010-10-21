@@ -95,7 +95,6 @@ unsigned int CollapseLOD::finishProcessingLODs(void)
 						parentAsLOD->addChild(selectedChild, originalChildMin, originalChildMax);
 						// remove original LOD node
 						(*parentIter)->removeChild((*itr));
-						// <<<>>>
 					} // if
 					else
 					{
