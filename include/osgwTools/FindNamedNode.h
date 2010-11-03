@@ -31,11 +31,27 @@ namespace osgwTools
 {
 
 
-// FindNamedNode -- Find all nodes with the given name. Calling code
-// accesses the nodes and their paths using the public _napl member variable.
+/**
+\brief Find all nodes with the given name.
+
+Invoke like any standard osg::NodeVisitor:
+subgraph->accepth( findNamedNode );
+or:
+findNamedNode::apply( *subgraph );
+
+Each osg::Node in the subgraph is searched for a matching name by
+examing the value of osg::Object::getName(). Whether a Node matches or
+not depends on the specified match algorithm. \see setMatchMethod.
+
+Calling code accesses the matched Nodes and their paths using the
+public _napl member variable. \see _napl.
+*/
 class OSGWTOOLS_EXPORT FindNamedNode : public osg::NodeVisitor
 {
 public:
+    /**
+    @param name Name of the node to search for.
+    */
     FindNamedNode( const std::string& name, const osg::NodeVisitor::TraversalMode travMode=osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN );
     ~FindNamedNode();
 
@@ -45,16 +61,41 @@ public:
 
     void reset();
 
+    /**
+    Algorithm for matching the specified name. Possible future
+    work: support for case-insensitive matching.
+    */
     typedef enum {
         EXACT_MATCH,
         CONTAINS
     } MatchMethod;
+    /**
+    Specify the match algorithm.
+    @param method The match algorithm. Default: EXACT_MATCH
+    */
     void setMatchMethod( MatchMethod method );
+    /**
+    Get the match algorithm.
+    */
     MatchMethod getMatchMethod() const;
 
+    /**
+    Control whether or not the named node is included at the end of
+    the NodePaths in _napl.
+    @param includeTargetNode If false, don't include the named node
+    in the returned NodePaths. Default: true (include the named node
+    in the paths).
+    */
     void setPathsIncludeTargetNode( bool includeTargetNode );
+    /**
+    Get the current setting for including the named node in the
+    returned NodePaths.
+    */
     bool getPathsIncludeTargetNode() const;
 
+    /**
+    Override of base class apply() method.
+    */
     void apply( osg::Node& node );
 
 protected:
