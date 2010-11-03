@@ -52,12 +52,16 @@ public:
     void setMatchMethod( MatchMethod method );
     MatchMethod getMatchMethod() const;
 
+    void setPathsIncludeTargetNode( bool includeTargetNode );
+    bool getPathsIncludeTargetNode() const;
+
     void apply( osg::Node& node );
 
 protected:
     std::string _name;
 
     MatchMethod _method;
+    bool _includeTargetNode;
 };
 
 // namespace osgwTools
