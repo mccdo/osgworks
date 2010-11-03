@@ -31,7 +31,8 @@ namespace osgwTools
 FindNamedNode::FindNamedNode( const std::string& name, const osg::NodeVisitor::TraversalMode travMode )
   : osg::NodeVisitor( travMode ),
     _name( name ),
-    _method( EXACT_MATCH )
+    _method( EXACT_MATCH ),
+    _includeTargetNode( true )
 {
 }
 
@@ -57,6 +58,18 @@ FindNamedNode::getMatchMethod() const
 }
 
 void
+FindNamedNode::setPathsIncludeTargetNode( bool includeTargetNode )
+{
+    _includeTargetNode = includeTargetNode;
+}
+bool
+FindNamedNode::getPathsIncludeTargetNode() const
+{
+    return( _includeTargetNode );
+}
+
+
+void
 FindNamedNode::apply( osg::Node& node )
 {
     bool match = (
@@ -64,11 +77,21 @@ FindNamedNode::apply( osg::Node& node )
             ( node.getName() == _name ) ) ||
         ( ( _method == CONTAINS ) &&
             ( node.getName().find( _name ) != std::string::npos ) ) );
+
     if( match )
     {
-        NodeAndPath nap( &node, getNodePath() );
+        // Copy the NodePath, so we can alter it if necessary.
+        osg::NodePath np = getNodePath();
+
+        if( !_includeTargetNode )
+            // Calling code has requested that the target node
+            // be removed from the node paths.
+            np.pop_back();
+
+        NodeAndPath nap( &node, np );
         _napl.push_back( nap );
     }
+
     traverse( node );
 }
 
