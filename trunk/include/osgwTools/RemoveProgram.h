@@ -33,25 +33,58 @@ namespace osgwTools
 {
 
 
-// RemoveProgram - Visitor to strip osg::Program objects out of
-// a scene graph's StateSet objects. Optionally also removed Uniforms.
+/**
+Visitor to strip osg::Program objects and osg::Uniform objects out of
+a scene graph's StateSet objects.
+*/
 class OSGWTOOLS_EXPORT RemoveProgram : public osg::NodeVisitor
 {
 public:
-    RemoveProgram( bool removeUniforms=false, const osg::NodeVisitor::TraversalMode travMode=osg::NodeVisitor::TRAVERSE_ALL_CHILDREN );
+    /**
+    Contructor to configure the RemoveProgram visitor. By default, RemoveProgram
+    removed programs, doesn't remove uniforms, and traverses all children. This
+    ehavior is configurable by dpecifying your own values for the default parameters.
+    @param removePrograms Default: true.
+    @param removePrograms Default: false.
+    @param travMode The traversal mode. Default: osg::NodeVisitor::TRAVERSE_ALL_CHILDREN.
+    */
+    RemoveProgram( bool removePrograms=true, bool removeUniforms=false, const osg::NodeVisitor::TraversalMode travMode=osg::NodeVisitor::TRAVERSE_ALL_CHILDREN );
     ~RemoveProgram();
 
+    /**
+    Sets _programCount and _uniformCount to 0. /see _programCount. /see _uniformCount.
+    */
     void reset();
 
+    /**
+    Override for base class apply() method.
+    */
     virtual void apply( osg::Node& node );
+    /**
+    Override for base class apply() method.
+    */
     virtual void apply( osg::Geode& node );
 
+    /**
+    Specify whether or not to remove programs. Default: true (remove programs).
+    */
+    void setRemovePrograms( bool removePrograms );
+    /**
+    Specify whether or not to remove uniforms. Default: false (don'tbremove uniforms).
+    */
+    void setRemoveUniforms( bool removeUniforms );
+
+    /**
+    During traversal, these counters track the total number of programs
+    and uniforms removed. They are public so that calling code can access
+    them directly following the traversal.
+    */
     unsigned int _programCount, _uniformCount;
 
 protected:
     void processStateSet( osg::StateSet* ss );
 
-    bool _removeUniforms;
+    bool _removePrograms, _removeUniforms;
 };
 
 

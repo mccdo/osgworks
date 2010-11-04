@@ -32,8 +32,9 @@ namespace osgwTools
 {
 
 
-RemoveProgram::RemoveProgram( bool removeUniforms, const osg::NodeVisitor::TraversalMode travMode )
+RemoveProgram::RemoveProgram( bool removePrograms, bool removeUniforms, const osg::NodeVisitor::TraversalMode travMode )
   : osg::NodeVisitor( travMode ),
+    _removePrograms( removePrograms ),
     _removeUniforms( removeUniforms ),
     _programCount( 0 ),
     _uniformCount( 0 )
@@ -49,6 +50,18 @@ RemoveProgram::reset()
     _programCount = 0;
     _uniformCount = 0;
 }
+
+void
+RemoveProgram::setRemovePrograms( bool removePrograms )
+{
+    _removePrograms = removePrograms;
+}
+void
+RemoveProgram::setRemoveUniforms( bool removeUniforms )
+{
+    _removeUniforms = removeUniforms;
+}
+
 
 void
 RemoveProgram::apply( osg::Node& node )
@@ -77,15 +90,17 @@ RemoveProgram::processStateSet( osg::StateSet* ss )
     if( ss == NULL )
         return;
 
-    if( ss->getAttribute( osg::StateAttribute::PROGRAM ) )
+    if( _removePrograms && ( ss->getAttribute( osg::StateAttribute::PROGRAM ) ) )
+    {
         _programCount++;
+        ss->removeAttribute( osg::StateAttribute::PROGRAM );
+    }
 
-    ss->removeAttribute( osg::StateAttribute::PROGRAM );
-    if( !_removeUniforms )
-        return;
-
-    _uniformCount += ss->getUniformList().size();
-    ss->getUniformList().clear();
+    if( _removeUniforms )
+    {
+        _uniformCount += ss->getUniformList().size();
+        ss->getUniformList().clear();
+    }
 }
 
 
