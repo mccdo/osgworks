@@ -36,6 +36,12 @@ namespace osgwTools
 /**
 Visitor to strip osg::Program objects and osg::Uniform objects out of
 a scene graph's StateSet objects.
+
+This visitor is particularly useful for performance analysis and debugging.
+If you suspect there is a bug in your shaders and wish to render your scene
+using FFP instead, use this visitor to remove the programs. You can compare
+the visual result between the shader- and FFP-renderings, as well as compare
+the performance using OSG's state handler.
 */
 class OSGWTOOLS_EXPORT RemoveProgram : public osg::NodeVisitor
 {
