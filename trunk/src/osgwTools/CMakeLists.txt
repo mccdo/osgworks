@@ -8,6 +8,7 @@ SET( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/AbsoluteModelTransform.h
     ${HEADER_PATH}/CallbackSupport.h
     ${HEADER_PATH}/CameraConfigObject.h
+    ${HEADER_PATH}/CountStateSets.h
     ${HEADER_PATH}/DecimatorOp.h
     ${HEADER_PATH}/FindNamedNode.h
     ${HEADER_PATH}/GeometryModifier.h
@@ -35,6 +36,7 @@ ADD_SHARED_LIBRARY_INTERNAL( ${LIB_NAME}
     AbsoluteModelTransform.cpp
     CallbackSupport.cpp
     CameraConfigObject.cpp
+    CountStateSets.cpp
     DecimatorOp.cpp
     FindNamedNode.cpp
     GeometryModifier.cpp
