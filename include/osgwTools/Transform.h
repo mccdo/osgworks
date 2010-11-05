@@ -33,11 +33,18 @@ namespace osgwTools
 {
 
 
-// Transform a bounding sphere or box by a matrix, and return a copy
-// of the transformed sphere or matrix.
+/** \defgroup Transform Transformation utilities */
+/*@{*/
+
+/** \brief Transform a \c BoundingSphere.
+*/
 OSGWTOOLS_EXPORT osg::BoundingSphere transform( const osg::Matrix& m, const osg::BoundingSphere& sphere );
+
+/** \brief Transform a \c BoundingBox.
+*/
 OSGWTOOLS_EXPORT osg::BoundingBox transform( const osg::Matrix& m, const osg::BoundingBox& box );
 
+/*@}*/
 
 
 // osgwTools
