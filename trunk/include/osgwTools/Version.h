@@ -29,37 +29,63 @@
 namespace osgwTools {
 
 
+/** \defgroup Version Version utilities */
+/*@{*/
+
 #define OSGWORKS_MAJOR_VERSION 1
 #define OSGWORKS_MINOR_VERSION 1
 #define OSGWORKS_SUB_VERSION 50
 
-// C preprocessor integrated version number.
-// The form is Mmmss, where:
-//   M is the major version
-//   mm is the minor version (zero-padded)
-//   ss is the sub version (zero padded)
-// Use this in version-specific code, for example:
-//   #if( OSGWORKS_VERSION < 10500 )
-//      ... code specific to releases before v1.05
-//   #endif
+/** \brief osgWorks version number as an integer.
+
+C preprocessor integrated version number.
+The form is Mmmss, where:
+   \li M is the major version
+   \li mm is the minor version (zero-padded)
+   \li ss is the sub version (zero padded)
+
+Use this in version-specific code, for example:
+\code
+   #if( OSGWORKS_VERSION < 10500 )
+      ... code specific to releases before v1.05
+   #endif
+\endcode
+*/
 #define OSGWORKS_VERSION ( \
         ( OSGWORKS_MAJOR_VERSION * 10000 ) + \
         ( OSGWORKS_MINOR_VERSION * 100 ) + \
         OSGWORKS_SUB_VERSION )
 
-// This macro does the same thing for the OSG version.
-// OSG did not provide a useful compile-time version
-// comparison macro until after the 2.9.6 release.
+/** \brief OSG version number as an integer.
+
+This macro provides the same functionality as 
+OSGWORKS_VERSION, but instead encodes the OSG version
+number as an integer.
+OSG did not provide a useful compile-time version
+comparison macro until after the 2.9.6 and 2.8.2 releases.
+\see OSGWORKS_VERSION */
 #define OSGWORKS_OSG_VERSION ( \
         ( OPENSCENEGRAPH_MAJOR_VERSION * 10000 ) + \
         ( OPENSCENEGRAPH_MINOR_VERSION * 100 ) + \
         OPENSCENEGRAPH_PATCH_VERSION )
 
-// Returns OSGWORKS_VERSION.
+/** \brief Run-time access to the osgWorks version number.
+
+Returns OSGWORKS_VERSION, the osgWorks version number as an integer.
+\see OSGWORKS_VERSION
+*/
 unsigned int OSGWTOOLS_EXPORT getVersionNumber();
 
-// Pretty string.
+/** \brief osgWorks version number as a string
+
+Example:
+\code
+osgWorks version 1.1.0 (10100)
+\endcode
+*/
 std::string OSGWTOOLS_EXPORT getVersionString();
+
+/*@}*/
 
 
 // namespace osgwTools
