@@ -30,6 +30,8 @@
 #include <osgwTools/CallbackSupport.h>
 
 
+/** \cond */
+
 struct MyCallback : public osg::Camera::DrawCallback
 {
 public:
@@ -44,6 +46,8 @@ public:
 protected:
     unsigned int _num;
 };
+
+/** \endcond */
 
 
 int
