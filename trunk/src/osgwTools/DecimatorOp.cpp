@@ -31,6 +31,8 @@
 namespace osgwTools {
 
 
+/** \cond */
+
 struct dereference_less
 {
     template<class T, class U>
@@ -1784,6 +1786,8 @@ void HalfEdgeCollapse::copyBackToGeometry()
     _geometry->addPrimitiveSet(primitives);
 
 }
+
+/** \endcond */
 
 DecimatorOp::DecimatorOp(double sampleRatio, double maximumError):
             _sampleRatio(sampleRatio),
