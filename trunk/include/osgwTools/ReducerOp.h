@@ -31,13 +31,15 @@
 namespace osgwTools {
 
 
+/**
+*/
 class OSGWTOOLS_EXPORT ReducerOp : public GeometryOperation
 {
 public:
     ReducerOp();
     ReducerOp( const ReducerOp& rhs, const osg::CopyOp& copyOp=osg::CopyOp::SHALLOW_COPY );
 
-    META_Object(osgBullet,ReducerOp)
+    META_Object(osgBullet,ReducerOp);
 
     virtual osg::Geometry* operator()( osg::Geometry& geom );
 

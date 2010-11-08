@@ -33,10 +33,16 @@ namespace osgwTools
 {
 
 
-// Alternate interface to osgDB::readNodeFiles. Takes
-// a string of space-separated files names, loads each
-// as a child of a Group, and returns the Group pointer.
+/** \defgroup ReadFile OSG plugin utilities.
+*/
+/*@{*/
+
+/** Alternate interface to osgDB::readNodeFiles. Takes
+a string of space-separated files names, loads each
+as a child of a Group, and returns the Group pointer. */
 OSGWTOOLS_EXPORT osg::Node* readNodeFiles( const std::string& fileNames );
+
+/*@}*/
 
 
 // namespace osgwTools

@@ -34,6 +34,10 @@ namespace osgwTools
 {
 
 
+/** A Camera post-draw callback to read the rendered image from the
+current OpenGL read buffer, and write the image data to an image file.
+File writes are performed in a separate thread so that disk IO doesn't
+bottleneck the rendering thread. */
 struct OSGWTOOLS_EXPORT ScreenCapture : public osg::Camera::DrawCallback
 {
 public:
@@ -42,26 +46,26 @@ public:
 
     virtual void operator()( osg::RenderInfo& ri ) const;
 
-    // Pass true to start capture, false to stop. While on, each frame is captured
-    // from the FB and written to a file.
+    /** Pass true to start capture, false to stop. While on, each frame is captured
+    from the FB and written to a file. */
     void setCapture( bool enable );
     bool getCaptureEnabled() const;
 
-    // Set to a positive number of frames to capture a specific frame count.
-    // If set to 0 (the default), capture continues until explicitly
-    // disables with setCapture(false).
+    /** Set to a positive number of frames to capture a specific frame count.
+    If set to 0 (the default), capture continues until explicitly
+    disables with setCapture(false). */
     void setNumFramesToCapture( unsigned int numFrames );
 
-    // File name is:
-    // <root name><framenum><extension>
-    // <rootname> defaults to "screencapture" if blank.
-    // <framenum> is the frame number, unless useFrameNum is false
-    // <extension> is ".png" by default. Note it includes the dot.
+    /** File name is: <rootname><framenum><extension>
+    \li <rootname> defaults to "screencapture" if blank.
+    \li <framenum> is the frame number, unless useFrameNum is false
+    \li <extension> is ".png" by default. Note it includes the dot.
+    */
     void setRootName( const std::string& name );
     void setExtension( const std::string& extension );
     void setUseFrameNumber( bool useFrameNum );
 
-    // Default is full screen. Pass non-NULL to specify a viewport other than full screen.
+    /** Default is full screen. Pass non-NULL to specify a viewport other than full screen. */
     void setViewport( osg::Viewport* vp );
 
 protected:

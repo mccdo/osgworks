@@ -36,7 +36,8 @@ namespace osgwTools
 {
 
 
-// RemoveLOD -- Finds LOD nodes and collapses them to only have one (the highest) LOD
+/** Finds LOD nodes and collapses them to only have one (the highest LOD) child.
+*/
 class OSGWTOOLS_EXPORT RemoveLOD : public osg::NodeVisitor
 {
 public:
@@ -44,7 +45,6 @@ public:
     ~RemoveLOD();
 
     virtual void apply( osg::LOD& node );
-
 };
 
 

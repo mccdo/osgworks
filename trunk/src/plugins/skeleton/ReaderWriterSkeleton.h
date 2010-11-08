@@ -27,6 +27,17 @@
 #include <osgDB/FileNameUtils>
 
 
+/** \addtogroup Plugins
+osgwTools contains two plugins, osgdb_osgwTools for dot OSG file support of
+various classes in the osgwTools library, and osgdb_skeleton, a plugin for
+writing scene graph hierarchy information.
+@{*/
+
+/** \addtogroup Skeleton
+@{*/
+
+/** Runs the RemoveData visitor on the scene graph before exporting it.
+*/
 class ReaderWriterSkeleton : public osgDB::ReaderWriter
 {
 public:
@@ -40,6 +51,10 @@ public:
 
 protected:
 };
+
+/**@}*/
+
+/**@}*/
 
 
 // __OSGWTOOLS_OSGDB_SKELETON__

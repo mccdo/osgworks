@@ -32,20 +32,21 @@ namespace osgwTools
 {
 
 
-// Parallel Visitor -- Simultaneously walk two scene graphs
-// and execute a call back if Nodes are not identical.
+/** Simultaneously walk two scene graphs
+and execute a call back if Nodes are not identical. */
 class OSGWTOOLS_EXPORT ParallelVisitor
 {
 public:
     ParallelVisitor( osg::Node* sgA, osg::Node* sgB );
     ~ParallelVisitor();
 
-    // Compare sgA and sgB. Returns true if match, false otherwise.
+    /** Compare sgA and sgB.
+    \rReturn True if match, false otherwise. */
     bool compare();
 
-    // Callback executed if isMatch(nodeA,nodeB) returns false.
-    // Typical usage: isMatch detects that nodes differ; callback
-    // performs operations to sync them.
+    /** Callback executed if isMatch(nodeA,nodeB) returns false.
+    Typical usage: isMatch detects that nodes differ; callback
+    performs operations to sync them. */
     struct ParallelVisitorCallback
     {
         ParallelVisitorCallback() {}
@@ -57,9 +58,9 @@ public:
     ParallelVisitor::ParallelVisitorCallback* getCallback() const;
 
 protected:
-    // Override to specify your own custom comparison criteria. Return
-    // true if the two Nodes match, false otherwise. If this function
-    // returns false, and _pvcb is not NULL, (*_pvcb)() is called.
+    /** Override to specify your own custom comparison criteria. Return
+    true if the two Nodes match, false otherwise. If this function
+    returns false, and _pvcb is not NULL, (*_pvcb)() is called. */
     virtual bool isMatch( const osg::Node& nodeA, const osg::Node& nodeB ) const;
 
     bool recurseCompare( osg::Node* nodeA, osg::Node* nodeB );

@@ -28,13 +28,17 @@
 
 namespace osgwTools {
 
+
+/** Base class for performing operations on osg::Geometry objects in collaboration
+with the GeometryModifier class.
+*/
 class OSGWTOOLS_EXPORT GeometryOperation : public osg::Object
 {
 public:
     GeometryOperation();
 
-    // Derived classes must override this method and return
-    // a pointer to a new Geometry object.
+    /** Derived classes must override this method and return
+     a pointer to a new Geometry object. */
     virtual osg::Geometry* operator()( osg::Geometry& geom ) = 0;
 
 protected:

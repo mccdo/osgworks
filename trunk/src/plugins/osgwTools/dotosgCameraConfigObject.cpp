@@ -33,8 +33,16 @@
 #include <vector>
 
 
+/** \addtogroup Plugins
+@{*/
+
+/** \addtogroup DotOSGSuppoer
+@{*/
+
+
 bool CCObject_readLocalData( osg::Object& obj, osgDB::Input& fr );
 bool CCObject_writeLocalData( const osg::Object& obj, osgDB::Output& fw );
+
 osgDB::RegisterDotOsgWrapperProxy CCObject_Proxy
 (
     new osgwTools::CameraConfigObject,
@@ -146,3 +154,7 @@ CCObject_writeLocalData( const osg::Object& obj, osgDB::Output& fw )
 
     return( true );
 }
+
+/*@}*/
+
+/*@}*/

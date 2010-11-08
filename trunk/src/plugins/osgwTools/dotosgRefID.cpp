@@ -28,6 +28,14 @@
 #include <osgDB/Output>
 #include <osgDB/ParameterOutput>
 
+
+/** \addtogroup Plugins
+@{*/
+
+/** \addtogroup DotOSGSuppoer
+@{*/
+
+
 bool RefID_readLocalData( osg::Object& obj, osgDB::Input& fr );
 bool RefID_writeLocalData( const osg::Object& obj, osgDB::Output& fw );
 
@@ -65,3 +73,7 @@ bool RefID_writeLocalData( const osg::Object& obj, osgDB::Output& fw )
 
     return( true );
 }
+
+/*@}*/
+
+/*@}*/

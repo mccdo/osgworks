@@ -34,17 +34,19 @@ namespace osgwTools {
 
 
 
-// Convenience routine for loading a viewer configuration file and
-// configuring a viewer from it. If the configFile name is empty,
-// this function looks for OSGW_VIEWER_CONFIG in the environment and
-// attempts to load the file that it specifies. If vonfigFile is empty
-// and OSGW_VIEWER_CONFIG is not set, this function displays a message
-// to osg::NOTICE and returns false.
+/**
+Convenience routine for loading a viewer configuration file and
+configuring a viewer from it. If the configFile name is empty,
+this function looks for OSGW_VIEWER_CONFIG in the environment and
+attempts to load the file that it specifies. If vonfigFile is empty
+and OSGW_VIEWER_CONFIG is not set, this function displays a message
+to osg::NOTICE and returns false. */
 bool OSGWTOOLS_EXPORT configureViewer( osgViewer::Viewer& viewer, const std::string& configFile="" );
 
 
-// Chuck of info for configuring a single slave camera, as
-// found in osgViewer::View.
+/**
+Chunck of info for configuring a single slave camera, as
+found in osgViewer::View. */
 class OSGWTOOLS_EXPORT CameraConfigInfo : public osg::Object
 {
 public:
@@ -66,8 +68,9 @@ protected:
 typedef std::vector< osg::ref_ptr< CameraConfigInfo > > CameraConfigList;
 
 
-// Chuck of information for configuring a viewer. Can be written to or
-// read from .osg/.ive files to save and restore Viewer configurations.
+/**
+Chunck of information for configuring a viewer. Can be written to or
+read from .osg/.ive files to save and restore Viewer configurations. */
 class OSGWTOOLS_EXPORT CameraConfigObject : public osg::Object
 {
 public:

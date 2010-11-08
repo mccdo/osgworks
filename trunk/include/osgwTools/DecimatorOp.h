@@ -25,6 +25,9 @@
 
 namespace osgwTools {
 
+
+/**
+*/
 class OSGWTOOLS_EXPORT DecimatorOp : public GeometryOperation
 {
 public:
@@ -32,7 +35,7 @@ public:
     DecimatorOp(double sampleRatio=1.0, double maximumError=FLT_MAX);
 
     DecimatorOp( const DecimatorOp& rhs, const osg::CopyOp& copyOp=osg::CopyOp::SHALLOW_COPY );
-    META_Object(osgBullet,DecimatorOp)
+    META_Object(osgBullet,DecimatorOp);
 
 
     void setSampleRatio(float sampleRatio) { _sampleRatio = sampleRatio; }
