@@ -33,6 +33,8 @@ namespace osgwTools
 {
 
 
+/** A reference counter string-based identifier.
+*/
 class OSGWTOOLS_EXPORT RefID : public osg::Object
 {
 public:

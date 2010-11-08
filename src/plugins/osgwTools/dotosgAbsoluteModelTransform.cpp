@@ -30,6 +30,14 @@
 #include <osgDB/Output>
 #include <osgDB/ParameterOutput>
 
+
+/** \addtogroup Plugins
+@{*/
+
+/** \addtogroup DotOSGSuppoer
+@{*/
+
+
 bool AMT_readLocalData( osg::Object& obj, osgDB::Input& fr );
 bool AMT_writeLocalData( const osg::Object& obj, osgDB::Output& fw );
 
@@ -116,3 +124,7 @@ bool AMT_writeLocalData( const osg::Object& obj, osgDB::Output& fw )
 
     return( true );
 }
+
+/*@}*/
+
+/*@}*/

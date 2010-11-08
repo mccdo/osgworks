@@ -25,11 +25,16 @@
 #include <osgwTools/GeometryOperation.h>
 #include <osg/NodeVisitor>
 #include <osg/Geode>
-#include <osg/Version>
+#include <osgwTools/Version.h>
 #include <ostream>
 
 namespace osgwTools {
 
+
+/** Convenience NodeVisitor to support finding and performing operations
+on osg::Geometry objects. Use with classes derived from GeometryOperation
+to perform various tasks.
+*/
 class OSGWTOOLS_EXPORT GeometryModifier : public osg::NodeVisitor
 {
 public:
@@ -37,7 +42,7 @@ public:
     GeometryModifier( GeometryOperation* geomOp );
     ~GeometryModifier();
 
-#if( (OPENSCENEGRAPH_MAJOR_VERSION > 2) || ( (OPENSCENEGRAPH_MAJOR_VERSION == 2) && (OPENSCENEGRAPH_MINOR_VERSION >= 8) ) )
+#if( OSGWORKS_OSG_VERSION >= 20800 )
     META_NodeVisitor(osgBullet,GeometryModifier)
 #endif
 

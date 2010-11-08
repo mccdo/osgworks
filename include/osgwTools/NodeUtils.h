@@ -31,18 +31,26 @@ namespace osgwTools
 {
 
 
-// Copies the contents of one Group's children container to the other.
-// The actual child Nodes aren't duplicated, only the references to them.
-// This means the child nodes are multi-parented.
-// This does NOT delete existing children from the destination node. You must
-// do this yourself if you desire it.
-// Returns count of children references copied.
+/** \defgroup NodeUtils Utilities for operating on Nodes and Groups.
+*/
+/*@{*/
+
+/** Copies the contents of one Group's children container to the other.
+The actual child Nodes aren't duplicated, only the references to them.
+This means the child nodes are multi-parented.
+
+This does NOT delete existing children from the source node. You must
+do this yourself if you desire it.
+
+\return Count of children references copied. */
 OSGWTOOLS_EXPORT unsigned int copyChildReferences( osg::Group* dest, osg::Group* source );
 
-// Replaces all ocurrances of the existingGraph node (which may or may not be
-// a Group with children) in the scenegraph with the newGraph node (which also may
-// or may not have children).
-OSGWTOOLS_EXPORT void replaceSubgraph(osg::Node *newGraph, osg::Node *existingGraph);
+/** Replaces all ocurrances of the existingGraph node (which may or may not be
+a Group with children) in the scene graph with the newGraph node (which also may
+or may not have children). */
+OSGWTOOLS_EXPORT void replaceSubgraph( osg::Node* newGraph, osg::Node* existingGraph );
+
+/*@}*/
 
 
 // namespace osgwTools

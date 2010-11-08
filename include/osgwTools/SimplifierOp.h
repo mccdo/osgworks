@@ -22,7 +22,6 @@
 #define __SIMPLIFIER_OP_H__
 
 
-//#include <osgBullet/Export.h>
 #include <osgwTools/GeometryOperation.h>
 #include <osg/CopyOp>
 #include <osg/Object>
@@ -31,13 +30,16 @@
 
 namespace osgwTools {
 
+
+/**
+*/
 class OSGWTOOLS_EXPORT SimplifierOp : public GeometryOperation
 {
 public:
     SimplifierOp();
     SimplifierOp( const SimplifierOp& rhs, const osg::CopyOp& copyOp=osg::CopyOp::SHALLOW_COPY );
 
-    META_Object(osgBullet,SimplifierOp)
+    META_Object(osgBullet,SimplifierOp);
 
     virtual osg::Geometry* operator()( osg::Geometry& geom );
 

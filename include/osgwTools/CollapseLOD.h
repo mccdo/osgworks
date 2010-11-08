@@ -42,11 +42,11 @@ namespace osgwTools
 // Should this perhaps be exposed somewhere else for wider use?
 	typedef std::set< osg::ref_ptr<osg::Node> > NodeSet;
 
-// Callback to decide which LOD child should be retained
+/** Callback to decide which LOD child should be retained */
 class NodeSelectorCallback : public osg::Referenced
 {
     public:
-        /** returns the node which should be selected for retention or NULL if no nodes should be retained.
+        /** Returns the node that should be selected for retention or NULL if no nodes should be retained.
 		Override to implement the desired behavior. */
 		virtual osg::Node *selectChild(osg::Group *parentOfCandidates) const
         {
@@ -58,11 +58,11 @@ class NodeSelectorCallback : public osg::Referenced
 
 
 
-// Callback to select highest LOD child 
+/** Callback to select highest LOD child. */
 class HighestLODChildSelectorCallback : public osgwTools::NodeSelectorCallback
 {
     public:
-        /** returns the child with the highest LOD */
+        /** Returns the child with the highest LOD. */
 		osg::Node *selectChild(osg::Group *parentOfCandidates) const
         {
 			osg::Node *selectedChild = NULL;
@@ -119,7 +119,7 @@ class HighestLODChildSelectorCallback : public osgwTools::NodeSelectorCallback
 }; // HighestLODChildSelectorCallback
 
 
-// CollapseLOD -- Finds LOD nodes and collapses them to a group that has only one child, the highest LOD.
+/** Finds LOD nodes and collapses them to a group that has only one child, the highest LOD. */
 class OSGWTOOLS_EXPORT CollapseLOD : public osg::NodeVisitor
 {
 public:

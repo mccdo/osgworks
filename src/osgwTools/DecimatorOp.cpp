@@ -30,6 +30,7 @@
 
 namespace osgwTools {
 
+
 struct dereference_less
 {
     template<class T, class U>
@@ -1313,6 +1314,7 @@ struct CollectTriangleOperator
 
 };
 
+/** \relates DecimatorOp */
 typedef osg::TriangleIndexFunctor<CollectTriangleOperator> CollectTriangleIndexFunctor;
 
 class CopyVertexArrayToPointsVisitor : public osg::ArrayVisitor
