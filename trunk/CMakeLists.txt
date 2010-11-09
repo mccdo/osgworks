@@ -53,3 +53,24 @@ ENDIF( OSGWORKS_BUILD_APPS )
 ADD_SUBDIRECTORY( src/osgwControls )
 ADD_SUBDIRECTORY( src/osgwTools )
 ADD_SUBDIRECTORY( src/plugins )
+
+
+#
+# Doxygen
+#INCLUDE( ${CMAKE_ROOT}/Modules/Documentation.cmake OPTIONAL )
+OPTION( OSGWORKS_DOCUMENTATION "Enable to create build target for Doxygen documentation." OFF )
+MARK_AS_ADVANCED( CLEAR OSGWORKS_DOCUMENTATION )
+IF( OSGWORKS_DOCUMENTATION )
+    FIND_PACKAGE( Doxygen REQUIRED )
+    SET( HAVE_DOT "NO" )
+    IF( DOXYGEN_DOT_PATH )
+        SET( HAVE_DOT "YES" )
+    ENDIF( DOXYGEN_DOT_PATH )
+    
+    CONFIGURE_FILE( ${PROJECT_SOURCE_DIR}/doc/doxyfile.cmake
+        ${PROJECT_BINARY_DIR}/doc/doxyfile
+    )
+    ADD_CUSTOM_TARGET( Documentation ${DOXYGEN_EXECUTABLE}
+        ${PROJECT_BINARY_DIR}/doc/doxyfile
+    )
+ENDIF( OSGWORKS_DOCUMENTATION )
