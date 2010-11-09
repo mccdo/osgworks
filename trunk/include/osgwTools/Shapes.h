@@ -41,7 +41,11 @@ supply a Geometry to use. By default, the convenience routines instantiate a
 Geometry. All routines set a color array with a single white color.
 
 All shapes are centered on the origin. Use OSG Transform Nodes to translate
-or orient the shapes. */
+or orient the shapes.
+
+\test shapes
+
+*/
 /*@{*/
 
 

@@ -40,7 +40,10 @@ configuring a viewer from it. If the configFile name is empty,
 this function looks for OSGW_VIEWER_CONFIG in the environment and
 attempts to load the file that it specifies. If vonfigFile is empty
 and OSGW_VIEWER_CONFIG is not set, this function displays a message
-to osg::NOTICE and returns false. */
+to osg::NOTICE and returns false.
+
+\test cameraconfig
+*/
 bool OSGWTOOLS_EXPORT configureViewer( osgViewer::Viewer& viewer, const std::string& configFile="" );
 
 

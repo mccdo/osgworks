@@ -134,6 +134,9 @@ See \ref CollapseMode to control the mode of operation. COLLAPSE_TO_GROUP is use
 LOD node contains callbacks, UserData, DescriptionLists, etc., as this information is
 copied from the LOD to the new Group. COLLAPSE_TO_PARENT (the default) removes the LOD and
 the references to any such associated data.
+
+\test testvisitors
+
 */
 class OSGWTOOLS_EXPORT CollapseLOD : public osg::NodeVisitor
 {

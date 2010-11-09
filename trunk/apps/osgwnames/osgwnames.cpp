@@ -116,3 +116,16 @@ main( int argc,
     return( 0 );
 }
 
+
+
+/** \page osgwnames
+
+\section osgwnames
+
+osgwnames is a useful tool for quickly examining the structure of a scene graph.
+It displays s summary of the hierarchy using indentation, with each node
+represented as a single line of text, containing the class name and osg::Object name.
+
+Further documentation for osgwnames is TBD.
+
+*/

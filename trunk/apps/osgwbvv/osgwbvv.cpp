@@ -129,3 +129,15 @@ main( int argc,
     viewer.setSceneData( root.get() );
     return( viewer.run() );
 }
+
+
+
+/** \page osgwbvv
+
+\section osgwbvv
+
+osgwbvv visualizes OSG bounding volumes as a box, a sphere, or both.
+
+Further documentation for osgwbvv is TBD.
+
+*/

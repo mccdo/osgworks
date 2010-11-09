@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = osgWorks
-PROJECT_NUMBER         = 1.1.50
+PROJECT_NUMBER         = osgWorks v1.1.50
 OUTPUT_DIRECTORY       = "${PROJECT_BINARY_DIR}/doc"
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
@@ -25,7 +25,7 @@ ABBREVIATE_BRIEF       = "The $name class" \
 ALWAYS_DETAILED_SEC    = NO
 INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = YES
-STRIP_FROM_PATH        = 
+STRIP_FROM_PATH        = "${osgWorks_SOURCE_DIR}/"
 STRIP_FROM_INC_PATH    = 
 SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = NO
@@ -102,16 +102,16 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 INPUT                  = "${osgWorks_SOURCE_DIR}/apps " \
                          "${osgWorks_SOURCE_DIR}/include " \
-                         "${osgWorks_SOURCE_DIR}/src "
+                         "${osgWorks_SOURCE_DIR}/src " \
+                         "${osgWorks_SOURCE_DIR}/tests "
 INPUT_ENCODING         = UTF-8
-FILE_PATTERNS          = *.cpp \
-                         *.h
+FILE_PATTERNS          = *.cpp *.h
 RECURSIVE              = YES
-EXCLUDE                = 
+EXCLUDE                = .svn
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = 
 EXCLUDE_SYMBOLS        = 
-EXAMPLE_PATH           = "${osgWorks_SOURCE_DIR}/tests "
+EXAMPLE_PATH           = 
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = YES
 IMAGE_PATH             = 
