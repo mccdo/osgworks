@@ -35,6 +35,8 @@ namespace osgwTools
 RemoveLOD::RemoveLOD( const osg::NodeVisitor::TraversalMode travMode )
   : osg::NodeVisitor( travMode )
 {
+    osg::notify( osg::INFO ) << "RemoveLOD: This class is deprecated." << std::endl;
+    osg::notify( osg::INFO ) << "  Please use CollapseLOD instead." << std::endl;
 }
 RemoveLOD::~RemoveLOD()
 {
@@ -47,8 +49,6 @@ RemoveLOD::~RemoveLOD()
 void
 RemoveLOD::apply( osg::LOD& node )
 {
-
-
 	// find highest LOD by examining each child, preserve copy of highest LOD in
 	// temporary highestLOD ref_ptr while removing all the others
 

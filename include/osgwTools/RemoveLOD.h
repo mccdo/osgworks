@@ -37,6 +37,9 @@ namespace osgwTools
 
 
 /** Finds LOD nodes and collapses them to only have one (the highest LOD) child.
+
+\deprecated Please use \ref CollapseLOD instead.
+
 */
 class OSGWTOOLS_EXPORT RemoveLOD : public osg::NodeVisitor
 {
