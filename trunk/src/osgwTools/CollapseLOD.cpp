@@ -33,8 +33,15 @@ namespace osgwTools
 
 
 CollapseLOD::CollapseLOD(NodeSelectorCallback *SelectorCallback, const CollapseMode collapseMode,  const osg::NodeVisitor::TraversalMode travMode )
-  : osg::NodeVisitor( travMode ), _LODsLocated(0), _LODsProcessed(0), _depth(0), _selectorCallback(SelectorCallback), _collapseMode(collapseMode)
+  : osg::NodeVisitor( travMode ),
+    _LODsLocated(0),
+    _LODsProcessed(0),
+    _depth(0),
+    _selectorCallback(SelectorCallback),
+    _collapseMode(collapseMode)
 {
+    if( _selectorCallback==NULL )
+        _selectorCallback = new HighestLODChildSelectorCallback;
 }
 
 unsigned int CollapseLOD::finishProcessingLODs(void)
