@@ -33,7 +33,11 @@ namespace osgwTools
 {
 
 
-/** \defgroup Transform Transformation utilities */
+/** \defgroup Transform Transformation utilities
+
+\test transform
+
+*/
 /*@{*/
 
 /** \brief Transform a \c BoundingSphere.

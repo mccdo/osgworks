@@ -45,8 +45,8 @@ The introduction is TBD.
 
 \section PluginsSection Plugins
 
-\subsection osgwTools osgdb_osgwTools
-\subsection osgwControls osgdb_skeleton
+\subsection PluginosgwTools osgdb_osgwTools
+\subsection Pluginskeletom osgdb_skeleton
 
 See the \ref Plugins module description.
 
@@ -85,6 +85,9 @@ Set OSGWORKS_SCENEVIEW_ANAGLYPHIC_STEREO_SUPPORT on in CMake to support this usa
 enabled, AbsoluteModelTransform obtains the view matrix by accumulating the model transform
 from the NodePath, inverting it, and multiplying it by the CullVisitor's current modelview
 matrix. This is a more general-purpose, but less efficient, solution.
+
+\test amt
+
 */
 class OSGWTOOLS_EXPORT AbsoluteModelTransform : public osg::Transform
 {

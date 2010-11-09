@@ -32,6 +32,9 @@ namespace osgwTools
 
 
 /** \defgroup InsertRemove Utilities for inserting and removing nodes from scene graphs.
+
+\test insert
+
 */
 /*@{*/
 

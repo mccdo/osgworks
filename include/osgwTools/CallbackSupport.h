@@ -38,7 +38,10 @@ In OSG 2.8.3 (at least), Cameras can only have one DrawCallback attached
 (as a post draw callback, for example). Nested callbacks, as in the NodeCallback
 class, are not supported. Apps can attach a CompositeDrawCallback to a Camera,
 then attach a list of DrawCallbacks. CompositeDrawCallback's operator() will then
-execute the operator() of each DrawCallback in the list. */
+execute the operator() of each DrawCallback in the list.
+
+\test callbacksupport
+*/
 struct OSGWTOOLS_EXPORT CompositeDrawCallback : public osg::Camera::DrawCallback
 {
 public:

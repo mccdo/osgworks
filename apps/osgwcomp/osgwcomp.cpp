@@ -114,3 +114,14 @@ main( int argc,
     return( viewer.run() );
 }
 
+
+
+/** \page osgwcomp
+
+\section osgwcomp
+
+osgwcomp compares the structure of two scene graphs using the \ref ParallenVisitor.
+
+Further documentation for osgwcomp is TBD.
+
+*/
