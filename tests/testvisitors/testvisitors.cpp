@@ -28,6 +28,8 @@
 osgViewer::Viewer viewer;
 
 
+/** \cond */
+
 class KeyHandler : public osgGA::GUIEventHandler
 {
 public:
@@ -180,9 +182,9 @@ public:
         }
         return( false );
     }
-
 };
 
+/** \endcond */
 
 
 
@@ -225,6 +227,4 @@ main( int argc, char ** argv )
 		osgDB::writeNodeFile(*viewer.getSceneData(), outputfilestr);
 	} // if
 	return(runResult);
-
 }
-

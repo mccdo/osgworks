@@ -39,8 +39,9 @@ namespace osg {
 namespace osgwTools
 {
 
+
 // Should this perhaps be exposed somewhere else for wider use?
-	typedef std::set< osg::ref_ptr<osg::Node> > NodeSet;
+typedef std::set< osg::ref_ptr<osg::Node> > NodeSet;
 
 /** Callback to decide which LOD child should be retained */
 class NodeSelectorCallback : public osg::Referenced
@@ -119,7 +120,16 @@ class HighestLODChildSelectorCallback : public osgwTools::NodeSelectorCallback
 }; // HighestLODChildSelectorCallback
 
 
-/** Finds LOD nodes and collapses them to a group that has only one child, the highest LOD. */
+/** \brief Removes LOD Nodes from a scene graph.
+
+In typical usage, the application should invoke this visitor as with any OSG NodeVisitor, and
+after traversal returns, the application should call the \ref finishProcessingLODs method.
+
+This NodeVisitor has two modes of operation. It can replace LOD Nodes with Group Nodes, or it
+can simply remove the LOD Nodes altogether. In either case, only the highest LOD child, as
+determined by the NodeSelectorCallback, remains (either attached to the new Group, or attached
+to the removed LOD's former parent).
+*/
 class OSGWTOOLS_EXPORT CollapseLOD : public osg::NodeVisitor
 {
 public:
@@ -129,7 +139,16 @@ public:
         NUM_COLLAPSE_MODES
     };
 
-	CollapseLOD( NodeSelectorCallback *SelectorCallback, const CollapseMode collapseMode, const osg::NodeVisitor::TraversalMode travMode=osg::NodeVisitor::TRAVERSE_ALL_CHILDREN );
+    /** Constructor.
+    \param SelectorCallback Callback to determine which child is the highest LOD. By default,
+    an instance of \ref HighestLODChildSelectorCallback is used.
+    \param CollapseMode LOD removal method. Default: COLLAPSE_TO_PARENT (LODs are removed,
+    and highest LOD child is attached to the LOD's former parent(s).
+    \param TraversalMode The traversal mode. Default is to treverse all children.
+    */
+	CollapseLOD( NodeSelectorCallback *SelectorCallback=NULL,
+        const CollapseMode collapseMode=COLLAPSE_TO_PARENT,
+        const osg::NodeVisitor::TraversalMode travMode=osg::NodeVisitor::TRAVERSE_ALL_CHILDREN );
 	virtual ~CollapseLOD() {};
 
 	void apply( osg::LOD& node );
@@ -137,6 +156,10 @@ public:
 
 	unsigned int getLODsLocated(void) const {return(_LODsLocated);}
 	unsigned int getLODsProcessed(void) const {return(_LODsProcessed);}
+
+    /** Calling code must call this function to remove LODs.
+    This NodeVisitor collects LOD nodes, but doesn't actually process/remove
+    them until calling code executes this member function. */
 	unsigned int finishProcessingLODs(void);
 
 protected:
