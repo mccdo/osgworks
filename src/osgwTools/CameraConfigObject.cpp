@@ -126,7 +126,7 @@ CameraConfigObject::store( osgViewer::Viewer& viewer )
         unsigned int width, height;
         wsi->getScreenResolution(si, width, height);
 
-#if ( OSGWORKS_OSG_VERSION >= 20900 )
+#if ( OSGWORKS_OSG_VERSION >= 20906 )
         osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits(ds);
 #else
         osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
