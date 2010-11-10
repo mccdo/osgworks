@@ -32,7 +32,7 @@
 namespace osgwTools {
 
 
-/*! \mainpage osgWorks Documentation
+/** \mainpage osgWorks Documentation
 
 \section IntroSection Introduction
 
