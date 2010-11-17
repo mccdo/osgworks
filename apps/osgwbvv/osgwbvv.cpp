@@ -132,9 +132,8 @@ main( int argc,
 
 
 
-/** \page osgwbvv
-
-\section osgwbvv
+/** \page osgwbvv The osgwbvv Application
+osgwbvv visualizes OSG bounding volumes.
 
 osgwbvv visualizes OSG bounding volumes as a box, a sphere, or both.
 

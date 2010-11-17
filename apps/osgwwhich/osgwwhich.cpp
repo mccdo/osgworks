@@ -172,9 +172,8 @@ main( int argc,
 
 
 
-/** \page osgwwhich
-
-\section osgwwhich
+/** \page osgwwhich The osgwwhich Application
+osgwwhich locates OSG data files and shared libraries.
 
 osgwwhich uses the same search algorithm employed by OSG to find data files and
 shared libraries, and then displays the full path of the specified file. This is
