@@ -73,4 +73,9 @@ IF( OSGWORKS_DOCUMENTATION )
     ADD_CUSTOM_TARGET( Documentation ${DOXYGEN_EXECUTABLE}
         ${PROJECT_BINARY_DIR}/doc/doxyfile
     )
+    
+    # Image files for the documentation (copy to doc output directory).
+    CONFIGURE_FILE( ${PROJECT_SOURCE_DIR}/doc/images/osgwbvv00.jpg
+        ${PROJECT_BINARY_DIR}/doc/html/osgwbvv00.jpg COPYONLY
+    )
 ENDIF( OSGWORKS_DOCUMENTATION )

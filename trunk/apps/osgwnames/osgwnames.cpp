@@ -119,12 +119,61 @@ main( int argc,
 
 
 /** \page osgwnames The osgwnames Application
-osgwnames displays the structure of a scene graph.
-
 osgwnames displays the structure of a scene graph in human-readable form.
 It displays s summary of the hierarchy using indentation, with each node
-represented as a single line of text, containing the class name and osg::Object name.
+represented as a single line of text, containing the class name and Node name.
+If the Node name is empty, \e NULL is displayed in its place.
 
-Further documentation for osgwnames is TBD.
+\section su Simple Usage
+Try running osgwnames on \c dectest20.osg, one of the osgWorks data files:
+
+\code
+C:\Projects>osgwnames dectest20.ive
+world (Group)
+  door_assembly.asm.2 (Group)
+    NULL (MatrixTransform)
+      KNOB.PRT (Geode)
+    NULL (MatrixTransform)
+      KNOB.PRT #2 (Geode)
+    NULL (MatrixTransform)
+      DOOR.PRT (Geode)
+    POLE.PRT (Geode)
+\endcode
+
+The output shows the scene graph's hierarchical structure:
+\li The scene graph has a top-level Group node named \e world, has a single Group child named
+\e door_assembly.asm.2.
+\li \e door_assembly.asm.2 has four children, three of which are unnamed MatrixTransform objects
+(the name is displayed as \i NULL), and the fourth child is a Geode named \e POLE.PRT.
+\li Each of the MatrixTransform objects have Geode children, with names \e KNOB.PRT,
+<i>KNOB.PRT #2</i>, and \e DOOR.PRT.
+
+To produce more readable output, you can prevent the display of Geodes with the
+\b --nogeodes option:
+
+\code
+C:\Projects>osgwnames --nogeodes dectest20.ive
+world (Group)
+  door_assembly.asm.2 (Group)
+    NULL (MatrixTransform)
+    NULL (MatrixTransform)
+    NULL (MatrixTransform)
+\endcode
+
+\section clp Command Line Parameters
+<table border="0">
+  <tr>
+    <td><b>--nogeodes</b></td>
+    <td>Do not display Geodes in the output.</td>
+  </tr>
+  <tr>
+    <td><b>-O <option></b></td>
+    <td>Pass \b <option> to the OSG import plugin.</td>
+  </tr>
+  <tr>
+    <td><b>-v/--version</b></td>
+    <td>Display the osgWorks version string.</td>
+  </tr>
+</table>
 
 */
