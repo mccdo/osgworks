@@ -36,7 +36,12 @@ namespace osgwTools {
 
 \section IntroSection Introduction
 
-The introduction is TBD.
+osgWorks is an open source SDK intended for OSG developers.
+The project contains developer tools that are useful to developers
+of most OSG applications, such as standalone applications,
+transformation utilities, visitors, custom nodes, scene graph
+editing facilities, basic geometric shapes, plugins, test models,
+and example programs.
 
 \section LibrariesSection Libraries
 
