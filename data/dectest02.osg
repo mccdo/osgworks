@@ -1,41 +1,24 @@
 Group {
-  name "USMC23_4126.PRT"
   nodeMask 0xffffffff
   cullingActive TRUE
   num_children 1
   Group {
-    name "USMC23_4126.PRT #1"
     nodeMask 0xffffffff
     cullingActive TRUE
-    description {
-      "AccountedCounter"
-      "ok_int: -1"
-    }
     num_children 1
     Group {
-      name "body #497"
       nodeMask 0xffffffff
       cullingActive TRUE
-      description {
-        "AccountedCounter"
-        "ok_int: -1"
-      }
       num_children 1
       Geode {
-        name "face #35481"
         nodeMask 0xffffffff
         cullingActive TRUE
-        description {
-          "AccountedCounter"
-          "ok_int: -1"
-        }
         num_drawables 1
         Geometry {
           StateSet {
             rendering_hint DEFAULT_BIN
             renderBinMode INHERIT
             Material {
-              name "STEEL #25"
               ColorMode OFF
               ambientColor 1 1 1 1
               diffuseColor 1 1 1 1
