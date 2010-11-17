@@ -1,5 +1,4 @@
 Group {
-  name "tetrahedron"
   nodeMask 0xffffffff
   cullingActive TRUE
   StateSet {
@@ -13,7 +12,6 @@ Group {
   }
   num_children 1
   Geode {
-    name "tetrahedron"
     nodeMask 0xffffffff
     cullingActive TRUE
     num_drawables 2
