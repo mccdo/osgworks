@@ -118,11 +118,10 @@ main( int argc,
 
 
 
-/** \page osgwnames
+/** \page osgwnames The osgwnames Application
+osgwnames displays the structure of a scene graph.
 
-\section osgwnames
-
-osgwnames is a useful tool for quickly examining the structure of a scene graph.
+osgwnames displays the structure of a scene graph in human-readable form.
 It displays s summary of the hierarchy using indentation, with each node
 represented as a single line of text, containing the class name and osg::Object name.
 
