@@ -56,10 +56,10 @@ and example programs.
 See the \ref Plugins module description.
 
 \section AppsSection Applications
-\li \ref osgwbvv visualizes OSG bounding volumes.
-\li \ref osgwcomp compares the structure of two scene graphs.
-\li \ref osgwnames displays the structure of a scene graph.
-\li \ref osgwwhich locates OSG data files and shared libraries.
+\ref osgwbvv visualizes OSG bounding volumes. \n
+\ref osgwcomp compares the structure of two scene graphs. \n
+\ref osgwnames displays the structure of a scene graph. \n
+\ref osgwwhich locates OSG data files and shared libraries.
 
 */
 

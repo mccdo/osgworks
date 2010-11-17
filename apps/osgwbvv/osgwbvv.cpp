@@ -133,10 +133,41 @@ main( int argc,
 
 
 /** \page osgwbvv The osgwbvv Application
-osgwbvv visualizes OSG bounding volumes.
+osgwbvv visualizes OSG bounding volumes as a box, a sphere, or both, and displays the
+bounding extents on the console.
 
-osgwbvv visualizes OSG bounding volumes as a box, a sphere, or both.
+\section su Simple Usage
+Try running osgwbvv on \c teapot.osg, one of the osgWorks data files:
 
-Further documentation for osgwbvv is TBD.
+\code
+C:\Projects>osgwbvv teapot.osg
+Sphere:
+        Center  0.0542275 0 0.01875
+        Radius  1.02558
+\endcode
+
+In addition to displaying the bounding sphere extents on the console, osgwbvv also visualizes
+the bounding sphere in an OSG window:
+\image html osgwbvv00.jpg
+
+\section clp Command Line Parameters
+<table border="0">
+  <tr>
+    <td><b>--sphere</b></td>
+    <td>Display the bounding sphere. This is the default.</td>
+  </tr>
+  <tr>
+    <td><b>--box</b></td>
+    <td>Display the bounding box.</td>
+  </tr>
+  <tr>
+    <td><b>--both</b></td>
+    <td>Display both the bounding sphere and bounding box.</td>
+  </tr>
+  <tr>
+    <td><b>-v/--version</b></td>
+    <td>Display the osgWorks version string.</td>
+  </tr>
+</table>
 
 */
