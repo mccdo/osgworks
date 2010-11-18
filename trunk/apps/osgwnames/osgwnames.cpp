@@ -120,9 +120,9 @@ main( int argc,
 
 /** \page osgwnames The osgwnames Application
 osgwnames displays the structure of a scene graph in human-readable form.
-It displays s summary of the hierarchy using indentation, with each node
-represented as a single line of text, containing the class name and Node name.
-If the Node name is empty, \e NULL is displayed in its place.
+It displays a summary of the hierarchy using indentation with each node
+represented as a single line of text, containing the class and Node name.
+If the Node name is empty, \e NULL displays in its place.
 
 \section su Simple Usage
 Try running osgwnames on \c dectest20.osg, one of the osgWorks data files:
@@ -140,7 +140,7 @@ world (Group)
     POLE.PRT (Geode)
 \endcode
 
-The output shows the scene graph's hierarchical structure:
+The output shows the scene graph hierarchical structure:
 \li The scene graph has a top-level Group node named \e world, has a single Group child named
 \e door_assembly.asm.2.
 \li \e door_assembly.asm.2 has four children, three of which are unnamed MatrixTransform objects

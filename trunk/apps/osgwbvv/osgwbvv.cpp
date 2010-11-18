@@ -146,7 +146,7 @@ Sphere:
         Radius  1.02558
 \endcode
 
-In addition to displaying the bounding sphere extents on the console, osgwbvv also visualizes
+In addition to displaying the bounding sphere extents on the console, osgwbvv visualizes
 the bounding sphere in an OSG window:
 \image html osgwbvv00.jpg
 

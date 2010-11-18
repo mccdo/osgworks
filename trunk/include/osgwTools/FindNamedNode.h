@@ -80,7 +80,7 @@ public:
     MatchMethod getMatchMethod() const;
 
     /**
-    Control whether or not the named node is included at the end of
+    Control whether the named node is included at the end of
     the NodePaths in _napl.
     @param includeTargetNode If false, don't include the named node
     in the returned NodePaths. Default: true (include the named node
