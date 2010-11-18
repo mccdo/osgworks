@@ -117,7 +117,7 @@ main( int argc,
 
 
 /** \page osgwcomp The osgwcomp Application
-osgwcomp compares the structure of two scene graphs using the \ref ParallenVisitor.
+osgwcomp compares the structure of two scene graphs using the \ref ParallelVisitor.
 
 Further documentation for osgwcomp is TBD.
 
