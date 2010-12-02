@@ -19,18 +19,11 @@ IF( WIN32 AND MSVC )
         SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP" )
     ENDIF( OSGWORKS_WIN32_USE_MP )
 ENDIF( WIN32 AND MSVC )
-    
-INCLUDE( CMakeMacros )
 
-INCLUDE( FindOSGHelper )
-#SET( CMAKE_PREFIX_PATH "C:/Projects/OSG/OSG283" "C:/Projects/OSG/OSG283/bld" )
-#SET( CMAKE_LIBRARY_PATH "C:/Projects/OSG/OSG283/bld" )
-#SET( OpenSceneGraph_DEBUG 1 )
-#FIND_PACKAGE( OpenSceneGraph 2.8.0 REQUIRED COMPONENTS osg osgDB osgUtil osgGA osgText osgViewer OpenThreads )
-#IF( OSG_FOUND )
-#    SET( OSG_INCLUDE_DIRS ${OSG_INCLUDE_DIR} ${OSGDB_INCLUDE_DIR} ${OSGUTIL_INCLUDE_DIR} ${OSGGA_INCLUDE_DIR} ${OSGTEXT_INCLUDE_DIR} ${OSGVIEWER_INCLUDE_DIR} ${OPENTHREADS_INCLUDE_DIR} )
-#    SET( OSG_LIBRARIES ${OSG_LIBRARIES} ${OSGDB_LIBRARIES} ${OSGUTIL_LIBRARIES} ${OSGGA_LIBRARIES} ${OSGTEXT_LIBRARIES} ${OSGVIEWER_LIBRARIES} ${OPENTHREADS_LIBRARIES} )
-#ENDIF()
+
+include( CMakeMacros )
+
+include( FindOSGHelper )
 
 
 
@@ -85,7 +78,14 @@ IF( OSGWORKS_DOCUMENTATION )
     )
     
     # Image files for the documentation (copy to doc output directory).
-    CONFIGURE_FILE( ${PROJECT_SOURCE_DIR}/doc/images/osgwbvv00.jpg
-        ${PROJECT_BINARY_DIR}/doc/html/osgwbvv00.jpg COPYONLY
-    )
+    configure_file( ${PROJECT_SOURCE_DIR}/doc/images/geom-edgecollapse.jpg
+        ${PROJECT_BINARY_DIR}/doc/html/geom-edgecollapse.jpg COPYONLY )
+    configure_file( ${PROJECT_SOURCE_DIR}/doc/images/geom-halfedgecollapse.jpg
+        ${PROJECT_BINARY_DIR}/doc/html/geom-halfedgecollapse.jpg COPYONLY )
+    configure_file( ${PROJECT_SOURCE_DIR}/doc/images/geom-reducergroup.jpg
+        ${PROJECT_BINARY_DIR}/doc/html/geom-reducergroup.jpg COPYONLY )
+    configure_file( ${PROJECT_SOURCE_DIR}/doc/images/geom-reducerremove.jpg
+        ${PROJECT_BINARY_DIR}/doc/html/geom-reducerremove.jpg COPYONLY )
+    configure_file( ${PROJECT_SOURCE_DIR}/doc/images/osgwbvv00.jpg
+        ${PROJECT_BINARY_DIR}/doc/html/osgwbvv00.jpg COPYONLY )
 ENDIF( OSGWORKS_DOCUMENTATION )
