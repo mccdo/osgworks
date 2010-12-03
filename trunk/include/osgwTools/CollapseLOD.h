@@ -133,7 +133,7 @@ to the removed LOD's former parent).
 See \ref CollapseMode to control the mode of operation. COLLAPSE_TO_GROUP is useful when the
 LOD node contains callbacks, UserData, DescriptionLists, etc. This information is
 copied from the LOD to the new Group. COLLAPSE_TO_PARENT (the default) removes the LOD and
-the references to any such associated data. */
+the references to any such associated data.
 
 \test testvisitors
 
