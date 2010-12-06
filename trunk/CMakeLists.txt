@@ -77,15 +77,5 @@ IF( OSGWORKS_DOCUMENTATION )
         ${PROJECT_BINARY_DIR}/doc/doxyfile
     )
     
-    # Image files for the documentation (copy to doc output directory).
-    configure_file( ${PROJECT_SOURCE_DIR}/doc/images/geom-edgecollapse.jpg
-        ${PROJECT_BINARY_DIR}/doc/html/geom-edgecollapse.jpg COPYONLY )
-    configure_file( ${PROJECT_SOURCE_DIR}/doc/images/geom-halfedgecollapse.jpg
-        ${PROJECT_BINARY_DIR}/doc/html/geom-halfedgecollapse.jpg COPYONLY )
-    configure_file( ${PROJECT_SOURCE_DIR}/doc/images/geom-reducergroup.jpg
-        ${PROJECT_BINARY_DIR}/doc/html/geom-reducergroup.jpg COPYONLY )
-    configure_file( ${PROJECT_SOURCE_DIR}/doc/images/geom-reducerremove.jpg
-        ${PROJECT_BINARY_DIR}/doc/html/geom-reducerremove.jpg COPYONLY )
-    configure_file( ${PROJECT_SOURCE_DIR}/doc/images/osgwbvv00.jpg
-        ${PROJECT_BINARY_DIR}/doc/html/osgwbvv00.jpg COPYONLY )
-ENDIF( OSGWORKS_DOCUMENTATION )
+    add_subdirectory( doc/images )
+endif()
