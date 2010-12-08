@@ -23,7 +23,7 @@ endmacro( unFindOSG )
 #  * Default installation (in which the stock FindOpenSceneGraph.cmake script does all the work)
 #  * Alternate Install Location (user must set the OSGInstallLocation variable)
 #  * Source And Build Tree (user must supply both the OSGSourceRoot and OSGBuildRoot variables)
-set( OSGInstallType "Default Installation" CACHE STRING "Specifies the type of OSG installation to look for" )
+set( OSGInstallType "Default Installation" CACHE STRING "Type of OSG install: 'Default Installation', 'Alternate Install Location', or 'Source And Build Tree'." )
 set_property( CACHE OSGInstallType PROPERTY STRINGS "Default Installation" "Alternate Install Location" "Source And Build Tree" )
 
 # We need to detect when the user changes the OSG install type
