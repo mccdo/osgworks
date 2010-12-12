@@ -58,7 +58,7 @@ unsigned int CollapseLOD::finishProcessingLODs(void)
 		{
 			osg::notify( osg::DEBUG_INFO ) << "CollapseLOD::finishProcessingLODs LOD NumChildren: " << currentNodeAsGroup->getNumChildren() << std::endl;
 			// invoke callback to determine which child should be retained
-			osg::Node *selectedChild = _selectorCallback->selectChild(currentNodeAsGroup);
+			osg::Node *selectedChild = _selectorCallback->selectChild(currentNodeAsGroup.get());
 			if(_collapseMode == COLLAPSE_TO_GROUP) // <<<>>> what if parent of parent is an LOD itself?
 			{
 				osg::ref_ptr<osg::Group> newGroup = new osg::Group(*(currentNodeAsGroup.get()));
@@ -71,7 +71,7 @@ unsigned int CollapseLOD::finishProcessingLODs(void)
 						newGroup->addChild(selectedChild);
 					} // if
 					// replace existing LOD node with replacement Group node
-					osgwTools::replaceSubgraph(newGroup, (*itr).get());
+					osgwTools::replaceSubgraph(newGroup.get(), (*itr).get());
 				} // if
 			} // if
 			else
@@ -93,7 +93,7 @@ unsigned int CollapseLOD::finishProcessingLODs(void)
 
 						// first find which child number the LOD-to-be-eliminated is, so we can query the ranges by ordinal
 						// which is the only API OSG offers for accessing the ranges
-						unsigned int childIndex = parentAsLOD->getChildIndex((*itr));
+						unsigned int childIndex = parentAsLOD->getChildIndex((*itr).get());
 						originalChildMin = parentAsLOD->getMinRange(childIndex);
 						originalChildMax = parentAsLOD->getMaxRange(childIndex);
 						// add selected child node to parent of LOD we're eliminating, using LOD ranges of the LOD we're eliminating
@@ -101,14 +101,14 @@ unsigned int CollapseLOD::finishProcessingLODs(void)
 						// so just sticking this onto the end should be fine.
 						parentAsLOD->addChild(selectedChild, originalChildMin, originalChildMax);
 						// remove original LOD node
-						(*parentIter)->removeChild((*itr));
+						(*parentIter)->removeChild((*itr).get());
 					} // if
 					else
 					{
 						// add selected child node
 						(*parentIter)->addChild(selectedChild);
 						// remove previous LOD node
-						(*parentIter)->removeChild(currentNodeAsGroup);
+						(*parentIter)->removeChild(currentNodeAsGroup.get());
 					} // else
 				} // for
 			} // else
