@@ -122,7 +122,7 @@ set( CMAKE_LIBRARY_PATH
 
 set( OpenSceneGraph_DEBUG 0 )
 set( OpenSceneGraph_MARK_AS_ADVANCED 1 )
-find_package( OpenSceneGraph 2.8.0 REQUIRED COMPONENTS ${_osgComponents} )
+find_package( OpenSceneGraph 2.6.1 REQUIRED COMPONENTS ${_osgComponents} )
 if( OSG_FOUND )
     foreach( currentLibIn ${_osgComponents} )
         string( TOUPPER ${currentLibIn} currentLib )
