@@ -15,105 +15,93 @@
 # and OSGWORKS_BUILD_DIR (in environment or CMake).
 
 
-SET( OSGWORKS_BUILD_DIR "" CACHE PATH "If using osgWorks out of a source tree, specify the build directory." )
-SET( OSGWORKS_SOURCE_DIR "" CACHE PATH "If using osgWorks out of a source tree, specify the root of the source tree." )
-SET( OSGWORKS_ROOT "" CACHE PATH "Specify non-standard osgWorks install directory. It is the parent of the include and lib dirs." )
+set( _osgWorksSearchPathS
+    /usr/local
+    /usr
+    /sw/ # Fink
+    /opt/local # DarwinPorts
+    /opt/csw # Blastwave
+    /opt
+    "C:/Program Files/osgWorks"
+    "C:/Program Files (x86)/osgWorks"
+    ~/Library/Frameworks
+    /Library/Frameworks
+)
 
-MACRO( FIND_OSGWORKS_INCLUDE THIS_OSGWORKS_INCLUDE_DIR THIS_OSGWORKS_INCLUDE_FILE )
-    UNSET( ${THIS_OSGWORKS_INCLUDE_DIR} CACHE )
-    MARK_AS_ADVANCED( ${THIS_OSGWORKS_INCLUDE_DIR} )
-    FIND_PATH( ${THIS_OSGWORKS_INCLUDE_DIR} ${THIS_OSGWORKS_INCLUDE_FILE}
-        PATHS
-            ${OSGWORKS_ROOT}
-            $ENV{OSGWORKS_ROOT}
-            ${OSGWORKS_SOURCE_DIR}
-            $ENV{OSGWORKS_SOURCE_DIR}
-            /usr/local
-            /usr
-            /sw/ # Fink
-            /opt/local # DarwinPorts
-            /opt/csw # Blastwave
-            /opt
-            "C:/Program Files/osgWorks"
-            "C:/Program Files (x86)/osgWorks"
-            ~/Library/Frameworks
-            /Library/Frameworks
-        PATH_SUFFIXES
-            include
-            .
-    )
-ENDMACRO( FIND_OSGWORKS_INCLUDE THIS_OSGWORKS_INCLUDE_DIR THIS_OSGWORKS_INCLUDE_FILE )
-
-FIND_OSGWORKS_INCLUDE( OSGWORKS_INCLUDE_DIR osgwTools/FindNamedNode.h )
+find_path( OSGWORKS_INCLUDE_DIR
+    osgwTools/FindNamedNode.h
+    HINTS
+        ${OSGWORKS_ROOT}
+        $ENV{OSGWORKS_ROOT}
+        ${OSGWORKS_SOURCE_DIR}
+        $ENV{OSGWORKS_SOURCE_DIR}
+    PATH_SUFFIXES
+        include
+    PATHS
+        ${_osgWorksSearchPathS}
+)
+mark_as_advanced( OSGWORKS_INCLUDE_DIR )
 # message( STATUS ${OSGWORKS_INCLUDE_DIR} )
 
-MACRO( FIND_OSGWORKS_LIBRARY MYLIBRARY MYLIBRARYNAME )
-    UNSET( ${MYLIBRARY} CACHE )
-    UNSET( ${MYLIBRARY}_debug CACHE )
-    MARK_AS_ADVANCED( ${MYLIBRARY} )
-    MARK_AS_ADVANCED( ${MYLIBRARY}_debug )
-    FIND_LIBRARY( ${MYLIBRARY}
-        NAMES ${MYLIBRARYNAME}
-        PATHS
+
+
+macro( FIND_OSGWORKS_LIBRARY MYLIBRARY MYLIBRARYNAME )
+    mark_as_advanced( ${MYLIBRARY} )
+    mark_as_advanced( ${MYLIBRARY}_debug )
+    find_library( ${MYLIBRARY}
+        NAMES
+            ${MYLIBRARYNAME}
+        HINTS
             ${OSGWORKS_ROOT}
             $ENV{OSGWORKS_ROOT}
             ${OSGWORKS_BUILD_DIR}
             $ENV{OSGWORKS_BUILD_DIR}
-            ~/Library/Frameworks
-            /Library/Frameworks
-            /usr/local
-            /usr
-            /sw
-            /opt/local
-            /opt/csw
-            /opt
-            "C:/Program Files/osgWorks"
-            "C:/Program Files (x86)/osgWorks"
-            /usr/freeware/lib64
         PATH_SUFFIXES
             lib
-            .
+            bin
+            bin/Release
+        PATHS
+            ${_osgWorksSearchPathS}
     )
-    FIND_LIBRARY( ${MYLIBRARY}_debug
-        NAMES ${MYLIBRARYNAME}d
-        PATHS
+    find_library( ${MYLIBRARY}_debug
+        NAMES
+            ${MYLIBRARYNAME}d
+        HINTS
             ${OSGWORKS_ROOT}
             $ENV{OSGWORKS_ROOT}
             ${OSGWORKS_BUILD_DIR}
             $ENV{OSGWORKS_BUILD_DIR}
-            ~/Library/Frameworks
-            /Library/Frameworks
-            /usr/local
-            /usr
-            /sw
-            /opt/local
-            /opt/csw
-            /opt
-            "C:/Program Files/osgWorks"
-            "C:/Program Files (x86)/osgWorks"
-            /usr/freeware/lib64
         PATH_SUFFIXES
             lib
-            .
+            bin
+            bin/Debug
+        PATHS
+            ${_osgWorksSearchPathS}
     )
 #    message( STATUS ${${MYLIBRARY}} ${${MYLIBRARY}_debug} )
 #    message( STATUS ${MYLIBRARYNAME} )
-    IF( ${MYLIBRARY} )
-        SET( OSGWORKS_LIBRARIES ${OSGWORKS_LIBRARIES}
+    if( ${MYLIBRARY} )
+        list( APPEND OSGWORKS_LIBRARIES
             "optimized" ${${MYLIBRARY}}
         )
-    ENDIF( ${MYLIBRARY} )
-    IF( ${MYLIBRARY}_debug )
-        SET( OSGWORKS_LIBRARIES ${OSGWORKS_LIBRARIES}
+    endif()
+    if( ${MYLIBRARY}_debug )
+        list( APPEND OSGWORKS_LIBRARIES
             "debug" ${${MYLIBRARY}_debug}
         )
-    ENDIF( ${MYLIBRARY}_debug )
-ENDMACRO(FIND_OSGWORKS_LIBRARY LIBRARY LIBRARYNAME)
+    endif()
+#    message( STATUS ${OSGWORKS_LIBRARIES} )
+endmacro()
 
+unset( OSGWORKS_LIBRARIES )
 FIND_OSGWORKS_LIBRARY( OSGWTOOLS_LIBRARY osgwTools )
 FIND_OSGWORKS_LIBRARY( OSGWCONTROLS_LIBRARY osgwControls )
 
-SET( OSGWORKS_FOUND 0 )
-IF( OSGWORKS_LIBRARIES AND OSGWORKS_INCLUDE_DIR )
-    SET( OSGWORKS_FOUND 1 )
-ENDIF( OSGWORKS_LIBRARIES AND OSGWORKS_INCLUDE_DIR )
+# handle the QUIETLY and REQUIRED arguments and set FMOD_FOUND to TRUE if all listed variables are TRUE
+include( FindPackageHandleStandardArgs )
+find_package_handle_standard_args(
+    OSGWorks
+    DEFAULT_MSG 
+    OSGWORKS_LIBRARIES 
+    OSGWORKS_INCLUDE_DIR
+)
