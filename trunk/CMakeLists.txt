@@ -2,6 +2,8 @@
 CMAKE_MINIMUM_REQUIRED( VERSION 2.8 )
 PROJECT( osgWorks )
 
+set( OSGWORKS_VERSION 1.1 )
+
 SET( CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}" )
 
 SET( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single directory for all libraries." )
@@ -36,6 +38,12 @@ INCLUDE_DIRECTORIES(
 LINK_DIRECTORIES(
     ${EXECUTABLE_OUTPUT_PATH}/Debug
 )
+
+
+option( BUILD_SHARED_LIBS "Set to ON to build osgWorks for dynamic linking. Use OFF for static." ON )
+if( NOT BUILD_SHARED_LIBS )
+    add_definitions( -DOSGWORKS_STATIC )
+endif()
 
 
 OPTION( OSGWORKS_SCENEVIEW_ANAGLYPHIC_STEREO_SUPPORT "Enable to support OSG_STEREO=ON." OFF )

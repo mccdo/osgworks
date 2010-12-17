@@ -1,9 +1,12 @@
-SET( LIB_NAME osgwTools )
+set( LIB_NAME osgwTools )
 
-ADD_DEFINITIONS( -DOSGWTOOLS_LIBRARY )
-SET( HEADER_PATH ${PROJECT_SOURCE_DIR}/include/${LIB_NAME} )
+if( BUILD_SHARED_LIBS )
+    add_definitions( -DOSGWTOOLS_LIBRARY )
+endif()
 
-SET( LIB_PUBLIC_HEADERS
+
+set( HEADER_PATH ${PROJECT_SOURCE_DIR}/include/${LIB_NAME} )
+set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/Export.h
     ${HEADER_PATH}/AbsoluteModelTransform.h
     ${HEADER_PATH}/CallbackSupport.h
@@ -31,8 +34,7 @@ SET( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/Version.h
 )
 
-ADD_SHARED_LIBRARY_INTERNAL( ${LIB_NAME}
-    ${LIB_PUBLIC_HEADERS}
+set( _osgwToolsSourceFiles
     AbsoluteModelTransform.cpp
     CallbackSupport.cpp
     CameraConfigObject.cpp
@@ -60,9 +62,18 @@ ADD_SHARED_LIBRARY_INTERNAL( ${LIB_NAME}
     Transform.cpp
 )
 
-TARGET_LINK_LIBRARIES(
-    ${LIB_NAME}
-    ${OSG_LIBRARIES}
+add_library( ${LIB_NAME}
+    ${LIB_PUBLIC_HEADERS}
+    ${_osgwToolsSourceFiles}
 )
+if( BUILD_SHARED_LIBS )
+    target_link_libraries( ${LIB_NAME}
+        ${OSG_LIBRARIES}
+    )
+endif()
 
-INCLUDE(ModuleInstall OPTIONAL)
+set_target_properties( ${LIB_NAME} PROPERTIES VERSION ${OSGWORKS_VERSION} )
+set_target_properties( ${LIB_NAME} PROPERTIES SOVERSION ${OSGWORKS_VERSION} )
+set_target_properties( ${LIB_NAME} PROPERTIES PROJECT_LABEL "Lib ${LIB_NAME}" )
+
+include( ModuleInstall REQUIRED )

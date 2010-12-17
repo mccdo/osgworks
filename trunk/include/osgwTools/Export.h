@@ -22,14 +22,16 @@
 #define __OSGWTOOLS_EXPORT__ 1
 
 
-#if defined ( _MSC_VER ) || defined ( __CYGWIN__ ) || defined ( __MINGW32__ ) || defined ( __BCPLUSPLUS__ ) || defined ( __MWERKS__ )
- #if defined ( OSGWTOOLS_LIBRARY )
-  #define OSGWTOOLS_EXPORT __declspec( dllexport )
- #else
-  #define OSGWTOOLS_EXPORT __declspec( dllimport )
- #endif
+#if defined( _MSC_VER ) || defined( __CYGWIN__ ) || defined( __MINGW32__ ) || defined( __BCPLUSPLUS__ ) || defined( __MWERKS__ )
+    #if defined( OSGWORKS_STATIC )
+        #define OSGWTOOLS_EXPORT
+    #elif defined( OSGWTOOLS_LIBRARY )
+        #define OSGWTOOLS_EXPORT __declspec( dllexport )
+    #else
+        #define OSGWTOOLS_EXPORT __declspec( dllimport )
+    #endif
 #else
- #define OSGWTOOLS_EXPORT
+    #define OSGWTOOLS_EXPORT
 #endif
 
 
