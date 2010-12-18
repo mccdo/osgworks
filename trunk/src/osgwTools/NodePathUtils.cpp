@@ -294,7 +294,12 @@ osg::Node* NodeData::findNode( osg::Group* parent ) const
                 foundSomething = true;
             }
         }
-        if( foundSomething && ( bestMatchIdx < parent->getNumChildren() ) )
+        if( indexChild != NULL )
+        {
+            osg::notify( osg::WARN ) << "  Selected alternate with matching index." << std::endl;
+            return( indexChild );
+        }
+        else if( foundSomething && ( bestMatchIdx < parent->getNumChildren() ) )
         {
             osg::notify( osg::WARN ) << "  Best match: index " << bestMatchIdx << std::endl;
             return( parent->getChild( bestMatchIdx ) );
