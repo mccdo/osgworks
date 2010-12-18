@@ -17,6 +17,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/GeometryModifier.h
     ${HEADER_PATH}/GeometryOperation.h
     ${HEADER_PATH}/CollapseLOD.h
+    ${HEADER_PATH}/NodePathUtils.h
     ${HEADER_PATH}/NodeUtils.h
     ${HEADER_PATH}/InsertRemove.h
     ${HEADER_PATH}/ParallelVisitor.h
@@ -44,6 +45,7 @@ set( _osgwToolsSourceFiles
     GeometryModifier.cpp
     GeometryOperation.cpp
     CollapseLOD.cpp
+    NodePathUtils.cpp
     NodeUtils.cpp
     InsertRemove.cpp
     ParallelVisitor.cpp
