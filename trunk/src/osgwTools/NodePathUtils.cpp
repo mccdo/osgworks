@@ -21,6 +21,7 @@
 #include "osgwTools/NodePathUtils.h"
 #include <osg/Node>
 #include <osg/Group>
+#include <osg/MatrixTransform>
 #include <osg/Notify>
 
 #include <string>
@@ -99,12 +100,12 @@ protected:
         return( unquoted );
     }
 };
-std::ostream& operator<<( std::ostream& ostr, const QuotedString& pstr )
+std::ostream& operator<<( std::ostream& ostr, const QuotedString& qstr )
 {
-    ostr << pstr.getQuoted();
+    ostr << qstr.getQuoted();
     return( ostr );
 }
-std::istream& operator>>( std::istream& istr, QuotedString& pstr )
+std::istream& operator>>( std::istream& istr, QuotedString& qstr )
 {
     std::string str;
     char ch;
@@ -123,7 +124,8 @@ std::istream& operator>>( std::istream& istr, QuotedString& pstr )
             str += ch;
         }
     }
-    pstr.setQuotedString( str );
+    if( !str.empty() )
+        qstr.setQuotedString( str );
     return( istr );
 }
 
@@ -157,8 +159,7 @@ IndexedNodePath nodePathToIndexed( const osg::NodePath& nodePath )
     {
         if( parent != NULL )
         {
-            NodeData nd( parent->getChildIndex( *pathIter ),
-                std::string( ( *pathIter )->className() ), std::string( ( *pathIter )->getName() ) );
+            NodeData nd( parent->getChildIndex( *pathIter ), **pathIter );
             inp.push_back( nd );
         }
         parent = ( *pathIter )->asGroup();
@@ -175,9 +176,12 @@ osg::NodePath indexedToNodePath( const IndexedNodePath& indexedNodePath, osg::Gr
     for( pathIter = indexedNodePath.begin(); pathIter != indexedNodePath.end(); ++pathIter )
     {
         const NodeData& nd = *pathIter;
-        osg::Node* child = parent->getChild( nd._index );
-        np.push_back( child );
-        parent = child->asGroup();
+        osg::Node* child = nd.findNode( parent );
+        if( child != NULL )
+        {
+            np.push_back( child );
+            parent = child->asGroup();
+        }
     }
     return( np );
 }
@@ -203,6 +207,8 @@ IndexedNodePath stringToIndexed( const std::string& stringPath )
     {
         NodeData nd;
         istr >> nd;
+        if( istr.eof() )
+            break;
         inp.push_back( nd );
     }
     return( inp );
@@ -230,16 +236,90 @@ osg::Node* findNode( const std::string& stringPath, osg::Group* root )
 }
 
 
+
+
 NodeData::NodeData()
 {
     _index = 0;
 }
-NodeData::NodeData( unsigned int index, std::string& className, std::string& objectName )
+NodeData::NodeData( unsigned int index, const osg::Node& node )
   : _index( index ),
-    _className( className ),
-    _objectName( objectName )
+    _className( node.className() ),
+    _objectName( node.getName() )
 {
 }
+
+osg::Node* NodeData::findNode( osg::Group* parent ) const
+{
+    const bool badIndex( _index >= parent->getNumChildren() );
+    bool badClassName( false );
+    bool badObjectName( false );
+
+    osg::Node* indexChild( NULL );
+    if( !badIndex )
+    {
+        indexChild = parent->getChild( _index );
+        badClassName = ( indexChild->className() != _className );
+        badObjectName = ( indexChild->getName() != _objectName );
+    }
+
+    if( badIndex || badClassName || badObjectName )
+    {
+        if( badIndex )
+            osg::notify( osg::WARN ) << "NodeData::findNode: Index out of range: " << _index <<
+                ", parent has " << parent->getNumChildren() << std::endl;
+        else if( badClassName )
+            osg::notify( osg::WARN ) << "NodeData::findNode: _className: " << _className <<
+                ", doesn't match indexChild " << _index << ": " << indexChild->className() << std::endl;
+        else if( badObjectName )
+            osg::notify( osg::WARN ) << "NodeData::findNode: _objectName: " << _objectName <<
+                ", doesn't match indexChild " << _index << ": " << indexChild->getName() << std::endl;
+
+        unsigned int bestMatchIdx( 0 );
+        bool foundSomething( false );
+        unsigned int idx;
+        for( idx=0; idx<parent->getNumChildren(); idx++ )
+        {
+            osg::Node* node = parent->getChild( idx );
+            if( ( node->className() == _className ) &&
+                    ( node->getName() == _objectName ) )
+            {
+                osg::notify( osg::WARN ) << "  Selected alternate: index " << idx << std::endl;
+                return( node );
+            }
+            else if( ( node->className() == _className ) ||
+                    ( node->getName() == _objectName ) )
+            {
+                bestMatchIdx = idx;
+                foundSomething = true;
+            }
+        }
+        if( foundSomething && ( bestMatchIdx < parent->getNumChildren() ) )
+        {
+            osg::notify( osg::WARN ) << "  Best match: index " << bestMatchIdx << std::endl;
+            return( parent->getChild( bestMatchIdx ) );
+        }
+        else
+        {
+            osg::notify( osg::WARN ) << "  No match. Returning NULL" << std::endl;
+            return( NULL );
+        }
+    }
+
+    return( indexChild );
+}
+
+bool NodeData::operator==( const NodeData& rhs )
+{
+    return( ( _index == rhs._index ) &&
+        ( _className == rhs._className ) &&
+        ( _objectName == rhs._objectName ) );
+}
+bool NodeData::operator!=( const NodeData& rhs )
+{
+    return( !( this->operator==( rhs ) ) );
+}
+
 
 
 
@@ -299,83 +379,319 @@ int testQuotedIStream( const std::string& input, const std::string& expectedResu
     return( 0 );
 }
 
+int testNodeDataOStream( const NodeData& input, const std::string& expectedResult )
+{
+    std::ostringstream ostr;
+    ostr << input;
+    if( ostr.str() != expectedResult )
+    {
+        osg::notify( osg::FATAL ) << "NodeData writing to ostream: test failure." << std::endl;
+        osg::notify( osg::FATAL ) << "  Expected: " << expectedResult << std::endl;
+        osg::notify( osg::FATAL ) << "  Received: " << ostr.str() << std::endl;
+        return( 1 );
+    }
+    return( 0 );
+}
+int testNodeDataIStream( const std::string& input, const NodeData& expectedResult )
+{
+    std::istringstream istr( input );
+    NodeData nd;
+    istr >> nd;
+    if( nd != expectedResult )
+    {
+        osg::notify( osg::FATAL ) << "NodeData reading from istream: test failure." << std::endl;
+        osg::notify( osg::FATAL ) << "  Expected: " << expectedResult << std::endl;
+        osg::notify( osg::FATAL ) << "  Received: " << nd << std::endl;
+        return( 1 );
+    }
+    return( 0 );
+}
+
+int testNodePathToString( const osg::NodePath& input, const std::string& expectedResult )
+{
+    std::string result = nodePathToString( input );
+    if( result != expectedResult )
+    {
+        osg::notify( osg::FATAL ) << "NodePath conversion to string: test failure." << std::endl;
+        osg::notify( osg::FATAL ) << "  Expected: " << expectedResult << std::endl;
+        osg::notify( osg::FATAL ) << "  Received: " << result << std::endl;
+        return( 1 );
+    }
+    return( 0 );
+}
+int testFindNode( const std::string& input, osg::Group* parent, osg::Node* expectedResult )
+{
+    osg::Node* result = findNode( input, parent );
+    if( result != expectedResult )
+    {
+        osg::notify( osg::FATAL ) << "findNode from string: test failure." << std::endl;
+        osg::notify( osg::FATAL ) << "  Expected: " << expectedResult << std::endl;
+        osg::notify( osg::FATAL ) << "  Received: " << result << std::endl;
+        return( 1 );
+    }
+    return( 0 );
+}
+
 
 int testNodePathUtils()
 {
     // tests for the QuotedString class
+
+    // Test adding quotes
     {
         std::string input( "abc" );
         std::string expectedResult( "\"abc\"" );
-        if( testQuoting( input, expectedResult ) == 1 )
+        if( testQuoting( input, expectedResult ) != 0 )
+            return( 1 );
+    }
+    {
+        std::string input;
+        std::string expectedResult( "\"\"" );
+        if( testQuoting( input, expectedResult ) != 0 )
             return( 1 );
     }
     {
         std::string input( "foo\"bar" );
         std::string expectedResult( "\"foo\"\"bar\"" );
-        if( testQuoting( input, expectedResult ) == 1 )
+        if( testQuoting( input, expectedResult ) != 0 )
             return( 1 );
     }
     {
         std::string input( "data type: \"unknown\"" );
         std::string expectedResult( "\"data type: \"\"unknown\"\"\"" );
-        if( testQuoting( input, expectedResult ) == 1 )
+        if( testQuoting( input, expectedResult ) != 0 )
             return( 1 );
     }
     {
         std::string input( "\"initial quote" );
         std::string expectedResult( "\"\"\"initial quote\"" );
-        if( testQuoting( input, expectedResult ) == 1 )
+        if( testQuoting( input, expectedResult ) != 0 )
             return( 1 );
     }
 
+    // Test removing quotes
     {
         std::string input( "\"abc\"" );
         std::string expectedResult( "abc" );
-        if( testUnquoting( input, expectedResult ) == 1 )
+        if( testUnquoting( input, expectedResult ) != 0 )
+            return( 1 );
+    }
+    {
+        std::string input( "\"\"" );
+        std::string expectedResult;
+        if( testUnquoting( input, expectedResult ) != 0 )
             return( 1 );
     }
     {
         std::string input( "\"foo\"\"bar\"" );
         std::string expectedResult( "foo\"bar" );
-        if( testUnquoting( input, expectedResult ) == 1 )
+        if( testUnquoting( input, expectedResult ) != 0 )
             return( 1 );
     }
     {
         std::string input( "\"data type: \"\"unknown\"\"\"" );
         std::string expectedResult( "data type: \"unknown\"" );
-        if( testUnquoting( input, expectedResult ) == 1 )
+        if( testUnquoting( input, expectedResult ) != 0 )
             return( 1 );
     }
     {
         std::string input( "\"\"\"initial quote\"" );
         std::string expectedResult( "\"initial quote" );
-        if( testUnquoting( input, expectedResult ) == 1 )
+        if( testUnquoting( input, expectedResult ) != 0 )
             return( 1 );
     }
 
+    // Test writing to ostream
     {
         std::string input( "abc" );
         std::string expectedResult( "\"abc\"" );
-        if( testQuotedOStream( input, expectedResult ) == 1 )
+        if( testQuotedOStream( input, expectedResult ) != 0 )
             return( 1 );
     }
     {
         std::string input( "data type: \"unknown\"" );
         std::string expectedResult( "\"data type: \"\"unknown\"\"\"" );
-        if( testQuotedOStream( input, expectedResult ) == 1 )
+        if( testQuotedOStream( input, expectedResult ) != 0 )
             return( 1 );
     }
 
+    // test reading from istream
     {
+        // NOTE comma after final quote. Otherwise, istringstream reads garbage chars.
         std::string input( "\"abc\"," );
         std::string expectedResult( "abc" );
-        if( testQuotedIStream( input, expectedResult ) == 1 )
+        if( testQuotedIStream( input, expectedResult ) != 0 )
             return( 1 );
     }
     {
-        std::string input( "\"\"\"initial quote\"" );
+        // NOTE comma after final quote. Otherwise, istringstream reads garbage chars.
+        std::string input( "\"\"\"initial quote\"," );
         std::string expectedResult( "\"initial quote" );
-        if( testQuotedIStream( input, expectedResult ) == 1 )
+        if( testQuotedIStream( input, expectedResult ) != 0 )
+            return( 1 );
+    }
+
+
+
+    // NodeData tests
+
+    // Test writing to ostream
+    {
+        osg::ref_ptr< osg::Group > grp = new osg::Group;
+        grp->setName( "test group" );
+        NodeData input( 121, *grp );
+        std::string expectedResult( "121,\"Group\",\"test group\":" );
+        if( testNodeDataOStream( input, expectedResult ) != 0 )
+            return( 1 );
+    }
+    {
+        osg::ref_ptr< osg::MatrixTransform > mt = new osg::MatrixTransform;
+        NodeData input( 0, *mt );
+        std::string expectedResult( "0,\"MatrixTransform\",\"\":" );
+        if( testNodeDataOStream( input, expectedResult ) != 0 )
+            return( 1 );
+    }
+
+    // Test reading from istream
+    {
+        std::string input( "121,\"Group\",\"test group\":" );
+        osg::ref_ptr< osg::Group > grp = new osg::Group;
+        grp->setName( "test group" );
+        NodeData expectedResult( 121, *grp );
+        if( testNodeDataIStream( input, expectedResult ) != 0 )
+            return( 1 );
+    }
+    {
+        std::string input( "0,\"MatrixTransform\",\"\":" );
+        osg::ref_ptr< osg::MatrixTransform > mt = new osg::MatrixTransform;
+        NodeData expectedResult( 0, *mt );
+        if( testNodeDataIStream( input, expectedResult ) != 0 )
+            return( 1 );
+    }
+
+
+    // Test NodePath conversion to string.
+    {
+        osg::ref_ptr< osg::Group > parent = new osg::Group;
+        parent->setName( "parent" );
+        osg::ref_ptr< osg::Group > child = new osg::Group;
+        child->setName( "child" );
+        parent->addChild( child.get() );
+
+        osg::NodePath input;
+        input.push_back( parent.get() );
+        input.push_back( child.get() );
+
+        std::string expectedResult( "0,\"Group\",\"child\":" );
+        if( testNodePathToString( input, expectedResult ) != 0 )
+            return( 1 );
+    }
+    {
+        osg::ref_ptr< osg::Group > parent = new osg::Group;
+        parent->setName( "parent" );
+        osg::ref_ptr< osg::Group > child = new osg::Group;
+        child->setName( "child" );
+        parent->addChild( child.get() );
+        osg::ref_ptr< osg::MatrixTransform > childMT = new osg::MatrixTransform;
+        childMT->setName( "childMT" );
+        parent->addChild( childMT.get() );
+
+        osg::NodePath input;
+        input.push_back( parent.get() );
+        input.push_back( childMT.get() );
+
+        std::string expectedResult( "1,\"MatrixTransform\",\"childMT\":" );
+        if( testNodePathToString( input, expectedResult ) != 0 )
+            return( 1 );
+    }
+    {
+        osg::ref_ptr< osg::Group > parent = new osg::Group;
+        parent->setName( "parent" );
+        osg::ref_ptr< osg::Group > child = new osg::Group;
+        child->setName( "child" );
+        parent->addChild( child.get() );
+        osg::ref_ptr< osg::MatrixTransform > childMT = new osg::MatrixTransform;
+        childMT->setName( "childMT" );
+        child->addChild( childMT.get() );
+
+        osg::NodePath input;
+        input.push_back( parent.get() );
+        input.push_back( child.get() );
+        input.push_back( childMT.get() );
+
+        std::string expectedResult( "0,\"Group\",\"child\":0,\"MatrixTransform\",\"childMT\":" );
+        if( testNodePathToString( input, expectedResult ) != 0 )
+            return( 1 );
+    }
+
+
+    // Test findNode from a string.
+    {
+        osg::ref_ptr< osg::Group > parent = new osg::Group;
+        parent->setName( "parent" );
+        osg::ref_ptr< osg::Group > child = new osg::Group;
+        child->setName( "child" );
+        parent->addChild( child.get() );
+
+        std::string input( "0,\"Group\",\"child\":" );
+        osg::Node* expectedResult = child.get();
+        if( testFindNode( input, parent.get(), expectedResult ) != 0 )
+            return( 1 );
+
+        // This is a bad index, but test should still pass.
+        // NodeData::findNode should find child 0 with matching className and object name.
+        // This test will display warning messages to the console:
+        //     NodeData::findNode: Index out of range: 4, parent has 1
+        //       Selected alternate: index 0
+        osg::notify( osg::WARN ) << "----------------------------------------" << std::endl;
+        osg::notify( osg::WARN ) << "--- Testing. Warning output is expected:" << std::endl;
+        input = std::string( "4,\"Group\",\"child\":" );
+        if( testFindNode( input, parent.get(), expectedResult ) != 0 )
+            return( 1 );
+    }
+    {
+        osg::ref_ptr< osg::Group > parent = new osg::Group;
+        parent->setName( "parent" );
+        osg::ref_ptr< osg::Group > child = new osg::Group;
+        child->setName( "child" );
+        parent->addChild( child.get() );
+        osg::ref_ptr< osg::MatrixTransform > childMT = new osg::MatrixTransform;
+        childMT->setName( "childMT" );
+        parent->addChild( childMT.get() );
+
+        std::string input( "1,\"MatrixTransform\",\"childMT\":" );
+        osg::Node* expectedResult = childMT.get();
+        if( testFindNode( input, parent.get(), expectedResult ) != 0 )
+            return( 1 );
+    }
+    {
+        osg::ref_ptr< osg::Group > parent = new osg::Group;
+        parent->setName( "parent" );
+        osg::ref_ptr< osg::Group > child = new osg::Group;
+        child->setName( "child" );
+        parent->addChild( child.get() );
+        osg::ref_ptr< osg::MatrixTransform > childMT = new osg::MatrixTransform;
+        childMT->setName( "childMT" );
+        child->addChild( childMT.get() );
+
+        std::string input( "0,\"Group\",\"child\":0,\"MatrixTransform\",\"childMT\":" );
+        osg::Node* expectedResult = childMT.get();
+        if( testFindNode( input, parent.get(), expectedResult ) != 0 )
+            return( 1 );
+
+        // This test should fail. Because this is an expected failure,
+        // we return 1 only if the test passes.
+        // This test will display warning messages to the console:
+        //        NodeData::findNode: _className: MatrixTransform, doesn't match indexChild 0: Group
+        //          No match. Returning NULL
+        //        findNode from string: test failure.
+        //          Expected: 00C29960
+        //          Received: 00C27F38
+        osg::notify( osg::WARN ) << "----------------------------------------" << std::endl;
+        osg::notify( osg::WARN ) << "--- Testing. Warning output is expected:" << std::endl;
+        input = std::string( "0,\"MatrixTransform\",\"childMT\":" );
+                                                       /* Node: == (instead of !=) because failue is correct behavior */
+        if( testFindNode( input, parent.get(), expectedResult ) == 0 )
             return( 1 );
     }
 

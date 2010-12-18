@@ -43,7 +43,12 @@ namespace osgwTools
 struct NodeData
 {
     NodeData();
-    NodeData( unsigned int index, std::string& className, std::string& objectName );
+    NodeData( unsigned int index, const osg::Node& node );
+
+    osg::Node* findNode( osg::Group* parent ) const;
+
+    bool operator==( const NodeData& rhs );
+    bool operator!=( const NodeData& rhs );
 
     unsigned int _index;
     std::string _className;
