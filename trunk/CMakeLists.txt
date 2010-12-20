@@ -27,7 +27,11 @@ include( CMakeMacros )
 
 include( FindOSGHelper )
 
-
+find_package( Boost )
+if( Boost_FOUND )
+    add_definitions( -DBOOST_FOUND )
+    include_directories( ${Boost_INCLUDE_DIR} )
+endif()
 
 # Add OSG for entire project for include & lib paths
 INCLUDE_DIRECTORIES( 

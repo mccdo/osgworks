@@ -24,6 +24,9 @@
 #include <osg/MatrixTransform>
 #include <osg/Notify>
 
+#ifdef BOOST_FOUND
+#  include <boost/algorithm/string/replace.hpp>
+#endif
 #include <string>
 #include <vector>
 #include <iostream>
@@ -71,6 +74,11 @@ protected:
 
     static std::string addQuotes( const std::string& in )
     {
+#ifdef BOOST_FOUND
+        std::string quoted( in );
+        boost::algorithm::replace_all( quoted, "\"", "\"\"" );
+        return( std::string( "\"" ) + quoted + std::string( "\"" ) );
+#else
         std::string quoted( "\"" );
         std::string::size_type lastPos( 0 );
         std::string::size_type pos = in.find( '"', lastPos );
@@ -84,9 +92,15 @@ protected:
         quoted += in.substr( lastPos, in.length()-lastPos );
         quoted += '"';
         return( quoted );
+#endif
     }
     static std::string removeQuotes( const std::string& in )
     {
+#ifdef BOOST_FOUND
+        std::string unquoted( in.substr( 1, in.length()-2 ) );
+        boost::algorithm::replace_all( unquoted, "\"\"", "\"" );
+        return( unquoted );
+#else
         std::string unquoted;
         std::string::size_type lastPos( 1 );
         std::string::size_type pos = in.find( "\"\"", lastPos );
@@ -98,6 +112,7 @@ protected:
         }
         unquoted += in.substr( lastPos, in.length()-lastPos-1 );
         return( unquoted );
+#endif
     }
 };
 std::ostream& operator<<( std::ostream& ostr, const QuotedString& qstr )
@@ -456,6 +471,12 @@ int testNodePathUtils()
             return( 1 );
     }
     {
+        std::string input( "\"\"\"\"\"" );
+        std::string expectedResult( "\"\"\"\"\"\"\"\"\"\"\"\"" );
+        if( testQuoting( input, expectedResult ) != 0 )
+            return( 1 );
+    }
+    {
         std::string input( "foo\"bar" );
         std::string expectedResult( "\"foo\"\"bar\"" );
         if( testQuoting( input, expectedResult ) != 0 )
@@ -484,6 +505,12 @@ int testNodePathUtils()
     {
         std::string input( "\"\"" );
         std::string expectedResult;
+        if( testUnquoting( input, expectedResult ) != 0 )
+            return( 1 );
+    }
+    {
+        std::string input( "\"\"\"\"\"\"\"\"\"\"\"\"" );
+        std::string expectedResult( "\"\"\"\"\"" );
         if( testUnquoting( input, expectedResult ) != 0 )
             return( 1 );
     }
