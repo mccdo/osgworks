@@ -1,0 +1,13 @@
+#summary Documentation for the Quat.cpp file
+
+= Quat.cpp =
+
+
+
+== Detailed Description ==
+
+
+
+
+---
+|| [Doxygen Main Page] || [Doxygen_files Files] ||

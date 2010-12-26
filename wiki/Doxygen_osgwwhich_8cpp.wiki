@@ -1,0 +1,94 @@
+#summary Documentation for the osgwwhich.cpp file
+
+= osgwwhich.cpp =
+
+
+
+== Functions ==
+
+std::string createLibraryName(std::string simpleName)
+  **
+void locatePlugin(const std::string & target)
+  **
+void locateSharedLibrary(const std::string & target)
+  **
+void locateDataFile(const std::string & target)
+  **
+int main(int argc, char ** argv)
+  **
+
+== Detailed Description ==
+
+
+
+
+== Function Documentation ==
+
+{{{
+#std::string createLibraryName   (
+  std::string simpleName  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+{{{
+#void locatePlugin   (
+  const std::string & target  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+{{{
+#void locateSharedLibrary   (
+  const std::string & target  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+{{{
+#void locateDataFile   (
+  const std::string & target  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+{{{
+#int main   (
+  int argc,
+  char ** argv  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+---
+|| [Doxygen Main Page] || [Doxygen_files Files] ||

@@ -1,0 +1,13 @@
+#summary Documentation for the ScreenCapture.cpp file
+
+= ScreenCapture.cpp =
+
+
+
+== Detailed Description ==
+
+
+
+
+---
+|| [Doxygen Main Page] || [Doxygen_files Files] ||

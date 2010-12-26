@@ -1,0 +1,41 @@
+
+
+osgwnames displays the structure of a scene graph in human-readable form. It displays a summary of the hierarchy using indentation with each node represented as a single line of text, containing the class and Node name. If the Node name is empty, _NULL_ displays in its place.
+
+= Simple Usage =
+
+Try running osgwnames on `dectest20.osg`, one of the osgWorks data files:
+
+*C:\Projects>osgwnames dectest20.ive*
+*world (Group)*
+*  door_assembly.asm.2 (Group)*
+*    NULL (MatrixTransform)*
+*      KNOB.PRT (Geode)*
+*    NULL (MatrixTransform)*
+*      KNOB.PRT **#2 (Geode)*
+***    NULL (MatrixTransform)*
+*      DOOR.PRT (Geode)*
+*    POLE.PRT (Geode)*
+
+
+The output shows the scene graph hierarchical structure: 
+ * The scene graph has a top-level Group node named _world_, has a single Group child named _door_assembly.asm.2_.
+ * _door_assembly.asm.2_ has four children, three of which are unnamed MatrixTransform objects (the name is displayed as _NULL_), and the fourth child is a Geode named _POLE.PRT_.
+ * Each of the MatrixTransform objects have Geode children, with names _KNOB.PRT_, _KNOB.PRT #2_, and _DOOR.PRT_.
+To produce more readable output, you can prevent the display of Geodes with the *--nogeodes* option:
+
+*C:\Projects>osgwnames --nogeodes dectest20.ive*
+*world (Group)*
+*  door_assembly.asm.2 (Group)*
+*    NULL (MatrixTransform)*
+*    NULL (MatrixTransform)*
+*    NULL (MatrixTransform)*
+
+
+= Command Line Parameters =
+
+
+
+
+---
+|| [Doxygen Main Page] || [Doxygen_files Files] ||

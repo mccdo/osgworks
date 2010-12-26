@@ -1,0 +1,154 @@
+#summary Documentation for the dotosgCameraConfigObject.cpp file
+
+= dotosgCameraConfigObject.cpp =
+
+
+
+== Functions ==
+
+bool CCObject_readLocalData(osg::Object & obj, osgDB::Input & fr)
+  **
+bool CCObject_writeLocalData(const osg::Object & obj, osgDB::Output & fw)
+  **
+osgDB::RegisterDotOsgWrapperProxy CCObject_Proxy(new  void, "CameraConfigObject" void, "Object CameraConfigObject" void, CCObject_readLocalData void, CCObject_writeLocalData void)
+  **
+bool CCInfo_readLocalData(osg::Object & obj, osgDB::Input & fr)
+  **
+bool CCInfo_writeLocalData(const osg::Object & obj, osgDB::Output & fw)
+  **
+osgDB::RegisterDotOsgWrapperProxy CCInfo_Proxy(new  void, "CameraConfigInfo" void, "Object CameraConfigInfo" void, CCInfo_readLocalData void, CCInfo_writeLocalData void)
+  **
+bool readMatrix(osg::Matrix & matrix, osgDB::Input & fr, const char * keyword)
+  **
+bool writeMatrix(const osg::Matrixd & matrix, osgDB::Output & fw, const char * keyword)
+  **
+
+== Detailed Description ==
+
+
+
+
+== Function Documentation ==
+
+{{{
+#bool CCObject_readLocalData   (
+  osg::Object & obj,
+  osgDB::Input & fr  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+{{{
+#bool CCObject_writeLocalData   (
+  const osg::Object & obj,
+  osgDB::Output & fw  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+{{{
+#osgDB::RegisterDotOsgWrapperProxy CCObject_Proxy   (
+  new  void,
+  "CameraConfigObject" void,
+  "Object CameraConfigObject" void,
+  CCObject_readLocalData void,
+  CCObject_writeLocalData void  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+{{{
+#bool CCInfo_readLocalData   (
+  osg::Object & obj,
+  osgDB::Input & fr  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+{{{
+#bool CCInfo_writeLocalData   (
+  const osg::Object & obj,
+  osgDB::Output & fw  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+{{{
+#osgDB::RegisterDotOsgWrapperProxy CCInfo_Proxy   (
+  new  void,
+  "CameraConfigInfo" void,
+  "Object CameraConfigInfo" void,
+  CCInfo_readLocalData void,
+  CCInfo_writeLocalData void  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+{{{
+#bool readMatrix   (
+  osg::Matrix & matrix,
+  osgDB::Input & fr,
+  const char * keyword  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+{{{
+#bool writeMatrix   (
+  const osg::Matrixd & matrix,
+  osgDB::Output & fw,
+  const char * keyword  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+---
+|| [Doxygen Main Page] || [Doxygen_files Files] ||

@@ -1,0 +1,34 @@
+#summary Documentation for the geometryop.cpp file
+
+= geometryop.cpp =
+
+
+
+== Functions ==
+
+int main(int argc, char * argv)
+  **
+
+== Detailed Description ==
+
+
+
+
+== Function Documentation ==
+
+{{{
+#int main   (
+  int argc,
+  char * argv  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+---
+|| [Doxygen Main Page] || [Doxygen_files Files] ||

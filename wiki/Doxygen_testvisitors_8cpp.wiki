@@ -1,0 +1,30 @@
+#summary Documentation for the testvisitors.cpp file
+
+= testvisitors.cpp =
+
+
+
+== Functions ==
+
+osgViewer::Viewer viewer()
+  **
+
+== Detailed Description ==
+
+
+
+
+== Function Documentation ==
+
+{{{
+#osgViewer::Viewer viewer   (
+  )
+}}}
+  
+  
+
+*Returns*:
+  And a return value!
+
+---
+|| [Doxygen Main Page] || [Doxygen_files Files] ||

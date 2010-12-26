@@ -1,0 +1,13 @@
+#summary Documentation for the DecimatorOp.cpp file
+
+= DecimatorOp.cpp =
+
+
+
+== Detailed Description ==
+
+
+
+
+---
+|| [Doxygen Main Page] || [Doxygen_files Files] ||

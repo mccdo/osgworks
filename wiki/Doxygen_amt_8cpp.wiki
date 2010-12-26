@@ -1,0 +1,46 @@
+#summary Documentation for the amt.cpp file
+
+= amt.cpp =
+
+
+
+== Functions ==
+
+osg::Node * makeScene()
+  **
+int main(int argc, char ** argv)
+  **
+
+== Detailed Description ==
+
+
+
+
+== Function Documentation ==
+
+{{{
+#osg::Node * makeScene   (
+  )
+}}}
+  
+  
+
+*Returns*:
+  And a return value!
+
+{{{
+#int main   (
+  int argc,
+  char ** argv  )
+}}}
+  
+  
+
+*Parameters*:
+  a   And two parameters. 
+  b   Here's the second. 
+*Returns*:
+  And a return value!
+
+---
+|| [Doxygen Main Page] || [Doxygen_files Files] ||
