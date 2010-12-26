@@ -27,11 +27,6 @@
 #include <osg/PolygonMode>
 #include <osg/Texture2D>
 
-#include <osg/Program>
-#include <osg/StateSet>
-#include <osg/Shader>
-#include <osg/Geometry>
-
 #include <osgwTools/Shapes.h>
 
 int
@@ -54,45 +49,6 @@ main( int argc,
     mt = new osg::MatrixTransform( osg::Matrix::translate( 0., 0., 3. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
-
-    geode = new osg::Geode;
-    osg::Geometry* geom = osgwTools::makeAltAzSphere( 0.5, 4, 6 );
-    geode->addDrawable( geom );
-    mt = new osg::MatrixTransform( osg::Matrix::translate( 6.0, 0., 3. ) );
-    root->addChild( mt.get() );
-    mt->addChild( geode.get() );
-    //Setup test shader
-    {
-        osg::StateSet* ss = geom->getOrCreateStateSet();
-        std::string vertexSource =
-            "vec4 \n"
-            "simpleLighting( const in vec4 color, const in vec3 normal, const in float diffCont, const in float ambCont ) \n"
-            "{ \n"
-            "    vec4 amb = color * ambCont; \n"
-            "    vec3 eyeVec = vec3( 0.0, 0.0, 1.0 ); \n"
-            "    float dotVal = max( dot( normal, eyeVec ), 0.0 ); \n"
-            "    vec4 diff = color * dotVal * diffCont; \n"
-            "    return( amb + diff ); \n"
-            "} \n" //25
-            " \n"
-            ///Main program    
-            "void main() \n"
-            "{ \n"
-            "   gl_Position=ftransform();\n"
-            "   vec3 norm = normalize( gl_NormalMatrix * gl_Normal ); \n"
-            "   vec4 color = simpleLighting( vec4( 1.0, 0.0, 0.0, 1.0 ), norm, 0.7, 0.3 ); \n"
-            "   gl_FrontColor = color; \n"
-            "} \n";
-    
-        osg::ref_ptr< osg::Program > program = new osg::Program();
-        osg::ref_ptr< osg::Shader > vertexShader = new osg::Shader();
-        vertexShader->setType( osg::Shader::VERTEX );
-        vertexShader->setShaderSource( vertexSource );
-        
-        program->addShader( vertexShader.get() );
-        ss->setAttributeAndModes( program.get(),
-            osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-    }
     
     geode = new osg::Geode;
     geode->addDrawable( osgwTools::makeWireAltAzSphere( 1., 5, 7 ) );
