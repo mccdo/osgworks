@@ -116,7 +116,7 @@ typedef std::vector< NodeData > IndexedNodePath;
 OSGWTOOLS_EXPORT IndexedNodePath nodePathToIndexed( const osg::NodePath& nodePath );
 
 /** Converts from an IndexedNodePath to an osg::NodePath.
-\parem indexedNodePath Input IndexedNodePath to convert.
+\param indexedNodePath Input IndexedNodePath to convert.
 \param root Stored first in the returned NodePath and used as the parent for
 identifying the first node in the input IndexedNodePath.
 */
@@ -137,7 +137,7 @@ OSGWTOOLS_EXPORT IndexedNodePath stringToIndexed( const std::string& stringPath 
 OSGWTOOLS_EXPORT std::string nodePathToString( const osg::NodePath& nodePath );
 
 /** Deserializes a string to an osg::NodePath.
-\parem stringPath Input string to deserialize.
+\param stringPath Input string to deserialize.
 \param root The returned NodePath stores it first and uses it as the parent for
 identifying the first node in the input string.
 */
