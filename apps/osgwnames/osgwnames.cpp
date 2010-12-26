@@ -144,7 +144,7 @@ The output shows the scene graph hierarchical structure:
 \li The scene graph has a top-level Group node named \e world, has a single Group child named
 \e door_assembly.asm.2.
 \li \e door_assembly.asm.2 has four children, three of which are unnamed MatrixTransform objects
-(the name is displayed as \i NULL), and the fourth child is a Geode named \e POLE.PRT.
+(the name is displayed as \e NULL), and the fourth child is a Geode named \e POLE.PRT.
 \li Each of the MatrixTransform objects have Geode children, with names \e KNOB.PRT,
 <i>KNOB.PRT #2</i>, and \e DOOR.PRT.
 

@@ -60,10 +60,10 @@ public:
     disables with setCapture(false). */
     void setNumFramesToCapture( unsigned int numFrames );
 
-    /** File name is: <rootname><framenum><extension>
-    \li <rootname> defaults to "screencapture" if blank.
-    \li <framenum> is the frame number, unless useFrameNum is false
-    \li <extension> is ".png" by default. Note it includes the dot.
+    /** File name is: \b rootname \b framenum \b extension
+    \li \b rootname defaults to "screencapture" if blank.
+    \li \b framenum is the frame number, unless useFrameNum is false
+    \li \b extension is ".png" by default. Note it includes the dot.
     */
     void setRootName( const std::string& name );
     void setExtension( const std::string& extension );

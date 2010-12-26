@@ -41,7 +41,7 @@ public:
     ~ParallelVisitor();
 
     /** Compare sgA and sgB.
-    \rReturn True if match, false otherwise. */
+    \return True if match, false otherwise. */
     bool compare();
 
     /** Callback executed if isMatch(nodeA,nodeB) returns false.
