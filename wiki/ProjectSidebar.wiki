@@ -1,3 +1,4 @@
+  * [http://vesuite.org/external/docs/osgworks/index.html Doxygen Documentation]
   * [DownloadPage Download]
     * [http://code.google.com/p/osgworks/source svn access]
     * [http://code.google.com/p/osgworks/downloads/list Release zips]
