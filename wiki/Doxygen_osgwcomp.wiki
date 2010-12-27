@@ -1,9 +1,0 @@
-
-
-osgwcomp compares the structure of two scene graphs using the ParallelVisitor.
-
-Further documentation for osgwcomp is TBD. 
-
-
----
-|| [Doxygen Main Page] || [Doxygen_files Files] ||
