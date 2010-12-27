@@ -1,3 +1,4 @@
+= [http://vesuite.org/external/docs/osgworks/index.html Doxygen Documentation] =
 = Building osgWorks =
  * [DownloadPage Get the source code.]
  * [BuildingOsgWorks Build instructions and dependencies.]
