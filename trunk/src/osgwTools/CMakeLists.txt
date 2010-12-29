@@ -13,6 +13,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/CameraConfigObject.h
     ${HEADER_PATH}/CountStateSets.h
     ${HEADER_PATH}/DecimatorOp.h
+    ${HEADER_PATH}/FBOUtils.h
     ${HEADER_PATH}/FindNamedNode.h
     ${HEADER_PATH}/GeometryModifier.h
     ${HEADER_PATH}/GeometryOperation.h
@@ -32,6 +33,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/Shapes.h
     ${HEADER_PATH}/SimplifierOp.h
     ${HEADER_PATH}/Transform.h
+    ${HEADER_PATH}/TransparencyUtils.h
     ${HEADER_PATH}/Version.h
 )
 
@@ -41,6 +43,7 @@ set( _osgwToolsSourceFiles
     CameraConfigObject.cpp
     CountStateSets.cpp
     DecimatorOp.cpp
+    FBOUtils.cpp
     FindNamedNode.cpp
     GeometryModifier.cpp
     GeometryOperation.cpp
@@ -60,8 +63,9 @@ set( _osgwToolsSourceFiles
     ScreenCapture.cpp
     Shapes.cpp
     SimplifierOp.cpp
-    Version.cpp
     Transform.cpp
+    TransparencyUtils.cpp
+    Version.cpp
 )
 
 add_library( ${LIB_NAME}
