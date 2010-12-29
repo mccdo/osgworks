@@ -23,6 +23,7 @@
 
 
 #include "osgwTools/Export.h"
+#include <osg/FrameBufferObject>
 
 
 
@@ -31,11 +32,21 @@ namespace osgwTools
 
 
 /** \defgroup FBOUtils OSG version-independent interface for OpenGL framebuffer object commands.
+
+OSG made a non-backwards compatible change to its FrameBufferObject header in
+OSG version 2.9.6. Any application code referencing the changed routines should
+use these version-independent entry points in order to remain compatible with all
+OSG versions.
 */
 /*@{*/
 
 
+GLvoid OSGWTOOLS_EXPORT glGenFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* framebuffer );
+GLvoid OSGWTOOLS_EXPORT glDeleteFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* framebuffer );
+GLvoid OSGWTOOLS_EXPORT glBindFramebuffer( osg::FBOExtensions* fboExt, GLenum target, GLuint framebuffer );
 
+GLvoid OSGWTOOLS_EXPORT glFramebufferTexture2D( osg::FBOExtensions* fboExt, GLenum target, GLenum attachment,
+            GLenum textarget, GLuint texture, GLint level );
 
 
 /*@}*/

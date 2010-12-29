@@ -19,11 +19,53 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osgwTools/FBOUtils.h>
+#include <osg/FrameBufferObject>
 
 
 namespace osgwTools
 {
 
+
+#define OSG_FBO_CHANGE_VERSION 20906
+
+
+GLvoid glGenFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* framebuffer )
+{
+#if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_VERSION )
+    fboExt->glGenFramebuffers( n, framebuffer );
+#else
+    fboExt->glGenFramebuffersEXT( n, framebuffer );
+#endif
+}
+
+GLvoid glDeleteFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* framebuffer )
+{
+#if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_VERSION )
+    fboExt->glDeleteFramebuffers( n, framebuffer );
+#else
+    fboExt->glDeleteFramebuffersEXT( n, framebuffer );
+#endif
+}
+
+GLvoid glBindFramebuffer( osg::FBOExtensions* fboExt, GLenum target, GLuint framebuffer )
+{
+#if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_VERSION )
+    fboExt->glBindFramebuffer( target, framebuffer );
+#else
+    fboExt->glBindFramebufferEXT( target, framebuffer );
+#endif
+}
+
+
+GLvoid glFramebufferTexture2D( osg::FBOExtensions* fboExt, GLenum target, GLenum attachment,
+            GLenum textarget, GLuint texture, GLint level )
+{
+#if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_VERSION )
+    fboExt->glFramebufferTexture2D( target, attachment, textarget, texture, level );
+#else
+    fboExt->glFramebufferTexture2DEXT( target, attachment, textarget, texture, level );
+#endif
+}
 
 
 
