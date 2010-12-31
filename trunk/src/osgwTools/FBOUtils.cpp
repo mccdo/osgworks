@@ -19,6 +19,7 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osgwTools/FBOUtils.h>
+#include <osgwTools/Version.h>
 #include <osg/FrameBufferObject>
 
 
