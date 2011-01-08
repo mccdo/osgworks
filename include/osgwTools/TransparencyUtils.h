@@ -32,17 +32,25 @@
 
 namespace osgwTools
 {
-
-
-
-// Forward declaration
-class RestoreOpacityVisitor;
-
-
 /** \defgroup TransparencyUtils Utilities for rendering transparent geometry.
 */
 /*@{*/
 
+/** \brief Recursively restore opacity on a subgraph.
+ This visitor should be considered part of the implementation of transparentDisable(),
+ which invokes this visitor when the \c recursive parameter is true.
+ Therefore, apps should call transparentDisable(), rather than invoking this
+ visitor directly.
+ */
+class OSGWTOOLS_EXPORT RestoreOpacityVisitor : public osg::NodeVisitor
+{
+public:
+    RestoreOpacityVisitor();
+    
+    virtual void apply( osg::Node& node );
+    virtual void apply( osg::Geode& geode );
+};
+    
 
 // When enabling transparency on a Node or Drawable that has no StateSet,
 // we assign this name to the newly created StateSet. When transparency
@@ -191,29 +199,7 @@ protected:
     */
     virtual bool isTransparentInternal( const osg::StateSet* stateSet ) const;
 };
-
-
-
-
-/** \brief Recursively restore opacity on a subgraph.
-This visitor should be considered part of the implementation of transparentDisable(),
-which invokes this visitor when the \c recursive parameter is true.
-Therefore, apps should call transparentDisable(), rather than invoking this
-visitor directly.
-*/
-class OSGWTOOLS_EXPORT RestoreOpacityVisitor : public osg::NodeVisitor
-{
-public:
-    RestoreOpacityVisitor();
-
-    virtual void apply( osg::Node& node );
-    virtual void apply( osg::Geode& geode );
-};
-
-
 /*@}*/
-
-
 // namespace osgwTools
 }
 
