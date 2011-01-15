@@ -101,7 +101,15 @@ CameraConfigObject::store( osgViewer::Viewer& viewer )
     }
 
     osg::DisplaySettings* ds = masterCamera->getDisplaySettings() != NULL ?
-        masterCamera->getDisplaySettings() : osg::DisplaySettings::instance();
+        masterCamera->getDisplaySettings() :
+#if( OSGWORKS_OSG_VERSION > 20907 )
+            // 2.9.7 2/22/2010
+            // r11399, 4/30/2010 Changed DisplaySetting::instance() to return a ref_ptr<>& rathern than a raw C pointer to enable apps to delete the singleton or assign their own.
+            // 2.9.8 6/18/2010
+            osg::DisplaySettings::instance().get();
+#else
+            osg::DisplaySettings::instance();
+#endif
     
     double fovy, aspectRatio, zNear, zFar;        
     masterCamera->getProjectionMatrixAsPerspective(fovy, aspectRatio, zNear, zFar);
