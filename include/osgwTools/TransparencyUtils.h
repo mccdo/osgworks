@@ -4,7 +4,7 @@
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
- * License version 2.1 as published by the Free Software Foundation.F
+ * License version 2.1 as published by the Free Software Foundation.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,9 +32,12 @@
 
 namespace osgwTools
 {
+
+
 /** \defgroup TransparencyUtils Utilities for rendering transparent geometry.
 */
 /*@{*/
+
 
 /** \brief Recursively restore opacity on a subgraph.
  This visitor should be considered part of the implementation of transparentDisable(),
@@ -50,7 +53,8 @@ public:
     virtual void apply( osg::Node& node );
     virtual void apply( osg::Geode& geode );
 };
-    
+
+
 
 // When enabling transparency on a Node or Drawable that has no StateSet,
 // we assign this name to the newly created StateSet. When transparency
@@ -173,7 +177,6 @@ OSGWTOOLS_EXPORT bool isTransparent( const osg::StateSet* stateSet );
 
 
 
-
 /** \brief Find StateSets with nominal transparency, and mark the transparent state as PROTECTED.
 Run this node visitor on scene graphs / loaded models that potentially already
 contain transparency. The visitor marks the transparent state as PROTECTED so that
@@ -199,7 +202,11 @@ protected:
     */
     virtual bool isTransparentInternal( const osg::StateSet* stateSet ) const;
 };
+
+
 /*@}*/
+
+
 // namespace osgwTools
 }
 
