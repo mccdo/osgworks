@@ -57,8 +57,8 @@ between an osg::NodePath and an IndexedNodePath.
 The functions nodePathToString() and stringToNodePath() provide a way to
 serialize an IndexedNodePath to a string and vice versa.
 
-Most applications do not use the IndexedNodePath, but instead
-convert directly between osg::NodePaths and std::strings using the
+Most applications do not use the IndexedNodePath, but instead 
+convert directly between osg::NodePaths and std::strings, using the
 functions nodePathToString() and stringToNodePath().
 
 Two overloaded findNode() functions identify a specific node with 
@@ -88,7 +88,7 @@ struct NodeData
     NodeData();
     NodeData( unsigned int index, const osg::Node& node );
 
-    /** Searches the parent's children for the best matching child node.
+    /** Searches the parent children for the best matching child node.
     Possible future work: Allow applications to specify a callback
     to override how child identification is performed.
     */
@@ -104,8 +104,8 @@ struct NodeData
 
 /** \brief Container of NodeData structs.
 This is a non-address based representation of an osg::NodePath.
-Note that this representation is based on child indices, so
-one element is always shorter than the equivalent NodePath
+Note that this representation is based on child indices. So
+one element is always shorter than the equivalent NodePath,
 because the NodePath root node doesn't have a child index.
 */
 typedef std::vector< NodeData > IndexedNodePath;
@@ -117,8 +117,8 @@ OSGWTOOLS_EXPORT IndexedNodePath nodePathToIndexed( const osg::NodePath& nodePat
 
 /** Converts from an IndexedNodePath to an osg::NodePath.
 \param indexedNodePath Input IndexedNodePath to convert.
-\param root Stored first in the returned NodePath and used as the parent for
-identifying the first node in the input IndexedNodePath.
+\param root The returned NodePath stores this first and 
+uses it as the parent for identifying the first node in the input IndexedNodePath.
 */
 OSGWTOOLS_EXPORT osg::NodePath indexedToNodePath( const IndexedNodePath& indexedNodePath, osg::Group* root );
 
@@ -138,7 +138,7 @@ OSGWTOOLS_EXPORT std::string nodePathToString( const osg::NodePath& nodePath );
 
 /** Deserializes a string to an osg::NodePath.
 \param stringPath Input string to deserialize.
-\param root The returned NodePath stores it first and uses it as the parent for
+\param root The returned NodePath stores this first and uses it as the parent for
 identifying the first node in the input string.
 */
 OSGWTOOLS_EXPORT osg::NodePath stringToNodePath( const std::string& stringPath, osg::Group* root );

@@ -35,7 +35,7 @@ namespace osgwTools
 
 OSG made a non-backwards compatible change to its FrameBufferObject header in
 OSG version 2.9.6. Any application code referencing the changed routines should
-use these version-independent entry points in order to remain compatible with all
+use these version-independent entry points to remain compatible with all
 OSG versions.
 */
 /*@{*/
