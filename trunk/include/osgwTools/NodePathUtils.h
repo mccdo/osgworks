@@ -88,7 +88,7 @@ struct NodeData
     NodeData();
     NodeData( unsigned int index, const osg::Node& node );
 
-    /** Searches the parent children for the best matching child node.
+    /** Searches the parent Grou's children for the best matching child node.
     Possible future work: Allow applications to specify a callback
     to override how child identification is performed.
     */
@@ -104,8 +104,8 @@ struct NodeData
 
 /** \brief Container of NodeData structs.
 This is a non-address based representation of an osg::NodePath.
-Note that this representation is based on child indices. So
-one element is always shorter than the equivalent NodePath,
+Note that this representation is based on child indices.
+It is always one element shorter than the equivalent NodePath,
 because the NodePath root node doesn't have a child index.
 */
 typedef std::vector< NodeData > IndexedNodePath;
