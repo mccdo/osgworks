@@ -25,18 +25,51 @@
 #include <osg/ComputeBoundsVisitor>
 #include <osg/BoundingSphere>
 #include <osg/MatrixTransform>
+#include <osg/AutoTransform>
 #include <osg/PolygonMode>
+#include <osg/Point>
 #include "osgwTools/Shapes.h"
 
 #include <osg/io_utils>
 
 
 
+osg::Node* makeOrigin()
+{
+    osg::ref_ptr< osg::AutoTransform > at = new osg::AutoTransform;
+    at->setAutoRotateMode( osg::AutoTransform::ROTATE_TO_SCREEN );
+    at->setAutoScaleToScreen( true );
+
+    osg::ref_ptr< osg::Geode > geode = new osg::Geode;
+    at->addChild( geode.get() );
+
+    osg::StateSet* ss = geode->getOrCreateStateSet();
+    ss->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+    ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+    ss->setAttributeAndModes( new osg::Point( 6. ) );
+
+    const float radius = 50.f;
+    const unsigned int subdivisions = 32;
+    osg::Vec3 orientation = osg::Vec3( 0., 0., 1. );
+    geode->addDrawable( osgwTools::makeWireCircle( radius, subdivisions, orientation ) );
+
+    osg::ref_ptr< osg::Geometry > geom = new osg::Geometry;
+    osg::Vec3Array* v = new osg::Vec3Array;
+    geom->setVertexArray( v );
+    v->push_back( osg::Vec3( 0., 0., 0. ) );
+    v->push_back( osg::Vec3( -radius, 0., 0. ) );
+    v->push_back( osg::Vec3( radius, 0., 0. ) );
+    v->push_back( osg::Vec3( 0., -radius, 0. ) );
+    v->push_back( osg::Vec3( 0., radius, 0. ) );
+    geom->addPrimitiveSet( new osg::DrawArrays( GL_POINTS, 0, 1 ) );
+    geom->addPrimitiveSet( new osg::DrawArrays( GL_LINES, 1, 4 ) );
+    geode->addDrawable( geom.get() );
+
+    return( at.release() );
+}
 
 
-int
-main( int argc,
-      char ** argv )
+int main( int argc, char** argv )
 {
     osg::ArgumentParser arguments( &argc, argv );
 
@@ -47,6 +80,7 @@ main( int argc,
     arguments.getApplicationUsage()->addCommandLineOption( "--box", "Display the bounding box." );
     arguments.getApplicationUsage()->addCommandLineOption( "--sphere", "Display the bounding sphere. This is the default." );
     arguments.getApplicationUsage()->addCommandLineOption( "--both", "Display both the bounding sphere and bounding box." );
+    arguments.getApplicationUsage()->addCommandLineOption( "--origin", "Render the model's origin with a circle and crosshair." );
     arguments.getApplicationUsage()->addCommandLineOption( "-v/--version", "Display the osgWorks version string." );
 
     if( arguments.read( "-h" ) || arguments.read( "--help" ) )
@@ -68,6 +102,12 @@ main( int argc,
     if( arguments.find( "--sphere" ) > 0 )
         doSphere = true;
     
+    bool displayOrigin( false );
+    if( arguments.find( "--origin" ) > 0 )
+    {
+        displayOrigin = true;
+    }
+
     if( arguments.read( "-v" ) || arguments.read( "--version" ) )
     {
         osg::notify( osg::ALWAYS ) << osgwTools::getVersionString() << std::endl << std::endl;
@@ -124,6 +164,9 @@ main( int argc,
         osg::notify( osg::ALWAYS ) << "\tExtents\t" << ext << std::endl;
     }
 
+    if( displayOrigin )
+        root->addChild( makeOrigin() );
+
 
     osgViewer::Viewer viewer;
     viewer.setSceneData( root.get() );
@@ -163,6 +206,10 @@ the bounding sphere in an OSG window:
   <tr>
     <td><b>--both</b></td>
     <td>Display both the bounding sphere and bounding box.</td>
+  </tr>
+  <tr>
+    <td><b>--origin</b></td>
+    <td>Render the model's origin with a circle and crosshair.</td>
   </tr>
   <tr>
     <td><b>-v/--version</b></td>
