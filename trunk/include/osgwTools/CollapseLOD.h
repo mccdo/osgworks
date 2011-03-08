@@ -126,8 +126,8 @@ In typical usage, the application should invoke this visitor as with any OSG Nod
 after traversal returns, the application should call the \ref finishProcessingLODs method.
 
 This NodeVisitor has two modes of operation. It can replace LOD Nodes with Group Nodes, or it
-can simply remove the LOD Nodes altogether. In either case, only the highest LOD child, as
-determined by the NodeSelectorCallback, remains (either attached to the new Group, or attached
+can simply remove the LOD Nodes altogether. In either case, only the highest LOD child as
+determined by the NodeSelectorCallback, remains (either attached to the new Group or attached
 to the removed LOD's former parent). 
 
 See \ref CollapseMode to control the mode of operation. COLLAPSE_TO_GROUP is useful when the
@@ -152,9 +152,9 @@ public:
     /** Constructor.
     \param SelectorCallback Callback to determine which child is the highest LOD. By default,
     an instance of \ref HighestLODChildSelectorCallback is used.
-    \param CollapseMode LOD removal method. Default: COLLAPSE_TO_PARENT (LODs are removed,
+    \param CollapseMode LOD removal method. Default is COLLAPSE_TO_PARENT. LODs are removed,
     and highest LOD child is attached to the LOD's former parent(s).
-    \param TraversalMode The traversal mode. Default is to treverse all children.
+    \param TraversalMode The traversal mode. Default is to traverse all children.
     */
 	CollapseLOD( NodeSelectorCallback *SelectorCallback=NULL,
         const CollapseMode collapseMode=COLLAPSE_TO_PARENT,
@@ -169,7 +169,7 @@ public:
 
     /** Calling code must call this function to remove LODs.
     This NodeVisitor collects LOD nodes, but doesn't actually process/remove
-    them until calling code executes this member function. */
+    them until the calling code executes this member function. */
 	unsigned int finishProcessingLODs(void);
 
 protected:
