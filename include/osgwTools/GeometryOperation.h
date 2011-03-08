@@ -55,7 +55,7 @@ protected:
 
 The osgWorks Polygon Decimation tools reduce scene graph geometry. The 
 decimation process output is a simplified geometric representation suitable 
-for use as a Bullet triangle mesh collision shape, and not necessarily suitable 
+for use as a Bullet triangle mesh collision shape and not necessarily suitable 
 for visual display.
 
 We've created an infrastructure that allows generic operations on an osg::Geometry object. 

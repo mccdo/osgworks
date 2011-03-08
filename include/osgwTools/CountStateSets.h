@@ -33,7 +33,7 @@ namespace osgwTools
 {
 
 
-/** Visitor to count \c StateSet objects, and optionally remove empty \c StateSet objects.
+/** Visitor to count \c StateSet objects and optionally remove empty \c StateSet objects.
 */
 class OSGWTOOLS_EXPORT CountStateSets : public osg::NodeVisitor
 {
@@ -53,19 +53,19 @@ public:
     /** Override for base class \c apply() method. */
     virtual void apply( osg::Geode& node );
 
-    /** Specify whether or not to remove empty \c StateSet objects. Default is true
+    /** Specifies whether to remove empty \c StateSet objects. Default is true
     (remove empty \c StateSet objects).*/
     void setRemoveEmptyStateSets( bool removeEmptyStateSets );
 
     /** During traversal, these counters track the total number of programs
-    and uniforms removed. They are public so that calling code can access
+    and uniforms removed. They are public, so the calling code can access
     them directly following the traversal. */
     unsigned int _uniqueStateSets, _sharedStateSets, _emptyStateSets, _removedStateSets;
 
 protected:
     /** Examines the \c StateSet and increments the unique and shared counters. Also
     increments the empty counter, but doesn't remove it or increment the removed counter.
-    The calling \c apply() method is responsible for taking care of that based on the return
+    The calling \c apply() method is responsible for taking care of this based on the return
     value. Returns true if the \c StateSet is NULL or not empty. Returns false if the
     \c StateSet is non-NULL and empty. */
     bool processStateSet( osg::StateSet* ss );

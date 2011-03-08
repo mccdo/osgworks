@@ -40,8 +40,8 @@ or:
 findNamedNode::apply( *subgraph );
 
 Each osg::Node in the subgraph is searched for a matching name by
-examing the value of osg::Object::getName(). Whether a Node matches or
-not depends on the specified match algorithm. \see setMatchMethod.
+examing the value of osg::Object::getName(). Whether a Node matches 
+depends on the specified match algorithm. \see setMatchMethod.
 
 Calling code accesses the matched Nodes and their paths using the
 public _napl member variable. \see _napl.

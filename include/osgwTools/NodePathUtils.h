@@ -65,10 +65,10 @@ Two overloaded findNode() functions identify a specific node with
 either an IndexedNodePath or a string representation and a root node
 to start searching from.
 
-When attempting to find a node from an IndexedNodePath or string
-representation, the code uses the information in NodeData to find the
+When the code attempts to find a node from an IndexedNodePath or string
+representation, it uses the information in NodeData to find the
 best possible match. In order of preference, the node returns as:
- -# A match for all three: child index, class name, and object name
+ -# A match for all three child index, class name, and object name
  -# A match for both class name and object name
  -# A match for child index only
  -# A match for either class name or object name
@@ -88,7 +88,7 @@ struct NodeData
     NodeData();
     NodeData( unsigned int index, const osg::Node& node );
 
-    /** Searches the parent Grou's children for the best matching child node.
+    /** Searches the parent Group's children for the best matching child node.
     Possible future work: Allow applications to specify a callback
     to override how child identification is performed.
     */
@@ -163,7 +163,7 @@ osg::NodePaths, IndexedNodePaths, and strings.
 The testnodepathutils test calls this function and is part of
 the automated CTest regression test suite.
 
-\return 0 for success, 1 for failure.
+\return 0 for success. 1 for failure.
 */
 OSGWTOOLS_EXPORT int testNodePathUtils();
 
