@@ -36,9 +36,9 @@ namespace osgwTools {
 #define OSGWORKS_MINOR_VERSION 1
 #define OSGWORKS_SUB_VERSION 51
 
-/** \brief osgWorks version number as an integer.
+/** \brief osgWorks version number as an integer
 
-C preprocessor integrated version number.
+C preprocessor integrated version number
 The form is Mmmss, where:
    \li M is the major version
    \li mm is the minor version (zero-padded)
@@ -56,7 +56,7 @@ Use this in version-specific code, for example:
         ( OSGWORKS_MINOR_VERSION * 100 ) + \
         OSGWORKS_SUB_VERSION )
 
-/** \brief OSG version number as an integer.
+/** \brief OSG version number as an integer
 
 This macro provides the same functionality as 
 OSGWORKS_VERSION, but instead encodes the OSG version
@@ -69,9 +69,9 @@ comparison macro until after the 2.9.6 and 2.8.2 releases.
         ( OPENSCENEGRAPH_MINOR_VERSION * 100 ) + \
         OPENSCENEGRAPH_PATCH_VERSION )
 
-/** \brief Run-time access to the osgWorks version number.
+/** \brief Run-time access to the osgWorks version number
 
-Returns OSGWORKS_VERSION, the osgWorks version number as an integer.
+Returns OSGWORKS_VERSION, the osgWorks version number as an integer
 \see OSGWORKS_VERSION
 */
 unsigned int OSGWTOOLS_EXPORT getVersionNumber();

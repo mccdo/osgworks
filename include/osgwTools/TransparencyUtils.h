@@ -42,7 +42,7 @@ namespace osgwTools
 /** \brief Recursively restore opacity on a subgraph.
  This visitor should be considered part of the implementation of transparentDisable(),
  which invokes this visitor when the \c recursive parameter is true.
- Therefore, apps should call transparentDisable(), rather than invoking this
+ Therefore, apps should call transparentDisable(), rather than invoke this
  visitor directly.
  */
 class OSGWTOOLS_EXPORT RestoreOpacityVisitor : public osg::NodeVisitor
@@ -56,9 +56,9 @@ public:
 
 
 
-// When enabling transparency on a Node or Drawable that has no StateSet,
-// we assign this name to the newly created StateSet. When transparency
-// is later disabled, if the name matches, we delete the StateSet.
+/** When enabling transparency on a Node or Drawable that has no StateSet,
+you assign this name to the newly created StateSet. When transparency
+is later disabled, if the name matches, you delete the StateSet. */
 static std::string s_magicStateSetName( "TransparentDeleteMe" );
 
 
@@ -83,7 +83,7 @@ bool transparentEnable( T* nodeOrDrawable, float alpha )
     {
         // We have a StateSet, and UserData is NULL, so make a copy of the StateSet.
         // We'll store the original StateSet as UserData (for later restore) and modify
-        // the copy.
+        // the copy. 
         nodeOrDrawable->setUserData( stateSet );
         stateSet = new osg::StateSet( *( stateSet ), osg::CopyOp::DEEP_COPY_ALL );
         nodeOrDrawable->setStateSet( stateSet );
@@ -167,7 +167,7 @@ bool transparentDisable( T* nodeOrDrawable, bool recursive=false )
 }
 
 /** \brief Return true if the given StateSet is configured like one of our transparent StateSets.
-\return True if the node has a StateSet and the StateSet has the following signature:
+\return True if the node has a StateSet, and the StateSet has the following signature:
 \li A BlendColor StateAttribute
 \li A BlendFunc StateAttribute
 \li GL_BLEND is enabled
@@ -179,8 +179,8 @@ OSGWTOOLS_EXPORT bool isTransparent( const osg::StateSet* stateSet );
 
 /** \brief Find StateSets with nominal transparency, and mark the transparent state as PROTECTED.
 Run this node visitor on scene graphs / loaded models that potentially already
-contain transparency. The visitor marks the transparent state as PROTECTED so that
-subsequently enabling transparency on an ancestor node will not affect the
+contain transparency. The visitor marks the transparent state as PROTECTED, so  
+subsequently enabling transparency on an ancestor node does not affect the
 protected state.
 */
 class OSGWTOOLS_EXPORT ProtectTransparencyVisitor : public osg::NodeVisitor
@@ -192,7 +192,7 @@ public:
     virtual void apply( osg::Geode& geode );
 
 protected:
-    /** \bried Mark the transparent componenets of \c stateSet as PROTECTED.
+    /** \bried Mark the transparent components of \c stateSet as PROTECTED.
     Does nothing if the \c stateSet is NULL.
     */
     virtual void protectTransparent( osg::StateSet* stateSet ) const;

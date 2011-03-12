@@ -34,14 +34,14 @@ namespace osgwTools
 
 
 /**
-Visitor to strip osg::Program objects and osg::Uniform objects out of
+Visitor strips osg::Program objects and osg::Uniform objects from 
 a scene graph's StateSet objects.
 
 This visitor is particularly useful for performance analysis and debugging.
 If you suspect there is a bug in your shaders and wish to render your scene
 using FFP instead, use this visitor to remove the programs. You can compare
 the visual result between the shader- and FFP-renderings, as well as compare
-the performance using OSG's state handler.
+the performance using the OSG state handler.
 */
 class OSGWTOOLS_EXPORT RemoveProgram : public osg::NodeVisitor
 {
@@ -49,10 +49,10 @@ public:
     /**
     Contructor to configure the RemoveProgram visitor. By default, RemoveProgram
     removed programs, doesn't remove uniforms, and traverses all children. This
-    ehavior is configurable by dpecifying your own values for the default parameters.
-    @param removePrograms Default: true.
-    @param removePrograms Default: false.
-    @param travMode The traversal mode. Default: osg::NodeVisitor::TRAVERSE_ALL_CHILDREN.
+    behavior is configurable by specifying your own values for the default parameters.
+    @param removePrograms Default is true.
+    @param removePrograms Default is false.
+    @param travMode The traversal mode. Default is osg::NodeVisitor::TRAVERSE_ALL_CHILDREN.
     */
     RemoveProgram( bool removePrograms=true, bool removeUniforms=false, const osg::NodeVisitor::TraversalMode travMode=osg::NodeVisitor::TRAVERSE_ALL_CHILDREN );
     ~RemoveProgram();
@@ -72,17 +72,17 @@ public:
     virtual void apply( osg::Geode& node );
 
     /**
-    Specify whether or not to remove programs. Default: true (remove programs).
+    Specify whether to remove programs. Default is true. (Remove programs.)
     */
     void setRemovePrograms( bool removePrograms );
     /**
-    Specify whether or not to remove uniforms. Default: false (don'tbremove uniforms).
+    Specify whether to remove uniforms. Default is false. (Don't remove uniforms.)
     */
     void setRemoveUniforms( bool removeUniforms );
 
     /**
     During traversal, these counters track the total number of programs
-    and uniforms removed. They are public so that calling code can access
+    and uniforms removed. They are public, so calling code can access
     them directly following the traversal.
     */
     unsigned int _programCount, _uniformCount;

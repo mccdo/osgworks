@@ -37,16 +37,16 @@ namespace osgwTools
 
 /** Make a Quat from hpr angles, avoiding gimble lock. It does this by
 creating an orthonormal basis of xyz axis vectors and reorienting them
-in sequence: first by heading, then pitch, then roll.
+in sequence first by heading, then pitch, then roll.
 hpr angles are in degrees.
 Assumes left-handed and z-up, so:
-  \li h rotates around the z axis.
-  \li p rotates aroung the x' axis.
-  \li r rotates around the y'' axis.
+  \li h rotates around the z axis
+  \li p rotates aroung the x' axis
+  \li r rotates around the y'' axis
 */
 OSGWTOOLS_EXPORT osg::Quat makeHPRQuat( double h, double p, double r );
 
-/** Same as makeHPRQuat, but hpr angles stored as xyz elements of a Vec3.
+/** Same as makeHPRQuat, but hpr angles are stored as xyz elements of a Vec3.
 \see makeHPRQuat
 */
 OSGWTOOLS_EXPORT osg::Quat makeHPRQuat( osg::Vec3 rotAngles );
