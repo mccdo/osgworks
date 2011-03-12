@@ -35,8 +35,8 @@ namespace osgwTools
 
 
 /** A Camera post-draw callback to read the rendered image from the
-current OpenGL read buffer, and write the image data to an image file.
-File writes are performed in a separate thread so that disk IO doesn't
+current OpenGL read buffer and write the image data to an image file.
+File writes are performed in a separate thread, so the disk IO doesn't
 bottleneck the rendering thread.
 
 \test screencap
@@ -50,19 +50,19 @@ public:
 
     virtual void operator()( osg::RenderInfo& ri ) const;
 
-    /** Pass true to start capture, false to stop. While on, each frame is captured
+    /** Pass true to start capture; false to stop. While on, each frame is captured
     from the FB and written to a file. */
     void setCapture( bool enable );
     bool getCaptureEnabled() const;
 
     /** Set to a positive number of frames to capture a specific frame count.
-    If set to 0 (the default), capture continues until explicitly
+    If set to 0 (the default), capture continues until it explicitly
     disables with setCapture(false). */
     void setNumFramesToCapture( unsigned int numFrames );
 
-    /** File name is: \b rootname \b framenum \b extension
+    /** File name is \b rootname \b framenum \b extension.
     \li \b rootname defaults to "screencapture" if blank.
-    \li \b framenum is the frame number, unless useFrameNum is false
+    \li \b framenum is the frame number, unless useFrameNum is false.
     \li \b extension is ".png" by default. Note it includes the dot.
     */
     void setRootName( const std::string& name );

@@ -29,14 +29,14 @@
 namespace osgwTools {
 
 
-/** \defgroup Shapes Convenience routines for Geometry-based shape creation.
+/** \defgroup Shapes convenience routines for Geometry-based shape creation.
 
 This is a set of convenience routines for configuring a Geometry to render
-specific shapes. It is intended as a replacement for OSG's ShapeDrawables.
+specific shapes. It is intended as a replacement for the OSG ShapeDrawables.
 While it lacks the implicit metadata found in ShapeDrawables, it allows direct
-access to vertices and vertex data, thus moe widely supported than ShapeDrawables.
+access to vertices and vertex data, which is more widely supported than ShapeDrawables.
 
-All convenience routines follow a common convention of allowint the app to
+All convenience routines follow a common convention of allowing the app to
 supply a Geometry to use. By default, the convenience routines instantiate a
 Geometry. All routines set a color array with a single white color.
 
@@ -56,7 +56,7 @@ or orient the shapes.
 
 Creates a geodesic sphere starting from the 20 triangles of an icosehedron.
 Each subdivision splits a triangle into four new triangles. The generated
-Geometry uses a single DrawElementsUShort GL_TRIANGLES PrimitiveSet, and contains
+Geometry uses a single DrawElementsUShort GL_TRIANGLES PrimitiveSet and contains
 vertex, normal, texture coordinate, and color data. The texture coordinates are
 configured for unit 0 and suitable for cube mapping. */
 OSGWTOOLS_EXPORT osg::Geometry* makeGeodesicSphere( const float radius=1., const unsigned int subdivisions=2, osg::Geometry* geometry=NULL );
@@ -90,8 +90,8 @@ OSGWTOOLS_EXPORT osg::Geometry* makeWireAltAzSphere( const float radius=1., cons
 Makes a plane using GL_TRIANGLE_STRIP PrimitiveSets. Dimensions are determined
 by the u and v vectors. By default, the plane is made of two triangles. However,
 this can be increased with the subdivisions parameter, which specifices how to
-subdivide the plane in x, and y. Normal and texture coordinate (unit 0) data
-are created, with the normal computed as (u^v(. The texture coordinate data
+subdivide the plane in x and y. Normal and texture coordinate (unit 0) data
+are created with the normal computed as (u^v). The texture coordinate data
 is suitable for applying an entire texture map to the plane. */
 OSGWTOOLS_EXPORT osg::Geometry* makePlane( const osg::Vec3& corner, const osg::Vec3& u, const osg::Vec3& v, const osg::Vec2s& subdivisions=osg::Vec2s(1,1), osg::Geometry* geometry=NULL );
 
@@ -156,7 +156,7 @@ Makes a unit-length arrow pointing towards +z with base at the origin.
 Current implementation uses a minimal number of vertices. In the future,
 this code could use cylinder/cone support routines to provide complete
 control over approximation.
-Adds vertex and normal data, with a single white color. */
+Adds vertex and normal data with a single white color. */
 OSGWTOOLS_EXPORT osg::Geometry* makeArrow( osg::Geometry* geometry=NULL );
 
 /*@}*/

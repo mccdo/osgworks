@@ -41,7 +41,7 @@ public:
     ~ParallelVisitor();
 
     /** Compare sgA and sgB.
-    \return True if match, false otherwise. */
+    \return True if match and false otherwise. */
     bool compare();
 
     /** Callback executed if isMatch(nodeA,nodeB) returns false.
@@ -59,8 +59,8 @@ public:
 
 protected:
     /** Override to specify your own custom comparison criteria. Return
-    true if the two Nodes match, false otherwise. If this function
-    returns false, and _pvcb is not NULL, (*_pvcb)() is called. */
+    true if the two Nodes match, and false otherwise. If this function
+    returns false and _pvcb is not NULL, (*_pvcb)() is called. */
     virtual bool isMatch( const osg::Node& nodeA, const osg::Node& nodeB ) const;
 
     bool recurseCompare( osg::Node* nodeA, osg::Node* nodeB );

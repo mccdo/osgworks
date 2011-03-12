@@ -40,7 +40,7 @@ The actual child Nodes aren't duplicated, only the references to them.
 This means the child nodes are multi-parented.
 
 This does NOT delete existing children from the source node. You need to 
-do this yourself.
+do this.
 
 \return Count of children references copied. */
 OSGWTOOLS_EXPORT unsigned int copyChildReferences( osg::Group* dest, osg::Group* source );
