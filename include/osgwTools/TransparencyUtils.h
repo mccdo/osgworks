@@ -34,13 +34,13 @@ namespace osgwTools
 {
 
 
-/** \defgroup TransparencyUtils Utilities for rendering transparent geometry.
+/** \defgroup TransparencyUtils Utilities for rendering transparent geometry
 */
 /*@{*/
 
 
-/** \brief Recursively restore opacity on a subgraph.
- This visitor should be considered part of the implementation of transparentDisable(),
+/** \brief Recursively restores opacity on a subgraph.
+ Consider this visitor as part of the implementation of transparentDisable(),
  which invokes this visitor when the \c recursive parameter is true.
  Therefore, apps should call transparentDisable(), rather than invoke this
  visitor directly.
@@ -57,15 +57,17 @@ public:
 
 
 /** When enabling transparency on a Node or Drawable that has no StateSet,
-you assign this name to the newly created StateSet. When transparency
-is later disabled, if the name matches, you delete the StateSet. */
+this function assigns the name to the newly created StateSet. When transparency
+is disabled later, if the name matches, you delete the StateSet. */
 static std::string s_magicStateSetName( "TransparentDeleteMe" );
 
 
 
-/** \brief Set a transparent StateSet on the given Node or Drawable, saving its current StateSet as UserData.
-If UserData is NULL, current StateSet is saved as UserData for later restore.
-If there is no current StateSet, one is created.
+/** \brief Sets a transparent StateSet on the given Node or Drawable, saving 
+its current StateSet as UserData. If nodeOrDrawable's UserData is NULL, this 
+function saves the current StateSet as UserData for later restore by the 
+transparentDisable() function. If nodeOrDrawable doesn't have a current StateSet, 
+this function creates one.
 The current StateSet is modified as follows:
 \li BlendColor is set using the specified alpha value.
 \li BlendFunc is set to use the BlendColor alpha.
@@ -112,10 +114,11 @@ bool transparentEnable( T* nodeOrDrawable, float alpha )
 
 /** \brief Restores opacity by undoing the effects of a prior call to transparentEnable.
 If the Node or Drawable isn't transparent (as defined by the isTransparent call),
-do nothing and return false. Otherwise, copy the node's UserData
+the function does nothing and returns false. Otherwise, it copies the node UserData
 to its StateSet.
-\param recursive If true, use the RestoreOpacityVisitor to recursively restore opacity. Default is false.
-\return false if \c node is NULL or \c node doesn't have a StateSet. Otherwise, returns true.
+\param It's recursive if true and uses the RestoreOpacityVisitor to recursively restore opacity. 
+The default is false.
+\It returns false if \c node is NULL or \c node doesn't have a StateSet. Otherwise, it returns true.
 */
 template< class T >
 bool transparentDisable( T* nodeOrDrawable, bool recursive=false )
@@ -166,8 +169,8 @@ bool transparentDisable( T* nodeOrDrawable, bool recursive=false )
     return( true );
 }
 
-/** \brief Return true if the given StateSet is configured like one of our transparent StateSets.
-\return True if the node has a StateSet, and the StateSet has the following signature:
+/** \brief Returns true if the given StateSet is configured like one of our transparent StateSets.
+\It returns True if the node has a StateSet, and the StateSet has the following signature:
 \li A BlendColor StateAttribute
 \li A BlendFunc StateAttribute
 \li GL_BLEND is enabled
@@ -177,8 +180,8 @@ OSGWTOOLS_EXPORT bool isTransparent( const osg::StateSet* stateSet );
 
 
 
-/** \brief Find StateSets with nominal transparency, and mark the transparent state as PROTECTED.
-Run this node visitor on scene graphs / loaded models that potentially already
+/** \brief Finds StateSets with nominal transparency and marks the transparent state as PROTECTED.
+The function runs this node visitor on scene graphs (for example, loaded models) that already potentially  
 contain transparency. The visitor marks the transparent state as PROTECTED, so  
 subsequently enabling transparency on an ancestor node does not affect the
 protected state.
@@ -192,13 +195,13 @@ public:
     virtual void apply( osg::Geode& geode );
 
 protected:
-    /** \bried Mark the transparent components of \c stateSet as PROTECTED.
-    Does nothing if the \c stateSet is NULL.
+    /** \brief This function marks the transparent components of \c stateSet as PROTECTED.
+    It does nothing if the \c stateSet is NULL.
     */
     virtual void protectTransparent( osg::StateSet* stateSet ) const;
 
     /** \brief A general test for transparency.
-    Code was lifted from osgconv.cpp FixTransparentVisitor and modified.
+    We copied this code from osgconv.cpp FixTransparentVisitor and modified.
     */
     virtual bool isTransparentInternal( const osg::StateSet* stateSet ) const;
 };
