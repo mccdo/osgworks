@@ -66,28 +66,28 @@ See the \ref Plugins module description.
 
 
 
-/** \brief Set the model part of the OpenGL modelview matrix.
+/** \brief Sets the model part of the OpenGL modelview matrix.
 
 AbsoluteModelTransform is an OSG Transform that overloads ABSOLUTE_RF to
 preserve the view. Regardless of (non-Camera) transforms above this node in
-the hierarchy, the effective transform will be this transform concatenated
-with the view. This allows Bullet to drive a model's transform with a single
+the hierarchy, the effective transform is concatenated
+with the view. This allows Bullet to drive a model transform with a single
 matrix.
 
-This behavior can be disabled by setting the reference frame to RELATIVE_RF,
+You can disable this behavior by setting the reference frame to RELATIVE_RF,
 which causes this Transform to behave like a regular MatrixTransform. The
 default reference frame is ABSOLUTE_RF.
 
-For AbsoluteModelTransform to operate, it needs the current view matrix.
-The code supports obtaining the view matrix in two ways controlled by the
-setting of OSGWORKS_SCENEVIEW_ANAGLYPHIC_STEREO_SUPPORT in CMake. By default,
+For the AbsoluteModelTransform to operate, it needs the current view matrix.
+The code supports obtaining the view matrix in two ways that the
+setting of OSGWORKS_SCENEVIEW_ANAGLYPHIC_STEREO_SUPPORT in CMake control. By default,
 OSGWORKS_SCENEVIEW_ANAGLYPHIC_STEREO_SUPPORT is disabled, and AbsoluteModelTransform
 assumes there is a Camera in the CullVisitor NodePath that contains the view matrix.
 This is the most efficient method, but it doesn't work in some corner-case usages, such
 as when the user has enabled anaglyphic stereo via the OSG_STEREO environment variable.
 Set OSGWORKS_SCENEVIEW_ANAGLYPHIC_STEREO_SUPPORT on in CMake to support this usage. When
 enabled, AbsoluteModelTransform obtains the view matrix by accumulating the model transform
-from the NodePath, inverting it, and multiplying it by the CullVisitor's current modelview
+from the NodePath, inverting it, and multiplying it by the CullVisitor current modelview
 matrix. This is a more general purpose, but less efficient solution.
 
 \test amt
