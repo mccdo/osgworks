@@ -59,7 +59,7 @@ public:
     class ContinueDecimationCallback : public osg::Referenced
         {
             public:
-                /** Returns true if mesh is continued to be decimated. Returns false to stop decimation.*/
+                /** Returns true if mesh is to continue being decimated. Returns false to stop decimation.*/
                 virtual bool continueDecimation(const DecimatorOp& decimator, float nextError, unsigned int numOriginalPrimitives, unsigned int numRemainingPrimitives) const
                 {
                     return decimator.continueDecimationImplementation(nextError, numOriginalPrimitives, numRemainingPrimitives);

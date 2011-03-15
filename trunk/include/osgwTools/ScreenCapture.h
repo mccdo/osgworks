@@ -50,26 +50,26 @@ public:
 
     virtual void operator()( osg::RenderInfo& ri ) const;
 
-    /** Pass true to start capture; false to stop. While on, each frame is captured
+    /** Passes true to start capture and false to stop. While on, each frame is captured
     from the FB and written to a file. */
     void setCapture( bool enable );
     bool getCaptureEnabled() const;
 
-    /** Set to a positive number of frames to capture a specific frame count.
+    /** Sets to a positive number of frames to capture a specific frame count.
     If set to 0 (the default), capture continues until it explicitly
     disables with setCapture(false). */
     void setNumFramesToCapture( unsigned int numFrames );
 
     /** File name is \b rootname \b framenum \b extension.
-    \li \b rootname defaults to "screencapture" if blank.
+    \li \b rootname defaults to screencapture if blank.
     \li \b framenum is the frame number, unless useFrameNum is false.
-    \li \b extension is ".png" by default. Note it includes the dot.
+    \li \b extension is .png by default. Note it includes the dot.
     */
     void setRootName( const std::string& name );
     void setExtension( const std::string& extension );
     void setUseFrameNumber( bool useFrameNum );
 
-    /** Default is full screen. Pass non-NULL to specify a viewport other than full screen. */
+    /** The default is full screen. Passes non-NULL to specify a viewport other than full screen. */
     void setViewport( osg::Viewport* vp );
 
 protected:

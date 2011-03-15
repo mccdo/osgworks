@@ -32,12 +32,12 @@
 namespace osgwTools {
 
 
-/** \brief Support for multiple Camera draw callbacks.
+/** \brief Support for multiple Camera draw callbacks
 
 In at least OSG 2.8.3, Cameras can have only one DrawCallback attached
-(for example, as a post draw callback). Nested callbacks, as in the NodeCallback
+(for example, as a post-draw callback). Nested callbacks, such as those in the NodeCallback
 class, are not supported. Apps can attach a CompositeDrawCallback to a Camera,
-then attach a list of DrawCallbacks. CompositeDrawCallback's operator() then
+then attach a list of DrawCallbacks. CompositeDrawCallback operator() then
 executes the operator() of each DrawCallback in the list.
 
 \test callbacksupport

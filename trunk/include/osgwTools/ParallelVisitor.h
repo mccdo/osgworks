@@ -58,7 +58,7 @@ public:
     ParallelVisitor::ParallelVisitorCallback* getCallback() const;
 
 protected:
-    /** Override to specify your own custom comparison criteria. Return
+    /** Overrides to specify your own custom comparison criteria. Return
     true if the two Nodes match, and false otherwise. If this function
     returns false and _pvcb is not NULL, (*_pvcb)() is called. */
     virtual bool isMatch( const osg::Node& nodeA, const osg::Node& nodeB ) const;

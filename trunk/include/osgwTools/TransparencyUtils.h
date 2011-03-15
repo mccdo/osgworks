@@ -69,9 +69,9 @@ function saves the current StateSet as UserData for later restore by the
 transparentDisable() function. If nodeOrDrawable doesn't have a current StateSet, 
 this function creates one.
 The current StateSet is modified as follows:
-\li BlendColor is set using the specified alpha value.
-\li BlendFunc is set to use the BlendColor alpha.
-\li The rendering hint is set to TRANSPARENT_BIN.
+\li BlendColor is set using the specified alpha value
+\li BlendFunc is set to use the BlendColor alpha
+\li The rendering hint is set to TRANSPARENT_BIN
 */
 template< class T >
 bool transparentEnable( T* nodeOrDrawable, float alpha )
@@ -201,7 +201,7 @@ protected:
     virtual void protectTransparent( osg::StateSet* stateSet ) const;
 
     /** \brief A general test for transparency.
-    We copied this code from osgconv.cpp FixTransparentVisitor and modified.
+    We copied this code from osgconv.cpp FixTransparentVisitor and modified it.
     */
     virtual bool isTransparentInternal( const osg::StateSet* stateSet ) const;
 };

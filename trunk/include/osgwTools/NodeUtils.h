@@ -31,7 +31,7 @@ namespace osgwTools
 {
 
 
-/** \defgroup NodeUtils Utilities for operating on Nodes and Groups.
+/** \defgroup NodeUtils Utilities for operating on Nodes and Groups
 */
 /*@{*/
 
