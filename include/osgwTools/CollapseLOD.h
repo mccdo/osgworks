@@ -149,12 +149,12 @@ public:
         NUM_COLLAPSE_MODES
     };
 
-    /** Constructor.
-    \param SelectorCallback Callback to determine which child is the highest LOD. By default,
-    an instance of \ref HighestLODChildSelectorCallback is used.
-    \param CollapseMode LOD removal method. Default is COLLAPSE_TO_PARENT. LODs are removed,
-    and highest LOD child is attached to the LOD's former parent(s).
-    \param TraversalMode The traversal mode. Default is to traverse all children.
+    /** Constructor
+    \param SelectorCallback Callback to determine which child is the highest LOD. By default, 
+	the function uses an instance of \ref HighestLODChildSelectorCallback.
+    \param CollapseMode LOD removal method. Default is COLLAPSE_TO_PARENT. The function 
+	removes the LODs and attaches the highest LOD child to the the LOD former parent(s).
+    \param TraversalMode The traversal mode. The default is to traverse all children.
     */
 	CollapseLOD( NodeSelectorCallback *SelectorCallback=NULL,
         const CollapseMode collapseMode=COLLAPSE_TO_PARENT,

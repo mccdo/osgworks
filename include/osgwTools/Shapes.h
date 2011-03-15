@@ -29,7 +29,7 @@
 namespace osgwTools {
 
 
-/** \defgroup Shapes convenience routines for Geometry-based shape creation
+/** \defgroup Shapes Convenience routines for Geometry-based shape creation
 
 This is a set of convenience routines for configuring a Geometry to render
 specific shapes. It is intended as a replacement for the OSG ShapeDrawables.
@@ -40,7 +40,7 @@ All convenience routines follow a common convention of allowing the app to
 supply a Geometry to use. By default, the convenience routines instantiate a
 Geometry. All routines set a color array with a single white color.
 
-All shapes are centered on the origin. Use OSG Transform Nodes to translate
+All shapes center on the origin. Use OSG Transform Nodes to translate
 or orient the shapes.
 
 \test shapes
@@ -90,7 +90,7 @@ OSGWTOOLS_EXPORT osg::Geometry* makeWireAltAzSphere( const float radius=1., cons
 Makes a plane using GL_TRIANGLE_STRIP PrimitiveSets. Use the u and v 
 vector parameters to specify the plane's dimensions. 
 By default, this function creates a plane 
-using two triangles. Use the subdivision parameter to increase the 
+using two triangles. It uses the subdivision parameter to increase the 
 plane tessellation, which specifices how to subdivide the plane in x and y. 
 The function creates normals per vertex and texture coordinates in unit 0 
 with the normal computed as (u^v). The texture coordinate data
@@ -111,7 +111,7 @@ OSGWTOOLS_EXPORT osg::Geometry* makeWirePlane( const osg::Vec3& corner, const os
 
 /** \brief Creates a box.
 
-This function makes an axis-aligned box using GL_TRIANGLE_STRIP PrimitiveSets. Dimensions
+This function makes an axis-aligned box using GL_TRIANGLE_STRIP PrimitiveSets. The dimensions
 are (halfExtents*2). By default, two triangles are on each side of the box, for
 a total of 12 triangles. However, the subdivision parameter can increase this, 
 which specifices how to subdivide the faces of the box in x, y, and z and creates 
@@ -135,12 +135,12 @@ OSGWTOOLS_EXPORT osg::Geometry* makeWireBox( const osg::Vec3& halfExtents, osg::
 
 Makes an axis-aligned circle (solid disk) using GL_TRIANGLE_FAN PrimitiveSets. Dimensions
 are (halfExtents*2). By default, the function creates a circle approximated with 32 segments. 
-However, you can change the approximation with the subdivisions parameter. 
+However, you can change the approximation with the subdivision's parameter. 
 The function creates normals per vertex and texture coordinates in unit 0. The texture coordinate data
 is suitable for applying an entire texture map to the face of the disk. */
 OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
-/** \brief Create a wireframe circle.
+/** \brief Creates a wireframe circle.
 
 Makes an axis-aligned wireframe circle using GL_LINE_LOOP PrimitiveSets. */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );

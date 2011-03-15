@@ -48,11 +48,11 @@ class OSGWTOOLS_EXPORT RemoveProgram : public osg::NodeVisitor
 public:
     /**
     Contructor to configure the RemoveProgram visitor. By default, RemoveProgram
-    removed programs, doesn't remove uniforms, and traverses all children. This
+    removes programs, doesn't remove uniforms, and traverses all children. This
     behavior is configurable by specifying your own values for the default parameters.
-    @param removePrograms Default is true.
-    @param removePrograms Default is false.
-    @param travMode The traversal mode. Default is osg::NodeVisitor::TRAVERSE_ALL_CHILDREN.
+    @param removePrograms The default is true.
+    @param removePrograms The default is false.
+    @param travMode The traversal mode. The default is osg::NodeVisitor::TRAVERSE_ALL_CHILDREN.
     */
     RemoveProgram( bool removePrograms=true, bool removeUniforms=false, const osg::NodeVisitor::TraversalMode travMode=osg::NodeVisitor::TRAVERSE_ALL_CHILDREN );
     ~RemoveProgram();
@@ -63,20 +63,20 @@ public:
     void reset();
 
     /**
-    Override for base class apply() method.
+    Overrides for base class apply() method.
     */
     virtual void apply( osg::Node& node );
     /**
-    Override for base class apply() method.
+    Overrides for base class apply() method.
     */
     virtual void apply( osg::Geode& node );
 
     /**
-    Specify whether to remove programs. Default is true. (Remove programs.)
+    Specifies whether to remove programs. The default is true. (Removes programs.)
     */
     void setRemovePrograms( bool removePrograms );
     /**
-    Specify whether to remove uniforms. Default is false. (Don't remove uniforms.)
+    Specifies whether to remove uniforms. The default is false. (Doesn't remove uniforms.)
     */
     void setRemoveUniforms( bool removeUniforms );
 

@@ -32,10 +32,10 @@ namespace osgwTools
 
 
 /**
-\brief Find all nodes with the given name.
+\brief Finds all nodes with the given name.
 
-Invoke like any standard osg::NodeVisitor:
-subgraph->accepth( findNamedNode );
+Invokes like any standard osg::NodeVisitor:
+subgraph->accept( findNamedNode );
 or:
 findNamedNode::apply( *subgraph );
 
@@ -70,31 +70,31 @@ public:
         CONTAINS
     } MatchMethod;
     /**
-    Specify the match algorithm.
-    @param method The match algorithm. Default: EXACT_MATCH
+    Specifies the match algorithm.
+    @param method The match algorithm. The default is EXACT_MATCH
     */
     void setMatchMethod( MatchMethod method );
     /**
-    Get the match algorithm.
+    Gets the match algorithm.
     */
     MatchMethod getMatchMethod() const;
 
     /**
-    Control whether the named node is included at the end of
+    Controls whether the named node is included at the end of
     the NodePaths in _napl.
     @param includeTargetNode If false, don't include the named node
-    in the returned NodePaths. Default: true (include the named node
+    in the returned NodePaths. The default is true (include the named node
     in the paths).
     */
     void setPathsIncludeTargetNode( bool includeTargetNode );
     /**
-    Get the current setting for including the named node in the
+    Gets the current setting for including the named node in the
     returned NodePaths.
     */
     bool getPathsIncludeTargetNode() const;
 
     /**
-    Override of base class apply() method.
+    Overrides of base class apply() method.
     */
     void apply( osg::Node& node );
 

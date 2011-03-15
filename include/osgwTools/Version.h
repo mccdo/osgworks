@@ -61,7 +61,7 @@ Use this in version-specific code, for example:
 This macro provides the same functionality as 
 OSGWORKS_VERSION, but instead encodes the OSG version
 number as an integer.
-OSG did not provide a useful compile-time version
+OSG didn't provide a useful compile-time version
 comparison macro until after the 2.9.6 and 2.8.2 releases.
 \see OSGWORKS_VERSION */
 #define OSGWORKS_OSG_VERSION ( \

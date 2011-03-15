@@ -33,7 +33,7 @@ namespace osgwTools
 {
 
 
-/** \defgroup ReadFile OSG plugin utilities.
+/** \defgroup ReadFile OSG plugin utilities
 */
 /*@{*/
 

@@ -33,7 +33,7 @@ namespace osgwTools
 {
 
 
-/** \defgroup NodePathUtils Utilities for NodePaths.
+/** \defgroup NodePathUtils Utilities for NodePaths
 
 The set of utilities in \c NodePathUtils.h provides a way to identify
 a unique node in a scene graph without using Node addresses.
@@ -50,7 +50,7 @@ IndexedNodePath.
 
 The IndexedNodePath creates a vector of NodeData structs, using one
 NodeData for every Node in the NodePath after the root node. NodeData
-contains the Node's child index, class name, and osg::Object name.
+contains the Node child index, class name, and osg::Object name.
 You use the functions nodePathToIndexed() and indexedToNodePath() to convert
 between an osg::NodePath and an IndexedNodePath.
 
@@ -88,9 +88,9 @@ struct NodeData
     NodeData();
     NodeData( unsigned int index, const osg::Node& node );
 
-    /** Searches the parent Group's children for the best matching child node.
+    /** Searches the parent Group children for the best matching child node.
     Possible future work: Allow applications to specify a callback
-    to override how child identification is performed.
+    to override how to perform child identification.
     */
     osg::Node* findNode( osg::Group* parent ) const;
 
