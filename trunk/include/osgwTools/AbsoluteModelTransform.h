@@ -69,7 +69,7 @@ See the \ref Plugins module description.
 /** \brief Sets the model part of the OpenGL modelview matrix.
 
 AbsoluteModelTransform is an OSG Transform that overloads ABSOLUTE_RF to
-preserve the view. Regardless of (non-Camera) transforms above this node in
+preserve the view. Regardless of (non-Camera) transforms above this Node in
 the hierarchy, the effective transform is concatenated
 with the view. This allows Bullet to drive a model transform with a single
 matrix.

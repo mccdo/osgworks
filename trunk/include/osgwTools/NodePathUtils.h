@@ -36,7 +36,7 @@ namespace osgwTools
 /** \defgroup NodePathUtils Utilities for NodePaths
 
 The set of utilities in \c NodePathUtils.h provides a way to identify
-a unique node in a scene graph without using Node addresses.
+a unique Node in a scene graph without using Node addresses.
 
 The osg::NodePath class identifies nodes in a scene graph using
 a std::vector< osg::Node* > or a list of Node addresses. Because
@@ -106,7 +106,7 @@ struct NodeData
 This is a non-address based representation of an osg::NodePath.
 Note that this representation is based on child indices.
 It is always one element shorter than the equivalent NodePath,
-because the NodePath root node doesn't have a child index.
+because the NodePath root Node doesn't have a child index.
 */
 typedef std::vector< NodeData > IndexedNodePath;
 
@@ -118,7 +118,7 @@ OSGWTOOLS_EXPORT IndexedNodePath nodePathToIndexed( const osg::NodePath& nodePat
 /** Converts from an IndexedNodePath to an osg::NodePath.
 \param indexedNodePath Input IndexedNodePath to convert.
 \param root The returned NodePath stores this first and 
-uses it as the parent for identifying the first node in the input IndexedNodePath.
+uses it as the parent for identifying the first Node in the input IndexedNodePath.
 */
 OSGWTOOLS_EXPORT osg::NodePath indexedToNodePath( const IndexedNodePath& indexedNodePath, osg::Group* root );
 
@@ -139,16 +139,16 @@ OSGWTOOLS_EXPORT std::string nodePathToString( const osg::NodePath& nodePath );
 /** Deserializes a string to an osg::NodePath.
 \param stringPath Input string to deserialize.
 \param root The returned NodePath stores this first and uses it as the parent for
-identifying the first node in the input string.
+identifying the first Node in the input string.
 */
 OSGWTOOLS_EXPORT osg::NodePath stringToNodePath( const std::string& stringPath, osg::Group* root );
 
 
-/** Identifies a node from an IndexedNodePath and root node.
+/** Identifies a Node from an IndexedNodePath and root Node.
 */
 OSGWTOOLS_EXPORT osg::Node* findNode( const IndexedNodePath& indexedNodePath, osg::Group* root );
 
-/** Identifies a node from a string and root node.
+/** Identifies a Node from a string and root Node.
 */
 OSGWTOOLS_EXPORT osg::Node* findNode( const std::string& stringPath, osg::Group* root );
 
@@ -160,7 +160,7 @@ utilities, such as the QuotedString class, stream IO for QuotedStrings
 and NodeData structs, the findNode() functions, and conversion between
 osg::NodePaths, IndexedNodePaths, and strings.
 
-The testnodepathutils test calls this function and is part of
+The testNodePathUtils test calls this function and is part of
 the automated CTest regression test suite.
 
 \return 0 for success. 1 for failure.

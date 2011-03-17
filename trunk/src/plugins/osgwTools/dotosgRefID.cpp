@@ -32,7 +32,7 @@
 /** \addtogroup Plugins
 @{*/
 
-/** \addtogroup DotOSGSuppoer
+/** \addtogroup DotOSGSupport
 @{*/
 
 

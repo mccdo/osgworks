@@ -41,11 +41,11 @@ public:
     ~ParallelVisitor();
 
     /** Compare sgA and sgB.
-    \return True if match and false otherwise. */
+    \return True if match and False otherwise. */
     bool compare();
 
-    /** Callback executed if isMatch(nodeA,nodeB) returns false.
-    Typical usage: isMatch detects that nodes differ; callback
+    /** Callback executed if isMatch(nodeA,nodeB) returns False.
+    Typical usage: isMatch detects that Nodes differ; callback
     performs operations to sync them. */
     struct ParallelVisitorCallback
     {

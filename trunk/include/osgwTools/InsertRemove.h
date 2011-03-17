@@ -31,24 +31,24 @@ namespace osgwTools
 {
 
 
-/** \defgroup InsertRemove Utilities for inserting and removing nodes from scene graphs
+/** \defgroup InsertRemove Utilities for inserting and removing Nodes from scene graphs
 
 \test insert
 
 */
 /*@{*/
 
-/** Inserts the node newParent into the scene graph hierarchy above
-the specified node. After this call, node has one parent (newParent),
-and all of the old parents of node are now parents of newParent. */
-OSGWTOOLS_EXPORT void insertAbove( osg::Node* node, osg::Group* newParent );
+/** Inserts the Node newParent into the scene graph hierarchy above
+the specified Node. After this call, Node has one parent (newParent),
+and all of the old parents of Node are now parents of newParent. */
+OSGWTOOLS_EXPORT void insertAbove( osg::Node* Node, osg::Group* newParent );
 
-/** Inserts the node newChild into the scene graph hierarchy below
+/** Inserts the Node newChild into the scene graph hierarchy below
 the specified parent. After this call, parent has one child (newChild),
 and all of the old children of parent are now children of newChild. */
 OSGWTOOLS_EXPORT void insertBelow( osg::Group* parent, osg::Group* newChild );
 
-/** Removes the specified node. Attaches all of node children to each
+/** Removes the specified Node. Attaches all of Node children to each
 of its parents and removes itself as a child from each of its
 parents. */
 OSGWTOOLS_EXPORT void removeNode( osg::Node* node );
