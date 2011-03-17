@@ -92,7 +92,7 @@ bool transparentEnable( T* nodeOrDrawable, float alpha )
     }
     else if( stateSet == NULL )
     {
-        // This node doesn't have a StateSet, so we create one and tag it
+        // This Node doesn't have a StateSet, so we create one and tag it
         // with the magic name for later deletion.
         stateSet = new osg::StateSet();
         stateSet->setName( s_magicStateSetName );
@@ -114,11 +114,11 @@ bool transparentEnable( T* nodeOrDrawable, float alpha )
 
 /** \brief Restores opacity by undoing the effects of a prior call to transparentEnable.
 If the Node or Drawable isn't transparent (as defined by the isTransparent call),
-the function does nothing and returns false. Otherwise, it copies the node UserData
+the function does nothing and returns false. Otherwise, it copies the Node UserData
 to its StateSet.
-\param It's recursive if true and uses the RestoreOpacityVisitor to recursively restore opacity. 
-The default is false.
-\It returns false if \c node is NULL or \c node doesn't have a StateSet. Otherwise, it returns true.
+\param It's recursive if True and uses the RestoreOpacityVisitor to recursively restore opacity. 
+The default is False.
+\It returns False if \c Node is NULL or \c Node doesn't have a StateSet. Otherwise, it returns True.
 */
 template< class T >
 bool transparentDisable( T* nodeOrDrawable, bool recursive=false )
@@ -141,7 +141,7 @@ bool transparentDisable( T* nodeOrDrawable, bool recursive=false )
     osg::StateSet* origStateSet = dynamic_cast< osg::StateSet* >( userData );
     if( origStateSet == NULL )
     {
-        // Probably the node had something else attached to UserData, so we
+        // Probably the Node had something else attached to UserData, so we
         // were unable to save the StateSet and had to modify the attached StateSet.
         osg::StateSet* stateSet = nodeOrDrawable->getStateSet();
         if( stateSet->getName() == s_magicStateSetName )
@@ -169,8 +169,8 @@ bool transparentDisable( T* nodeOrDrawable, bool recursive=false )
     return( true );
 }
 
-/** \brief Returns true if the given StateSet is configured like one of our transparent StateSets.
-\It returns True if the node has a StateSet, and the StateSet has the following signature:
+/** \brief Returns True if the given StateSet is configured like one of our transparent StateSets.
+\It returns True if the Node has a StateSet, and the StateSet has the following signature:
 \li A BlendColor StateAttribute
 \li A BlendFunc StateAttribute
 \li GL_BLEND is enabled
@@ -181,9 +181,9 @@ OSGWTOOLS_EXPORT bool isTransparent( const osg::StateSet* stateSet );
 
 
 /** \brief Finds StateSets with nominal transparency and marks the transparent state as PROTECTED.
-The function runs this node visitor on scene graphs (for example, loaded models) that already potentially  
+The function runs this Node visitor on scene graphs (for example, loaded models) that already potentially  
 contain transparency. The visitor marks the transparent state as PROTECTED, so  
-subsequently enabling transparency on an ancestor node does not affect the
+subsequently enabling transparency on an ancestor Node does not affect the
 protected state.
 */
 class OSGWTOOLS_EXPORT ProtectTransparencyVisitor : public osg::NodeVisitor

@@ -32,15 +32,15 @@ namespace osgwTools
 
 
 /**
-\brief Finds all nodes with the given name.
+\brief Finds all Nodes with the given name.
 
 Invokes like any standard osg::NodeVisitor:
 subgraph->accept( findNamedNode );
 or:
 findNamedNode::apply( *subgraph );
 
-Each osg::Node in the subgraph is searched for a matching name by
-examing the value of osg::Object::getName(). Whether a Node matches 
+This NodeVisitor searches for a matching name by examining the 
+value of each osg::Node's osg::Object::getName() string. Whether a Node matches 
 depends on the specified match algorithm. \see setMatchMethod.
 
 Calling code accesses the matched Nodes and their paths using the
@@ -50,7 +50,7 @@ class OSGWTOOLS_EXPORT FindNamedNode : public osg::NodeVisitor
 {
 public:
     /**
-    @param name Name of the node to search for.
+    @param name Name of the Node to search for.
     */
     FindNamedNode( const std::string& name, const osg::NodeVisitor::TraversalMode travMode=osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN );
     ~FindNamedNode();
@@ -80,15 +80,15 @@ public:
     MatchMethod getMatchMethod() const;
 
     /**
-    Controls whether the named node is included at the end of
+    Controls whether the named Node is included at the end of
     the NodePaths in _napl.
-    @param includeTargetNode If false, don't include the named node
-    in the returned NodePaths. The default is true (include the named node
+    @param includeTargetNode If false, don't include the named Node
+    in the returned NodePaths. The default is true (include the named Node
     in the paths).
     */
     void setPathsIncludeTargetNode( bool includeTargetNode );
     /**
-    Gets the current setting for including the named node in the
+    Gets the current setting for including the named Node in the
     returned NodePaths.
     */
     bool getPathsIncludeTargetNode() const;

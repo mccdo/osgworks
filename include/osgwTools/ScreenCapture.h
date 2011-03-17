@@ -50,8 +50,8 @@ public:
 
     virtual void operator()( osg::RenderInfo& ri ) const;
 
-    /** Passes true to start capture and false to stop. While on, each frame is captured
-    from the FB and written to a file. */
+    /** Passes true to start capture and false to stop. While on, this class 
+	captures each frame from the framebuffer and writes it to a file. */
     void setCapture( bool enable );
     bool getCaptureEnabled() const;
 

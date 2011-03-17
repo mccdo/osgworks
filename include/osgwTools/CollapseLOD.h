@@ -47,7 +47,7 @@ typedef std::set< osg::ref_ptr<osg::Node> > NodeSet;
 class NodeSelectorCallback : public osg::Referenced
 {
     public:
-        /** Returns the node that should be selected for retention or NULL if no nodes should be retained.
+        /** Returns the Node that should be selected for retention or NULL if no Nodes should be retained.
 		Override to implement the desired behavior. */
 		virtual osg::Node *selectChild(osg::Group *parentOfCandidates) const
         {
@@ -131,7 +131,7 @@ determined by the NodeSelectorCallback, remains (either attached to the new Grou
 to the removed LOD's former parent). 
 
 See \ref CollapseMode to control the mode of operation. COLLAPSE_TO_GROUP is useful when the
-LOD node contains callbacks, UserData, DescriptionLists, etc. This information is
+LOD Node contains callbacks, UserData, DescriptionLists, etc. This information is
 copied from the LOD to the new Group. COLLAPSE_TO_PARENT (the default) removes the LOD and
 the references to any such associated data.
 
@@ -168,7 +168,7 @@ public:
 	unsigned int getLODsProcessed(void) const {return(_LODsProcessed);}
 
     /** Calling code must call this function to remove LODs.
-    This NodeVisitor collects LOD nodes, but doesn't actually process/remove
+    This NodeVisitor collects LOD Nodes, but doesn't actually process/remove
     them until the calling code executes this member function. */
 	unsigned int finishProcessingLODs(void);
 
