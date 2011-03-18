@@ -107,14 +107,14 @@ INPUT                  = "${osgWorks_SOURCE_DIR}/apps " \
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.cpp *.h
 RECURSIVE              = YES
-EXCLUDE                = .svn
+EXCLUDE                = */.svn
 EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       = 
+EXCLUDE_PATTERNS       = */.svn/*
 EXCLUDE_SYMBOLS        = 
 EXAMPLE_PATH           = 
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = YES
-IMAGE_PATH             = 
+IMAGE_PATH             = "${osgWorks_SOURCE_DIR}/doc/images"
 INPUT_FILTER           = 
 FILTER_PATTERNS        = 
 FILTER_SOURCE_FILES    = NO
@@ -226,7 +226,7 @@ MAN_LINKS              = NO
 #---------------------------------------------------------------------------
 # configuration options related to the XML output
 #---------------------------------------------------------------------------
-GENERATE_XML           = NO
+GENERATE_XML           = NO 
 XML_OUTPUT             = xml
 XML_SCHEMA             = 
 XML_DTD                = 
