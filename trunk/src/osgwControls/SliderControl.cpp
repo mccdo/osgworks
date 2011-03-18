@@ -65,6 +65,7 @@ protected:
 
 };
 
+/* \cond */
 class ButtonPickHandler : public osgGA::GUIEventHandler
 {   
 public:
@@ -154,9 +155,8 @@ private:
 
         return false;
     }
-
-
 };
+
 class SliderPickHandler : public osgGA::GUIEventHandler
 {   
 public:
@@ -258,9 +258,8 @@ private:
 
         return false;
     }
-
-
 };
+/* \endcond */
 
 SliderControl::SliderControl()
   : _currentValue( 0. ),
