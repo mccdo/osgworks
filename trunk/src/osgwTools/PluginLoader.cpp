@@ -36,6 +36,7 @@
 // executable and osgBulletPlus shared library are loaded, before main() starts to
 // execite.
 //
+/* \cond */
 class PluginLoader
 {
 public:
@@ -77,5 +78,5 @@ public:
         //ostr << "~PluginLoader." << std::endl;
     }
 };
-
+/* \endcond */
 static PluginLoader s_pluginLoader;

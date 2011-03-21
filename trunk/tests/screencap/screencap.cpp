@@ -23,7 +23,7 @@
 #include <osgViewer/Viewer>
 #include <osgGA/GUIEventHandler>
 
-
+/* \cond */
 class KeyHandler : public osgGA::GUIEventHandler
 {
 public:
@@ -57,7 +57,7 @@ public:
 private:
     osgwTools::ScreenCapture* _sc;
 };
-
+/* \endcond */
 
 
 

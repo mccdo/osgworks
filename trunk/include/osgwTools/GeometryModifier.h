@@ -31,8 +31,10 @@
 namespace osgwTools {
 
 
-/** Convenience NodeVisitor to support finding and performing operations
-on osg::Geometry objects. Use with classes derived from GeometryOperation
+/** \brief Convenience NodeVisitor to support finding and performing operations
+on osg::Geometry objects 
+
+Use with classes derived from GeometryOperation
 to perform various tasks.
 */
 class OSGWTOOLS_EXPORT GeometryModifier : public osg::NodeVisitor

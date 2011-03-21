@@ -36,7 +36,7 @@ namespace osgwTools
 {
 
 
-/** Removes specified data from the scene graph.
+/** \brief Removes specified data from the scene graph
 */
 class OSGWTOOLS_EXPORT RemoveData : public osg::NodeVisitor
 {

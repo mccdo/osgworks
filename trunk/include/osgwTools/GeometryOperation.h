@@ -29,8 +29,8 @@
 namespace osgwTools {
 
 
-/** Base class for performing operations on osg::Geometry objects in collaboration
-with the GeometryModifier class.
+/** \brief Base class for performing operations on osg::Geometry objects in collaboration
+with the GeometryModifier class
 
 \test geometryop
 */

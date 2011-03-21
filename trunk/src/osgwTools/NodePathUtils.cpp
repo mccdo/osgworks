@@ -37,11 +37,14 @@ namespace osgwTools
 {
 
 
-// A class to enclose a string in double quotes, preserving any double quotes that exist
-// in the string. If a double quote exists in the string, this code converts it to a pair
-// of double quotes. For example:
-//    Input:  test"string
-//    Output: "test""string"
+/** \brief A class to enclose a string in double quotes, preserving any double quotes that exist
+in the string. 
+
+If a double quote exists in the string, this code converts it to a pair
+of double quotes. For example:
+Input:  test"string
+Output: "test""string"
+*/
 class QuotedString
 {
 public:

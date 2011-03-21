@@ -34,8 +34,9 @@ namespace osgwTools
 {
 
 
-/** A Camera post-draw callback to read the rendered image from the
-current OpenGL read buffer and write the image data to an image file.
+/** \brief A Camera post-draw callback to read the rendered image from the
+current OpenGL read buffer and write the image data to an image file
+
 File writes are performed in a separate thread, so the disk IO doesn't
 bottleneck the rendering thread.
 

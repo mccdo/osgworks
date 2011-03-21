@@ -34,8 +34,7 @@ namespace osgwTools {
 
 
 
-/**
-This is a convenience routine for loading a viewer configuration file and
+/** This is a convenience routine for loading a viewer configuration file and
 configuring a viewer from it. If the configFile name is empty,
 this function looks for OSGW_VIEWER_CONFIG in the environment and
 attempts to load the file that it specifies. If vonfigFile is empty
@@ -47,8 +46,7 @@ to osg::NOTICE and returns false.
 bool OSGWTOOLS_EXPORT configureViewer( osgViewer::Viewer& viewer, const std::string& configFile="" );
 
 
-/**
-A chunk of info for configuring a single slave camera, as
+/** A chunk of info for configuring a single slave camera, as
 found in osgViewer::View. */
 class OSGWTOOLS_EXPORT CameraConfigInfo : public osg::Object
 {

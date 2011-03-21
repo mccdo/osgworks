@@ -33,7 +33,7 @@ namespace osgwTools
 {
 
 
-/** Visitor to count \c StateSet objects and optionally removes empty \c StateSet objects.
+/** \brief Visitor to count \c StateSet objects and optionally removes empty \c StateSet objects.
 */
 class OSGWTOOLS_EXPORT CountStateSets : public osg::NodeVisitor
 {

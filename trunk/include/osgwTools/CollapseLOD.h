@@ -43,7 +43,7 @@ namespace osgwTools
 // Should this perhaps be exposed somewhere else for wider use?
 typedef std::set< osg::ref_ptr<osg::Node> > NodeSet;
 
-/** Callback to decide which LOD child should be retained */
+/** \brief Callback to decide which LOD child to retain */
 class NodeSelectorCallback : public osg::Referenced
 {
     public:
@@ -59,7 +59,7 @@ class NodeSelectorCallback : public osg::Referenced
 
 
 
-/** Callback to select highest LOD child. */
+/** \brief Callback to select highest LOD child */
 class HighestLODChildSelectorCallback : public osgwTools::NodeSelectorCallback
 {
     public:
@@ -120,7 +120,7 @@ class HighestLODChildSelectorCallback : public osgwTools::NodeSelectorCallback
 }; // HighestLODChildSelectorCallback
 
 
-/** \brief Removes LOD Nodes from a scene graph.
+/** \brief Removes LOD Nodes from a scene graph
 
 In typical usage, the application should invoke this visitor as with any OSG NodeVisitor, and
 after traversal returns, the application should call the \ref finishProcessingLODs method.

@@ -33,9 +33,8 @@ namespace osgwTools
 {
 
 
-/**
-Visitor strips osg::Program objects and osg::Uniform objects from 
-a scene graph's StateSet objects.
+/** \brief Visitor strips osg::Program objects and osg::Uniform objects from 
+scene graph StateSet objects
 
 This visitor is particularly useful for performance analysis and debugging.
 If you suspect there is a bug in your shaders and wish to render your scene
