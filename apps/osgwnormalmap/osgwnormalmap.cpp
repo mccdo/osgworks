@@ -207,30 +207,31 @@ void addShaders( osg::Node* node, osg::Image* baseImage, osg::Image* normalImage
     stateSet->addUniform( heightControl.get() );
 
     ///Setup the shaders and programs
-#if 0
     std::string shaderName = osgDB::findDataFile( "parallax_mapping.fs" );
-    osg::ref_ptr< osg::Shader > fragmentShader = 
-        osg::Shader::readShaderFile( osg::Shader::FRAGMENT, shaderName );
-#else
-    std::string fragmentSource =
-    "uniform sampler2D baseMap;\n"
-    "uniform sampler2D normalMap;\n"
-    "uniform sampler2D heightMap;\n"
-    "uniform bool useHeightMap;\n"
-    "\n"
-    "varying vec3 v_lightVector;\n"
-    "varying vec3 v_viewVector;\n"
-    "\n"
-    "void main()\n"
-    "{\n"
+    osg::ref_ptr< osg::Shader > fragmentShader;
+    if( shaderName.empty() )
+    {
+        std::string fragmentSource =
+        "uniform sampler2D baseMap;\n"
+        "uniform sampler2D normalMap;\n"
+        "uniform sampler2D heightMap;\n"
+        "uniform bool useHeightMap;\n"
+        "\n"
+        "varying vec3 v_lightVector;\n"
+        "varying vec3 v_viewVector;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
         //determine if we are going to use the height map
         "float height = 0.;\n"
+        "float v = 0.;\n"
         "if( useHeightMap )\n"
         "{\n"
             "height = texture2D( heightMap, gl_TexCoord[ 0 ].st ).r;\n"
+            "vec2 scaleBias = vec2( 0.06, 0.03 );\n"
+            "v = height * scaleBias.s - scaleBias.t;\n"
         "}\n"
-        "vec2 scaleBias = vec2( 0.06, 0.03 );\n"
-        "float v = height * scaleBias.s - scaleBias.t;\n"
+        "\n"
         "vec3 V = normalize( v_viewVector );\n"
         "vec2 texCoords = gl_TexCoord[ 0 ].st + ( V.xy * v );\n"
         "\n"
@@ -250,7 +251,7 @@ void addShaders( osg::Node* node, osg::Image* baseImage, osg::Image* normalImage
         "float RdotL = max( dot( R, L ), 0.0 );\n"
         "\n"
         //
-        "float specularPower = 16.0;\n"
+        "float specularPower = 50.0;\n"
         "vec3 base = texture2D( baseMap, texCoords ).rgb;\n"
         "vec3 ambient = vec3( 0.368627, 0.368421, 0.368421 ) * base;\n"
         "vec3 diffuse = vec3( 0.886275, 0.885003, 0.885003 ) * base * NdotL;\n"
@@ -259,27 +260,31 @@ void addShaders( osg::Node* node, osg::Image* baseImage, osg::Image* normalImage
         "\n"
         //
         "gl_FragColor = vec4( color, 1.0 );\n"
-    "}\n";
-    osg::ref_ptr< osg::Shader > fragmentShader = new osg::Shader();
-    fragmentShader->setType( osg::Shader::FRAGMENT );
-    fragmentShader->setShaderSource( fragmentSource );
+        "}\n";
+        fragmentShader = new osg::Shader();
+        fragmentShader->setType( osg::Shader::FRAGMENT );
+        fragmentShader->setShaderSource( fragmentSource );
+    }
+    else
+    {
+        fragmentShader = 
+            osg::Shader::readShaderFile( osg::Shader::FRAGMENT, shaderName );
+    }
     fragmentShader->setName( "parallax frag shader" );
-#endif
 
-#if 0
     shaderName = osgDB::findDataFile( "parallax_mapping.vs" );
-    osg::ref_ptr< osg::Shader > vertexShader = 
-        osg::Shader::readShaderFile( osg::Shader::VERTEX, shaderName );
-#else
-    std::string vertexSource =
-    "attribute vec4 a_tangent; \n"
-    "attribute vec4 a_binormal;\n"
-    
-    "varying vec3 v_lightVector;\n"
-    "varying vec3 v_viewVector;\n"
-    "\n"
-    "void main()\n"
-    "{\n"
+    osg::ref_ptr< osg::Shader > vertexShader;
+    if( shaderName.empty() )
+    {
+        std::string vertexSource =
+        "attribute vec4 a_tangent; \n"
+        "attribute vec4 a_binormal;\n"
+        
+        "varying vec3 v_lightVector;\n"
+        "varying vec3 v_viewVector;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
         //
         "gl_Position = ftransform();\n"
         "\n"
@@ -300,12 +305,17 @@ void addShaders( osg::Node* node, osg::Image* baseImage, osg::Image* normalImage
         //Convert view vector into tangent space
         "v_viewVector = ecPosition;\n"
         "v_viewVector *= TBNMatrix;\n"
-    "}\n";
-    osg::ref_ptr< osg::Shader > vertexShader = new osg::Shader();
-    vertexShader->setType( osg::Shader::VERTEX );
-    vertexShader->setShaderSource( vertexSource );
+        "}\n";
+        vertexShader = new osg::Shader();
+        vertexShader->setType( osg::Shader::VERTEX );
+        vertexShader->setShaderSource( vertexSource );
+    }
+    else
+    {
+        vertexShader = osg::Shader::readShaderFile( osg::Shader::VERTEX, shaderName );
+    }
     vertexShader->setName( "parallax vertex shader" );
-#endif
+
     osg::ref_ptr< osg::Program > program = new osg::Program();
     program->addShader( vertexShader.get() );
     program->addShader( fragmentShader.get() );

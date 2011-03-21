@@ -29,12 +29,14 @@ void main()
 {
     //determine if we are going to use the height map
     float height = 0.;
+    float v = 0.;
     if( useHeightMap )
     {
         height = texture2D( heightMap, gl_TexCoord[ 0 ].st ).r;
+        vec2 scaleBias = vec2( 0.06, 0.03 );
+        v = height * scaleBias.s - scaleBias.t;
     }
-    vec2 scaleBias = vec2( 0.06, 0.03 );
-    float v = height * scaleBias.s - scaleBias.t;
+
     vec3 V = normalize( v_viewVector );
     vec2 texCoords = gl_TexCoord[ 0 ].st + ( V.xy * v );
 
@@ -54,7 +56,7 @@ void main()
     float RdotL = max( dot( R, L ), 0.0 );
 
     //
-    float specularPower = 16.0;
+    float specularPower = 50.0;
     vec3 base = texture2D( baseMap, texCoords ).rgb;
     vec3 ambient = vec3( 0.368627, 0.368421, 0.368421 ) * base;
     vec3 diffuse = vec3( 0.886275, 0.885003, 0.885003 ) * base * NdotL;
