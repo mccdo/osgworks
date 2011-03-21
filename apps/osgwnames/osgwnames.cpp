@@ -24,6 +24,7 @@
 
 #include <string>
 
+/* \cond */
 class ShowNodeNamesVisitor : public osg::NodeVisitor
 {
 public:
@@ -60,7 +61,7 @@ protected:
     int _level;
     bool _showGeodes;
 };
-
+/* \endcond */
 
 int
 main( int argc,

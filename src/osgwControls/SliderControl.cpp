@@ -27,7 +27,7 @@
 
 using namespace osgwControls;
 
-
+/* \cond */
 class SliderCallback :public osg::NodeCallback
 {
 public:
@@ -65,7 +65,6 @@ protected:
 
 };
 
-/* \cond */
 class ButtonPickHandler : public osgGA::GUIEventHandler
 {   
 public:

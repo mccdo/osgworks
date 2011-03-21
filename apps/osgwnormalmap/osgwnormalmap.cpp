@@ -39,6 +39,7 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////
+/* \cond */
 class TSGVisitor : public osg::NodeVisitor
 {
 public:
@@ -89,12 +90,12 @@ private:
     ///
     void PrepareGeometry( osg::Geometry* const geometry )
     {
-        //Create the tangent, binormal, and normal array data
+        /// Create the tangent, binormal, and normal array data.
         osg::ref_ptr< osgUtil::TangentSpaceGenerator > tsg =
             new osgUtil::TangentSpaceGenerator;
             tsg->generate( geometry, m_normalMapTexUnit );
         
-        //Assign the tangent array data
+        /// Assign the tangent array data.
         if( !geometry->getVertexAttribArray( m_tangentIndex ) )
         {
             geometry->setVertexAttribData(
@@ -108,7 +109,7 @@ private:
             ;
         }
         
-        //Assign the binormal array data
+        /// Assign the binormal array data.
         if( !geometry->getVertexAttribArray( m_binormalIndex ) )
         {
             geometry->setVertexAttribData(
@@ -122,7 +123,7 @@ private:
             ;
         }
         
-        //Assign the normal array data
+        /// Assign the normal array data. 
         if( !geometry->getVertexAttribArray( m_normalIndex ) )
         {
             geometry->setVertexAttribData(
@@ -148,6 +149,7 @@ private:
     ///
     unsigned int m_normalIndex;
 };
+/* \endcond */
 ////////////////////////////////////////////////////////////////////////////////
 void addShaders( osg::Node* node, osg::Image* baseImage, osg::Image* normalImage, osg::Image* heightImage )
 {
@@ -428,7 +430,7 @@ int main( int argc, char** argv )
 
 
 /** \page osgwnormalmap The osgwnormalmap Application
-osgwnormalmap maps the specified normal map to the loaded file. We are assuming
+osgwnormalmap maps the specified normal map to the loaded file. We're assuming
 that texture unit 0 contains the base texture for the model.
 
 \code
@@ -438,20 +440,20 @@ C:\Projects>osgwnormalmap --normal file.dds --height file2.dds file.ive
 \section clp Command Line Parameters
 <table border="0">
   <tr>
-    <td><b>--normal</b></td>
-    <td>Supply a normal texture. This is required.</td>
+    <td><b>--normal <filename></b></td>
+    <td>Specifies a normal texture. This is required.</td>
   </tr>
   <tr>
-    <td><b>--height</b></td>
-    <td>Supply a height map if desired.</td>
+    <td><b>--height <filename></b></td>
+    <td>Specifies a height map if desired.</td>
   </tr>
   <tr>
-    <td><b>--base</b></td>
-    <td>Supply a base map if the loaded model does not contain a base texture in unit 0.</td>
+    <td><b>--base <filename></b></td>
+    <td>Specifies a base map if the loaded model doesn't contain a base texture in unit 0.</td>
   </tr>
   <tr>
-    <td><b>-v/--version</b></td>
-    <td>Display the osgWorks version string.</td>
+    <td><b>-v/--version <filename></b></td>
+    <td>Displays the osgWorks version string.</td>
   </tr>
 </table>
 */

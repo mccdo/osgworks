@@ -28,7 +28,7 @@
 osgViewer::Viewer viewer;
 
 
-/** \cond */
+/* \cond */
 
 class KeyHandler : public osgGA::GUIEventHandler
 {
@@ -184,7 +184,7 @@ public:
     }
 };
 
-/** \endcond */
+/* \endcond */
 
 
 

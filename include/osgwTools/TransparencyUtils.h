@@ -40,10 +40,11 @@ namespace osgwTools
 
 
 /** \brief Recursively restores opacity on a subgraph.
- Consider this visitor as part of the implementation of transparentDisable(),
- which invokes this visitor when the \c recursive parameter is true.
- Therefore, apps should call transparentDisable(), rather than invoke this
- visitor directly.
+
+Consider this visitor as part of the implementation of transparentDisable(),
+which invokes this visitor when the \c recursive parameter is True.
+Therefore, apps should call transparentDisable(), rather than invoke this
+visitor directly.
  */
 class OSGWTOOLS_EXPORT RestoreOpacityVisitor : public osg::NodeVisitor
 {
@@ -180,7 +181,8 @@ OSGWTOOLS_EXPORT bool isTransparent( const osg::StateSet* stateSet );
 
 
 
-/** \brief Finds StateSets with nominal transparency and marks the transparent state as PROTECTED.
+/** \brief Finds StateSets with nominal transparency and marks the transparent state as PROTECTED
+
 The function runs this Node visitor on scene graphs (for example, loaded models) that already potentially  
 contain transparency. The visitor marks the transparent state as PROTECTED, so  
 subsequently enabling transparency on an ancestor Node does not affect the

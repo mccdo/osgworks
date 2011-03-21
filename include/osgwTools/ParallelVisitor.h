@@ -32,8 +32,8 @@ namespace osgwTools
 {
 
 
-/** Simultaneously walk two scene graphs
-and execute a call back if Nodes are not identical. */
+/** \brief Simultaneously walks two scene graphs
+and executes a callback if Nodes are not identical */
 class OSGWTOOLS_EXPORT ParallelVisitor
 {
 public:

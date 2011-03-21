@@ -36,7 +36,7 @@ namespace osgwTools
 {
 
 
-/** Finds LOD Nodes and collapses them to have only one (the highest LOD) child.
+/** \brief Finds LOD Nodes and collapses them to have only one child (the highest LOD)
 
 \deprecated Please use \ref CollapseLOD instead.
 
