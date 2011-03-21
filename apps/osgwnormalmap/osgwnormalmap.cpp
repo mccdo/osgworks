@@ -264,11 +264,13 @@ void addShaders( osg::Node* node, osg::Image* baseImage, osg::Image* normalImage
         fragmentShader = new osg::Shader();
         fragmentShader->setType( osg::Shader::FRAGMENT );
         fragmentShader->setShaderSource( fragmentSource );
+        osg::notify( osg::ALWAYS ) << "Using the inline fragment shader." << std::endl;
     }
     else
     {
         fragmentShader = 
             osg::Shader::readShaderFile( osg::Shader::FRAGMENT, shaderName );
+        osg::notify( osg::ALWAYS ) << "Using the file fragment shader." << std::endl;
     }
     fragmentShader->setName( "parallax frag shader" );
 
@@ -309,10 +311,12 @@ void addShaders( osg::Node* node, osg::Image* baseImage, osg::Image* normalImage
         vertexShader = new osg::Shader();
         vertexShader->setType( osg::Shader::VERTEX );
         vertexShader->setShaderSource( vertexSource );
+        osg::notify( osg::ALWAYS ) << "Using the inline vertex shader." << std::endl;
     }
     else
     {
         vertexShader = osg::Shader::readShaderFile( osg::Shader::VERTEX, shaderName );
+        osg::notify( osg::ALWAYS ) << "Using the file vertex shader." << std::endl;
     }
     vertexShader->setName( "parallax vertex shader" );
 
