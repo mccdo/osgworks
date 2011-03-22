@@ -40,9 +40,9 @@ to perform various tasks.
 class OSGWTOOLS_EXPORT GeometryModifier : public osg::NodeVisitor
 {
 public:
-    GeometryModifier();
+    GeometryModifier( const osg::NodeVisitor::TraversalMode mode=osg::NodeVisitor::TRAVERSE_ALL_CHILDREN );
     GeometryModifier( GeometryOperation* geomOp );
-    ~GeometryModifier();
+    virtual ~GeometryModifier();
 
 #if( OSGWORKS_OSG_VERSION >= 20800 )
     META_NodeVisitor(osgwTools,GeometryModifier)

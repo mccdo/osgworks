@@ -40,6 +40,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 /* \cond */
+// TBD This can be removed and replaced with the TangentSpaceOp class.
 class TSGVisitor : public osg::NodeVisitor
 {
 public:
