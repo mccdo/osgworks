@@ -46,7 +46,7 @@ and example programs.
 \section LibrariesSection Libraries
 
 \subsection osgwTools osgwTools
-\subsection osgwControls osgwTools
+\subsection osgwControls osgwControls
 
 \section PluginsSection Plugins
 

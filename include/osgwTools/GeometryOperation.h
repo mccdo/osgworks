@@ -51,7 +51,7 @@ protected:
 
 #endif
 
-/** \page "Overview of osgWorks Polygon Decimation Tools"
+/** \page geomopt Overview of osgWorks Polygon Decimation Tools
 
 The osgWorks Polygon Decimation tools reduce scene graph geometry. The 
 decimation process output is a simplified geometric representation suitable 

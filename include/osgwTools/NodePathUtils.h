@@ -80,7 +80,8 @@ NULL returns if all data fails to match.
 /*@{*/
 
 
-/** Stores node data and is a basic element of the IndexedNodePath container.
+/** \brief Stores node data and is a basic element of the IndexedNodePath container.
+
 \see NodePathUtils
 */
 struct NodeData

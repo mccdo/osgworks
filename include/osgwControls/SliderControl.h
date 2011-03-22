@@ -38,6 +38,8 @@
 namespace osgwControls {
 
 
+/** \brief A 3D slider device.
+*/
 class OSGWCONTROLS_EXPORT SliderControl
 {
 public:

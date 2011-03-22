@@ -36,7 +36,7 @@ writing scene graph hierarchy information.
 /** \addtogroup Skeleton
 @{*/
 
-/** Runs the RemoveData visitor on the scene graph before exporting it.
+/** \brief Runs the RemoveData visitor on the scene graph before exporting it.
 */
 class ReaderWriterSkeleton : public osgDB::ReaderWriter
 {
