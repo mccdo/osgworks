@@ -33,7 +33,7 @@
 // operations to always succeed. This class explicitly loads a .skel plugin. We
 // don't really care which one it finds and loads, as long as it succeeds. A
 // static variable is declared below. The constructor should be invoked when the
-// executable and osgBulletPlus shared library are loaded, before main() starts to
+// executable and shared library are loaded, before main() starts to
 // execite.
 //
 /* \cond */

@@ -41,7 +41,7 @@ public:
     ReducerOp();
     ReducerOp( const ReducerOp& rhs, const osg::CopyOp& copyOp=osg::CopyOp::SHALLOW_COPY );
 
-    META_Object(osgBullet,ReducerOp);
+    META_Object(osgwTools,ReducerOp);
 
     virtual osg::Geometry* operator()( osg::Geometry& geom );
 

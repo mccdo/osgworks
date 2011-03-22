@@ -45,7 +45,7 @@ public:
     ~GeometryModifier();
 
 #if( OSGWORKS_OSG_VERSION >= 20800 )
-    META_NodeVisitor(osgBullet,GeometryModifier)
+    META_NodeVisitor(osgwTools,GeometryModifier)
 #endif
 
     void setGeometryOperation( GeometryOperation* geomOp ) { _geomOp = geomOp; }
