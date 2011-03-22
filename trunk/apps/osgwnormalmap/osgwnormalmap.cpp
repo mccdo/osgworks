@@ -20,12 +20,12 @@
 
 #include "osgwTools/Version.h"
 
+#include "osgwTools/GeometryModifier.h"
+#include "osgwTools/TangentSpaceOp.h"
+
 #include <osg/ArgumentParser>
-#include <osg/NodeVisitor>
 #include <osg/Texture2D>
 #include <osg/io_utils>
-
-#include <osgUtil/TangentSpaceGenerator>
 
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
@@ -38,119 +38,6 @@
 #include <iostream>
 
 
-////////////////////////////////////////////////////////////////////////////////
-/* \cond */
-// TBD This can be removed and replaced with the TangentSpaceOp class.
-class TSGVisitor : public osg::NodeVisitor
-{
-public:
-    ///Constructor
-    TSGVisitor(
-               osg::Node* const node,
-               unsigned int normalMapTexUnit,
-               unsigned int tangentIndex = 6,
-               unsigned int binormalIndex = 7,
-               unsigned int normalIndex = 15 )
-        :
-        osg::NodeVisitor( osg::NodeVisitor::TRAVERSE_ALL_CHILDREN ),
-        m_normalMapTexUnit( normalMapTexUnit ),
-        m_tangentIndex( tangentIndex ),
-        m_binormalIndex( binormalIndex ),
-        m_normalIndex( normalIndex )
-    {
-        node->accept( *this );
-    }
-    
-    ///Destructor
-    virtual ~TSGVisitor()
-    {
-        ;
-    }
-    ///
-    META_NodeVisitor( osgw, TSGVisitor );
-    
-    ///
-    virtual void apply( osg::Geode& geode )
-    {
-        for( unsigned int i = 0; i < geode.getNumDrawables(); ++i )
-        {
-            osg::Geometry* geometry =
-            static_cast< osg::Geometry* >( geode.getDrawable( i ) );
-            if( geometry )
-            {
-                PrepareGeometry( geometry );
-            }
-        }
-        
-        osg::NodeVisitor::apply( geode );
-    }
-
-protected:
-    
-private:
-    ///
-    void PrepareGeometry( osg::Geometry* const geometry )
-    {
-        /// Create the tangent, binormal, and normal array data.
-        osg::ref_ptr< osgUtil::TangentSpaceGenerator > tsg =
-            new osgUtil::TangentSpaceGenerator;
-            tsg->generate( geometry, m_normalMapTexUnit );
-        
-        /// Assign the tangent array data.
-        if( !geometry->getVertexAttribArray( m_tangentIndex ) )
-        {
-            geometry->setVertexAttribData(
-                m_tangentIndex,
-                osg::Geometry::ArrayData(
-                tsg->getTangentArray(),
-                osg::Geometry::BIND_PER_VERTEX, GL_FALSE ) );
-        }
-        else
-        {
-            ;
-        }
-        
-        /// Assign the binormal array data.
-        if( !geometry->getVertexAttribArray( m_binormalIndex ) )
-        {
-            geometry->setVertexAttribData(
-                m_binormalIndex,
-                osg::Geometry::ArrayData(
-                tsg->getBinormalArray(),
-                osg::Geometry::BIND_PER_VERTEX, GL_FALSE ) );
-        }
-        else
-        {
-            ;
-        }
-        
-        /// Assign the normal array data. 
-        if( !geometry->getVertexAttribArray( m_normalIndex ) )
-        {
-            geometry->setVertexAttribData(
-                m_normalIndex,
-                osg::Geometry::ArrayData(
-                tsg->getNormalArray(),
-                osg::Geometry::BIND_PER_VERTEX, GL_FALSE ) );
-        }
-        else
-        {
-            ;
-        }
-    }
-    ///
-    unsigned int m_normalMapTexUnit;
-    
-    ///
-    unsigned int m_tangentIndex;
-    
-    ///
-    unsigned int m_binormalIndex;
-    
-    ///
-    unsigned int m_normalIndex;
-};
-/* \endcond */
 ////////////////////////////////////////////////////////////////////////////////
 void addShaders( osg::Node* node, osg::Image* baseImage, osg::Image* normalImage, osg::Image* heightImage )
 {
@@ -332,7 +219,10 @@ void addShaders( osg::Node* node, osg::Image* baseImage, osg::Image* normalImage
     stateSet->setAttribute( program.get(), osg::StateAttribute::ON );
     
     ///Now process the geometry
-    TSGVisitor tsgVisitor( node, 0 );    
+    //TSGVisitor tsgVisitor( node, 0 );    
+    osgwTools::TangentSpaceOp* tso = new osgwTools::TangentSpaceOp;
+    osgwTools::GeometryModifier gm( tso );
+    node->accept( gm );
 }
 ////////////////////////////////////////////////////////////////////////////////
 int main( int argc, char** argv )

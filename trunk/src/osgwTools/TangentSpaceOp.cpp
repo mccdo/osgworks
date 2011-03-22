@@ -71,11 +71,16 @@ TangentSpaceOp::operator()( osg::Geometry& geom )
     _tsg->generate( &geom, _normalMapTextureUnit );
 
     if( geom.getVertexAttribArray( _normalIndex ) == NULL )
-        geom.setVertexAttribArray( _normalIndex, _tsg->getNormalArray() );
+        geom.setVertexAttribData( _normalIndex,
+            osg::Geometry::ArrayData( _tsg->getNormalArray(), osg::Geometry::BIND_PER_VERTEX ) );
+
     if( geom.getVertexAttribArray( _tangentIndex ) == NULL )
-        geom.setVertexAttribArray( _tangentIndex, _tsg->getTangentArray() );
+        geom.setVertexAttribData( _tangentIndex,
+            osg::Geometry::ArrayData( _tsg->getTangentArray(), osg::Geometry::BIND_PER_VERTEX ) );
+
     if( geom.getVertexAttribArray( _binormalIndex ) == NULL )
-        geom.setVertexAttribArray( _binormalIndex, _tsg->getBinormalArray() );
+        geom.setVertexAttribData( _binormalIndex,
+            osg::Geometry::ArrayData( _tsg->getBinormalArray(), osg::Geometry::BIND_PER_VERTEX ) );
 
     return( &geom );
 }
