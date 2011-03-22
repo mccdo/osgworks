@@ -87,6 +87,7 @@ protected:
 
     typedef std::list< osg::ref_ptr< osg::Image > > ImageList;
 
+    /* \cond */
     class WriteImageThread : public OpenThreads::Thread
     {
     public:
@@ -96,7 +97,7 @@ protected:
         WriteImageThread();
 
         virtual void run();
-    };
+    }; /* \endcond */
     mutable WriteImageThread* wit_;
 };
 

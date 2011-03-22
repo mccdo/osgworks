@@ -31,7 +31,9 @@
 namespace osgwTools {
 
 
-/**
+/** \brief Reduces geometry by removing vertices without adding new vertices.
+
+For more information, see \ref geomopt
 */
 class OSGWTOOLS_EXPORT ReducerOp : public GeometryOperation
 {
@@ -62,7 +64,7 @@ protected:
     bool _removeDegenerateAndRedundantTriangles;
 
 
-
+    /* \cond */
     struct Tri
     {
         Tri( int v0, int v1, int v2, const osg::Vec3Array* verts=NULL )
@@ -91,11 +93,12 @@ protected:
 
         unsigned int _v0, _v1, _v2;
         osg::Vec3 _norm;
-    };
+    }; /* \endcond */
     typedef std::vector< Tri > TriList;
     typedef std::vector< TriList > TriListList;
     typedef std::map< unsigned int, TriList > VertToTriMap;
 
+    /* \cond */
     struct Edge
     {
         Edge( int a, int b, bool sort=true )
@@ -121,7 +124,7 @@ protected:
         }
 
         unsigned int _a, _b;
-    };
+    }; /* \endcond */
     typedef std::vector< Edge > EdgeList;
     typedef std::map< Edge, TriList > EdgeToTriMap;
 

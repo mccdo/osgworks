@@ -26,7 +26,9 @@
 namespace osgwTools {
 
 
-/**
+/** \brief An osgUtil::Simplifier-like geometry reduction tool capable of removing edge vertices.
+
+For more information, see \ref geomopt
 */
 class OSGWTOOLS_EXPORT DecimatorOp : public GeometryOperation
 {
