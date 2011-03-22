@@ -27,8 +27,8 @@
 
 namespace osgwTools {
 
-GeometryModifier::GeometryModifier()
-  : osg::NodeVisitor( osg::NodeVisitor::TRAVERSE_ALL_CHILDREN )
+GeometryModifier::GeometryModifier( const osg::NodeVisitor::TraversalMode mode )
+  : osg::NodeVisitor( mode )
 {
     reset();
 }
