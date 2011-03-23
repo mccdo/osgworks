@@ -58,6 +58,8 @@ public:
     void setMinPrimatives(unsigned int minPrim){_minPrim = minPrim;}
     unsigned int getMinPrimatives() const { return _minPrim;}
 
+    /** \brief Application control mechanism to continue or halt decimation.
+    */
     class ContinueDecimationCallback : public osg::Referenced
         {
             public:
