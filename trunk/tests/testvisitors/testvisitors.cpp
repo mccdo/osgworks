@@ -68,18 +68,18 @@ public:
 				childThree = new osg::Node;
 				childThree->setName("childThree");
 
-				topLevelGroup->addChild(midLOD);
-				midLOD->addChild(childA, 0.0f, 10.0f);
-				midLOD->addChild(childB, 10.0f, 100.0f);
-				midLOD->addChild(childC, 100.0f, 1000.0f);
-				midLOD->addChild(bottomLevelGroup, 1000.0f, 100000.0f);
-				bottomLevelGroup->addChild(bottomLOD);
-				bottomLOD->addChild(childOne, 0.0f, 10.0f);
-				bottomLOD->addChild(childTwo, 10.0f, 100.0f);
-				bottomLOD->addChild(childThree, 100.0f, 1000.0f);
+				topLevelGroup->addChild( midLOD.get() );
+				midLOD->addChild(childA.get(), 0.0f, 10.0f);
+				midLOD->addChild(childB.get(), 10.0f, 100.0f);
+				midLOD->addChild(childC.get(), 100.0f, 1000.0f);
+				midLOD->addChild(bottomLevelGroup.get(), 1000.0f, 100000.0f);
+				bottomLevelGroup->addChild(bottomLOD.get());
+				bottomLOD->addChild(childOne.get(), 0.0f, 10.0f);
+				bottomLOD->addChild(childTwo.get(), 10.0f, 100.0f);
+				bottomLOD->addChild(childThree.get(), 100.0f, 1000.0f);
 
 				// add topLevelGroup to scene root
-				viewer.setSceneData(topLevelGroup);
+				viewer.setSceneData(topLevelGroup.get());
 				// write out a file showing topology before processing
 			    osgDB::writeNodeFile(*topLevelGroup, "lodvisitor_before.dot" );
                 return( true );
@@ -115,19 +115,19 @@ public:
 				topLevelSecondChild = new osg::Node;
 				topLevelSecondChild->setName("topLevelSecondChild");
 
-				topLevelLOD->addChild(midLOD, 0.0f, 10000.0f);
-				topLevelLOD->addChild(topLevelSecondChild, 10000.0f, 100000.0f);
-				midLOD->addChild(childA, 0.0f, 10.0f);
-				midLOD->addChild(childB, 10.0f, 100.0f);
-				midLOD->addChild(childC, 100.0f, 1000.0f);
-				midLOD->addChild(bottomLevelGroup, 1000.0f, 100000.0f);
-				bottomLevelGroup->addChild(bottomLOD);
-				bottomLOD->addChild(childOne, 0.0f, 10.0f);
-				bottomLOD->addChild(childTwo, 10.0f, 100.0f);
-				bottomLOD->addChild(childThree, 100.0f, 1000.0f);
+				topLevelLOD->addChild(midLOD.get(), 0.0f, 10000.0f);
+				topLevelLOD->addChild(topLevelSecondChild.get(), 10000.0f, 100000.0f);
+				midLOD->addChild(childA.get(), 0.0f, 10.0f);
+				midLOD->addChild(childB.get(), 10.0f, 100.0f);
+				midLOD->addChild(childC.get(), 100.0f, 1000.0f);
+				midLOD->addChild(bottomLevelGroup.get(), 1000.0f, 100000.0f);
+				bottomLevelGroup->addChild(bottomLOD.get());
+				bottomLOD->addChild(childOne.get(), 0.0f, 10.0f);
+				bottomLOD->addChild(childTwo.get(), 10.0f, 100.0f);
+				bottomLOD->addChild(childThree.get(), 100.0f, 1000.0f);
 
 				// add topLevelGroup to scene root
-				viewer.setSceneData(topLevelLOD);
+				viewer.setSceneData( topLevelLOD.get() );
 				// write out a file showing topology before processing
 			    osgDB::writeNodeFile(*topLevelLOD, "lodvisitor_complex_before.dot" );
 				// write scene file for human examination
@@ -150,7 +150,7 @@ public:
             {
 				osg::ref_ptr<osgwTools::HighestLODChildSelectorCallback> selectorCallback;
 				selectorCallback = new osgwTools::HighestLODChildSelectorCallback;
-				if(osgwTools::CollapseLOD *colLOD = new osgwTools::CollapseLOD(selectorCallback, osgwTools::CollapseLOD::COLLAPSE_TO_PARENT))
+				if(osgwTools::CollapseLOD *colLOD = new osgwTools::CollapseLOD(selectorCallback.get(), osgwTools::CollapseLOD::COLLAPSE_TO_PARENT))
                 {
 					osg::notify( osg::WARN ) << "Running osgwTools::CollapseLOD" << std::endl;
 					colLOD->traverse(*(viewer.getSceneData())); // collect the LODs to process
@@ -168,7 +168,7 @@ public:
 				// we can't rewrite the existing root node in-place. But this is an uncommon situation and easily avoidable.
 				osg::ref_ptr<osgwTools::HighestLODChildSelectorCallback> selectorCallback;
 				selectorCallback = new osgwTools::HighestLODChildSelectorCallback;
-				if(osgwTools::CollapseLOD *colLOD = new osgwTools::CollapseLOD(selectorCallback, osgwTools::CollapseLOD::COLLAPSE_TO_PARENT))
+				if(osgwTools::CollapseLOD *colLOD = new osgwTools::CollapseLOD(selectorCallback.get(), osgwTools::CollapseLOD::COLLAPSE_TO_PARENT))
                 {
 					osg::notify( osg::WARN ) << "Running osgwTools::CollapseLOD" << std::endl;
 					viewer.getSceneData()->accept(*colLOD); // collect the LODs to process
