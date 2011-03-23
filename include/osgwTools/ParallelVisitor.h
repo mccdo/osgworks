@@ -45,6 +45,7 @@ public:
     bool compare();
 
     /** \brief Callback executed if isMatch(nodeA,nodeB) returns False.
+
     Typical usage: isMatch detects that Nodes differ; callback
     performs operations to sync them. */
     struct ParallelVisitorCallback
