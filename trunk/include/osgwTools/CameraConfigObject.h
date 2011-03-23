@@ -46,7 +46,7 @@ to osg::NOTICE and returns false.
 bool OSGWTOOLS_EXPORT configureViewer( osgViewer::Viewer& viewer, const std::string& configFile="" );
 
 
-/** A chunk of info for configuring a single slave camera, as
+/** \brief A chunk of info for configuring a single slave camera, as
 found in osgViewer::View. */
 class OSGWTOOLS_EXPORT CameraConfigInfo : public osg::Object
 {
@@ -69,8 +69,9 @@ protected:
 typedef std::vector< osg::ref_ptr< CameraConfigInfo > > CameraConfigList;
 
 
-/**
-A chunk of information for configuring a viewer. Your application can read and write this object to .osg 
+/** \brief A chunk of information for configuring a viewer. 
+
+Your application can read and write this object to .osg 
 files to save and restore Viewer configurations. */
 class OSGWTOOLS_EXPORT CameraConfigObject : public osg::Object
 {

@@ -31,8 +31,8 @@
 namespace osgwTools {
 
 
-/** \brief A geometry reduction wrapper around the osgUtil::Simplifier.
-*/
+/** \brief A geometry reduction wrapper around the osgUtil::Simplifier.*/
+
 class OSGWTOOLS_EXPORT SimplifierOp : public GeometryOperation
 {
 public:
