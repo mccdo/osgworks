@@ -619,7 +619,7 @@ const buildCircleData (float radius, const unsigned int subdivisions, const osg:
 
     // Find ideal base vector (at 90 degree angle to normalVec)
     osg::Vec3 crossVec( 1., 0., 0. );
-    if( normalVec * crossVec > .9 )
+    if( osg::absolute( normalVec * crossVec ) > .9 )
         crossVec = osg::Vec3( 0., 1., 0. );
     osg::Vec3 baseVec = normalVec ^ crossVec;
     baseVec.normalize();
