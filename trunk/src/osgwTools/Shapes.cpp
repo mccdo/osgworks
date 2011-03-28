@@ -411,14 +411,14 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
     for( latCounter=numLat+1; latCounter>0; latCounter-- )
     {
         const double t( (double)(latCounter-1) / (double)numLat );
-        const double latAngle( (t-0.5) * osg::PI );
+        const double latAngle( (t-0.5) * osg::PI ); // latAngle is in range (-pi/2,pi/2) radians.
         const osg::Vec3 baseVec( cos( latAngle ), 0., sin( latAngle ) );
 
         unsigned int longCounter;
         for( longCounter=0; longCounter<numLong; longCounter++ )
         {
             const double s( (double)longCounter / (double)numLong );
-            const double longAngle( s * 2.0 * osg::PI );
+            const double longAngle( s * 2.0 * osg::PI ); // longAngle is in range (0,2pi) radians.
             const double sinAngle( sin( longAngle ) );
             const double cosAngle( cos( longAngle ) );
 
@@ -628,7 +628,7 @@ const buildCircleData (float radius, const unsigned int subdivisions, const osg:
 	for( subCounter=0; subCounter<=numSub; subCounter++ )
     {
         const double t( (double)(subCounter) / (double)numSub );
-        const double subAngle( t * osg::PI * 2.);
+        const double subAngle( t * 2.0 * osg::PI);  // subAngle is in range (0,2pi) radians.
         osg::Matrix m( osg::Matrix::rotate( subAngle, normalVec ) );
         osg::Vec3 v( baseVec * m );
 
