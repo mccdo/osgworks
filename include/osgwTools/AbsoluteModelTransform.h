@@ -59,8 +59,8 @@ See the \ref Plugins module description.
 \ref osgwbvv visualizes OSG bounding volumes. \n
 \ref osgwcomp compares the structure of two scene graphs. \n
 \ref osgwnames displays the structure of a scene graph. \n
-\ref osgwwhich locates OSG data files and shared libraries. \n
-\ref osgwnormalmap maps the specified normal map to the loaded file.
+\ref osgwnormalmap maps the specified normal map to the loaded file. \n
+\ref osgwwhich locates OSG data files and shared libraries.
 */
 
 
