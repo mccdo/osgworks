@@ -1,5 +1,5 @@
 #summary osgWorks compatibility by version
 
 || *Release date* || *osgWorks* || *!OpenSceneGraph* ||
-|| 11 Sept 2010 || v1.1 || v2.6.1 - v2.8.3 ||
-|| 4 Nov 2008 || v1.0 || v2.6.1 - v2.8.3 ||
+|| 11 Sept 2010 || v1.1 || v2.6.1 - v2.8.4 ||
+|| 4 Nov 2008 || v1.0 || v2.6.1 - v2.8.4 ||
