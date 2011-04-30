@@ -50,12 +50,17 @@ MACRO( MAKE_EXECUTABLE EXENAME )
     TARGET_LINK_LIBRARIES( ${EXENAME}
         ${OSG_LIBRARIES}
     )
-    IF( CATEGORY STREQUAL "App" )
-        INSTALL(
+    if( CATEGORY STREQUAL "App" )
+        install(
             TARGETS ${EXENAME}
             RUNTIME DESTINATION bin COMPONENT libosgworks
         )
-    ENDIF( CATEGORY STREQUAL "App" )
+    else()
+        install(
+            TARGETS ${EXENAME}
+            RUNTIME DESTINATION share/${CMAKE_PROJECT_NAME}/bin COMPONENT libosgworks
+        )
+    endif()
     # Requires ${CATAGORY}
     SET_TARGET_PROPERTIES( ${EXENAME} PROPERTIES PROJECT_LABEL "${CATEGORY} ${EXENAME}" )
 ENDMACRO( MAKE_EXECUTABLE EXENAME )
