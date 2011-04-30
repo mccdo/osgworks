@@ -1,5 +1,4 @@
 set( _exeName testnodepathutils )
-set( CATEGORY Test )
 MAKE_EXECUTABLE( ${_exeName}
     testnodepathutils.cpp
 )
