@@ -1,3 +1,5 @@
+SET( CATEGORY Test )
+
 ADD_SUBDIRECTORY( amt )
 ADD_SUBDIRECTORY( callbacksupport )
 ADD_SUBDIRECTORY( cameraconfig )
