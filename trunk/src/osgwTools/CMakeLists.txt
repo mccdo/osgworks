@@ -12,6 +12,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/CallbackSupport.h
     ${HEADER_PATH}/CameraConfigObject.h
     ${HEADER_PATH}/CountStateSets.h
+    ${HEADER_PATH}/CountsVisitor.h
     ${HEADER_PATH}/DecimatorOp.h
     ${HEADER_PATH}/FBOUtils.h
     ${HEADER_PATH}/FindNamedNode.h
@@ -43,6 +44,7 @@ set( _osgwToolsSourceFiles
     CallbackSupport.cpp
     CameraConfigObject.cpp
     CountStateSets.cpp
+    CountsVisitor.cpp
     DecimatorOp.cpp
     FBOUtils.cpp
     FindNamedNode.cpp
