@@ -70,7 +70,10 @@ CountsVisitor::reset()
     _stateSets = 0;
     _uniforms = 0;
     _programs = 0;
-    _stateAttributes = 0;
+    _attributes = 0;
+    _modes = 0;
+    _texAttributes = 0;
+    _texModes = 0;
     _textures = 0;
     _primitiveSets = 0;
     _drawArrays = 0;
@@ -95,7 +98,8 @@ CountsVisitor::reset()
     _uStateSets.clear();
     _uUniforms.clear();
     _uPrograms.clear();
-    _uStateAttributes.clear();
+    _uAttributes.clear();
+    _uTexAttributes.clear();
     _uTextures.clear();
     _uPrimitiveSets.clear();
     _uDrawArrays.clear();
@@ -118,10 +122,13 @@ CountsVisitor::dump()
     std::cout << "   DOFTransforms \t" << _dofTransforms << "\t" << _uDofTransforms.size() << std::endl;
     std::cout << "          Geodes \t" << _geodes << "\t" << _uGeodes.size() << std::endl;
     std::cout << "       StateSets \t" << _stateSets << "\t" << _uStateSets.size() << std::endl;
-    std::cout << "        Textures \t" << _textures << "\t" << _uTextures.size() << std::endl;
-    std::cout << " StateAttributes \t" << _stateAttributes << "\t" << _uStateAttributes.size() << std::endl;
+    std::cout << "      Attributes \t" << _attributes << "\t" << _uAttributes.size() << std::endl;
+    std::cout << "           Modes \t" << _modes << std::endl;
+    std::cout << "   TexAttributes \t" << _texAttributes << "\t" << _uTexAttributes.size() << std::endl;
+    std::cout << "        TexModes \t" << _texModes << std::endl;
     std::cout << "        Programs \t" << _programs << "\t" << _uPrograms.size() << std::endl;
     std::cout << "        Uniforms \t" << _uniforms << "\t" << _uUniforms.size() << std::endl;
+    std::cout << "        Textures \t" << _textures << "\t" << _uTextures.size() << std::endl;
     std::cout << "       Drawables \t" << _drawables << "\t" << _uDrawables.size() << std::endl;
     std::cout << "      Geometries \t" << _geometries << "\t" << _uGeometries.size() << std::endl;
     std::cout << "           Texts \t" << _texts << "\t" << _uTexts.size() << std::endl;
@@ -146,9 +153,22 @@ void CountsVisitor::apply( osg::StateSet* stateSet )
     osg::ref_ptr<osg::Object> ssrp = (osg::Object*)stateSet;
     _uStateSets.insert( ssrp );
 
+    const osg::StateSet::TextureAttributeList& tal = stateSet->getTextureAttributeList();
+    const osg::StateSet::TextureModeList tml = stateSet->getTextureModeList();
     unsigned int idx;
-    for( idx=0; idx<32; idx++ )
+    for( idx=0; idx<tal.size(); idx++ )
     {
+        const osg::StateSet::AttributeList& al = tal[ idx ];
+        _texAttributes += al.size();
+        osg::StateSet::AttributeList::const_iterator ait;
+        for( ait=al.begin(); ait!=al.end(); ait++ )
+        {
+            osg::ref_ptr<osg::Object> arp = (osg::Object*)( ait->second.first.get() );
+            _uTexAttributes.insert( arp );
+        }
+
+        _texModes += tml[ idx ].size();
+
         osg::Texture* texture = static_cast< osg::Texture* >(
             stateSet->getTextureAttribute( idx, osg::StateAttribute::TEXTURE ) );
         if( texture != NULL )
@@ -160,13 +180,15 @@ void CountsVisitor::apply( osg::StateSet* stateSet )
     }
 
     const osg::StateSet::AttributeList& al = stateSet->getAttributeList();
-    _stateAttributes += al.size();
+    _attributes += al.size();
     osg::StateSet::AttributeList::const_iterator ait;
     for( ait=al.begin(); ait!=al.end(); ait++ )
     {
         osg::ref_ptr<osg::Object> arp = (osg::Object*)( ait->second.first.get() );
-        _uStateAttributes.insert( arp );
+        _uAttributes.insert( arp );
     }
+
+    _modes += stateSet->getModeList().size();
 
     osg::Program* program = static_cast< osg::Program* >(
         stateSet->getAttribute( osg::StateAttribute::PROGRAM ) );
