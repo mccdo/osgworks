@@ -60,7 +60,10 @@ protected:
     int _stateSets;
     int _uniforms;
     int _programs;
-    int _stateAttributes;
+    int _attributes;
+    int _texAttributes;
+    int _modes;
+    int _texModes;
     int _textures;
     int _primitiveSets;
     int _drawArrays;
@@ -86,7 +89,8 @@ protected:
     ObjectSet _uStateSets;
     ObjectSet _uUniforms;
     ObjectSet _uPrograms;
-    ObjectSet _uStateAttributes;
+    ObjectSet _uAttributes;
+    ObjectSet _uTexAttributes;
     ObjectSet _uTextures;
     ObjectSet _uPrimitiveSets;
     ObjectSet _uDrawArrays;
