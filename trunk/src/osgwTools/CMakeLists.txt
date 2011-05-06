@@ -33,6 +33,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/ScreenCapture.h
     ${HEADER_PATH}/Shapes.h
     ${HEADER_PATH}/SimplifierOp.h
+    ${HEADER_PATH}/StateSetUtils.h
     ${HEADER_PATH}/TangentSpaceOp.h
     ${HEADER_PATH}/Transform.h
     ${HEADER_PATH}/TransparencyUtils.h
@@ -66,6 +67,7 @@ set( _osgwToolsSourceFiles
     ScreenCapture.cpp
     Shapes.cpp
     SimplifierOp.cpp
+    StateSetUtils.cpp
     TangentSpaceOp.cpp
     Transform.cpp
     TransparencyUtils.cpp

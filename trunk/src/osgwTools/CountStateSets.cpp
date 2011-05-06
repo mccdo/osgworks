@@ -19,6 +19,7 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include "osgwTools/CountStateSets.h"
+#include <osgwTools/StateSetUtils.h>
 #include <osg/NodeVisitor>
 #include <osg/Geode>
 #include <osg/Drawable>
@@ -105,27 +106,7 @@ CountStateSets::processStateSet( osg::StateSet* ss )
     else
         _sharedStateSets++;
 
-    // TBD This could probably be in a utility function:
-    // bool isEmpty( osg::StateSet* ss );
-    // Sadly, "osg::StateSet::empty()" doesn't exist.
-    bool empty( true );
-    if( ss->getDataVariance() != osg::Object::STATIC )
-        empty = false;
-    else if( !ss->getModeList().empty() )
-        empty = false;
-    else if( !ss->getAttributeList().empty() )
-        empty = false;
-    else if( !ss->getTextureModeList().empty() )
-        empty = false;
-    else if( !ss->getTextureAttributeList().empty() )
-        empty = false;
-    else if( !ss->getUniformList().empty() )
-        empty = false;
-    else if( ss->getRenderBinMode() != osg::StateSet::INHERIT_RENDERBIN_DETAILS )
-        empty = false;
-    else if( !ss->getNestRenderBins() )
-        empty = false;
-
+    bool empty = osgwTools::isEmpty( *ss );
     if( empty )
         _emptyStateSets++;
     return( !empty );
