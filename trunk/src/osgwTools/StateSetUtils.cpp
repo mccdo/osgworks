@@ -18,6 +18,7 @@
  *
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
+#include <osgwTools/StateSetUtils.h>
 #include <osg/StateSet>
 #include <osg/Node>
 
