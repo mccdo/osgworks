@@ -37,6 +37,8 @@ namespace osgwTools
 
 
 /** \brief Removes specified data from the scene graph
+In v1.1.52, this visitor supports deleting empty StateSets.
+This task was formerly performed by the (deprecated) CountStateSets visitor.
 */
 class OSGWTOOLS_EXPORT RemoveData : public osg::NodeVisitor
 {
@@ -47,12 +49,13 @@ public:
     enum RemovalFlags {
         STATESETS = (0x1 << 0),
         STATESET_TEXTURES = (0x1 << 1),
-        DRAWABLES = (0x1 << 2),
-        GEOMETRY_ARRAYS = (0x1 << 3),
-        GEOMETRY_PRIMITIVESETS = (0x1 << 4),
-        GEODES = (0x1 << 5),
-        USERDATA = (0x1 << 6),
-        DESCRIPTIONS = (0x1 << 7),
+        EMPTY_STATESETS = (0x1 << 2),
+        DRAWABLES = (0x1 << 3),
+        GEOMETRY_ARRAYS = (0x1 << 4),
+        GEOMETRY_PRIMITIVESETS = (0x1 << 5),
+        GEODES = (0x1 << 6),
+        USERDATA = (0x1 << 7),
+        DESCRIPTIONS = (0x1 << 8),
         DEFAULT = ( STATESETS |
             DRAWABLES |
             DESCRIPTIONS ),
@@ -74,7 +77,7 @@ public:
 protected:
     unsigned int _removalFlags;
 
-    void apply( osg::StateSet& ss );
+    void apply( osg::StateSet* ss );
     void apply( osg::Geometry& geom );
 };
 

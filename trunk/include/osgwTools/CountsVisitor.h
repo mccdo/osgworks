@@ -61,6 +61,7 @@ protected:
     int _texts;
     int _vertices;
     int _stateSets;
+    int _emptyStateSets;
     int _uniforms;
     int _programs;
     int _attributes;
