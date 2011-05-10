@@ -4,6 +4,7 @@
 //
 
 #include <osgwTools/CountsVisitor.h>
+#include <osgwTools/StateSetUtils.h>
 #include <osg/LOD>
 #include <osg/PagedLOD>
 #include <osg/Switch>
@@ -73,6 +74,7 @@ CountsVisitor::reset()
     _texts = 0;
     _vertices = 0;
     _stateSets = 0;
+    _emptyStateSets = 0;
     _uniforms = 0;
     _programs = 0;
     _attributes = 0;
@@ -127,6 +129,7 @@ CountsVisitor::dump( std::ostream& ostr )
     ostr << "   DOFTransforms \t" << _dofTransforms << "\t" << _uDofTransforms.size() << std::endl;
     ostr << "          Geodes \t" << _geodes << "\t" << _uGeodes.size() << std::endl;
     ostr << "       StateSets \t" << _stateSets << "\t" << _uStateSets.size() << std::endl;
+    ostr << " Empty StateSets \t" << _emptyStateSets << std::endl;
     ostr << "      Attributes \t" << _attributes << "\t" << _uAttributes.size() << std::endl;
     ostr << "           Modes \t" << _modes << std::endl;
     ostr << "   TexAttributes \t" << _texAttributes << "\t" << _uTexAttributes.size() << std::endl;
@@ -157,6 +160,9 @@ void CountsVisitor::apply( osg::StateSet* stateSet )
     _stateSets++;
     osg::ref_ptr<osg::Object> ssrp = (osg::Object*)stateSet;
     _uStateSets.insert( ssrp );
+
+    if( osgwTools::isEmpty( *stateSet ) )
+        _emptyStateSets++;
 
     const osg::StateSet::TextureAttributeList& tal = stateSet->getTextureAttributeList();
     const osg::StateSet::TextureModeList tml = stateSet->getTextureModeList();

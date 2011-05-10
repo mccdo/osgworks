@@ -19,6 +19,7 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include "osgwTools/RemoveData.h"
+#include <osgwTools/StateSetUtils.h>
 #include <osg/NodeVisitor>
 #include <osg/Geode>
 #include <osg/StateSet>
@@ -69,6 +70,8 @@ RemoveData::flagsToString( unsigned int flags )
             str += "STATESETS ";
         else if( flags & STATESET_TEXTURES )
             str += "STATESET_TEXTURES ";
+        else if( flags & EMPTY_STATESETS )
+            str += "EMPTY_STATESETS ";
         else if( flags & DRAWABLES )
             str += "DRAWABLES ";
         else if( flags & GEOMETRY_ARRAYS )
@@ -113,6 +116,11 @@ RemoveData::stringToFlags( const std::string& str )
     else if( str.find( "STATESET_TEXTURES" ) != std::string::npos )
         flags |= STATESET_TEXTURES;
 
+    if( str.find( "~EMPTY_STATESETS" ) != std::string::npos )
+        flags |= ~EMPTY_STATESETS;
+    else if( str.find( "EMPTY_STATESETS" ) != std::string::npos )
+        flags |= EMPTY_STATESETS;
+
     if( str.find( "~DRAWABLES" ) != std::string::npos )
         flags |= ~DRAWABLES;
     else if( str.find( "DRAWABLES" ) != std::string::npos )
@@ -152,8 +160,12 @@ RemoveData::apply( osg::Node& node )
 {
     if( _removalFlags & STATESETS )
         node.setStateSet( NULL );
+    else if( ( _removalFlags & EMPTY_STATESETS ) &&
+            ( node.getStateSet() != NULL ) &&
+            ( isEmpty( *( node.getStateSet() ) ) ) )
+        node.setStateSet( NULL );
     else
-        apply( *(node.getStateSet()) );
+        apply( node.getStateSet() );
 
     if( _removalFlags & USERDATA )
         node.setUserData( NULL );
@@ -169,8 +181,12 @@ RemoveData::apply( osg::Group& node )
 {
     if( _removalFlags & STATESETS )
         node.setStateSet( NULL );
+    else if( ( _removalFlags & EMPTY_STATESETS ) &&
+            ( node.getStateSet() != NULL ) &&
+            ( isEmpty( *( node.getStateSet() ) ) ) )
+        node.setStateSet( NULL );
     else
-        apply( *(node.getStateSet()) );
+        apply( node.getStateSet() );
 
     if( _removalFlags & USERDATA )
         node.setUserData( NULL );
@@ -202,8 +218,12 @@ RemoveData::apply( osg::Geode& node )
 {
     if( _removalFlags & STATESETS )
         node.setStateSet( NULL );
+    else if( ( _removalFlags & EMPTY_STATESETS ) &&
+            ( node.getStateSet() != NULL ) &&
+            ( isEmpty( *( node.getStateSet() ) ) ) )
+        node.setStateSet( NULL );
     else
-        apply( *(node.getStateSet()) );
+        apply( node.getStateSet() );
 
     if( _removalFlags & USERDATA )
         node.setUserData( NULL );
@@ -220,6 +240,15 @@ RemoveData::apply( osg::Geode& node )
         {
             osg::Drawable* draw( node.getDrawable( idx ) );
 
+            if( _removalFlags & STATESETS )
+                draw->setStateSet( NULL );
+            else if( ( _removalFlags & EMPTY_STATESETS ) &&
+                    ( node.getStateSet() != NULL ) &&
+                    ( isEmpty( *( node.getStateSet() ) ) ) )
+                draw->setStateSet( NULL );
+            else
+                apply( draw->getStateSet() );
+
             if( _removalFlags & USERDATA )
                 draw->setUserData( NULL );
 
@@ -231,17 +260,20 @@ RemoveData::apply( osg::Geode& node )
 }
 
 void
-RemoveData::apply( osg::StateSet& ss )
+RemoveData::apply( osg::StateSet* ss )
 {
+    if( ss == NULL )
+        return;
+
     if( _removalFlags & STATESET_TEXTURES )
     {
         unsigned int idx;
         for( idx=0; idx<16; idx++ )
-            ss.setTextureAttribute( idx, NULL );
+            ss->setTextureAttribute( idx, NULL );
     }
 
     if( _removalFlags & USERDATA )
-        ss.setUserData( NULL );
+        ss->setUserData( NULL );
 }
 
 void
