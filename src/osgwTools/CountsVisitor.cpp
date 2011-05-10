@@ -19,10 +19,15 @@
 #include <osgSim/DOFTransform>
 #include <osgText/Text>
 #include <iostream>
+#include <map>
 
 
 namespace osgwTools
 {
+
+
+    typedef std::map< int, int > ModeCounter;
+    static ModeCounter mc;
 
 CountsVisitor::CountsVisitor( osg::NodeVisitor::TraversalMode mode )
   : osg::NodeVisitor( mode )
@@ -106,43 +111,43 @@ CountsVisitor::reset()
 }
 
 void
-CountsVisitor::dump()
+CountsVisitor::dump( std::ostream& ostr )
 {
-    std::cout << std::endl;
-    std::cout << "      OSG Object \tCount\tUnique" << std::endl;
-    std::cout << "      ---------- \t-----\t------" << std::endl;
-    std::cout << "           Nodes \t" << _nodes << "\t" << _uNodes.size() << std::endl;
-    std::cout << "          Groups \t" << _groups << "\t" << _uGroups.size() << std::endl;
-    std::cout << "            LODs \t" << _lods << "\t" << _uLods.size() << std::endl;
-    std::cout << "       PagedLODs \t" << _pagedLods << "\t" << _uPagedLods.size() << std::endl;
-    std::cout << "        Switches \t" << _switches << "\t" << _uSwitches.size() << std::endl;
-    std::cout << "       Sequences \t" << _sequences << "\t" << _uSequences.size() << std::endl;
-    std::cout << "      Transforms \t" << _transforms << "\t" << _uTransforms.size() << std::endl;
-    std::cout << "MatrixTransforms \t" << _matrixTransforms << "\t" << _uMatrixTransforms.size() << std::endl;
-    std::cout << "   DOFTransforms \t" << _dofTransforms << "\t" << _uDofTransforms.size() << std::endl;
-    std::cout << "          Geodes \t" << _geodes << "\t" << _uGeodes.size() << std::endl;
-    std::cout << "       StateSets \t" << _stateSets << "\t" << _uStateSets.size() << std::endl;
-    std::cout << "      Attributes \t" << _attributes << "\t" << _uAttributes.size() << std::endl;
-    std::cout << "           Modes \t" << _modes << std::endl;
-    std::cout << "   TexAttributes \t" << _texAttributes << "\t" << _uTexAttributes.size() << std::endl;
-    std::cout << "        TexModes \t" << _texModes << std::endl;
-    std::cout << "        Programs \t" << _programs << "\t" << _uPrograms.size() << std::endl;
-    std::cout << "        Uniforms \t" << _uniforms << "\t" << _uUniforms.size() << std::endl;
-    std::cout << "        Textures \t" << _textures << "\t" << _uTextures.size() << std::endl;
-    std::cout << "       Drawables \t" << _drawables << "\t" << _uDrawables.size() << std::endl;
-    std::cout << "      Geometries \t" << _geometries << "\t" << _uGeometries.size() << std::endl;
-    std::cout << "           Texts \t" << _texts << "\t" << _uTexts.size() << std::endl;
-    std::cout << "   PrimitiveSets \t" << _primitiveSets << "\t" << _uPrimitiveSets.size() << std::endl;
-    std::cout << "      DrawArrays \t" << _drawArrays << "\t" << _uDrawArrays.size() << std::endl;
-    std::cout << " NULL Geometries \t" << _nullGeometries << std::endl;
+    ostr << std::endl;
+    ostr << "      OSG Object \tCount\tUnique" << std::endl;
+    ostr << "      ---------- \t-----\t------" << std::endl;
+    ostr << "           Nodes \t" << _nodes << "\t" << _uNodes.size() << std::endl;
+    ostr << "          Groups \t" << _groups << "\t" << _uGroups.size() << std::endl;
+    ostr << "            LODs \t" << _lods << "\t" << _uLods.size() << std::endl;
+    ostr << "       PagedLODs \t" << _pagedLods << "\t" << _uPagedLods.size() << std::endl;
+    ostr << "        Switches \t" << _switches << "\t" << _uSwitches.size() << std::endl;
+    ostr << "       Sequences \t" << _sequences << "\t" << _uSequences.size() << std::endl;
+    ostr << "      Transforms \t" << _transforms << "\t" << _uTransforms.size() << std::endl;
+    ostr << "MatrixTransforms \t" << _matrixTransforms << "\t" << _uMatrixTransforms.size() << std::endl;
+    ostr << "   DOFTransforms \t" << _dofTransforms << "\t" << _uDofTransforms.size() << std::endl;
+    ostr << "          Geodes \t" << _geodes << "\t" << _uGeodes.size() << std::endl;
+    ostr << "       StateSets \t" << _stateSets << "\t" << _uStateSets.size() << std::endl;
+    ostr << "      Attributes \t" << _attributes << "\t" << _uAttributes.size() << std::endl;
+    ostr << "           Modes \t" << _modes << std::endl;
+    ostr << "   TexAttributes \t" << _texAttributes << "\t" << _uTexAttributes.size() << std::endl;
+    ostr << "        TexModes \t" << _texModes << std::endl;
+    ostr << "        Programs \t" << _programs << "\t" << _uPrograms.size() << std::endl;
+    ostr << "        Uniforms \t" << _uniforms << "\t" << _uUniforms.size() << std::endl;
+    ostr << "        Textures \t" << _textures << "\t" << _uTextures.size() << std::endl;
+    ostr << "       Drawables \t" << _drawables << "\t" << _uDrawables.size() << std::endl;
+    ostr << "      Geometries \t" << _geometries << "\t" << _uGeometries.size() << std::endl;
+    ostr << "           Texts \t" << _texts << "\t" << _uTexts.size() << std::endl;
+    ostr << "   PrimitiveSets \t" << _primitiveSets << "\t" << _uPrimitiveSets.size() << std::endl;
+    ostr << "      DrawArrays \t" << _drawArrays << "\t" << _uDrawArrays.size() << std::endl;
+    ostr << " NULL Geometries \t" << _nullGeometries << std::endl;
 
     if (_slowPathGeometries)
-        std::cout << "Slow path Geometries: " << _slowPathGeometries << std::endl;
+        ostr << "Slow path Geometries: " << _slowPathGeometries << std::endl;
     float avgChildren = (float)_totalChildren / (float)(_nodes+_groups+_lods+_pagedLods+_switches+_sequences+_transforms+_matrixTransforms+_dofTransforms);
-    std::cout << "Average children per node: " << avgChildren << std::endl;
+    ostr << "Average children per node: " << avgChildren << std::endl;
 
-    std::cout << "Total vertices: " << _vertices << std::endl;
-    std::cout << "Max depth: " << _maxDepth << std::endl;
+    ostr << "Total vertices: " << _vertices << std::endl;
+    ostr << "Max depth: " << _maxDepth << std::endl;
 }
 
 void CountsVisitor::apply( osg::StateSet* stateSet )
@@ -189,6 +194,12 @@ void CountsVisitor::apply( osg::StateSet* stateSet )
     }
 
     _modes += stateSet->getModeList().size();
+    {
+        const osg::StateSet::ModeList& ml = stateSet->getModeList();
+        osg::StateSet::ModeList::const_iterator it;
+        for( it=ml.begin(); it != ml.end(); it++ )
+            mc[ it->first ] += 1;
+    }
 
     osg::Program* program = static_cast< osg::Program* >(
         stateSet->getAttribute( osg::StateAttribute::PROGRAM ) );

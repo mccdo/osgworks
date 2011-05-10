@@ -9,9 +9,12 @@
 #include <osgwTools/Export.h>
 #include <osg/NodeVisitor>
 #include <set>
+#include <iostream>
+
 
 namespace osgwTools
 {
+
 
 class OSGWTOOLS_EXPORT CountsVisitor : public osg::NodeVisitor
 {
@@ -21,7 +24,7 @@ public:
 
     void reset();
 
-    void dump();
+    void dump( std::ostream& ostr=std::cout );
 
     void apply( osg::Node& node );
     void apply( osg::Group& node );
