@@ -8,6 +8,7 @@
 
 #include <osgwTools/Export.h>
 #include <osg/NodeVisitor>
+#include <deque>
 #include <set>
 #include <iostream>
 
@@ -16,11 +17,20 @@ namespace osgwTools
 {
 
 
+/** \brief Accumulate information about a scene graph.
+TBD To be done: We should be able to "addUserMode/addUserAttribute" instead of just "set"
+so that we can accumulate counts for multiple modes and attributes. There needs to be an
+analogous system for adding texture modes and attributes. The dump() method should be able
+to display an arbitrary GLenum mode as ASCII string (without a dependency on GLU).
+*/
 class OSGWTOOLS_EXPORT CountsVisitor : public osg::NodeVisitor
 {
 public:
     CountsVisitor( osg::NodeVisitor::TraversalMode mode = osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN );
     ~CountsVisitor();
+
+    void setUserMode( GLenum userMode );
+    void setUserAttribute( osg::StateAttribute::Type userAttr );
 
     void reset();
 
@@ -38,42 +48,63 @@ public:
 
     void apply( osg::StateSet* stateSet );
 
-    int getVertices() const;
-    int getDrawArrays() const;
+    unsigned int getVertices() const;
+    unsigned int getDrawArrays() const;
+    unsigned int getTotalDrawables() const;
+    unsigned int getNumDrawablesUserModeOff() const;
 
 protected:
+    std::deque< osg::ref_ptr< osg::StateSet > > _stateStack;
+    void pushStateSet( osg::StateSet* ss );
+    void popStateSet();
+
+    bool isSet( GLenum stateItem, osg::StateSet* ss );
+    bool isEnabled( GLenum stateItem, osg::StateSet* ss );
+
+    GLenum _userMode;
+    bool _countUserMode;
+    osg::StateAttribute::Type _userAttr;
+    bool _countUserAttr;
+
     int _depth;
     int _maxDepth;
 
-    int _nodes;
-    int _groups;
-    int _lods;
-    int _pagedLods;
-    int _switches;
-    int _sequences;
-    int _transforms;
-    int _matrixTransforms;
-    int _dofTransforms;
-    int _geodes;
-    int _drawables;
-    int _geometries;
-    int _nullGeometries;
-    int _texts;
-    int _vertices;
-    int _stateSets;
-    int _emptyStateSets;
-    int _uniforms;
-    int _programs;
-    int _attributes;
-    int _texAttributes;
-    int _modes;
-    int _texModes;
-    int _textures;
-    int _primitiveSets;
-    int _drawArrays;
+    unsigned int _nodes;
+    unsigned int _groups;
+    unsigned int _lods;
+    unsigned int _pagedLods;
+    unsigned int _switches;
+    unsigned int _sequences;
+    unsigned int _transforms;
+    unsigned int _matrixTransforms;
+    unsigned int _dofTransforms;
+    unsigned int _geodes;
+    unsigned int _drawables;
+    unsigned int _geometries;
+    unsigned int _nullGeometries;
+    unsigned int _texts;
+    unsigned int _totalDrawables;
+    unsigned int _vertices;
+    unsigned int _stateSets;
+    unsigned int _emptyStateSets;
+    unsigned int _uniforms;
+    unsigned int _programs;
+    unsigned int _attributes;
+    unsigned int _texAttributes;
+    unsigned int _modes;
+    unsigned int _texModes;
+    unsigned int _textures;
+    unsigned int _primitiveSets;
+    unsigned int _drawArrays;
 
-    int _totalChildren;
-    int _slowPathGeometries;
+    unsigned int _totalUserModes;
+    unsigned int _totalUserAttrs;
+    unsigned int _drawUserModeOn;
+    unsigned int _drawUserModeOff;
+    unsigned int _drawUserModeNotSet;
+
+    unsigned int _totalChildren;
+    unsigned int _slowPathGeometries;
 
     typedef std::set< osg::ref_ptr<osg::Object> > ObjectSet;
     ObjectSet _uNodes;

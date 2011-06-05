@@ -25,6 +25,7 @@
 #include "osgwTools/Export.h"
 #include <osg/NodeVisitor>
 
+#include <vector>
 #include <string>
 
 namespace osg {
@@ -67,6 +68,9 @@ public:
     void setRemovalFlags( unsigned int flags );
     unsigned int getRemovalFlags() const;
 
+    void addRemoveMode( GLenum mode );
+    void addRemoveAttribute( osg::StateAttribute::Type attribute );
+
     static std::string flagsToString( unsigned int flags );
     static unsigned int stringToFlags( const std::string& str );
 
@@ -79,6 +83,11 @@ protected:
 
     void apply( osg::StateSet* ss );
     void apply( osg::Geometry& geom );
+
+    typedef std::vector< GLenum > ModeVector;
+    typedef std::vector< osg::StateAttribute::Type > AttributeTypeVector;
+    ModeVector _removeModes;
+    AttributeTypeVector _removeAttrs;
 };
 
 

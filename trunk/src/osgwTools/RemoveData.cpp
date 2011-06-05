@@ -24,8 +24,9 @@
 #include <osg/Geode>
 #include <osg/StateSet>
 #include <osg/Geometry>
-#include <osg/Version>
+#include <osgwTools/Version.h>
 
+#include <vector>
 #include <string>
 
 
@@ -43,16 +44,22 @@ RemoveData::~RemoveData()
 }
 
 
-void
-RemoveData::setRemovalFlags( unsigned int flags )
+void RemoveData::setRemovalFlags( unsigned int flags )
 {
     _removalFlags = flags;
 }
-
-unsigned int
-RemoveData::getRemovalFlags() const
+unsigned int RemoveData::getRemovalFlags() const
 {
     return( _removalFlags );
+}
+
+void RemoveData::addRemoveMode( GLenum mode )
+{
+    _removeModes.push_back( mode );
+}
+void RemoveData::addRemoveAttribute( osg::StateAttribute::Type attribute )
+{
+    _removeAttrs.push_back( attribute );
 }
 
 std::string
@@ -158,14 +165,13 @@ RemoveData::stringToFlags( const std::string& str )
 void
 RemoveData::apply( osg::Node& node )
 {
+    apply( node.getStateSet() );
     if( _removalFlags & STATESETS )
         node.setStateSet( NULL );
     else if( ( _removalFlags & EMPTY_STATESETS ) &&
             ( node.getStateSet() != NULL ) &&
             ( isEmpty( *( node.getStateSet() ) ) ) )
         node.setStateSet( NULL );
-    else
-        apply( node.getStateSet() );
 
     if( _removalFlags & USERDATA )
         node.setUserData( NULL );
@@ -179,14 +185,13 @@ RemoveData::apply( osg::Node& node )
 void
 RemoveData::apply( osg::Group& node )
 {
+    apply( node.getStateSet() );
     if( _removalFlags & STATESETS )
         node.setStateSet( NULL );
     else if( ( _removalFlags & EMPTY_STATESETS ) &&
             ( node.getStateSet() != NULL ) &&
             ( isEmpty( *( node.getStateSet() ) ) ) )
         node.setStateSet( NULL );
-    else
-        apply( node.getStateSet() );
 
     if( _removalFlags & USERDATA )
         node.setUserData( NULL );
@@ -200,7 +205,7 @@ RemoveData::apply( osg::Group& node )
         for( idx=node.getNumChildren(); idx>0; idx-- )
         {
             const unsigned int realIdx( idx-1 );
-#if (OPENSCENEGRAPH_MAJOR_VERSION == 2) && (OPENSCENEGRAPH_MINOR_VERSION >= 9)
+#if( OSGWORKS_OSG_VERSION >= 20900 )
             osg::Geode* geode = node.getChild( realIdx )->asGeode();
 #else
             osg::Geode* geode = dynamic_cast< osg::Geode* >( node.getChild( realIdx ) );
@@ -216,14 +221,13 @@ RemoveData::apply( osg::Group& node )
 void
 RemoveData::apply( osg::Geode& node )
 {
+    apply( node.getStateSet() );
     if( _removalFlags & STATESETS )
         node.setStateSet( NULL );
     else if( ( _removalFlags & EMPTY_STATESETS ) &&
             ( node.getStateSet() != NULL ) &&
             ( isEmpty( *( node.getStateSet() ) ) ) )
         node.setStateSet( NULL );
-    else
-        apply( node.getStateSet() );
 
     if( _removalFlags & USERDATA )
         node.setUserData( NULL );
@@ -240,14 +244,13 @@ RemoveData::apply( osg::Geode& node )
         {
             osg::Drawable* draw( node.getDrawable( idx ) );
 
+            apply( draw->getStateSet() );
             if( _removalFlags & STATESETS )
                 draw->setStateSet( NULL );
             else if( ( _removalFlags & EMPTY_STATESETS ) &&
                     ( node.getStateSet() != NULL ) &&
                     ( isEmpty( *( node.getStateSet() ) ) ) )
                 draw->setStateSet( NULL );
-            else
-                apply( draw->getStateSet() );
 
             if( _removalFlags & USERDATA )
                 draw->setUserData( NULL );
@@ -271,6 +274,14 @@ RemoveData::apply( osg::StateSet* ss )
         for( idx=0; idx<16; idx++ )
             ss->setTextureAttribute( idx, NULL );
     }
+
+    ModeVector::const_iterator mvit;
+    for( mvit = _removeModes.begin(); mvit != _removeModes.end(); mvit++ )
+        ss->removeMode( *mvit );
+
+    AttributeTypeVector::const_iterator avit;
+    for( avit = _removeAttrs.begin(); avit != _removeAttrs.end(); avit++ )
+        ss->removeAttribute( *avit );
 
     if( _removalFlags & USERDATA )
         ss->setUserData( NULL );
