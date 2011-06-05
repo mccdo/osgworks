@@ -27,11 +27,14 @@ namespace osgwTools
 {
 
 
-    typedef std::map< int, int > ModeCounter;
-    static ModeCounter mc;
+typedef std::map< int, int > ModeCounter;
+static ModeCounter mc;
+
 
 CountsVisitor::CountsVisitor( osg::NodeVisitor::TraversalMode mode )
-  : osg::NodeVisitor( mode )
+  : osg::NodeVisitor( mode ),
+    _countUserMode( false ),
+    _countUserAttr( false )
 {
     reset();
 }
@@ -40,17 +43,34 @@ CountsVisitor::~CountsVisitor()
 {
 }
 
-int
-CountsVisitor::getVertices() const
+unsigned int CountsVisitor::getVertices() const
 {
     return( _vertices );
 }
-
-int
-CountsVisitor::getDrawArrays() const
+unsigned int CountsVisitor::getDrawArrays() const
 {
     return( _drawArrays );
 }
+unsigned int CountsVisitor::getTotalDrawables() const
+{
+    return( _totalDrawables );
+}
+unsigned int CountsVisitor::getNumDrawablesUserModeOff() const
+{
+    return( _drawUserModeOff );
+}
+
+void CountsVisitor::setUserMode( GLenum userMode )
+{
+    _userMode = userMode;
+    _countUserMode = true;
+}
+void CountsVisitor::setUserAttribute( osg::StateAttribute::Type userAttr )
+{
+    _userAttr = userAttr;
+    _countUserAttr = true;
+}
+
 
 void
 CountsVisitor::reset()
@@ -68,6 +88,7 @@ CountsVisitor::reset()
     _matrixTransforms = 0;
     _dofTransforms = 0;
     _geodes = 0;
+    _totalDrawables = 0;
     _drawables = 0;
     _geometries = 0;
     _nullGeometries = 0;
@@ -84,6 +105,12 @@ CountsVisitor::reset()
     _textures = 0;
     _primitiveSets = 0;
     _drawArrays = 0;
+
+    _totalUserModes = 0;
+    _totalUserAttrs = 0;
+    _drawUserModeOn = 0;
+    _drawUserModeOff = 0;
+    _drawUserModeNotSet = 0;
 
     _totalChildren = 0;
     _slowPathGeometries = 0;
@@ -116,33 +143,45 @@ void
 CountsVisitor::dump( std::ostream& ostr )
 {
     ostr << std::endl;
-    ostr << "      OSG Object \tCount\tUnique" << std::endl;
-    ostr << "      ---------- \t-----\t------" << std::endl;
-    ostr << "           Nodes \t" << _nodes << "\t" << _uNodes.size() << std::endl;
-    ostr << "          Groups \t" << _groups << "\t" << _uGroups.size() << std::endl;
-    ostr << "            LODs \t" << _lods << "\t" << _uLods.size() << std::endl;
-    ostr << "       PagedLODs \t" << _pagedLods << "\t" << _uPagedLods.size() << std::endl;
-    ostr << "        Switches \t" << _switches << "\t" << _uSwitches.size() << std::endl;
-    ostr << "       Sequences \t" << _sequences << "\t" << _uSequences.size() << std::endl;
-    ostr << "      Transforms \t" << _transforms << "\t" << _uTransforms.size() << std::endl;
-    ostr << "MatrixTransforms \t" << _matrixTransforms << "\t" << _uMatrixTransforms.size() << std::endl;
-    ostr << "   DOFTransforms \t" << _dofTransforms << "\t" << _uDofTransforms.size() << std::endl;
-    ostr << "          Geodes \t" << _geodes << "\t" << _uGeodes.size() << std::endl;
-    ostr << "       StateSets \t" << _stateSets << "\t" << _uStateSets.size() << std::endl;
-    ostr << " Empty StateSets \t" << _emptyStateSets << std::endl;
-    ostr << "      Attributes \t" << _attributes << "\t" << _uAttributes.size() << std::endl;
-    ostr << "           Modes \t" << _modes << std::endl;
-    ostr << "   TexAttributes \t" << _texAttributes << "\t" << _uTexAttributes.size() << std::endl;
-    ostr << "        TexModes \t" << _texModes << std::endl;
-    ostr << "        Programs \t" << _programs << "\t" << _uPrograms.size() << std::endl;
-    ostr << "        Uniforms \t" << _uniforms << "\t" << _uUniforms.size() << std::endl;
-    ostr << "        Textures \t" << _textures << "\t" << _uTextures.size() << std::endl;
-    ostr << "       Drawables \t" << _drawables << "\t" << _uDrawables.size() << std::endl;
-    ostr << "      Geometries \t" << _geometries << "\t" << _uGeometries.size() << std::endl;
-    ostr << "           Texts \t" << _texts << "\t" << _uTexts.size() << std::endl;
-    ostr << "   PrimitiveSets \t" << _primitiveSets << "\t" << _uPrimitiveSets.size() << std::endl;
-    ostr << "      DrawArrays \t" << _drawArrays << "\t" << _uDrawArrays.size() << std::endl;
-    ostr << " NULL Geometries \t" << _nullGeometries << std::endl;
+    ostr << "         OSG Object \tCount\tUnique" << std::endl;
+    ostr << "         ---------- \t-----\t------" << std::endl;
+    ostr << "             Groups \t" << _groups << "\t" << _uGroups.size() << std::endl;
+    ostr << "               LODs \t" << _lods << "\t" << _uLods.size() << std::endl;
+    ostr << "          PagedLODs \t" << _pagedLods << "\t" << _uPagedLods.size() << std::endl;
+    ostr << "           Switches \t" << _switches << "\t" << _uSwitches.size() << std::endl;
+    ostr << "          Sequences \t" << _sequences << "\t" << _uSequences.size() << std::endl;
+    ostr << "   MatrixTransforms \t" << _matrixTransforms << "\t" << _uMatrixTransforms.size() << std::endl;
+    ostr << "      DOFTransforms \t" << _dofTransforms << "\t" << _uDofTransforms.size() << std::endl;
+    ostr << "   Other Transforms \t" << _transforms << "\t" << _uTransforms.size() << std::endl;
+    ostr << "             Geodes \t" << _geodes << "\t" << _uGeodes.size() << std::endl;
+    ostr << "        Other Nodes \t" << _nodes << "\t" << _uNodes.size() << std::endl;
+    ostr << "    Empty StateSets \t" << _emptyStateSets << std::endl;
+    ostr << "    Total StateSets \t" << _stateSets << "\t" << _uStateSets.size() << std::endl;
+    ostr << "           Programs \t" << _programs << "\t" << _uPrograms.size() << std::endl;
+    ostr << "           Uniforms \t" << _uniforms << "\t" << _uUniforms.size() << std::endl;
+    if( _countUserMode )
+        ostr << "         User Modes \t" << _totalUserModes << std::endl;
+    if( _countUserAttr )
+        ostr << "    User Attributes \t" << _totalUserAttrs << std::endl;
+    ostr << "   Total Attributes \t" << _attributes << "\t" << _uAttributes.size() << std::endl;
+    ostr << "        Total Modes \t" << _modes << std::endl;
+    ostr << "           Textures \t" << _textures << "\t" << _uTextures.size() << std::endl;
+    ostr << "Total TexAttributes \t" << _texAttributes << "\t" << _uTexAttributes.size() << std::endl;
+    ostr << "     Total TexModes \t" << _texModes << std::endl;
+    ostr << "    NULL Geometries \t" << _nullGeometries << std::endl;
+    ostr << "   Total Geometries \t" << _geometries << "\t" << _uGeometries.size() << std::endl;
+    ostr << "              Texts \t" << _texts << "\t" << _uTexts.size() << std::endl;
+    ostr << "    Other Drawables \t" << _drawables << "\t" << _uDrawables.size() << std::endl;
+    ostr << "    Totol Drawables \t" << _totalDrawables << std::endl;
+    ostr << "         DrawArrays \t" << _drawArrays << "\t" << _uDrawArrays.size() << std::endl;
+    ostr << "Total PrimitiveSets \t" << _primitiveSets << "\t" << _uPrimitiveSets.size() << std::endl;
+    if( _countUserMode )
+    {
+        ostr << "Drawables with user Modes:" << std::endl;
+        ostr << "            Enabled \t" << _drawUserModeOn << std::endl;
+        ostr << "           Disabled \t" << _drawUserModeOff << std::endl;
+        ostr << "            Not set \t" << _drawUserModeNotSet << std::endl;
+    }
 
     if (_slowPathGeometries)
         ostr << "Slow path Geometries: " << _slowPathGeometries << std::endl;
@@ -195,7 +234,11 @@ void CountsVisitor::apply( osg::StateSet* stateSet )
     osg::StateSet::AttributeList::const_iterator ait;
     for( ait=al.begin(); ait!=al.end(); ait++ )
     {
-        osg::ref_ptr<osg::Object> arp = (osg::Object*)( ait->second.first.get() );
+        osg::StateAttribute* sa = ait->second.first.get();
+        if( _countUserAttr && ( sa->getType() == _userAttr ) )
+            _totalUserAttrs++;
+
+        osg::ref_ptr<osg::Object> arp = (osg::Object*)( sa );
         _uAttributes.insert( arp );
     }
 
@@ -204,7 +247,12 @@ void CountsVisitor::apply( osg::StateSet* stateSet )
         const osg::StateSet::ModeList& ml = stateSet->getModeList();
         osg::StateSet::ModeList::const_iterator it;
         for( it=ml.begin(); it != ml.end(); it++ )
+        {
+            if( _countUserMode && ( it->first == _userMode ) )
+                _totalUserModes++;
+
             mc[ it->first ] += 1;
+        }
     }
 
     osg::Program* program = static_cast< osg::Program* >(
@@ -229,6 +277,8 @@ void CountsVisitor::apply( osg::StateSet* stateSet )
 void
 CountsVisitor::apply( osg::Node& node )
 {
+    pushStateSet( node.getStateSet() );
+
     _nodes++;
     osg::ref_ptr<osg::Object> rp = (osg::Object*)&node;
     _uNodes.insert( rp );
@@ -238,11 +288,15 @@ CountsVisitor::apply( osg::Node& node )
         _maxDepth = _depth;
     traverse( node );
     _depth--;
+
+    popStateSet();
 }
 
 void
 CountsVisitor::apply( osg::Group& node )
 {
+    pushStateSet( node.getStateSet() );
+
     _groups++;
     osg::ref_ptr<osg::Object> rp = (osg::Object*)&node;
     _uGroups.insert( rp );
@@ -253,11 +307,15 @@ CountsVisitor::apply( osg::Group& node )
         _maxDepth = _depth;
     traverse( (osg::Node&)node );
     _depth--;
+
+    popStateSet();
 }
 
 void
 CountsVisitor::apply( osg::LOD& node )
 {
+    pushStateSet( node.getStateSet() );
+
     _lods++;
     osg::ref_ptr<osg::Object> rp = (osg::Object*)&node;
     _uLods.insert( rp );
@@ -268,11 +326,15 @@ CountsVisitor::apply( osg::LOD& node )
         _maxDepth = _depth;
     traverse( (osg::Node&)node );
     _depth--;
+
+    popStateSet();
 }
 
 void
 CountsVisitor::apply( osg::PagedLOD& node )
 {
+    pushStateSet( node.getStateSet() );
+
     osg::Group* grp = node.getParent(0);
     osg::Group* gPar = NULL;
     if (grp)
@@ -288,11 +350,15 @@ CountsVisitor::apply( osg::PagedLOD& node )
         _maxDepth = _depth;
     traverse( (osg::Node&)node );
     _depth--;
+
+    popStateSet();
 }
 
 void
 CountsVisitor::apply( osg::Switch& node )
 {
+    pushStateSet( node.getStateSet() );
+
     _switches++;
     osg::ref_ptr<osg::Object> rp = (osg::Object*)&node;
     _uSwitches.insert( rp );
@@ -303,11 +369,15 @@ CountsVisitor::apply( osg::Switch& node )
         _maxDepth = _depth;
     traverse( (osg::Node&)node );
     _depth--;
+
+    popStateSet();
 }
 
 void
 CountsVisitor::apply( osg::Sequence& node )
 {
+    pushStateSet( node.getStateSet() );
+
     _sequences++;
     osg::ref_ptr<osg::Object> rp = (osg::Object*)&node;
     _uSequences.insert( rp );
@@ -318,11 +388,15 @@ CountsVisitor::apply( osg::Sequence& node )
         _maxDepth = _depth;
     traverse( (osg::Node&)node );
     _depth--;
+
+    popStateSet();
 }
 
 void
 CountsVisitor::apply( osg::Transform& node )
 {
+    pushStateSet( node.getStateSet() );
+
     if (dynamic_cast<osgSim::DOFTransform*>( &node ) != NULL)
     {
         _dofTransforms++;
@@ -342,11 +416,15 @@ CountsVisitor::apply( osg::Transform& node )
         _maxDepth = _depth;
     traverse( (osg::Node&)node );
     _depth--;
+
+    popStateSet();
 }
 
 void
 CountsVisitor::apply( osg::MatrixTransform& node )
 {
+    pushStateSet( node.getStateSet() );
+
     _matrixTransforms++;
     osg::ref_ptr<osg::Object> rp = (osg::Object*)&node;
     _uMatrixTransforms.insert( rp );
@@ -357,11 +435,15 @@ CountsVisitor::apply( osg::MatrixTransform& node )
         _maxDepth = _depth;
     traverse( (osg::Node&)node );
     _depth--;
+
+    popStateSet();
 }
 
 void
 CountsVisitor::apply( osg::Geode& node )
 {
+    pushStateSet( node.getStateSet() );
+
     _geodes++;
     osg::ref_ptr<osg::Object> rp = (osg::Object*)&node;
     _uGeodes.insert( rp );
@@ -373,6 +455,22 @@ CountsVisitor::apply( osg::Geode& node )
         osg::Drawable* draw = node.getDrawable( idx );
         apply( draw->getStateSet() );
 
+        pushStateSet( draw->getStateSet() );
+
+        if( _countUserMode )
+        {
+            if( isSet( _userMode, _stateStack.back().get() ) )
+            {
+                if( isEnabled( _userMode, _stateStack.back().get() ) )
+                    _drawUserModeOn++;
+                else
+                    _drawUserModeOff++;
+            }
+            else
+                _drawUserModeNotSet++;
+        }
+
+        _totalDrawables++;
         osg::Geometry* geom;
         if (dynamic_cast<osgText::Text*>( draw ) != NULL)
         {
@@ -421,13 +519,77 @@ CountsVisitor::apply( osg::Geode& node )
             osg::ref_ptr<osg::Object> rp = (osg::Object*)draw;
             _uDrawables.insert( rp );
         }
+
+        popStateSet();
     }
 
     if (++_depth > _maxDepth)
         _maxDepth = _depth;
     traverse( (osg::Node&)node );
     _depth--;
+
+    popStateSet();
 }
+
+
+void CountsVisitor::pushStateSet( osg::StateSet* ss )
+{
+    if( ss == NULL )
+        ss = new osg::StateSet;
+
+    if( _stateStack.size() > 0 )
+    {
+        osg::StateSet* oldTop = _stateStack.back().get();
+        osg::StateSet* newTop = new osg::StateSet( *oldTop );
+        newTop->merge( *ss );
+        _stateStack.push_back( newTop );
+    }
+    else
+    {
+        _stateStack.push_back( ss );
+    }
+}
+void CountsVisitor::popStateSet()
+{
+    if( _stateStack.size() > 0 )
+        _stateStack.pop_back();
+    else
+        osg::notify( osg::WARN ) << "osgw: CountsVisitor: State stack underflow." << std::endl;
+}
+
+bool CountsVisitor::isSet( GLenum stateItem, osg::StateSet* ss )
+{
+    if( ss == NULL )
+        return( false );
+
+    // StateSet is not NULL. Query the mode.
+    osg::StateAttribute::GLModeValue mode;
+    mode = ss->getMode( stateItem );
+
+    // The item is set if the mode is anything other than INHERIT.
+    return( mode != osg::StateAttribute::INHERIT );
+}
+bool CountsVisitor::isEnabled( GLenum stateItem, osg::StateSet* ss )
+{
+    if( ss == NULL )
+        // Calling code must use isSet() to verify a mode is set, then
+        // call isEnabled() to see if the mode is enabled or not. We return
+        // false here, but calling code should never call us with a NULL
+        // StateSet, as isSet() would have returned false.
+        return( false );
+
+    // StateSet is not NULL. Query the mode.
+    osg::StateAttribute::GLModeValue mode;
+    mode = ss->getMode( stateItem );
+
+    if( mode & osg::StateAttribute::ON )
+        // Item is enabled if its value is ON.
+        return( true );
+    else
+        // If it's not enabled, then it's off or not set.
+        return( false );
+}
+
 
 // osgwTools
 }
