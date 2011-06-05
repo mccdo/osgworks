@@ -34,7 +34,7 @@ namespace osgwTools {
 
 #define OSGWORKS_MAJOR_VERSION 1
 #define OSGWORKS_MINOR_VERSION 1
-#define OSGWORKS_SUB_VERSION 52
+#define OSGWORKS_SUB_VERSION 53
 
 /** \brief osgWorks version number as an integer
 
