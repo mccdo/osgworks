@@ -208,16 +208,20 @@ void CountsVisitor::apply( osg::StateSet* stateSet )
     unsigned int idx;
     for( idx=0; idx<tal.size(); idx++ )
     {
-        const osg::StateSet::AttributeList& al = tal[ idx ];
-        _texAttributes += al.size();
-        osg::StateSet::AttributeList::const_iterator ait;
-        for( ait=al.begin(); ait!=al.end(); ait++ )
+        if( tal.size() > 0 )
         {
-            osg::ref_ptr<osg::Object> arp = (osg::Object*)( ait->second.first.get() );
-            _uTexAttributes.insert( arp );
+            const osg::StateSet::AttributeList& al = tal[ idx ];
+            _texAttributes += al.size();
+            osg::StateSet::AttributeList::const_iterator ait;
+            for( ait=al.begin(); ait!=al.end(); ait++ )
+            {
+                osg::ref_ptr<osg::Object> arp = (osg::Object*)( ait->second.first.get() );
+                _uTexAttributes.insert( arp );
+            }
         }
 
-        _texModes += tml[ idx ].size();
+        if( tml.size() > 0 )
+            _texModes += tml[ idx ].size();
 
         osg::Texture* texture = static_cast< osg::Texture* >(
             stateSet->getTextureAttribute( idx, osg::StateAttribute::TEXTURE ) );
