@@ -19,18 +19,22 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osgwQuery/QueryObject.h>
+#include <osgwQuery/QueryAPI.h>
+#include <osg/Notify>
 
 
 namespace osgwQuery
 {
 
 
-QueryObject::QueryObject()
-  : osg::Object()
+QueryObject::QueryObject( unsigned int numIDs )
+  : osg::Object(),
+    _numIDs( numIDs )
 {
 }
 QueryObject::QueryObject( const QueryObject& rhs, const osg::CopyOp& copyop )
-  : osg::Object( rhs, copyop )
+  : osg::Object( rhs, copyop ),
+    _numIDs( rhs._numIDs )
 {
 }
 QueryObject::~QueryObject()
@@ -38,9 +42,23 @@ QueryObject::~QueryObject()
 }
 
 
-void QueryObject::internalInit()
+GLuint QueryObject::getID( unsigned int contextID, unsigned int queryIDIndex )
 {
-    //setGLExtensionFuncPtr(_gl_begin_query_arb, "glBeginQuery", "glBeginQueryARB");
+    if( queryIDIndex >= _numIDs )
+    {
+        osg::notify( osg::WARN ) << "QueryObject::getID queryIDIndex (" << queryIDIndex << ") >= _numIDs (" << _numIDs << ")." << std::endl;
+        return( 0 );
+    }
+
+    QueryIDVector& idVec = _ids[ contextID ];
+    if( idVec.size() == 0 )
+    {
+        idVec.resize( _numIDs );
+        QueryAPI* qapi = getQueryAPI( contextID );
+        qapi->glGenQueries( _numIDs, &( idVec[0] ) );
+    }
+
+    return( idVec[ queryIDIndex ] );
 }
 
 

@@ -27,6 +27,8 @@
 #include <osg/buffered_value>
 #include <osg/GL>
 
+#include <vector>
+
 
 
 namespace osgwQuery
@@ -39,20 +41,18 @@ namespace osgwQuery
 class OSGWQUERY_EXPORT QueryObject : public osg::Object
 {
 public:
-    QueryObject();
+    QueryObject( unsigned int numIDs=1 );
     QueryObject( const QueryObject& rhs, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY );
     META_Object(osgwQuery,QueryObject);
 
-    void setID( unsigned int contextID, GLuint id );
-    GLuint getID( unsigned int contextID );
+    GLuint getID( unsigned int contextID, unsigned int queryIDIndex=0 );
 
 protected:
     ~QueryObject();
 
-    void internalInit();
-    bool _initialized;
-
-    osg::buffered_value< GLuint > _id;
+    unsigned int _numIDs;
+    typedef std::vector< GLuint > QueryIDVector;
+    osg::buffered_object< QueryIDVector > _ids;
 };
 
 

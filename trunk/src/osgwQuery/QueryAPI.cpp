@@ -47,18 +47,16 @@ QueryAPI::QueryAPI( unsigned int contextID )
     _transformFeedbackSupported( false ),
     _occlusionQuery2Supported( false )
 {
+    internalInit( contextID );
 }
 QueryAPI::~QueryAPI()
 {
 }
 
-
 void QueryAPI::internalInit( unsigned int contextID )
 {
-    bool _queryAPISupported = osg::isGLExtensionOrVersionSupported( contextID, "GL_ARB_occlusion_query", 1.5f );
-    if( !_queryAPISupported )
-        osg::notify( osg::WARN ) << "osgwQuery: Query API is unavailable. GL v" << osg::getGLVersionNumber() << std::endl;
-    else
+    _queryAPISupported = osg::isGLExtensionOrVersionSupported( contextID, "GL_ARB_occlusion_query", 1.5f );
+    if( _queryAPISupported )
     {
         _beginQuery = (BeginQueryProc)( osg::getGLExtensionFuncPtr( "glBeginQuery", "glBeginQueryARB" ) );
         _endQuery = (EndQueryProc)( osg::getGLExtensionFuncPtr( "glEndQuery", "glEndQueryARB" ) );
@@ -70,29 +68,138 @@ void QueryAPI::internalInit( unsigned int contextID )
         _getQueryObjectuiv = (GetQueryObjectuivProc)( osg::getGLExtensionFuncPtr( "glGetQueryObjectuiv", "glGetQueryObjectuivARB" ) );
     }
 
-    bool _timerQuerySupported = osg::isGLExtensionOrVersionSupported( contextID, "GL_ARB_timer_query", 3.3f );
-    if( !_timerQuerySupported )
-        osg::notify( osg::WARN ) << "osgwQuery: Time query is unavailable. GL v" << osg::getGLVersionNumber() << std::endl;
-    else
+    _timerQuerySupported = osg::isGLExtensionOrVersionSupported( contextID, "GL_ARB_timer_query", 3.3f );
+    if( _timerQuerySupported )
     {
         _getQueryObjecti64v = (GetQueryObjecti64vProc)( osg::getGLExtensionFuncPtr( "glGetQueryObjecti64v", "glGetQueryObjecti64vARB" ) );
         _getQueryObjectui64v = (GetQueryObjectui64vProc)( osg::getGLExtensionFuncPtr( "glGetQueryObjectui64v", "glGetQueryObjectui64vARB" ) );
     }
 
-    bool _transformFeedback3Supported = osg::isGLExtensionOrVersionSupported( contextID, "GL_ARB_transform_feedback3", 4.0f );
-    if( !_transformFeedback3Supported )
-        osg::notify( osg::WARN ) << "osgwQuery: Transform feedback 3 is unavailable. GL v" << osg::getGLVersionNumber() << std::endl;
-    else
+    _transformFeedback3Supported = osg::isGLExtensionOrVersionSupported( contextID, "GL_ARB_transform_feedback3", 4.0f );
+    if( _transformFeedback3Supported )
     {
         _beginQueryIndexed = (BeginQueryIndexedProc)( osg::getGLExtensionFuncPtr( "glBeginQueryIndexed", "glBeginQueryIndexedARB" ) );
         _endQueryIndexed = (EndQueryIndexedProc)( osg::getGLExtensionFuncPtr( "glEndQueryIndexed", "glEndQueryIndexedARB" ) );
         _getQueryIndexediv = (GetQueryIndexedivProc)( osg::getGLExtensionFuncPtr( "glGetQueryIndexediv", "glGetQueryIndexedivARB" ) );
     }
 
-    bool _transformFeedbackSupported = osg::isGLExtensionOrVersionSupported( contextID, "GL_EXT_transform_feedback", 3.0f );
-    bool _occlusionQuery2Supported = osg::isGLExtensionOrVersionSupported( contextID, "GL_ARB_occlusion_query2", 3.3f );
+    _transformFeedbackSupported = osg::isGLExtensionOrVersionSupported( contextID, "GL_EXT_transform_feedback", 3.0f );
+    _occlusionQuery2Supported = osg::isGLExtensionOrVersionSupported( contextID, "GL_ARB_occlusion_query2", 3.3f );
+
+    osg::notify( osg::INFO ) << "osgwQuery: Query API availability:" << std::endl;
+    osg::notify( osg::INFO ) << "\tBase query API: " << std::boolalpha << _queryAPISupported << std::endl;
+    osg::notify( osg::INFO ) << "\tOcc Query 2: " << std::boolalpha << _occlusionQuery2Supported << std::endl;
+    osg::notify( osg::INFO ) << "\tTimer query: " << std::boolalpha << _timerQuerySupported << std::endl;
+    osg::notify( osg::INFO ) << "\tXform feedback: " << std::boolalpha << _transformFeedbackSupported << std::endl;
+    osg::notify( osg::INFO ) << "\tXform feedback 3: " << std::boolalpha << _transformFeedback3Supported << std::endl;
 
     _initialized = true;
+}
+
+
+void QueryAPI::glBeginQuery( GLenum target, GLuint id )
+{
+#ifdef _DEBUG
+    if( !_initialized || ( _beginQuery == NULL ) )
+        osg::notify( osg::WARN ) << "osgwQuerl::QueryAPI: glBeginQuery NULL" << std::endl;
+#endif
+    _beginQuery( target, id );
+}
+void QueryAPI::glEndQuery( GLenum target )
+{
+#ifdef _DEBUG
+    if( !_initialized || ( _endQuery == NULL ) )
+        osg::notify( osg::WARN ) << "osgwQuerl::QueryAPI: glEndQuery NULL" << std::endl;
+#endif
+    _endQuery( target );
+}
+void QueryAPI::glGenQueries( GLsizei n, GLuint *ids )
+{
+#ifdef _DEBUG
+    if( !_initialized || ( _genQueries == NULL ) )
+        osg::notify( osg::WARN ) << "osgwQuerl::QueryAPI: glGenQueries NULL" << std::endl;
+#endif
+    _genQueries( n, ids );
+}
+void QueryAPI::glDeleteQueries( GLsizei n, const GLuint *ids )
+{
+#ifdef _DEBUG
+    if( !_initialized || ( _deleteQueries == NULL ) )
+        osg::notify( osg::WARN ) << "osgwQuerl::QueryAPI: glDeleteQueries NULL" << std::endl;
+#endif
+    _deleteQueries( n, ids );
+}
+GLboolean QueryAPI::glIsQuery( GLuint id )
+{
+#ifdef _DEBUG
+    if( !_initialized || ( _isQuery == NULL ) )
+        osg::notify( osg::WARN ) << "osgwQuerl::QueryAPI: glIsQuery NULL" << std::endl;
+#endif
+    return( _isQuery( id ) );
+}
+void QueryAPI::glGetQueryiv( GLenum target, GLenum pname, int *params )
+{
+#ifdef _DEBUG
+    if( !_initialized || ( _getQueryiv == NULL ) )
+        osg::notify( osg::WARN ) << "osgwQuerl::QueryAPI: glGetQueryiv NULL" << std::endl;
+#endif
+    _getQueryiv( target, pname, params );
+}
+void QueryAPI::glGetQueryObjectiv( GLuint id, GLenum pname, GLint *params )
+{
+#ifdef _DEBUG
+    if( !_initialized || ( _getQueryObjectiv == NULL ) )
+        osg::notify( osg::WARN ) << "osgwQuerl::QueryAPI: glGetQueryObjectiv NULL" << std::endl;
+#endif
+    _getQueryObjectiv( id, pname, params );
+}
+void QueryAPI::glGetQueryObjectuiv( GLuint id, GLenum pname, GLuint *params )
+{
+#ifdef _DEBUG
+    if( !_initialized || ( _getQueryObjectuiv == NULL ) )
+        osg::notify( osg::WARN ) << "osgwQuerl::QueryAPI: glGetQueryObjectuiv NULL" << std::endl;
+#endif
+    _getQueryObjectuiv( id, pname, params );
+}
+void QueryAPI::glGetQueryObjecti64v( GLuint id, GLenum pname, GLint64EXT *params )
+{
+#ifdef _DEBUG
+    if( !_initialized || ( _getQueryObjecti64v == NULL ) )
+        osg::notify( osg::WARN ) << "osgwQuerl::QueryAPI: glGetQueryObjecti64v NULL" << std::endl;
+#endif
+    _getQueryObjecti64v( id, pname, params );
+}
+void QueryAPI::glGetQueryObjectui64v( GLuint id, GLenum pname, GLuint64EXT *params )
+{
+#ifdef _DEBUG
+    if( !_initialized || ( _getQueryObjectui64v == NULL ) )
+        osg::notify( osg::WARN ) << "osgwQuerl::QueryAPI: glGetQueryObjectui64v NULL" << std::endl;
+#endif
+    _getQueryObjectui64v( id, pname, params );
+}
+void QueryAPI::glBeginQueryIndexed( GLenum target, GLuint index, GLuint id )
+{
+#ifdef _DEBUG
+    if( !_initialized || ( _beginQueryIndexed == NULL ) )
+        osg::notify( osg::WARN ) << "osgwQuerl::QueryAPI: glBeginQueryIndexed NULL" << std::endl;
+#endif
+    _beginQueryIndexed( target, index, id );
+}
+void QueryAPI::glEndQueryIndexed( GLenum target, GLuint index )
+{
+#ifdef _DEBUG
+    if( !_initialized || ( _endQueryIndexed == NULL ) )
+        osg::notify( osg::WARN ) << "osgwQuerl::QueryAPI: glEndQueryIndexed NULL" << std::endl;
+#endif
+    _endQueryIndexed( target, index );
+}
+void QueryAPI::glGetQueryIndexediv( GLenum target, GLuint index, GLenum pname, GLint *params )
+{
+#ifdef _DEBUG
+    if( !_initialized || ( _getQueryIndexediv == NULL ) )
+        osg::notify( osg::WARN ) << "osgwQuerl::QueryAPI: glGetQueryIndexediv NULL" << std::endl;
+#endif
+    _getQueryIndexediv( target, index, pname, params );
 }
 
 
