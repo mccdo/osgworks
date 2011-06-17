@@ -125,9 +125,9 @@ protected:
 };
 
 
-/**
+/** Function to obtain a QueryAPI class for a specific context.
 */
-QueryAPI* getQueryAPI( unsigned int contextID );
+OSGWQUERY_EXPORT QueryAPI* getQueryAPI( unsigned int contextID );
 
 
 // osgwQuery
