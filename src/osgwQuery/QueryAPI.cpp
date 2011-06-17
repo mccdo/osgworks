@@ -97,7 +97,7 @@ void QueryAPI::internalInit( unsigned int contextID )
 }
 
 
-void QueryAPI::glBeginQuery( GLenum target, GLuint id )
+void QueryAPI::glBeginQuery( GLenum target, GLuint id ) const
 {
 #ifdef _DEBUG
     if( !_initialized || ( _beginQuery == NULL ) )
@@ -105,7 +105,7 @@ void QueryAPI::glBeginQuery( GLenum target, GLuint id )
 #endif
     _beginQuery( target, id );
 }
-void QueryAPI::glEndQuery( GLenum target )
+void QueryAPI::glEndQuery( GLenum target ) const
 {
 #ifdef _DEBUG
     if( !_initialized || ( _endQuery == NULL ) )
@@ -113,7 +113,7 @@ void QueryAPI::glEndQuery( GLenum target )
 #endif
     _endQuery( target );
 }
-void QueryAPI::glGenQueries( GLsizei n, GLuint *ids )
+void QueryAPI::glGenQueries( GLsizei n, GLuint *ids ) const
 {
 #ifdef _DEBUG
     if( !_initialized || ( _genQueries == NULL ) )
@@ -121,7 +121,7 @@ void QueryAPI::glGenQueries( GLsizei n, GLuint *ids )
 #endif
     _genQueries( n, ids );
 }
-void QueryAPI::glDeleteQueries( GLsizei n, const GLuint *ids )
+void QueryAPI::glDeleteQueries( GLsizei n, const GLuint *ids ) const
 {
 #ifdef _DEBUG
     if( !_initialized || ( _deleteQueries == NULL ) )
@@ -129,7 +129,7 @@ void QueryAPI::glDeleteQueries( GLsizei n, const GLuint *ids )
 #endif
     _deleteQueries( n, ids );
 }
-GLboolean QueryAPI::glIsQuery( GLuint id )
+GLboolean QueryAPI::glIsQuery( GLuint id ) const
 {
 #ifdef _DEBUG
     if( !_initialized || ( _isQuery == NULL ) )
@@ -137,7 +137,7 @@ GLboolean QueryAPI::glIsQuery( GLuint id )
 #endif
     return( _isQuery( id ) );
 }
-void QueryAPI::glGetQueryiv( GLenum target, GLenum pname, int *params )
+void QueryAPI::glGetQueryiv( GLenum target, GLenum pname, int *params ) const
 {
 #ifdef _DEBUG
     if( !_initialized || ( _getQueryiv == NULL ) )
@@ -145,7 +145,7 @@ void QueryAPI::glGetQueryiv( GLenum target, GLenum pname, int *params )
 #endif
     _getQueryiv( target, pname, params );
 }
-void QueryAPI::glGetQueryObjectiv( GLuint id, GLenum pname, GLint *params )
+void QueryAPI::glGetQueryObjectiv( GLuint id, GLenum pname, GLint *params ) const
 {
 #ifdef _DEBUG
     if( !_initialized || ( _getQueryObjectiv == NULL ) )
@@ -153,7 +153,7 @@ void QueryAPI::glGetQueryObjectiv( GLuint id, GLenum pname, GLint *params )
 #endif
     _getQueryObjectiv( id, pname, params );
 }
-void QueryAPI::glGetQueryObjectuiv( GLuint id, GLenum pname, GLuint *params )
+void QueryAPI::glGetQueryObjectuiv( GLuint id, GLenum pname, GLuint *params ) const
 {
 #ifdef _DEBUG
     if( !_initialized || ( _getQueryObjectuiv == NULL ) )
@@ -161,7 +161,7 @@ void QueryAPI::glGetQueryObjectuiv( GLuint id, GLenum pname, GLuint *params )
 #endif
     _getQueryObjectuiv( id, pname, params );
 }
-void QueryAPI::glGetQueryObjecti64v( GLuint id, GLenum pname, GLint64EXT *params )
+void QueryAPI::glGetQueryObjecti64v( GLuint id, GLenum pname, GLint64EXT *params ) const
 {
 #ifdef _DEBUG
     if( !_initialized || ( _getQueryObjecti64v == NULL ) )
@@ -169,7 +169,7 @@ void QueryAPI::glGetQueryObjecti64v( GLuint id, GLenum pname, GLint64EXT *params
 #endif
     _getQueryObjecti64v( id, pname, params );
 }
-void QueryAPI::glGetQueryObjectui64v( GLuint id, GLenum pname, GLuint64EXT *params )
+void QueryAPI::glGetQueryObjectui64v( GLuint id, GLenum pname, GLuint64EXT *params ) const
 {
 #ifdef _DEBUG
     if( !_initialized || ( _getQueryObjectui64v == NULL ) )
@@ -177,7 +177,7 @@ void QueryAPI::glGetQueryObjectui64v( GLuint id, GLenum pname, GLuint64EXT *para
 #endif
     _getQueryObjectui64v( id, pname, params );
 }
-void QueryAPI::glBeginQueryIndexed( GLenum target, GLuint index, GLuint id )
+void QueryAPI::glBeginQueryIndexed( GLenum target, GLuint index, GLuint id ) const
 {
 #ifdef _DEBUG
     if( !_initialized || ( _beginQueryIndexed == NULL ) )
@@ -185,7 +185,7 @@ void QueryAPI::glBeginQueryIndexed( GLenum target, GLuint index, GLuint id )
 #endif
     _beginQueryIndexed( target, index, id );
 }
-void QueryAPI::glEndQueryIndexed( GLenum target, GLuint index )
+void QueryAPI::glEndQueryIndexed( GLenum target, GLuint index ) const
 {
 #ifdef _DEBUG
     if( !_initialized || ( _endQueryIndexed == NULL ) )
@@ -193,7 +193,7 @@ void QueryAPI::glEndQueryIndexed( GLenum target, GLuint index )
 #endif
     _endQueryIndexed( target, index );
 }
-void QueryAPI::glGetQueryIndexediv( GLenum target, GLuint index, GLenum pname, GLint *params )
+void QueryAPI::glGetQueryIndexediv( GLenum target, GLuint index, GLenum pname, GLint *params ) const
 {
 #ifdef _DEBUG
     if( !_initialized || ( _getQueryIndexediv == NULL ) )
