@@ -37,10 +37,12 @@ public:
 
     virtual void operator()( osg::RenderInfo& renderInfo ) const
     {
-        osg::State* state = renderInfo.getState();
-        unsigned int contextID = state->getContextID();
+        const osg::State* state = renderInfo.getState();
+        const unsigned int contextID = state->getContextID();
 
+        osg::setNotifyLevel( osg::INFO );
         _qapi = osgwQuery::getQueryAPI( contextID );
+        osg::setNotifyLevel( osg::NOTICE );
     }
 
     // Return 0 for pass, 1 for fail.
@@ -68,8 +70,8 @@ int main( int argc, char ** argv )
     viewer.getCamera()->setPostDrawCallback( pd.get() );
     viewer.realize();
 
-    // Draw an arbitrary 4 frames.
-    for( int idx=0; idx<4; idx++ )
+    // Draw an arbitrary 3 frames.
+    for( int idx=0; idx<3; idx++ )
         viewer.frame();
 
     return( pd->success() );
