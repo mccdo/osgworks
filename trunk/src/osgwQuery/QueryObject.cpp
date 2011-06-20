@@ -61,6 +61,17 @@ GLuint QueryObject::getID( unsigned int contextID, unsigned int queryIDIndex )
     return( idVec[ queryIDIndex ] );
 }
 
+void QueryObject::deleteIDs( unsigned int contextID )
+{
+    QueryIDVector& idVec = _ids[ contextID ];
+    if( idVec.size() == 0 )
+        return;
+
+    QueryAPI* qapi = getQueryAPI( contextID );
+    qapi->glDeleteQueries( _numIDs, &( idVec[0] ) );
+    idVec.resize( 0 );
+}
+
 
 // osgwQuery
 }

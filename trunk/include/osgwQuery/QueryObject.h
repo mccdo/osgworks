@@ -47,6 +47,8 @@ public:
 
     GLuint getID( unsigned int contextID, unsigned int queryIDIndex=0 );
 
+    void deleteIDs( unsigned int contextID );
+
 protected:
     ~QueryObject();
 
