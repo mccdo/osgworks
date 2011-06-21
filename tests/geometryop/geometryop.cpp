@@ -58,9 +58,9 @@ int main( int argc,
     arguments.getApplicationUsage()->setDescription( arguments.getApplicationName() + " shows a before and after image of the DecimatorOp module, using a default decimation of 0.6." );
     arguments.getApplicationUsage()->setCommandLineUsage( arguments.getApplicationName() + " [options] filename ..." );
 
-    arguments.getApplicationUsage()->addCommandLineOption( "--decPercent <n>", "Runs the DecimatorOp on the scene graph before generating the Bullet collision shape. <n> is the target percentage of vertices to remove, and is usually in the range 0.0 to 1.0.Default 0.6" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--decPercent <n>", "Use DecimatorOp. <n> is the target percentage of vertices to remove, in the range 0.0 to 1.0. Default 0.6" );
     arguments.getApplicationUsage()->addCommandLineOption( "--decMaxError <n>", "Specifies the Decimator maximum error tolerance. Geometry exceeding this tolerance is not reduced. <n> is in the range 0.0 to FLT_MAX. Default FLT_MAX" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--respectBoundaries", "Will not decimate boundry polygons, will not decimate fully but may fix some mesh errors. Default False" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--respectBoundaries", "Will not decimate boundary polygons, will not decimate fully but may fix some mesh errors. Default False" );
     arguments.getApplicationUsage()->addCommandLineOption( "--minPrimatives <n>", "Sets the minimum primatives a geometry must have to start Decimation" );
 
     bool useReducer( arguments.find( "--reducer" ) >= 0 );
