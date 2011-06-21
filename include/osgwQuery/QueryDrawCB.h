@@ -59,7 +59,9 @@ protected:
 class OSGWQUERY_EXPORT AddDrawCB : public osg::NodeVisitor
 {
 public:
-    AddDrawCB() {}
+    AddDrawCB( osg::NodeVisitor::TraversalMode mode=osg::NodeVisitor::TRAVERSE_ALL_CHILDREN )
+      : osg::NodeVisitor( mode )
+    {}
 
     virtual void apply( osg::Geode& node )
     {
