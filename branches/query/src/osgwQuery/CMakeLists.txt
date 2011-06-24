@@ -8,6 +8,7 @@ endif()
 set( HEADER_PATH ${PROJECT_SOURCE_DIR}/include/${LIB_NAME} )
 set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/QueryAPI.h
+    ${HEADER_PATH}/QueryBenchmarks.h
     ${HEADER_PATH}/QueryBin.h
     ${HEADER_PATH}/QueryDrawCB.h
     ${HEADER_PATH}/QueryObject.h
@@ -16,6 +17,7 @@ set( LIB_PUBLIC_HEADERS
 
 set( _osgwQuerySourceFiles
     QueryAPI.cpp
+    QueryBenchmarks.cpp
     QueryBin.cpp
     QueryDrawCB.cpp
     QueryObject.cpp
@@ -26,11 +28,17 @@ add_library( ${LIB_NAME}
     ${_osgwQuerySourceFiles}
 )
 
+find_package( OpenGL REQUIRED )
+include_directories(
+    ${OPENGL_INCLUDE_DIR}
+)
+
 if( BUILD_SHARED_LIBS )
     # Shared libs must explicitly resolve all symbols.
     # Link against our dependency: OSG.
     target_link_libraries( ${LIB_NAME}
         ${OSG_LIBRARIES}
+        ${OPENGL_LIBRARIES}
     )
 
     if( WIN32 )
