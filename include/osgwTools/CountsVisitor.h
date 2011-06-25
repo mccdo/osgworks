@@ -46,6 +46,7 @@ public:
     void apply( osg::MatrixTransform& node );
     void apply( osg::Geode& node );
 
+    void apply( osg::Drawable* draw );
     void apply( osg::StateSet* stateSet );
 
     unsigned int getVertices() const;
