@@ -56,8 +56,9 @@ QueryBenchmarks::~QueryBenchmarks()
 
 void QueryBenchmarks::internalInit( unsigned int contextID, osg::RenderInfo* ri )
 {
-    const osg::Viewport* vp = ri->getCurrentCamera()->getViewport();
-    const double width( vp->width() ), height( vp->height() );
+    //const osg::Viewport* vp = ri->getCurrentCamera()->getViewport();
+    //const double width( vp->width() ), height( vp->height() );
+    const double width( 1024. ), height( 768. );
 
     // This is the only state setup we do:
     glMatrixMode( GL_PROJECTION );
@@ -84,7 +85,7 @@ void QueryBenchmarks::internalInit( unsigned int contextID, osg::RenderInfo* ri 
     unsigned int idx;
     for( idx=0; idx<(numVerts / 2); idx++ )
     {
-        vert->set( idx, 2., 0. );
+        vert->set( idx, 3., 0. );
         vert++;
         *index++ = idx * 2;
         vert->set( idx, 1., 0. );
@@ -102,6 +103,7 @@ void QueryBenchmarks::internalInit( unsigned int contextID, osg::RenderInfo* ri 
 
     osgwQuery::QueryAPI* qapi = osgwQuery::getQueryAPI( contextID );
 
+    time( geom.get(), *ri, qapi );
     t = time( geom.get(), *ri, qapi );
     _toSetup = t;
 
@@ -124,7 +126,7 @@ void QueryBenchmarks::internalInit( unsigned int contextID, osg::RenderInfo* ri 
     index = &( (*deui)[0] );
     for( idx=0; idx<(numVerts / 2); idx++ )
     {
-        vert->set( idx, 2., 0. );
+        vert->set( idx, 3., 0. );
         vert++;
         *index++ = idx * 2;
         vert->set( idx, 1., 0. );
@@ -187,6 +189,7 @@ void QueryBenchmarks::internalInit( unsigned int contextID, osg::RenderInfo* ri 
     //
     // Measure fragment time for occlusion queries.
 
+    time( geom.get(), *ri, qapi );
     t = time( geom.get(), *ri, qapi );
     if( t < _toSetup )
     {
@@ -198,17 +201,8 @@ void QueryBenchmarks::internalInit( unsigned int contextID, osg::RenderInfo* ri 
 
 
     // TBD
-    _toLatency = 0.0001;
-    _toOverhead = 0.0001;
-
-
-    osg::notify( osg::ALWAYS ) << "Render setup: " << _trSetup << std::endl;
-    osg::notify( osg::ALWAYS ) << "Render triangle: " << _trTriangle << std::endl;
-    osg::notify( osg::ALWAYS ) << "Render fragment: " << _trFragment << std::endl;
-    osg::notify( osg::ALWAYS ) << "Occl setup: " << _toSetup << std::endl;
-    osg::notify( osg::ALWAYS ) << "Occl fragment: " << _toFragment << std::endl;
-    osg::notify( osg::ALWAYS ) << "Occl latency: " << _toLatency << std::endl;
-    osg::notify( osg::ALWAYS ) << "Occl overhead: " << _toOverhead << std::endl;
+    _toLatency = 1.; // Used to determine if Group children should be inserted. Not possible in OSG.
+    _toOverhead = 1.; // Guthke doesn't appear to describe how to measure this, or how it is used in his algorithm.
 }
 
 #define LOOPCOUNT 100

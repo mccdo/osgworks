@@ -28,12 +28,26 @@
 struct InitCallback : public osg::Camera::DrawCallback
 {
 public:
-    InitCallback() {}
+    InitCallback() : _displayed( false ) {}
     virtual void operator()( osg::RenderInfo& renderInfo ) const
     {
         unsigned int contextID = renderInfo.getState()->getContextID();
         osgwQuery::QueryBenchmarks* qb = osgwQuery::getQueryBenchmarks( contextID, &renderInfo );
+
+        if( !_displayed )
+        {
+            osg::notify( osg::ALWAYS ) << "Render setup: " << qb->_trSetup << std::endl;
+            osg::notify( osg::ALWAYS ) << "Render triangle: " << qb->_trTriangle << std::endl;
+            osg::notify( osg::ALWAYS ) << "Render fragment: " << qb->_trFragment << std::endl;
+            osg::notify( osg::ALWAYS ) << "Occl setup: " << qb->_toSetup << std::endl;
+            osg::notify( osg::ALWAYS ) << "Occl fragment: " << qb->_toFragment << std::endl;
+            osg::notify( osg::ALWAYS ) << "Occl latency: " << qb->_toLatency << std::endl;
+            osg::notify( osg::ALWAYS ) << "Occl overhead: " << qb->_toOverhead << std::endl;
+            _displayed = true;
+        }
     }
+protected:
+    mutable bool _displayed;
 };
 void addInit( osgViewer::Viewer& viewer )
 {
