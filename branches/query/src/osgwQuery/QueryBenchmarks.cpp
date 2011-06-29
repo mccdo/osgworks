@@ -56,9 +56,18 @@ QueryBenchmarks::~QueryBenchmarks()
 
 void QueryBenchmarks::internalInit( unsigned int contextID, osg::RenderInfo* ri )
 {
-    //const osg::Viewport* vp = ri->getCurrentCamera()->getViewport();
-    //const double width( vp->width() ), height( vp->height() );
-    const double width( 1024. ), height( 768. );
+    double width, height;
+    if( ( ri != NULL ) && ( ri->getCurrentCamera() != NULL ) )
+    {
+        const osg::Viewport* vp = ri->getCurrentCamera()->getViewport();
+        width = vp->width();
+        height = vp->height();
+    }
+    else
+    {
+        width = 1024.;
+        height = 768.;
+    }
 
     // This is the only state setup we do:
     glMatrixMode( GL_PROJECTION );
