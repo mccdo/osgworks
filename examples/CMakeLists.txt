@@ -1,0 +1,3 @@
+SET( CATEGORY Example )
+
+ADD_SUBDIRECTORY( rtt )
