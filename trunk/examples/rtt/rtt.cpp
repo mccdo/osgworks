@@ -94,15 +94,21 @@ postRender( osgViewer::Viewer& viewer )
 int
 main( int argc, char** argv )
 {
+    osg::ArgumentParser arguments( &argc, argv );
     osg::ref_ptr< osg::Group > root( new osg::Group );
+    root->addChild( osgDB::readNodeFiles( arguments ) );
+    if( root->getNumChildren() == 0 )
+    {
+        // Load default cow model.
 #if( OSGWORKS_OSG_VERSION < 30000 )
-    std::string fileName( "cow.osg" );
+        std::string fileName( "cow.osg" );
 #else
-    // *.osg files were removed from OpenSceneGraph-Data shortly before
-    // the 3.0.0 release. Use .osgt instead.
-    std::string fileName( "cow.osgt" );
+        // *.osg files were removed from OpenSceneGraph-Data shortly before
+        // the 3.0.0 release. Use .osgt instead.
+        std::string fileName( "cow.osgt" );
 #endif
-    root->addChild( osgDB::readNodeFile( fileName ) );
+        root->addChild( osgDB::readNodeFile( fileName ) );
+    }
     if( root->getNumChildren() == 0 )
         return( 1 );
 
