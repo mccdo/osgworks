@@ -26,7 +26,8 @@
 namespace osgwTools {
 
 
-/** \brief An osgUtil::Simplifier-like geometry reduction tool capable of removing edge vertices.
+/** \class DecimatorOp DecimatorOp.h <osgwTools/DecimatorOp.h>
+\brief An osgUtil::Simplifier-like geometry reduction tool capable of removing edge vertices.
 
 For more information, see \ref geomopt
 */
@@ -58,7 +59,8 @@ public:
     void setMinPrimatives(unsigned int minPrim){_minPrim = minPrim;}
     unsigned int getMinPrimatives() const { return _minPrim;}
 
-    /** \brief Application control mechanism to continue or halt decimation.
+    /** \class ContinueDecimationCallback DecimatorOp.h <osgwTools/DecimatorOp.h>
+    \brief Application control mechanism to continue or halt decimation.
     */
     class ContinueDecimationCallback : public osg::Referenced
         {

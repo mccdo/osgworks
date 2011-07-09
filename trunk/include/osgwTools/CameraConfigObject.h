@@ -46,8 +46,9 @@ to osg::NOTICE and returns false.
 bool OSGWTOOLS_EXPORT configureViewer( osgViewer::Viewer& viewer, const std::string& configFile="" );
 
 
-/** \brief A chunk of info for configuring a single slave camera, as
-found in osgViewer::View. */
+/** \class CameraConfigInfo CameraConfigInfo.h <osgwTools/CameraConfigInfo.h>
+\brief A chunk of info for configuring a single slave camera, as found in osgViewer::View.
+*/
 class OSGWTOOLS_EXPORT CameraConfigInfo : public osg::Object
 {
 public:
@@ -69,10 +70,20 @@ protected:
 typedef std::vector< osg::ref_ptr< CameraConfigInfo > > CameraConfigList;
 
 
-/** \brief A chunk of information for configuring a viewer. 
+/** \class CameraConfigObject CameraConfigObject.h <osgwTools/CameraConfigObject.h>
+\brief A chunk of information for configuring a viewer. 
 
 Your application can read and write this object to .osg 
-files to save and restore Viewer configurations. */
+files to save and restore Viewer configurations.
+\code
+    // For example...
+    osgwTools::CameraConfigInfo* cci;
+    osgwTools::writeObjectFile( *cci, "config.osg" );
+    // or...
+    cci = static_cast< osgwTools::CameraConfigInfo >(
+        osgDB::readObjectFile( "config.osg" ) );
+\endcode
+*/
 class OSGWTOOLS_EXPORT CameraConfigObject : public osg::Object
 {
 public:
@@ -81,7 +92,11 @@ public:
 
     META_Object( osgwTools, CameraConfigObject );
 
+    /** Cause the class to take (copy) the \c viewer parameter's current
+    configuration. */
     void take( const osgViewer::Viewer& viewer );
+    /** Cause the class to configure the \c viewer parameter from the
+    configuration data stored in this class. */
     void store( osgViewer::Viewer& viewer );
 
     CameraConfigList _slaveConfigInfo;
