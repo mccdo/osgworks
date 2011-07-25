@@ -38,8 +38,6 @@ public:
 
     void apply( osg::Node& n )
     {
-        indent();
-
         display( n.getName(), n.className() );
 
         _level++;
@@ -52,25 +50,24 @@ public:
         if( !_showGeodes )
             return;
 
-        indent();
-
+        // For Geodes, along with className, also include number of Drawables.
         std::ostringstream ostr;
         const unsigned int nd = n.getNumDrawables();
         ostr << n.className() << " with " << nd << " Drawable" << ((nd!=1)?"s":"");
         display( n.getName(), ostr.str() );
+
+        // No traverse for Geodes (they have no children, so it's a no-op).
     }
 
 protected:
-    void indent()
+    void display( const std::string& name, const std::string& classInfo )
     {
         int idx;
         for( idx=0; idx<_level; idx++ )
             osg::notify( osg::NOTICE ) << "  ";
-    }
-    void display( const std::string& name, const std::string& className )
-    {
+
         osg::notify( osg::NOTICE ) << ( ( !name.empty() ) ? name : "NULL" );
-        osg::notify( osg::NOTICE ) << " (" << className << ")" << std::endl;
+        osg::notify( osg::NOTICE ) << " (" << classInfo << ")" << std::endl;
     }
 
     int _level;
