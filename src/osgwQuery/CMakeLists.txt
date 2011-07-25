@@ -7,6 +7,7 @@ endif()
 
 set( HEADER_PATH ${PROJECT_SOURCE_DIR}/include/${LIB_NAME} )
 set( LIB_PUBLIC_HEADERS
+    ${HEADER_PATH}/NodeData.h
     ${HEADER_PATH}/QueryAPI.h
     ${HEADER_PATH}/QueryBenchmarks.h
     ${HEADER_PATH}/QueryBin.h
@@ -16,6 +17,7 @@ set( LIB_PUBLIC_HEADERS
 )
 
 set( _osgwQuerySourceFiles
+    NodeData.cpp
     QueryAPI.cpp
     QueryBenchmarks.cpp
     QueryBin.cpp

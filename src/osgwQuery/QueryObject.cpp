@@ -50,26 +50,24 @@ GLuint QueryObject::getID( unsigned int contextID, unsigned int queryIDIndex )
         return( 0 );
     }
 
-    QueryIDVector& idVec = _ids[ contextID ];
-    if( idVec.size() == 0 )
+    if( _ids.size() == 0 )
     {
-        idVec.resize( _numIDs );
+        _ids.resize( _numIDs );
         QueryAPI* qapi = getQueryAPI( contextID );
-        qapi->glGenQueries( _numIDs, &( idVec[0] ) );
+        qapi->glGenQueries( _numIDs, &( _ids[0] ) );
     }
 
-    return( idVec[ queryIDIndex ] );
+    return( _ids[ queryIDIndex ] );
 }
 
 void QueryObject::deleteIDs( unsigned int contextID )
 {
-    QueryIDVector& idVec = _ids[ contextID ];
-    if( idVec.size() == 0 )
+    if( _ids.size() == 0 )
         return;
 
     QueryAPI* qapi = getQueryAPI( contextID );
-    qapi->glDeleteQueries( _numIDs, &( idVec[0] ) );
-    idVec.resize( 0 );
+    qapi->glDeleteQueries( _numIDs, &( _ids[0] ) );
+    _ids.resize( 0 );
 }
 
 

@@ -18,19 +18,107 @@
  *
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
-#include <osgwQuery/QueryDrawCB.h>
+#include <osgwQuery/NodeData.h>
+#include <osgwQuery/QueryBenchmarks.h>
+#include <osgwTools/Shapes.h>
+#include <osgUtil/RenderBin>
 
 #include <osgDB/ReadFile>
+#include <osgDB/WriteFile>
 #include <osgViewer/Viewer>
+#include <osgViewer/ViewerEventHandlers>
+#include <osgGA/StateSetManipulator>
+#include <osgGA/TrackballManipulator>
+#include <osg/MatrixTransform>
+
+
+struct InitCallback : public osg::Camera::DrawCallback
+{
+public:
+    InitCallback() {}
+    virtual void operator()( osg::RenderInfo& renderInfo ) const
+    {
+        unsigned int contextID = renderInfo.getState()->getContextID();
+        osgwQuery::QueryBenchmarks* qb = osgwQuery::getQueryBenchmarks( contextID, &renderInfo );
+    }
+};
+void addInit( osgViewer::Viewer& viewer )
+{
+    viewer.getCamera()->setPreDrawCallback( new InitCallback() );
+}
+void removeInit( osgViewer::Viewer& viewer )
+{
+    viewer.getCamera()->setPreDrawCallback( NULL );
+}
+
+
+osg::Node* makeSceneA()
+{
+    osg::Group* grp = new osg::Group;
+    osg::Geode* geode = new osg::Geode;
+    grp->addChild( geode );
+    osg::Geometry* geom = osgwTools::makeGeodesicSphere( 3., 5 );
+    geode->addDrawable( geom );
+
+    return( grp );
+}
+osg::Node* makeSceneB()
+{
+    osg::Group* grp = new osg::Group;
+    osg::Geode* geode = new osg::Geode;
+    grp->addChild( geode );
+    osg::Geometry* geom = osgwTools::makePlane( osg::Vec3( -10., -50., -10. ),
+        osg::Vec3( 20., 0., 0. ), osg::Vec3( 0., 0., 20. ) );
+    geode->addDrawable( geom );
+
+    return( grp );
+}
 
 int main( int argc, char** argv )
 {
-    if( argc <= 1 )
-        return( 1 );
+    osg::ArgumentParser arguments( &argc, argv );
+
+    osgUtil::RenderBin::setDefaultRenderBinSortMode(
+        osgUtil::RenderBin::SORT_FRONT_TO_BACK );
 
     osgViewer::Viewer viewer;
-    viewer.setSceneData( osgDB::readNodeFile( argv[ 1 ] ) );
-    osgwQuery::AddDrawCB adcb;
-    viewer.getSceneData()->accept( adcb );
-    return( viewer.run() );
+    viewer.setUpViewInWindow( 0., 0., 1024., 768. );
+    viewer.setCameraManipulator( new osgGA::TrackballManipulator );
+    viewer.addEventHandler( new osgViewer::StatsHandler );
+    viewer.addEventHandler( new osgGA::StateSetManipulator(
+        viewer.getCamera()->getOrCreateStateSet() ) );
+
+
+    osg::Group* root = new osg::Group;
+    osg::Node* models = osgDB::readNodeFiles( arguments );
+    if( models != NULL )
+        root->addChild( models );
+    else
+    {
+        root->addChild( makeSceneA() );
+        root->addChild( makeSceneB() );
+    }
+
+    viewer.setSceneData( root );
+
+
+    viewer.setThreadingModel( osgViewer::ViewerBase::SingleThreaded );
+
+    // First frame creates GL objects. Must do this before we add
+    // any Drawable draw callbacks or Camera pre-draw callbacks.
+    viewer.frame();
+
+    osgwQuery::AddQueries aqs;
+    root->accept( aqs );
+    addInit( viewer );
+
+    while( !viewer.done() )
+    {
+        osg::notify( osg::INFO ) << "        *** Frame ***" << std::endl;
+
+        osgwQuery::AddQueries::setCscrOi( 0. );
+        viewer.frame();
+
+        removeInit( viewer );
+    }
 }
