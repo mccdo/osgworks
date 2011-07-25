@@ -23,21 +23,29 @@
 
 
 #include <osgwQuery/Export.h>
+#include <osgwQuery/QueryObject.h>
 #include <osg/Drawable>
 #include <OpenThreads/Mutex>
 
 #include <osg/Node>
 #include <osg/Geode>
 #include <osg/NodeVisitor>
+#include <osg/buffered_value>
 
 
 namespace osgwQuery
 {
 
 
-/**
+/** \class QueryDrawCB QueryDrawCB.h <osgwQuery/QueryDrawCB.h>
+\brief A multi-inherited draw/cull callback that supports occlusion query.
+
+This class attempts to implement the algorithm described in "Near Optimal
+Hierarchical Culling: Performance Driven Use of Hardware Occlusion Queries"
+by Guthke, Balázs, and Klein, Eurographics 2006.
 */
-class OSGWQUERY_EXPORT QueryDrawCB : public osg::Drawable::DrawCallback
+class OSGWQUERY_EXPORT QueryDrawCB : public osg::Drawable::DrawCallback,
+    public osg::Drawable::CullCallback
 {
 public:
     QueryDrawCB();
@@ -46,12 +54,45 @@ public:
 
     virtual void drawImplementation( osg::RenderInfo& renderInfo, const osg::Drawable* drawable ) const;
 
+    virtual bool cull( osg::NodeVisitor* nv, osg::Drawable* drawable, osg::RenderInfo* renderInfo ) const;
+
+    void setNumVertices( unsigned int numVertices ) { _numVertices = numVertices; }
+    unsigned int getNumVertices() const { return( _numVertices ); }
+
 protected:
     mutable osg::ref_ptr< osg::Drawable > _queryDrawable;
 
+    mutable OpenThreads::Mutex _lock;
+
     mutable bool _initialized;
-    mutable OpenThreads::Mutex _initLock;
     void init( osg::BoundingBox bb ) const;
+
+    unsigned int _numVertices;
+
+    // Guthke algorithm constants and variables
+    //   Surface area of the bounding box divided by 6.
+    mutable double _AbbOiOver6;
+    //   Ratio: actual object coverage / bounding box coverage.
+    mutable double _RcovOi;
+    //   Taken from CullVisitor:
+    //     Distance from the Drawble to the viewpoint.
+    mutable double _dOi;
+    //     Width and height of the viewport.
+    mutable double _w, _h;
+    //     Half of the vertical field of view.
+    mutable double _thetaOver2;
+
+
+    class QueryStatus
+    {
+    public:
+        QueryStatus();
+
+        bool _queryActive;
+        bool _wasOccluded;
+        osg::ref_ptr< osgwQuery::QueryObject > _queryObject;
+    };
+    mutable osg::buffered_object< QueryStatus > _queries;
 };
 
 
@@ -63,17 +104,15 @@ public:
       : osg::NodeVisitor( mode )
     {}
 
-    virtual void apply( osg::Geode& node )
-    {
-        unsigned int idx;
-        for( idx=0; idx< node.getNumDrawables(); idx++ )
-        {
-            node.getDrawable( idx )->setDrawCallback( new QueryDrawCB );
-        }
+    virtual void apply( osg::Geode& node );
 
-        traverse( node );
-    }
+    static double getCscrOi() { return( s_CscrOi ); }
+    static void setCscrOi( double c ) { s_CscrOi = c; }
+
+protected:
+    static double s_CscrOi;
 };
+
 
 // osgwQuery
 }
