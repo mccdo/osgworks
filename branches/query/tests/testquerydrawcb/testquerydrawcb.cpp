@@ -20,7 +20,9 @@
 
 #include <osgwQuery/NodeData.h>
 #include <osgwQuery/QueryBenchmarks.h>
+#include <osgwQuery/QueryStats.h>
 #include <osgwTools/Shapes.h>
+#include <osgwTools/FindNamedNode.h>
 #include <osgUtil/RenderBin>
 
 #include <osgDB/ReadFile>
@@ -99,6 +101,20 @@ int main( int argc, char** argv )
         root->addChild( makeSceneB() );
     }
 
+    // Add the Query statistics HUD.
+    osg::ref_ptr< osgwQuery::QueryStats > qs;
+    {
+        osgwTools::FindNamedNode fnn( "Dumptruck" );
+        root->accept( fnn );
+        if( fnn._napl.empty() )
+            return( 1 );
+        osg::notify( osg::ALWAYS ) << "Stats for node " << fnn._napl[ 0 ].first->getName() << std::endl;
+        qs = new osgwQuery::QueryStats( fnn._napl[ 0 ].first );
+        root->addChild( qs->getSceneGraph() );
+
+        viewer.addEventHandler( new osgwQuery::QueryStatsHandler( qs.get() ) );
+    }
+
     viewer.setSceneData( root );
 
 
@@ -109,6 +125,7 @@ int main( int argc, char** argv )
     viewer.frame();
 
     osgwQuery::AddQueries aqs;
+    aqs.setQueryStats( qs.get() );
     root->accept( aqs );
     addInit( viewer );
 
@@ -120,5 +137,7 @@ int main( int argc, char** argv )
         viewer.frame();
 
         removeInit( viewer );
+
+        qs->incFrames();
     }
 }
