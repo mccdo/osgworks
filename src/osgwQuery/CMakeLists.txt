@@ -13,6 +13,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/QueryBin.h
     ${HEADER_PATH}/QueryDrawCB.h
     ${HEADER_PATH}/QueryObject.h
+    ${HEADER_PATH}/QueryStats.h
     ${HEADER_PATH}/Export.h
 )
 
@@ -23,6 +24,7 @@ set( _osgwQuerySourceFiles
     QueryBin.cpp
     QueryDrawCB.cpp
     QueryObject.cpp
+    QueryStats.cpp
 )
 
 add_library( ${LIB_NAME}

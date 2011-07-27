@@ -37,16 +37,19 @@ namespace osgwQuery
 double AddQueries::s_CscrOi( 0. );
 
 
-NodeData::NodeData()
+NodeData::NodeData( osgwQuery::QueryStats* debugStats )
   : _initialized( false ),
     _numVertices( 0 ),
-    _lastQueryFrame( 0 )
+    _lastQueryFrame( 0 ),
+    _lastCullFrame( 0 ),
+    _debugStats( debugStats )
 {
 }
 NodeData::NodeData( const NodeData& rhs, const osg::CopyOp& copyop )
   : _initialized( false ),
     _numVertices( rhs._numVertices ),
-    _lastQueryFrame( rhs._lastQueryFrame )
+    _lastQueryFrame( rhs._lastQueryFrame ),
+    _lastCullFrame( rhs._lastCullFrame )
 {
 }
 
@@ -61,6 +64,17 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
             init( bb, this );
         _initialized = true;
     }
+
+    // We should only be here if the cull visitor visits our associated Node.
+    // That should only happen if our Node isn't frustum culled. Determine
+    // if the current frame# is significantly different from the last time
+    // we were here, then record the current frame#.
+    const unsigned int currentFrame = nv->getFrameStamp()->getFrameNumber();
+    const bool wasFrustumCulled( _lastCullFrame < currentFrame - 2 );
+    _lastCullFrame = currentFrame;
+    if( _debugStats.valid() && wasFrustumCulled )
+        _debugStats->incFrustum();
+
 
     osgUtil::CullVisitor* cv = static_cast< osgUtil::CullVisitor* >( nv );
     osg::RefMatrix* view = cv->getModelViewMatrix();
@@ -100,7 +114,7 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
     const double cbbOiSqRt = 1. / ( dOi * sqrt( width / height ) * 2. * tan( thetaOver2 ) );
     const double cbbOi = cbbOiSqRt * cbbOiSqRt * _AbbOiOver6;
 
-    // Compute pcovOi, the probability that this Drawable id covered.
+    // Compute pcovOi, the probability that this Node is covered.
     double pcovOi;
     const double cscrOi = AddQueries::getCscrOi();
     if( cbbOi < cscrOi )
@@ -117,12 +131,15 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
     // (in reference to a hierarchy) also as "p sub o ( H sub i )".
     // This is from personal communication with author Michael Guthke.
     double pocclOi;
-    if( true /* previously visible */ )
+    if( !qs._wasOccluded )
+        // previously visible
         pocclOi = 0.5 * pcovOi * pcovOi;
-    else if( false /* previously frustum culled */ )
+    else if( wasFrustumCulled )
         pocclOi = pcovOi;
     else /* previously occluded */
         pocclOi = 1.;
+    if( _debugStats.valid() )
+        _debugStats->setPoccl( (float)pocclOi );
 
 
 
@@ -147,25 +164,34 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
     const double nodeCost = queryTime;
     const double nodeBenefit = pocclOi * ( renderTime - queryTime ) / sceneDepth;
 
-    unsigned int framesSinceLastQuery = nv->getFrameStamp()->getFrameNumber() - _lastQueryFrame;
+    unsigned int framesSinceLastQuery = currentFrame - _lastQueryFrame;
 
     if( ( renderTime < queryTime ) /* ||
             ( sum of child costs < node cost ) */ )
     {
         queryReasonable = false;
         osg::notify( osg::INFO ) << "Case 1: False. renderTime < queryTime" << std::endl;
+
+        if( _debugStats.valid() )
+            _debugStats->incRtLessQt();
     }
 
     else if( qs._wasOccluded )
     {
         queryReasonable = true;
         osg::notify( osg::INFO ) << "Case 2: True. Was occluded" << std::endl;
+
+        if( _debugStats.valid() )
+            _debugStats->incOccluded();
     }
 
     else if( nodeCost > ( framesSinceLastQuery * nodeBenefit ) )
     {
         queryReasonable = false;
         osg::notify( osg::INFO ) << "Case 3: False. cost > benefit" << std::endl;
+
+        if( _debugStats.valid() )
+            _debugStats->incCGreaterB();
     }
 
     else
@@ -201,7 +227,10 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
             cv->addDrawableAndDepth( _queryDrawable.get(), view, depth );
         }
 
-        _lastQueryFrame = nv->getFrameStamp()->getFrameNumber();
+        _lastQueryFrame = currentFrame;
+
+        if( _debugStats.valid() )
+            _debugStats->incQueries();
     }
 
 
@@ -228,6 +257,7 @@ void NodeData::init( osg::BoundingBox bb, NodeData* nd )
     qdc->attach( geom, nd );
     geom->setDrawCallback( qdc );
 
+    // TBD osgwTools Shapes really does need to support non-origin centers.
     // Offset the query geometry box by the bounding box center.
     osg::Vec3Array* v = static_cast< osg::Vec3Array* >( geom->getVertexArray() );
     const osg::Vec3 center = bb.center();
@@ -236,6 +266,7 @@ void NodeData::init( osg::BoundingBox bb, NodeData* nd )
         (*v)[ idx ] += center;
 
     // Optimize.
+    // TBD Possibly display lists are better? Need to try on higher-end hardware.
     geom->setUseDisplayList( false );
     geom->setUseVertexBufferObjects( true );
     geom->setTexCoordArray( 0, NULL );
@@ -354,10 +385,20 @@ void QueryDrawCallback::attach( osg::Drawable* drawable, osgwQuery::NodeData* nd
 
 void AddQueries::apply( osg::Group& node )
 {
+    if( node.getName() == std::string( "__QueryStats" ) )
+        // This is the QueryStats subtree. Don't instrument it with any OQ stuff.
+        return;
+
     osg::ComputeBoundsVisitor cbv;
     node.accept( cbv );
 
-    NodeData* nd = new NodeData;
+    // Create NodeData for this node.
+    // Add q QueryStats only if a) we have one and
+    // b) the node addresses match.
+    osgwQuery::QueryStats* debugStats( NULL );
+    if( ( _qs != NULL ) && ( &node == _qs->getNode() ) )
+        debugStats = _qs;
+    NodeData* nd = new NodeData( debugStats );
 
     osgwTools::CountsVisitor cv;
     node.accept( cv );

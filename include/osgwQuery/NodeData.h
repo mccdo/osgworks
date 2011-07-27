@@ -24,6 +24,7 @@
 
 #include <osgwQuery/Export.h>
 #include <osgwQuery/QueryObject.h>
+#include <osgwQuery/QueryStats.h>
 #include <osg/Drawable>
 #include <OpenThreads/Mutex>
 
@@ -38,21 +39,21 @@ namespace osgwQuery
 
 
 /** \class NodeData NodeData.h <osgwQuery/NodeData.h>
-\brief A support struct for the Guthke occlusion query algorithm.
+\brief A support struct for the Guthe occlusion query algorithm.
 
 This class attempts to implement the algorithm described in "Near Optimal
 Hierarchical Culling: Performance Driven Use of Hardware Occlusion Queries"
-by Guthke, Balázs, and Klein, Eurographics 2006.
+by Guthe, Balázs, and Klein, Eurographics 2006.
 */
 class OSGWQUERY_EXPORT NodeData : public osg::Object
 {
 public:
-    NodeData();
+    NodeData( osgwQuery::QueryStats* debugStats=NULL );
     NodeData( const NodeData& rhs, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY );
     META_Object(osgwQuery,NodeData);
 
-    /** \brief Implements Guthke algorithm and tells calling code whether to render children.
-    NOTE: Guthke assumes a concurrent cull/draw with an active rendering context. The
+    /** \brief Implements Guthe algorithm and tells calling code whether to render children.
+    NOTE: Guthe assumes a concurrent cull/draw with an active rendering context. The
     cullOperation() method requires an active context in order to retrieve the active query
     result. If you call this function without an active context, results are undefined.
     Many osgViewer threading models do *not* have an active rendering context during cull
@@ -92,7 +93,7 @@ protected:
 
     unsigned int _numVertices;
 
-    // Guthke algorithm constants and variables.
+    // Guthe algorithm constants and variables.
     // Note: Must hold _lock when writing these values during cull.
     //   Surface area of the bounding box divided by 6.
     double _AbbOiOver6;
@@ -100,9 +101,14 @@ protected:
     double _RcovOi;
     //   Last frame for which a query was issued.
     unsigned int _lastQueryFrame;
+    // Used to determine if the node was frustum culled. This is a Guthe
+    // constant (indirectly).
+    unsigned int _lastCullFrame;
 
 
     osg::buffered_object< QueryStatus > _queries;
+
+    osg::ref_ptr< osgwQuery::QueryStats > _debugStats;
 };
 
 
@@ -152,8 +158,12 @@ public:
     static double getCscrOi() { return( s_CscrOi ); }
     static void setCscrOi( double c ) { s_CscrOi = c; }
 
+    void setQueryStats( osgwQuery::QueryStats* qs ) { _qs = qs; }
+
 protected:
     static double s_CscrOi;
+
+    osgwQuery::QueryStats* _qs;
 };
 
 
