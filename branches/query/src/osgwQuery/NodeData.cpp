@@ -65,16 +65,6 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
         _initialized = true;
     }
 
-    // We should only be here if the cull visitor visits our associated Node.
-    // That should only happen if our Node isn't frustum culled. Determine
-    // if the current frame# is significantly different from the last time
-    // we were here, then record the current frame#.
-    const unsigned int currentFrame = nv->getFrameStamp()->getFrameNumber();
-    const bool wasFrustumCulled( _lastCullFrame < currentFrame - 2 );
-    _lastCullFrame = currentFrame;
-    if( _debugStats.valid() && wasFrustumCulled )
-        _debugStats->incFrustum();
-
 
     osgUtil::CullVisitor* cv = static_cast< osgUtil::CullVisitor* >( nv );
     osg::RefMatrix* view = cv->getModelViewMatrix();
@@ -94,6 +84,16 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
     const double thetaOver2 = osg::DegreesToRadians( fovy * .5 );
 
 
+    // We should only be here if the cull visitor visits our associated Node.
+    // That should only happen if our Node isn't frustum culled. Determine
+    // if the current frame# is significantly different from the last time
+    // we were here, then record the current frame#.
+    const unsigned int currentFrame = nv->getFrameStamp()->getFrameNumber();
+    bool wasFrustumCulled( _lastCullFrame < currentFrame - 2 );
+    _lastCullFrame = currentFrame;
+    // Note that we will explicitly set wasFrustumCulled=false
+    // if it turns out we has an active query.
+
     unsigned int contextID = renderInfo.getState()->getContextID();
     osgwQuery::QueryBenchmarks* qb = osgwQuery::getQueryBenchmarks( contextID, &renderInfo );
     osgwQuery::QueryAPI* qapi = osgwQuery::getQueryAPI( contextID );
@@ -108,8 +108,14 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
         osg::notify( osg::INFO ) << " ID: " << id << " Result: " << result << ", numV " << _numVertices << std::endl;
         qs._wasOccluded = ( result < 25 ); // TBD need configurable threshold.
         qs._queryActive = false;
+
+        // If query was active, we were _not_ frustum culled.
+        wasFrustumCulled = false;
     }
 
+    // Report if frustum culled
+    if( _debugStats.valid() && wasFrustumCulled )
+        _debugStats->incFrustum();
 
     const double cbbOiSqRt = 1. / ( dOi * sqrt( width / height ) * 2. * tan( thetaOver2 ) );
     const double cbbOi = cbbOiSqRt * cbbOiSqRt * _AbbOiOver6;
@@ -388,6 +394,12 @@ void AddQueries::apply( osg::Group& node )
     if( node.getName() == std::string( "__QueryStats" ) )
         // This is the QueryStats subtree. Don't instrument it with any OQ stuff.
         return;
+
+    if( node.getCullCallback() != NULL )
+    {
+        traverse( node );
+        return;
+    }
 
     osg::ComputeBoundsVisitor cbv;
     node.accept( cbv );

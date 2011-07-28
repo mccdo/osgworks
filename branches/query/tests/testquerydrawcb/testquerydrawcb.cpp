@@ -26,9 +26,9 @@
 #include <osgUtil/RenderBin>
 
 #include <osgDB/ReadFile>
-#include <osgDB/WriteFile>
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
+#include <osgUtil/Optimizer>
 #include <osgGA/StateSetManipulator>
 #include <osgGA/TrackballManipulator>
 #include <osg/MatrixTransform>
@@ -80,6 +80,9 @@ int main( int argc, char** argv )
 {
     osg::ArgumentParser arguments( &argc, argv );
 
+    std::string debugNodeName;
+    bool debugStats( arguments.read( "--debug", debugNodeName ) );
+
     osgUtil::RenderBin::setDefaultRenderBinSortMode(
         osgUtil::RenderBin::SORT_FRONT_TO_BACK );
 
@@ -94,7 +97,11 @@ int main( int argc, char** argv )
     osg::Group* root = new osg::Group;
     osg::Node* models = osgDB::readNodeFiles( arguments );
     if( models != NULL )
+    {
+        osgUtil::Optimizer opt;
+        opt.optimize( models, osgUtil::Optimizer::REMOVE_LOADED_PROXY_NODES );
         root->addChild( models );
+    }
     else
     {
         root->addChild( makeSceneA() );
@@ -103,16 +110,19 @@ int main( int argc, char** argv )
 
     // Add the Query statistics HUD.
     osg::ref_ptr< osgwQuery::QueryStats > qs;
+    if( debugStats )
     {
-        osgwTools::FindNamedNode fnn( "Dumptruck" );
+        osgwTools::FindNamedNode fnn( debugNodeName );
         root->accept( fnn );
-        if( fnn._napl.empty() )
-            return( 1 );
-        osg::notify( osg::ALWAYS ) << "Stats for node " << fnn._napl[ 0 ].first->getName() << std::endl;
-        qs = new osgwQuery::QueryStats( fnn._napl[ 0 ].first );
-        root->addChild( qs->getSceneGraph() );
+        if( !( fnn._napl.empty() ) )
+        {
+            osg::notify( osg::ALWAYS ) << "Stats for node " << fnn._napl[ 0 ].first->getName() <<
+                " (found " << fnn._napl.size() << ")" << std::endl;
+            qs = new osgwQuery::QueryStats( fnn._napl[ 2 ].first );
+            root->addChild( qs->getSceneGraph() );
 
-        viewer.addEventHandler( new osgwQuery::QueryStatsHandler( qs.get() ) );
+            viewer.addEventHandler( new osgwQuery::QueryStatsHandler( qs.get() ) );
+        }
     }
 
     viewer.setSceneData( root );
@@ -138,6 +148,7 @@ int main( int argc, char** argv )
 
         removeInit( viewer );
 
-        qs->incFrames();
+        if( qs.valid() )
+            qs->incFrames();
     }
 }

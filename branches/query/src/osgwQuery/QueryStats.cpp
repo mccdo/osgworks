@@ -33,7 +33,7 @@ namespace osgwQuery
 
 QueryStats::QueryStats( osg::Node* node )
   : _node( node ),
-    _accum( false )
+    _accum( true )
 {
     clear();
 }
