@@ -84,7 +84,7 @@ public:
 
 
 protected:
-    void init( osg::BoundingBox bb, NodeData* nd );
+    void init( osg::BoundingBox bb, osg::NodeVisitor* nv );
     bool _initialized;
 
     OpenThreads::Mutex _lock;
@@ -92,6 +92,7 @@ protected:
     osg::ref_ptr< osg::Drawable > _queryDrawable;
 
     unsigned int _numVertices;
+    osg::BoundingBox _worldBB;
 
     // Guthe algorithm constants and variables.
     // Note: Must hold _lock when writing these values during cull.

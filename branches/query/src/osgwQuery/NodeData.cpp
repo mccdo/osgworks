@@ -23,6 +23,7 @@
 #include <osgwQuery/QueryBenchmarks.h>
 #include <osgwTools/Shapes.h>
 #include <osgwTools/CountsVisitor.h>
+#include <osgwTools/Transform.h>
 #include <OpenThreads/ScopedLock>
 #include <osgUtil/CullVisitor>
 #include <osg/ComputeBoundsVisitor>
@@ -61,7 +62,7 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
         OpenThreads::ScopedLock< OpenThreads::Mutex > lock( _lock );
 
         if( !( _queryDrawable.valid() ) )
-            init( bb, this );
+            init( bb, nv );
         _initialized = true;
     }
 
@@ -72,7 +73,7 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
 
     // Obtain cull-time constants (possibly different per cull in multidisplay).
     //     Distance from the Drawble to the viewpoint.
-    const double dOi = cv->getDistanceFromEyePoint( bb.center(), false );
+    const double dOi = cv->getDistanceFromEyePoint( _worldBB.center(), false );
     //     Width and height of the viewport.
     const osg::Viewport* vp = cam->getViewport();
     const double width = vp->width();
@@ -92,7 +93,7 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
     bool wasFrustumCulled( _lastCullFrame < currentFrame - 2 );
     _lastCullFrame = currentFrame;
     // Note that we will explicitly set wasFrustumCulled=false
-    // if it turns out we has an active query.
+    // if it turns out we have an active query.
 
     unsigned int contextID = renderInfo.getState()->getContextID();
     osgwQuery::QueryBenchmarks* qb = osgwQuery::getQueryBenchmarks( contextID, &renderInfo );
@@ -221,11 +222,11 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
 
         // Issue query. Add the query drawable to the render graph just as
         // if CullVisitor had encountered it while processing a Geode.
-        const float depth = bb.valid() ? cv->getDistanceFromEyePoint( bb.center(), false ) : 0.f;
+        const float depth = _worldBB.valid() ? cv->getDistanceFromEyePoint( _worldBB.center(), false ) : 0.f;
         if( osg::isNaN( depth ) )
         {
             osg::notify(osg::NOTICE)<<"NodeData: detected NaN,"<<std::endl
-                                    <<"    depth="<<depth<<", center=("<<bb.center()<<"),"<<std::endl;
+                                    <<"    depth="<<depth<<", center=("<<_worldBB.center()<<"),"<<std::endl;
         }
         else
         {
@@ -248,8 +249,10 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
 }
 
 
-void NodeData::init( osg::BoundingBox bb, NodeData* nd )
+void NodeData::init( osg::BoundingBox bb, osg::NodeVisitor* nv )
 {
+    _worldBB = osgwTools::transform( osg::computeLocalToWorld( nv->getNodePath() ), bb );
+
     osg::Vec3 extents = bb._max - bb._min;
 
 
@@ -260,7 +263,7 @@ void NodeData::init( osg::BoundingBox bb, NodeData* nd )
     osg::Geometry* geom = osgwTools::makeBox( halfExtents );
 
     QueryDrawCallback* qdc = new QueryDrawCallback();
-    qdc->attach( geom, nd );
+    qdc->attach( geom, this );
     geom->setDrawCallback( qdc );
 
     // TBD osgwTools Shapes really does need to support non-origin centers.
@@ -371,11 +374,14 @@ void QueryDrawCallback::drawImplementation( osg::RenderInfo& renderInfo, const o
     osg::notify( osg::INFO ) << " ID: " << id << std::endl;
     qapi->glBeginQuery( GL_SAMPLES_PASSED, id );
 
+    glPolygonOffset( -1., -1. );
+    glEnable( GL_POLYGON_OFFSET_FILL );
     glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
     glDepthMask( GL_FALSE );
     _drawable->drawImplementation( renderInfo );
     glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
     glDepthMask( GL_TRUE );
+    glDisable( GL_POLYGON_OFFSET_FILL );
 
     qapi->glEndQuery( GL_SAMPLES_PASSED );
     qs._queryActive = true;
@@ -401,9 +407,6 @@ void AddQueries::apply( osg::Group& node )
         return;
     }
 
-    osg::ComputeBoundsVisitor cbv;
-    node.accept( cbv );
-
     // Create NodeData for this node.
     // Add q QueryStats only if a) we have one and
     // b) the node addresses match.
@@ -416,8 +419,24 @@ void AddQueries::apply( osg::Group& node )
     node.accept( cv );
     nd->setNumVertices( cv.getVertices() );
 
+    osg::ComputeBoundsVisitor cbv;
+    node.accept( cbv );
+    osg::BoundingBox bb = cbv.getBoundingBox();
+    // We do not want a transformed bounding box, because the bb is used to create the
+    // query geometry. If this node is a transform, this would result in the transform
+    // being applied twice, rendering the geometry in the wrong location.
+    osg::Transform* transform = node.asTransform();
+    if( transform != NULL )
+    {
+        // Remove the transform from the bounding box.
+        osg::Matrix m;
+        transform->computeLocalToWorldMatrix( m, NULL );
+        m.invert( m );
+        bb = osgwTools::transform( m, bb );
+    }
+
     QueryCullCallback* qcc = new QueryCullCallback();
-    qcc->attach( &node, nd, cbv.getBoundingBox() );
+    qcc->attach( &node, nd, bb );
     node.setCullCallback( qcc );
 
     traverse( node );
