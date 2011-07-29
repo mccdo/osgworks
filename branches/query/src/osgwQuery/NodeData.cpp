@@ -27,6 +27,9 @@
 #include <OpenThreads/ScopedLock>
 #include <osgUtil/CullVisitor>
 #include <osg/ComputeBoundsVisitor>
+#include <osg/PolygonOffset>
+#include <osg/ColorMask>
+#include <osg/Depth>
 
 #include <osg/io_utils>
 
@@ -36,6 +39,8 @@ namespace osgwQuery
 
 
 double AddQueries::s_CscrOi( 0. );
+
+osg::ref_ptr< osg::StateSet > NodeData::s_queryStateSet( NULL );
 
 
 NodeData::NodeData( osgwQuery::QueryStats* debugStats )
@@ -59,6 +64,11 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
 {
     if( !_initialized )
     {
+        // Must hold lock for 2 reasons:
+        // 1) Could be multiple culls operating on this at the same time. Only one needs
+        // to create _queryDrawable.
+        // 2) init() creates a static StateSet shared by all NodeData objects. Only need
+        // to create that StateSet once.
         OpenThreads::ScopedLock< OpenThreads::Mutex > lock( _lock );
 
         if( !( _queryDrawable.valid() ) )
@@ -218,6 +228,10 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
 
     if( queryReasonable )
     {
+        osg::StateSet* stateSet = _queryDrawable->getStateSet();
+        if( stateSet )
+            cv->pushStateSet( stateSet );
+
         cv->updateCalculatedNearFar( *view, *_queryDrawable, false );
 
         // Issue query. Add the query drawable to the render graph just as
@@ -233,6 +247,9 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
             osg::notify( osg::INFO ) << "Issued query" << std::endl;
             cv->addDrawableAndDepth( _queryDrawable.get(), view, depth );
         }
+
+        if( stateSet )
+            cv->popStateSet();
 
         _lastQueryFrame = currentFrame;
 
@@ -283,6 +300,25 @@ void NodeData::init( osg::BoundingBox bb, osg::NodeVisitor* nv )
     geom->setNormalBinding( osg::Geometry::BIND_OFF );
 
     _queryDrawable = geom;
+
+    // Initialize a static StateSet used by all NodeData's _queryDrawable objects.
+    if( !( s_queryStateSet.valid() ) )
+    {
+        s_queryStateSet = new osg::StateSet;
+
+        osg::PolygonOffset* po = new osg::PolygonOffset( -1.f, -1.f );
+        s_queryStateSet->setAttributeAndModes( po );
+
+        osg::ColorMask* cm = new osg::ColorMask( false, false, false, false );
+        s_queryStateSet->setAttributeAndModes( cm );
+
+        // Sadly, there is no way in OSG to set the depth mask without also setting
+        // the depth function and the viewport depth range values. So we go ahead and
+        // set them (we have no choice) and hope for the best.
+        osg::Depth* depth = new osg::Depth( osg::Depth::LESS, 0., 1., false );
+        s_queryStateSet->setAttributeAndModes( depth );
+    }
+    _queryDrawable->setStateSet( s_queryStateSet.get() );
 
 
     //
@@ -374,14 +410,7 @@ void QueryDrawCallback::drawImplementation( osg::RenderInfo& renderInfo, const o
     osg::notify( osg::INFO ) << " ID: " << id << std::endl;
     qapi->glBeginQuery( GL_SAMPLES_PASSED, id );
 
-    glPolygonOffset( -1., -1. );
-    glEnable( GL_POLYGON_OFFSET_FILL );
-    glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
-    glDepthMask( GL_FALSE );
     _drawable->drawImplementation( renderInfo );
-    glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
-    glDepthMask( GL_TRUE );
-    glDisable( GL_POLYGON_OFFSET_FILL );
 
     qapi->glEndQuery( GL_SAMPLES_PASSED );
     qs._queryActive = true;

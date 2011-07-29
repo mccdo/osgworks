@@ -90,6 +90,7 @@ protected:
     OpenThreads::Mutex _lock;
 
     osg::ref_ptr< osg::Drawable > _queryDrawable;
+    static osg::ref_ptr< osg::StateSet > s_queryStateSet;
 
     unsigned int _numVertices;
     osg::BoundingBox _worldBB;
