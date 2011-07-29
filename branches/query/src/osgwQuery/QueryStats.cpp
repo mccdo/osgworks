@@ -67,7 +67,7 @@ osg::Node* QueryStats::getSceneGraph()
     _labels->setPosition( osg::Vec3( textX, textY, 0. ) );
     textY += textYDelta;
     _labels->setCharacterSize( .04 );
-    _labels->setText( _node->getName() + "\nframes: \nqueries: \noccluded: \nRt < Qt: \nCost > Ben: \nfrustum culled: \nPoccl: " );
+    _labels->setText( _node->getName() + "\nframes: \nqueries: \noccluded: \nNo Q (Rt < Qt): \nNo Q (Cost > Ben): \nQ (prev culled): \nPoccl: " );
     geode->addDrawable( _labels.get() );
 
     _frames = new osgText::Text;
