@@ -39,14 +39,14 @@ class QueryAPI;
 
 
 /** \class QueryBenchmarks QueryBenchmarks.h <osgwQuery/QueryBenchmarks.h>
-\brief OpenGL query API benchmarks used in Guthke algorithm.
+\brief OpenGL query API benchmarks used in Guthe algorithm.
 */
 class OSGWQUERY_EXPORT QueryBenchmarks : public osg::Referenced
 {
 public:
     QueryBenchmarks( unsigned int contextID, osg::RenderInfo* ri );
 
-    // Benchmark values. See Guthke, Section 3.2, Table 2.
+    // Benchmark values. See Guthe, Section 3.2, Table 2.
     double _trSetup, _trTriangle, _trFragment;
     double _toSetup, _toFragment;
     double _toLatency, _toOverhead;

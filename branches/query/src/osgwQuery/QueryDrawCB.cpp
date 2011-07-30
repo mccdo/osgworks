@@ -79,7 +79,7 @@ void QueryDrawCB::drawImplementation( osg::RenderInfo& renderInfo, const osg::Dr
     // accounting for temporal coherence. "p sub occl ( O sub i )" is
     // referred to as "p sub o ( O sub i )" after section 3.1, and
     // (in reference to a hierarchy) also as "p sub o ( H sub i )".
-    // This is from personal communication with author Michael Guthke.
+    // This is from personal communication with author Michael Guthe.
     double pocclOi;
     if( true /* previously visible */ )
         pocclOi = 0.5 * pcovOi * pcovOi;
@@ -95,8 +95,8 @@ void QueryDrawCB::drawImplementation( osg::RenderInfo& renderInfo, const osg::Dr
     osgwQuery::QueryAPI* qapi = osgwQuery::getQueryAPI( contextID );
     QueryStatus& qs = _queries[ contextID ];
 
-    /** Implements the Guthke paper'a "QueryReasonable" function, pseudocode
-    in Guthke Figure 5, described in Guthke section 4. */
+    /** Implements the Guthe paper'a "QueryReasonable" function, pseudocode
+    in Guthe Figure 5, described in Guthe section 4. */
     bool queryReasonable( false );
 
 
@@ -219,7 +219,7 @@ void QueryDrawCB::init( osg::BoundingBox bb ) const
 
 
     //
-    // Compute and store constants defined in Guthke, section 3.1.
+    // Compute and store constants defined in Guthe, section 3.1.
 
     // 1/6th of the bounding box surface area.
     const double abbOi = ( 2. * extents[ 0 ] * extents[ 1 ] ) +

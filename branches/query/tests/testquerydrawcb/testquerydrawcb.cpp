@@ -18,7 +18,7 @@
  *
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
-#include <osgwQuery/NodeData.h>
+#include <osgwQuery/QueryUtils.h>
 #include <osgwQuery/QueryBenchmarks.h>
 #include <osgwQuery/QueryStats.h>
 #include <osgwTools/Shapes.h>
@@ -118,7 +118,7 @@ int main( int argc, char** argv )
         {
             osg::notify( osg::ALWAYS ) << "Stats for node " << fnn._napl[ 0 ].first->getName() <<
                 " (found " << fnn._napl.size() << ")" << std::endl;
-            qs = new osgwQuery::QueryStats( fnn._napl[ 2 ].first );
+            qs = new osgwQuery::QueryStats( fnn._napl[ 0 ].first );
             root->addChild( qs->getSceneGraph() );
 
             viewer.addEventHandler( new osgwQuery::QueryStatsHandler( qs.get() ) );
@@ -143,7 +143,7 @@ int main( int argc, char** argv )
     {
         osg::notify( osg::INFO ) << "        *** Frame ***" << std::endl;
 
-        osgwQuery::AddQueries::setCscrOi( 0. );
+        osgwQuery::QueryComputation::setCscrOi( 0. );
         viewer.frame();
 
         removeInit( viewer );

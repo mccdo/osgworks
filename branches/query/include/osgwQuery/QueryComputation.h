@@ -18,8 +18,8 @@
  *
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
-#ifndef __OSGWQUERY_NODE_DATA_H__
-#define __OSGWQUERY_NODE_DATA_H__ 1
+#ifndef __OSGWQUERY_QUERY_COMPUTATION_H__
+#define __OSGWQUERY_QUERY_COMPUTATION_H__ 1
 
 
 #include <osgwQuery/Export.h>
@@ -38,19 +38,19 @@ namespace osgwQuery
 {
 
 
-/** \class NodeData NodeData.h <osgwQuery/NodeData.h>
+/** \class QueryComputation QueryComputation.h <osgwQuery/QueryComputation.h>
 \brief A support struct for the Guthe occlusion query algorithm.
 
 This class attempts to implement the algorithm described in "Near Optimal
 Hierarchical Culling: Performance Driven Use of Hardware Occlusion Queries"
 by Guthe, Balázs, and Klein, Eurographics 2006.
 */
-class OSGWQUERY_EXPORT NodeData : public osg::Object
+class OSGWQUERY_EXPORT QueryComputation : public osg::Object
 {
 public:
-    NodeData( osgwQuery::QueryStats* debugStats=NULL );
-    NodeData( const NodeData& rhs, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY );
-    META_Object(osgwQuery,NodeData);
+    QueryComputation( osgwQuery::QueryStats* debugStats=NULL );
+    QueryComputation( const QueryComputation& rhs, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY );
+    META_Object(osgwQuery,QueryComputation);
 
     /** \brief Implements Guthe algorithm and tells calling code whether to render children.
     NOTE: Guthe assumes a concurrent cull/draw with an active rendering context. The
@@ -67,6 +67,9 @@ public:
     them to the render graph. False if the calling code should not add its children to
     the render graph. */
     virtual bool cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo, const osg::BoundingBox& bb );
+
+    static double getCscrOi() { return( s_CscrOi ); }
+    static void setCscrOi( double c ) { s_CscrOi = c; }
 
     void setNumVertices( unsigned int numVertices ) { _numVertices = numVertices; }
     unsigned int getNumVertices() const { return( _numVertices ); }
@@ -107,6 +110,10 @@ protected:
     // constant (indirectly).
     unsigned int _lastCullFrame;
 
+    // Guthe variable to track accumulated coverage during front-to-back
+    // rendering. Must be set to 0. at the start of each frame.
+    static double s_CscrOi;
+
 
     osg::buffered_object< QueryStatus > _queries;
 
@@ -114,22 +121,6 @@ protected:
 };
 
 
-class OSGWQUERY_EXPORT QueryCullCallback : public osg::NodeCallback
-{
-public:
-    QueryCullCallback();
-    QueryCullCallback( const QueryCullCallback& rhs, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY );
-    META_Object(osgwQuery,QueryCullCallback);
-
-    virtual void operator()( osg::Node* node, osg::NodeVisitor* nv );
-
-    void attach( osg::Node* node, osgwQuery::NodeData* nd, osg::BoundingBox bb );
-
-protected:
-    osg::Node* _node;
-    osgwQuery::NodeData* _nd;
-    osg::BoundingBox _bb;
-};
 class OSGWQUERY_EXPORT QueryDrawCallback : public osg::Drawable::DrawCallback
 {
 public:
@@ -139,38 +130,16 @@ public:
 
     virtual void drawImplementation( osg::RenderInfo& renderInfo, const osg::Drawable* drawable ) const;
 
-    void attach( osg::Drawable* drawable, osgwQuery::NodeData* nd );
+    void attach( osg::Drawable* drawable, osgwQuery::QueryComputation* nd );
 
 protected:
     osg::Drawable* _drawable;
-    osgwQuery::NodeData* _nd;
-};
-
-
-class OSGWQUERY_EXPORT AddQueries : public osg::NodeVisitor
-{
-public:
-    AddQueries( osg::NodeVisitor::TraversalMode mode=osg::NodeVisitor::TRAVERSE_ALL_CHILDREN )
-      : osg::NodeVisitor( mode )
-    {}
-
-    virtual void apply( osg::Group& node );
-    virtual void apply( osg::Geode& node );
-
-    static double getCscrOi() { return( s_CscrOi ); }
-    static void setCscrOi( double c ) { s_CscrOi = c; }
-
-    void setQueryStats( osgwQuery::QueryStats* qs ) { _qs = qs; }
-
-protected:
-    static double s_CscrOi;
-
-    osgwQuery::QueryStats* _qs;
+    osgwQuery::QueryComputation* _nd;
 };
 
 
 // osgwQuery
 }
 
-// __OSGWQUERY_NODE_DATA_H__
+// __OSGWQUERY_QUERY_COMPUTATION_H__
 #endif

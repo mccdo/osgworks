@@ -7,24 +7,22 @@ endif()
 
 set( HEADER_PATH ${PROJECT_SOURCE_DIR}/include/${LIB_NAME} )
 set( LIB_PUBLIC_HEADERS
-    ${HEADER_PATH}/NodeData.h
     ${HEADER_PATH}/QueryAPI.h
     ${HEADER_PATH}/QueryBenchmarks.h
-    ${HEADER_PATH}/QueryBin.h
-    ${HEADER_PATH}/QueryDrawCB.h
+    ${HEADER_PATH}/QueryComputation.h
     ${HEADER_PATH}/QueryObject.h
     ${HEADER_PATH}/QueryStats.h
+    ${HEADER_PATH}/QueryUtils.h
     ${HEADER_PATH}/Export.h
 )
 
 set( _osgwQuerySourceFiles
-    NodeData.cpp
     QueryAPI.cpp
     QueryBenchmarks.cpp
-    QueryBin.cpp
-    QueryDrawCB.cpp
+    QueryComputation.cpp
     QueryObject.cpp
     QueryStats.cpp
+    QueryUtils.cpp
 )
 
 add_library( ${LIB_NAME}

@@ -18,7 +18,7 @@
  *
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
-#include <osgwQuery/NodeData.h>
+#include <osgwQuery/QueryComputation.h>
 #include <osgwQuery/QueryAPI.h>
 #include <osgwQuery/QueryBenchmarks.h>
 #include <osgwTools/Shapes.h>
@@ -38,12 +38,12 @@ namespace osgwQuery
 {
 
 
-double AddQueries::s_CscrOi( 0. );
+double QueryComputation::s_CscrOi( 0. );
 
-osg::ref_ptr< osg::StateSet > NodeData::s_queryStateSet( NULL );
+osg::ref_ptr< osg::StateSet > QueryComputation::s_queryStateSet( NULL );
 
 
-NodeData::NodeData( osgwQuery::QueryStats* debugStats )
+QueryComputation::QueryComputation( osgwQuery::QueryStats* debugStats )
   : _initialized( false ),
     _numVertices( 0 ),
     _lastQueryFrame( 0 ),
@@ -51,7 +51,7 @@ NodeData::NodeData( osgwQuery::QueryStats* debugStats )
     _debugStats( debugStats )
 {
 }
-NodeData::NodeData( const NodeData& rhs, const osg::CopyOp& copyop )
+QueryComputation::QueryComputation( const QueryComputation& rhs, const osg::CopyOp& copyop )
   : _initialized( false ),
     _numVertices( rhs._numVertices ),
     _lastQueryFrame( rhs._lastQueryFrame ),
@@ -60,14 +60,14 @@ NodeData::NodeData( const NodeData& rhs, const osg::CopyOp& copyop )
 }
 
 
-bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo, const osg::BoundingBox& bb )
+bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo, const osg::BoundingBox& bb )
 {
     if( !_initialized )
     {
         // Must hold lock for 2 reasons:
         // 1) Could be multiple culls operating on this at the same time. Only one needs
         // to create _queryDrawable.
-        // 2) init() creates a static StateSet shared by all NodeData objects. Only need
+        // 2) init() creates a static StateSet shared by all QueryComputation objects. Only need
         // to create that StateSet once.
         OpenThreads::ScopedLock< OpenThreads::Mutex > lock( _lock );
 
@@ -133,7 +133,7 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
 
     // Compute pcovOi, the probability that this Node is covered.
     double pcovOi;
-    const double cscrOi = AddQueries::getCscrOi();
+    const double cscrOi = getCscrOi();
     if( cbbOi < cscrOi )
     {
         double temp = sqrt( cscrOi ) - sqrt( cbbOi );
@@ -146,7 +146,7 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
     // accounting for temporal coherence. "p sub occl ( O sub i )" is
     // referred to as "p sub o ( O sub i )" after section 3.1, and
     // (in reference to a hierarchy) also as "p sub o ( H sub i )".
-    // This is from personal communication with author Michael Guthke.
+    // This is from personal communication with author Michael Guthe.
     double pocclOi;
     if( !qs._wasOccluded )
         // previously visible
@@ -160,8 +160,8 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
 
 
 
-    /** Implements the Guthke paper'a "QueryReasonable" function, pseudocode
-    in Guthke Figure 5, described in Guthke section 4. */
+    /** Implements the Guthe paper'a "QueryReasonable" function, pseudocode
+    in Guthe Figure 5, described in Guthe section 4. */
     bool queryReasonable( false );
 
 
@@ -239,7 +239,7 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
         const float depth = _worldBB.valid() ? cv->getDistanceFromEyePoint( _worldBB.center(), false ) : 0.f;
         if( osg::isNaN( depth ) )
         {
-            osg::notify(osg::NOTICE)<<"NodeData: detected NaN,"<<std::endl
+            osg::notify(osg::NOTICE)<<"QueryComputation: detected NaN,"<<std::endl
                                     <<"    depth="<<depth<<", center=("<<_worldBB.center()<<"),"<<std::endl;
         }
         else
@@ -259,14 +259,17 @@ bool NodeData::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo,
 
 
     // Increment CscrOi for next Drawable.
-    AddQueries::setCscrOi( cscrOi + ( ( 1. - cscrOi ) * cbbOi ) );
+    // TBD probable threading issue. Multiple cull threads executing
+    // this function will result in corrupting cscrOi. Need cscrOi
+    // per thread!
+    setCscrOi( cscrOi + ( ( 1. - cscrOi ) * cbbOi ) );
 
     osg::notify( osg::INFO ) << "  Was occluded? " << std::boolalpha << qs._wasOccluded << " numV " << _numVertices << std::endl;
     return( !qs._wasOccluded );
 }
 
 
-void NodeData::init( osg::BoundingBox bb, osg::NodeVisitor* nv )
+void QueryComputation::init( osg::BoundingBox bb, osg::NodeVisitor* nv )
 {
     _worldBB = osgwTools::transform( osg::computeLocalToWorld( nv->getNodePath() ), bb );
 
@@ -280,6 +283,7 @@ void NodeData::init( osg::BoundingBox bb, osg::NodeVisitor* nv )
     osg::Geometry* geom = osgwTools::makeBox( halfExtents );
 
     QueryDrawCallback* qdc = new QueryDrawCallback();
+    qdc->setName( nv->getNodePath().back()->getName() );
     qdc->attach( geom, this );
     geom->setDrawCallback( qdc );
 
@@ -301,7 +305,7 @@ void NodeData::init( osg::BoundingBox bb, osg::NodeVisitor* nv )
 
     _queryDrawable = geom;
 
-    // Initialize a static StateSet used by all NodeData's _queryDrawable objects.
+    // Initialize a static StateSet used by all QueryComputation's _queryDrawable objects.
     if( !( s_queryStateSet.valid() ) )
     {
         s_queryStateSet = new osg::StateSet;
@@ -322,7 +326,7 @@ void NodeData::init( osg::BoundingBox bb, osg::NodeVisitor* nv )
 
 
     //
-    // Compute and store constants defined in Guthke, section 3.1.
+    // Compute and store constants defined in Guthe, section 3.1.
 
     // 1/6th of the bounding box surface area.
     const double abbOi = ( 2. * extents[ 0 ] * extents[ 1 ] ) +
@@ -337,48 +341,11 @@ void NodeData::init( osg::BoundingBox bb, osg::NodeVisitor* nv )
 
 
 
-NodeData::QueryStatus::QueryStatus()
+QueryComputation::QueryStatus::QueryStatus()
   : _queryActive( false ),
     _wasOccluded( false ),
     _queryObject( new QueryObject() )
 {
-}
-
-
-
-QueryCullCallback::QueryCullCallback()
-  : osg::NodeCallback(),
-    _node( NULL ),
-    _nd( NULL )
-{
-}
-QueryCullCallback::QueryCullCallback( const QueryCullCallback& rhs, const osg::CopyOp& copyop )
-  : osg::NodeCallback( rhs ),
-    _node( rhs._node ),
-    _nd( rhs._nd )
-{
-}
-
-void QueryCullCallback::operator()( osg::Node* node, osg::NodeVisitor* nv )
-{
-    if( ( _node == NULL ) || ( _nd == NULL ) )
-        return;
-
-    osgUtil::CullVisitor* cv = static_cast< osgUtil::CullVisitor* >( nv );
-    osg::RenderInfo& renderInfo = cv->getRenderInfo();
-
-    bool traverseChildren = _nd->cullOperation( nv, renderInfo, _bb );
-    if( !traverseChildren )
-        return;
-
-    traverse( node, nv );
-}
-
-void QueryCullCallback::attach( osg::Node* node, osgwQuery::NodeData* nd, osg::BoundingBox bb )
-{
-    _node = node;
-    _nd = nd;
-    _bb = bb;
 }
 
 
@@ -401,11 +368,12 @@ void QueryDrawCallback::drawImplementation( osg::RenderInfo& renderInfo, const o
     if( ( _drawable == NULL ) || ( _nd == NULL ) )
         return;
 
+    bool isDumptruck( getName() == std::string( "Dumptruck" ) );
 
     const unsigned int contextID = renderInfo.getState()->getContextID();
     osgwQuery::QueryAPI* qapi = osgwQuery::getQueryAPI( contextID );
 
-    NodeData::QueryStatus& qs = _nd->getQueryStatus( contextID );
+    QueryComputation::QueryStatus& qs = _nd->getQueryStatus( contextID );
     const GLuint id = qs._queryObject->getID( contextID );
     osg::notify( osg::INFO ) << " ID: " << id << std::endl;
     qapi->glBeginQuery( GL_SAMPLES_PASSED, id );
@@ -416,63 +384,10 @@ void QueryDrawCallback::drawImplementation( osg::RenderInfo& renderInfo, const o
     qs._queryActive = true;
 }
 
-void QueryDrawCallback::attach( osg::Drawable* drawable, osgwQuery::NodeData* nd )
+void QueryDrawCallback::attach( osg::Drawable* drawable, osgwQuery::QueryComputation* nd )
 {
     _drawable = drawable;
     _nd = nd;
-}
-
-
-
-void AddQueries::apply( osg::Group& node )
-{
-    if( node.getName() == std::string( "__QueryStats" ) )
-        // This is the QueryStats subtree. Don't instrument it with any OQ stuff.
-        return;
-
-    if( node.getCullCallback() != NULL )
-    {
-        traverse( node );
-        return;
-    }
-
-    // Create NodeData for this node.
-    // Add q QueryStats only if a) we have one and
-    // b) the node addresses match.
-    osgwQuery::QueryStats* debugStats( NULL );
-    if( ( _qs != NULL ) && ( &node == _qs->getNode() ) )
-        debugStats = _qs;
-    NodeData* nd = new NodeData( debugStats );
-
-    osgwTools::CountsVisitor cv;
-    node.accept( cv );
-    nd->setNumVertices( cv.getVertices() );
-
-    osg::ComputeBoundsVisitor cbv;
-    node.accept( cbv );
-    osg::BoundingBox bb = cbv.getBoundingBox();
-    // We do not want a transformed bounding box, because the bb is used to create the
-    // query geometry. If this node is a transform, this would result in the transform
-    // being applied twice, rendering the geometry in the wrong location.
-    osg::Transform* transform = node.asTransform();
-    if( transform != NULL )
-    {
-        // Remove the transform from the bounding box.
-        osg::Matrix m;
-        transform->computeLocalToWorldMatrix( m, NULL );
-        m.invert( m );
-        bb = osgwTools::transform( m, bb );
-    }
-
-    QueryCullCallback* qcc = new QueryCullCallback();
-    qcc->attach( &node, nd, bb );
-    node.setCullCallback( qcc );
-
-    traverse( node );
-}
-void AddQueries::apply( osg::Geode& node )
-{
-    traverse( node );
 }
 
 

@@ -211,7 +211,7 @@ void QueryBenchmarks::internalInit( unsigned int contextID, osg::RenderInfo* ri 
 
     // TBD
     _toLatency = 1.; // Used to determine if Group children should be inserted. Not possible in OSG.
-    _toOverhead = 1.; // Guthke doesn't appear to describe how to measure this, or how it is used in his algorithm.
+    _toOverhead = 1.; // Guthe doesn't appear to describe how to measure this, or how it is used in his algorithm.
 }
 
 #define LOOPCOUNT 100
