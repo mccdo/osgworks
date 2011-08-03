@@ -99,6 +99,24 @@ void AddQueries::apply( osg::Group& node )
         return;
     }
 
+    // Do not add callbacks to redundant Groups because the parent Group's
+    // bounding volume (and query geometry) would also be redundant.
+    bool redundantGroup( true );
+    unsigned int idx;
+    for( idx=0; idx < node.getNumParents(); idx++ )
+    {
+        if( node.getParent( idx )->getNumChildren() > 1 )
+        {
+            redundantGroup = false;
+            break;
+        }
+    }
+    if( redundantGroup )
+    {
+        traverse( node );
+        return;
+    }
+
     // Create QueryComputation for this node.
     // Add q QueryStats only if a) we have one and
     // b) the node addresses match.
@@ -130,6 +148,8 @@ void AddQueries::apply( osg::Group& node )
     QueryCullCallback* qcc = new QueryCullCallback();
     qcc->attach( &node, nd, bb );
     node.setCullCallback( qcc );
+
+    _queryCount++;
 
     traverse( node );
 }
