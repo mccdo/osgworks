@@ -278,5 +278,16 @@ double QueryBenchmarks::time( osg::Drawable* draw, osg::RenderInfo& ri, osgwQuer
 }
 
 
+
+void InitCallback::operator()( osg::RenderInfo& renderInfo ) const
+{
+    if( _initialized )
+        return;
+    unsigned int contextID = renderInfo.getState()->getContextID();
+    osgwQuery::QueryBenchmarks* qb = osgwQuery::getQueryBenchmarks( contextID, &renderInfo );
+    _initialized = true;
+}
+
+
 // osgwQuery
 }

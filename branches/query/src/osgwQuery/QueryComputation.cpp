@@ -106,7 +106,7 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
     // Note that we will explicitly set wasFrustumCulled=false
     // if it turns out we have an active query.
 
-    unsigned int contextID = renderInfo.getState()->getContextID();
+    const unsigned int contextID = renderInfo.getState()->getContextID();
     osgwQuery::QueryBenchmarks* qb = osgwQuery::getQueryBenchmarks( contextID, &renderInfo );
     osgwQuery::QueryAPI* qapi = osgwQuery::getQueryAPI( contextID );
     QueryStatus& qs = _queries[ contextID ];

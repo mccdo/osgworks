@@ -125,6 +125,7 @@ protected:
 };
 
 
+
 class OSGWQUERY_EXPORT QueryDrawCallback : public osg::Drawable::DrawCallback
 {
 public:
