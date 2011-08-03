@@ -34,25 +34,6 @@
 #include <osg/MatrixTransform>
 
 
-struct InitCallback : public osg::Camera::DrawCallback
-{
-public:
-    InitCallback() {}
-    virtual void operator()( osg::RenderInfo& renderInfo ) const
-    {
-        unsigned int contextID = renderInfo.getState()->getContextID();
-        osgwQuery::QueryBenchmarks* qb = osgwQuery::getQueryBenchmarks( contextID, &renderInfo );
-    }
-};
-void addInit( osgViewer::Viewer& viewer )
-{
-    viewer.getCamera()->setPreDrawCallback( new InitCallback() );
-}
-void removeInit( osgViewer::Viewer& viewer )
-{
-    viewer.getCamera()->setPreDrawCallback( NULL );
-}
-
 
 osg::Node* makeSceneA()
 {
@@ -126,29 +107,25 @@ int main( int argc, char** argv )
     }
 
     viewer.setSceneData( root );
-
-
     viewer.setThreadingModel( osgViewer::ViewerBase::SingleThreaded );
 
-    // First frame creates GL objects. Must do this before we add
-    // any Drawable draw callbacks or Camera pre-draw callbacks.
-    viewer.frame();
-
-    // Now that we've realized and rendered the viewer, root's parent should
+    // Realized the viewer, then root's parent should
     // be the top-level Camera. We want to add queries starting at that node.
+    viewer.realize();
     osgwQuery::AddQueries aqs;
     aqs.setQueryStats( qs.get() );
     root->getParent( 0 )->accept( aqs );
     osg::notify( osg::ALWAYS ) << "Added " << aqs.getQueryCount() << " queries." << std::endl;
-    addInit( viewer );
+
+    // Guthe algorithm requires gathering of init-time constants. We do
+    // this with a pre-draw callback.
+    viewer.getCamera()->setPreDrawCallback( new osgwQuery::InitCallback() );
 
     while( !viewer.done() )
     {
         osg::notify( osg::INFO ) << "        *** Frame ***" << std::endl;
 
         viewer.frame();
-
-        removeInit( viewer );
 
         if( qs.valid() )
             qs->incFrames();

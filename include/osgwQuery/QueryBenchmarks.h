@@ -24,6 +24,7 @@
 
 #include <osgwQuery/Export.h>
 #include <osg/Referenced>
+#include <osg/Camera>
 
 namespace osg {
     class RenderInfo;
@@ -65,6 +66,17 @@ protected:
 /** Function to obtain a QueryBenchmarks class for a specific context.
 */
 OSGWQUERY_EXPORT QueryBenchmarks* getQueryBenchmarks( unsigned int contextID, osg::RenderInfo* ri=NULL );
+
+
+struct OSGWQUERY_EXPORT InitCallback : public osg::Camera::DrawCallback
+{
+    InitCallback() : _initialized( false ) {}
+
+    virtual void operator()( osg::RenderInfo& renderInfo ) const;
+
+    mutable bool _initialized;
+};
+
 
 
 // osgwQuery
