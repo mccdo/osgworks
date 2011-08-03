@@ -56,8 +56,6 @@ void QueryCullCallback::operator()( osg::Node* node, osg::NodeVisitor* nv )
     if( ( _node == NULL ) || ( _nd == NULL ) )
         return;
 
-    bool isDumptruck( node->getName() == std::string( "Dumptruck" ) );
-
     osgUtil::CullVisitor* cv = static_cast< osgUtil::CullVisitor* >( nv );
     osg::RenderInfo& renderInfo = cv->getRenderInfo();
 
@@ -73,6 +71,18 @@ void QueryCullCallback::attach( osg::Node* node, osgwQuery::QueryComputation* nd
     _node = node;
     _nd = nd;
     _bb = bb;
+}
+
+
+
+CameraResetCallback::CameraResetCallback()
+{
+}
+void CameraResetCallback::operator()( osg::RenderInfo& renderInfo ) const
+{
+    osg::Camera* cam = renderInfo.getCurrentCamera();
+    unsigned int contextID = renderInfo.getState()->getContextID();
+    QueryComputation::setCscrOi( 0., cam, contextID );
 }
 
 
@@ -125,6 +135,20 @@ void AddQueries::apply( osg::Group& node )
 }
 void AddQueries::apply( osg::Geode& node )
 {
+    traverse( node );
+}
+void AddQueries::apply( osg::Camera& node )
+{
+    if( node.getCullCallback() != NULL )
+    {
+        traverse( node );
+        return;
+    }
+
+    CameraResetCallback* crc = new CameraResetCallback();
+    // TBD use the osgWorks composite post-draw callback.
+    node.setPostDrawCallback( crc );
+
     traverse( node );
 }
 

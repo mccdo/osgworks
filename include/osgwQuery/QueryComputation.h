@@ -33,6 +33,8 @@
 #include <osg/NodeVisitor>
 #include <osg/buffered_value>
 
+#include <map>
+
 
 namespace osgwQuery
 {
@@ -68,8 +70,8 @@ public:
     the render graph. */
     virtual bool cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo, const osg::BoundingBox& bb );
 
-    static double getCscrOi() { return( s_CscrOi ); }
-    static void setCscrOi( double c ) { s_CscrOi = c; }
+    static double getCscrOi( const osg::Camera* cam, unsigned int contextID );
+    static void setCscrOi( double c, const osg::Camera* cam, unsigned int contextID );
 
     void setNumVertices( unsigned int numVertices ) { _numVertices = numVertices; }
     unsigned int getNumVertices() const { return( _numVertices ); }
@@ -112,7 +114,9 @@ protected:
 
     // Guthe variable to track accumulated coverage during front-to-back
     // rendering. Must be set to 0. at the start of each frame.
-    static double s_CscrOi;
+    typedef std::pair< const osg::Camera*, unsigned int /*ctx*/ > CameraContext;
+    typedef std::map< CameraContext, double > CscrOiMap;
+    static CscrOiMap s_CscrOiMap;
 
 
     osg::buffered_object< QueryStatus > _queries;
