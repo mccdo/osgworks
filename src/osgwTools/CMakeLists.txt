@@ -14,6 +14,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/CountStateSets.h
     ${HEADER_PATH}/CountsVisitor.h
     ${HEADER_PATH}/DecimatorOp.h
+    ${HEADER_PATH}/DecimationTestModel.h
     ${HEADER_PATH}/FBOUtils.h
     ${HEADER_PATH}/FindNamedNode.h
     ${HEADER_PATH}/GeometryModifier.h
@@ -32,6 +33,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/RemoveProgram.h
     ${HEADER_PATH}/ScreenCapture.h
     ${HEADER_PATH}/Shapes.h
+    ${HEADER_PATH}/ShortEdgeOp.h
     ${HEADER_PATH}/SimplifierOp.h
     ${HEADER_PATH}/StateSetUtils.h
     ${HEADER_PATH}/TangentSpaceOp.h
@@ -66,6 +68,7 @@ set( _osgwToolsSourceFiles
     RemoveProgram.cpp
     ScreenCapture.cpp
     Shapes.cpp
+    ShortEdgeOp.cpp
     SimplifierOp.cpp
     StateSetUtils.cpp
     TangentSpaceOp.cpp
