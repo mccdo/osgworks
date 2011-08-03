@@ -62,7 +62,7 @@ int main( int argc,
 
     arguments.getApplicationUsage()->addCommandLineOption( "--reducer <n>", "Use ReducerOp." );
     arguments.getApplicationUsage()->addCommandLineOption( "--shortedge <n>", "Use ShortEdgeOp." );
-    arguments.getApplicationUsage()->addCommandLineOption( "--decPercent <n>", "Use DecimatorOp (also valid parameter for ShortEdgeOp). <n> is the target percentage of vertices to remain, in the range 0.0 to 1.0. Default 0.6" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--decPercent <n>", "Use DecimatorOp (also valid parameter for ShortEdgeOp). <n> is the target percentage of triangles to remain, in the range 0.0 to 1.0. Default 0.6" );
     arguments.getApplicationUsage()->addCommandLineOption( "--decMaxError <n>", "Specifies the Decimator maximum error tolerance. Geometry exceeding this tolerance is not reduced. <n> is in the range 0.0 to FLT_MAX. Default FLT_MAX" );
     arguments.getApplicationUsage()->addCommandLineOption( "--respectBoundaries", "Will not decimate boundary polygons, will not decimate fully but may fix some mesh errors. Default False" );
     arguments.getApplicationUsage()->addCommandLineOption( "--minPrimatives <n>", "Sets the minimum primitives a geometry must have to start Decimation. Default 1." );
