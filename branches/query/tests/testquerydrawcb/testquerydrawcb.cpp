@@ -134,16 +134,17 @@ int main( int argc, char** argv )
     // any Drawable draw callbacks or Camera pre-draw callbacks.
     viewer.frame();
 
+    // Now that we've realized and rendered the viewer, root's parent should
+    // be the top-level Camera. We want to add queries starting at that node.
     osgwQuery::AddQueries aqs;
     aqs.setQueryStats( qs.get() );
-    root->accept( aqs );
+    root->getParent( 0 )->accept( aqs );
     addInit( viewer );
 
     while( !viewer.done() )
     {
         osg::notify( osg::INFO ) << "        *** Frame ***" << std::endl;
 
-        osgwQuery::QueryComputation::setCscrOi( 0. );
         viewer.frame();
 
         removeInit( viewer );

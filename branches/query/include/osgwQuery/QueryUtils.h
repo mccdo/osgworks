@@ -39,8 +39,9 @@ namespace osgwQuery
 {
 
 
-/** \class QueryComputation QueryComputation.h <osgwQuery/QueryComputation.h>
-\brief A support struct for the Guthe occlusion query algorithm.
+/** \class QueryCullCallback QueryUtils.h <osgwQuery/QueryUtils.h>
+\brief Make a cull-time traverse/no-traverse decision based on Guthe
+algorithm criteria in the QueryComputation class.
 */
 class OSGWQUERY_EXPORT QueryCullCallback : public osg::NodeCallback
 {
@@ -58,10 +59,20 @@ protected:
     osgwQuery::QueryComputation* _nd;
     osg::BoundingBox _bb;
 };
+/** \class CameraResetCallback QueryUtils.h <osgwQuery/QueryUtils.h>
+\brief Resets the Guthe screen coverage CscrOi value for each
+Camera as a post-draw callback.
+*/
+struct OSGWQUERY_EXPORT CameraResetCallback : public osg::Camera::DrawCallback
+{
+public:
+    CameraResetCallback();
+    virtual void operator()( osg::RenderInfo& renderInfo ) const;
+};
 
 
-/** \class QueryComputation QueryComputation.h <osgwQuery/QueryComputation.h>
-\brief A support struct for the Guthe occlusion query algorithm.
+/** \class AddQueries QueryUtils.h <osgwQuery/QueryUtils.h>
+\brief Add cull-time callbacks to a scene graph to support the Guthe algorithm.
 */
 class OSGWQUERY_EXPORT AddQueries : public osg::NodeVisitor
 {
@@ -72,6 +83,7 @@ public:
 
     virtual void apply( osg::Group& node );
     virtual void apply( osg::Geode& node );
+    virtual void apply( osg::Camera& node );
 
     void setQueryStats( osgwQuery::QueryStats* qs ) { _qs = qs; }
 

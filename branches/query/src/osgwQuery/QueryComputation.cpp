@@ -38,9 +38,10 @@ namespace osgwQuery
 {
 
 
-double QueryComputation::s_CscrOi( 0. );
-
+// Statics
 osg::ref_ptr< osg::StateSet > QueryComputation::s_queryStateSet( NULL );
+
+QueryComputation::CscrOiMap QueryComputation::s_CscrOiMap;
 
 
 QueryComputation::QueryComputation( osgwQuery::QueryStats* debugStats )
@@ -133,7 +134,7 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
 
     // Compute pcovOi, the probability that this Node is covered.
     double pcovOi;
-    const double cscrOi = getCscrOi();
+    const double cscrOi = getCscrOi( cam, contextID );
     if( cbbOi < cscrOi )
     {
         double temp = sqrt( cscrOi ) - sqrt( cbbOi );
@@ -262,10 +263,25 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
     // TBD probable threading issue. Multiple cull threads executing
     // this function will result in corrupting cscrOi. Need cscrOi
     // per thread!
-    setCscrOi( cscrOi + ( ( 1. - cscrOi ) * cbbOi ) );
+    setCscrOi( cscrOi + ( ( 1. - cscrOi ) * cbbOi ), cam, contextID );
 
     osg::notify( osg::INFO ) << "  Was occluded? " << std::boolalpha << qs._wasOccluded << " numV " << _numVertices << std::endl;
     return( !qs._wasOccluded );
+}
+
+double QueryComputation::getCscrOi( const osg::Camera* cam, unsigned int contextID )
+{
+    const CameraContext camCtx = CameraContext( cam, contextID );
+    CscrOiMap::const_iterator it = s_CscrOiMap.find( camCtx );
+    if( it != s_CscrOiMap.end() )
+        return( it->second );
+    else
+        return( s_CscrOiMap[ camCtx ] = 0. );
+}
+void QueryComputation::setCscrOi( double c, const osg::Camera* cam, unsigned int contextID )
+{
+    const CameraContext camCtx = CameraContext( cam, contextID );
+    s_CscrOiMap[ camCtx ] = c;
 }
 
 
@@ -367,8 +383,6 @@ void QueryDrawCallback::drawImplementation( osg::RenderInfo& renderInfo, const o
 {
     if( ( _drawable == NULL ) || ( _nd == NULL ) )
         return;
-
-    bool isDumptruck( getName() == std::string( "Dumptruck" ) );
 
     const unsigned int contextID = renderInfo.getState()->getContextID();
     osgwQuery::QueryAPI* qapi = osgwQuery::getQueryAPI( contextID );
