@@ -78,7 +78,8 @@ class OSGWQUERY_EXPORT AddQueries : public osg::NodeVisitor
 {
 public:
     AddQueries( osg::NodeVisitor::TraversalMode mode=osg::NodeVisitor::TRAVERSE_ALL_CHILDREN )
-      : osg::NodeVisitor( mode )
+      : osg::NodeVisitor( mode ),
+        _queryCount( 0 )
     {}
 
     virtual void apply( osg::Group& node );
@@ -87,8 +88,12 @@ public:
 
     void setQueryStats( osgwQuery::QueryStats* qs ) { _qs = qs; }
 
+    unsigned int getQueryCount() const { return( _queryCount ); }
+
 protected:
     osgwQuery::QueryStats* _qs;
+
+    unsigned int _queryCount;
 };
 
 

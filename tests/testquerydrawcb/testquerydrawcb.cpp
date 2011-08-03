@@ -139,6 +139,7 @@ int main( int argc, char** argv )
     osgwQuery::AddQueries aqs;
     aqs.setQueryStats( qs.get() );
     root->getParent( 0 )->accept( aqs );
+    osg::notify( osg::ALWAYS ) << "Added " << aqs.getQueryCount() << " queries." << std::endl;
     addInit( viewer );
 
     while( !viewer.done() )
