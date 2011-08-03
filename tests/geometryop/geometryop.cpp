@@ -36,6 +36,8 @@
 #include <osgwTools/ReducerOp.h>
 #include <osgwTools/DecimatorOp.h>
 #include <osgwTools/SimplifierOp.h>
+#include <osgwTools/ShortEdgeOp.h>
+#include <osgwTools/DecimationTestModel.h>
 // TBD #include <osgBullet/VertexAggOp.h>
 
 #include <osg/NodeVisitor>
@@ -58,12 +60,19 @@ int main( int argc,
     arguments.getApplicationUsage()->setDescription( arguments.getApplicationName() + " shows a before and after image of the DecimatorOp module, using a default decimation of 0.6." );
     arguments.getApplicationUsage()->setCommandLineUsage( arguments.getApplicationName() + " [options] filename ..." );
 
-    arguments.getApplicationUsage()->addCommandLineOption( "--decPercent <n>", "Use DecimatorOp. <n> is the target percentage of vertices to remove, in the range 0.0 to 1.0. Default 0.6" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--reducer <n>", "Use ReducerOp." );
+    arguments.getApplicationUsage()->addCommandLineOption( "--shortedge <n>", "Use ShortEdgeOp." );
+    arguments.getApplicationUsage()->addCommandLineOption( "--decPercent <n>", "Use DecimatorOp (also valid parameter for ShortEdgeOp). <n> is the target percentage of vertices to remain, in the range 0.0 to 1.0. Default 0.6" );
     arguments.getApplicationUsage()->addCommandLineOption( "--decMaxError <n>", "Specifies the Decimator maximum error tolerance. Geometry exceeding this tolerance is not reduced. <n> is in the range 0.0 to FLT_MAX. Default FLT_MAX" );
     arguments.getApplicationUsage()->addCommandLineOption( "--respectBoundaries", "Will not decimate boundary polygons, will not decimate fully but may fix some mesh errors. Default False" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--minPrimatives <n>", "Sets the minimum primatives a geometry must have to start Decimation" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--minPrimatives <n>", "Sets the minimum primitives a geometry must have to start Decimation. Default 1." );
+    arguments.getApplicationUsage()->addCommandLineOption( "--maxFeature <n>", "Specifies the ShortEdgeOp largest feature size to be removed, measured in model units. Can be combined with decPercent to limit the decimation using ShortEdgeOp. Default 0.1" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--attemptMerge <n>", "Attempts to merge drawables within the model prior to any geometry reduction using a MergeGeometryVisitor. In cases where there are multiple drawables, more functional decimation may result. Default False" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--numParts <n>", "Controls the geometry building process if user chooses to use a model built in software (see GeometryModifier.h). numParts controls the geometry and can be used to test different aspects of the decimation routines. Default 3. Range 0-4." );
+    arguments.getApplicationUsage()->addCommandLineOption( "--attemptMerge <n>", "Attempt to merge geometry drawables into one using Optimizer::MergeGeometryVisitor before using specified geometry reduction operator." );
 
     bool useReducer( arguments.find( "--reducer" ) >= 0 );
+    bool useShortEdge( arguments.find( "--shortedge" ) >= 0 );
 
     if( arguments.read( "-h" ) || arguments.read( "--help" ) )
     {
@@ -101,7 +110,8 @@ int main( int argc,
     bool decimatorIgnoreBoundaries = (true);
     if (arguments.read( "--respectBoundaries" ))
         decimatorIgnoreBoundaries = false;
-     int minprim(1);
+
+    int minprim(1);
     if (arguments.read("--minPrimatives", str))
     {
         if( sscanf( str.c_str(), "%u", &minprim ) != 1 )
@@ -112,6 +122,19 @@ int main( int argc,
     }
     if (decimatorPercent < 1.f )
         osg::notify( osg::INFO ) << "DecimatorOp: " << decimatorPercent << ", " << decimatorMaxError << std::endl;
+
+    float shortEdgeFeature( .1 );
+    if ( arguments.read( "--maxFeature", str ) )
+    {
+        if( sscanf( str.c_str(), "%f", &shortEdgeFeature ) != 1 )
+        {
+            arguments.getApplicationUsage()->write( osg::notify( osg::FATAL ) );
+            return 1;
+        }
+    }
+    bool attemptMerge = (false);
+    if (arguments.read( "--attemptMerge" ))
+        attemptMerge = true;
 
     bool useAgg = false;
     unsigned int aggMaxVerticies( 0 );
@@ -133,11 +156,31 @@ int main( int argc,
         }
     }
     
+    // builds a model for testing if no model file supplied
     osg::Node*  model = osgDB::readNodeFiles( arguments );
     if( !model )
         {
+            // built model can consist of one part or two or three. If one part, the front, back and sides can share vertices or have duplicate sets of vertices for the edge triangles. 
+            // Merge results may differ depending which is modeled and how the decimation algorithm is implemented and whether or not a geometry merge is attempted prior to decimation.
+            int numParts( 3 );
+            if ( arguments.read( "--numParts", str ) )
+            {
+                if( sscanf( str.c_str(), "%u", &numParts ) != 1 )
+                {
+                    arguments.getApplicationUsage()->write( osg::notify( osg::FATAL ) );
+                    return 1;
+                }
+            }
+            osgwTools::DecimationTestModel* builtModel = new osgwTools::DecimationTestModel(numParts);
+            if (builtModel)
+            {
+                model = builtModel->getModel();
+            }
+            if (!model)
+            {
                 osg::notify( osg::FATAL ) << "Can't load input file(s)." << std::endl;
                 return 1;
+            }
            
         }
     osg::Group* grporig = new osg::Group;
@@ -147,7 +190,7 @@ int main( int argc,
     osg::Group* grpcopy = new osg::Group( *grporig , osg::CopyOp::DEEP_COPY_ALL);
 
     osgwTools::GeometryOperation* reducer;
-    if(!useAgg && !useReducer)
+    if(!useAgg && !useReducer && !useShortEdge)
     {
         osgwTools::DecimatorOp* decimate = new osgwTools::DecimatorOp;
         decimate->setSampleRatio(decimatorPercent);
@@ -161,6 +204,16 @@ int main( int argc,
         osgwTools::ReducerOp* redOp = new osgwTools::ReducerOp;
         reducer = redOp;
     }
+    else if( useShortEdge )
+    {
+        osgwTools::ShortEdgeOp* seOp = new osgwTools::ShortEdgeOp;
+        seOp->setSampleRatio(decimatorPercent);
+        seOp->setMaxFeature(shortEdgeFeature);
+        seOp->setMaximumError(decimatorMaxError);
+        seOp->setIgnoreBoundaries(decimatorIgnoreBoundaries);
+        seOp->setMinPrimatives(minprim);
+        reducer = seOp;
+    }
     else
     {
         /* TBD
@@ -173,6 +226,7 @@ int main( int argc,
     if( reducer != NULL )
     {
         osgwTools::GeometryModifier modifier(reducer);
+        modifier.setDrawableMerge(attemptMerge);
         grpcopy->accept( modifier);
         modifier.displayStatistics( osg::notify( osg::ALWAYS ) );
     }
