@@ -54,7 +54,7 @@ protected:
 
     unsigned int _numIDs;
     typedef std::vector< GLuint > QueryIDVector;
-    osg::buffered_object< QueryIDVector > _ids;
+    QueryIDVector _ids;
 };
 
 

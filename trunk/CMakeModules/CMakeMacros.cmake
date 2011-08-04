@@ -26,8 +26,9 @@ MACRO( ADD_OSGPLUGIN TRGTNAME )
     SET_TARGET_PROPERTIES( ${TRGTNAME} PROPERTIES PROJECT_LABEL "Plugin ${TRGTNAME}" )
 
     link_internal( ${TRGTNAME}
-        osgwTools
+        osgwQuery
         osgwControls
+        osgwTools
     )
     target_link_libraries( ${TRGTNAME}
         ${OSG_LIBRARIES}
@@ -45,8 +46,9 @@ MACRO( MAKE_EXECUTABLE EXENAME )
     endif()
 
     LINK_INTERNAL( ${EXENAME}
-        osgwTools
+        osgwQuery
         osgwControls
+        osgwTools
     )
     TARGET_LINK_LIBRARIES( ${EXENAME}
         ${OSG_LIBRARIES}
