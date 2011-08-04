@@ -75,6 +75,11 @@ IF( OSGWORKS_BUILD_APPS )
     ADD_SUBDIRECTORY( apps )
 ENDIF( OSGWORKS_BUILD_APPS )
 
+option( OSGWORKS_BUILD_EXAMPLES "Enable to build example code" OFF )
+if( OSGWORKS_BUILD_EXAMPLES )
+    ADD_SUBDIRECTORY( examples )
+endif()
+
 option( OSGWORKS_INSTALL_DATA "Enable to add the data directory to the install target" ON )
 if( OSGWORKS_INSTALL_DATA )
     add_subdirectory( data )

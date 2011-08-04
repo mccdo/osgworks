@@ -23,6 +23,7 @@
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <osg/PrimitiveSet>
+#include <osgUtil/Optimizer>
 #include <ostream>
 
 namespace osgwTools {
@@ -45,6 +46,7 @@ GeometryModifier::reset()
     _drawableCount = _geometryCount = 0;
     _preVertices = _preIndices = _prePrimitives = 0;
     _postVertices = _postIndices = _postPrimitives = 0;
+    _attemptDrawableMerge = 0;
 }
 
 GeometryModifier::~GeometryModifier()
@@ -54,6 +56,14 @@ GeometryModifier::~GeometryModifier()
 void
 GeometryModifier::apply( osg::Geode& geode )
 {
+    // merge drawables if possible for best results
+    if (getDrawableMerge())
+    {
+        osgUtil::Optimizer::MergeGeometryVisitor mgv;
+        mgv.setTargetMaximumNumberOfVertices(1000000);
+        mgv.mergeGeode(geode);
+    }
+
     for(unsigned int i=0;i<geode.getNumDrawables();++i)
     {
         _drawableCount++;
