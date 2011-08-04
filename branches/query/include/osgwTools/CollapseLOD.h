@@ -43,8 +43,9 @@ namespace osgwTools
 // Should this perhaps be exposed somewhere else for wider use?
 typedef std::set< osg::ref_ptr<osg::Node> > NodeSet;
 
-/** \brief Callback to decide which LOD child to retain */
-class NodeSelectorCallback : public osg::Referenced
+/** NodeSelectorCallback NodeSelectorCallback.h <osgwTools/NodeSelectorCallback.h>
+\brief Callback to decide which LOD child to retain */
+class OSGWTOOLS_EXPORT NodeSelectorCallback : public osg::Referenced
 {
     public:
         /** Returns the Node that should be selected for retention or NULL if no Nodes should be retained.
@@ -120,7 +121,8 @@ class HighestLODChildSelectorCallback : public osgwTools::NodeSelectorCallback
 }; // HighestLODChildSelectorCallback
 
 
-/** \brief Removes LOD Nodes from a scene graph
+/** \class CollapseLOD CollapseLOD.h <osgwTools/CollapseLOD.h>
+\brief Removes LOD Nodes from a scene graph.
 
 In typical usage, the application should invoke this visitor as with any OSG NodeVisitor, and
 after traversal returns, the application should call the \ref finishProcessingLODs method.

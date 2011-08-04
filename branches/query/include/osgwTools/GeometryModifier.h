@@ -51,6 +51,8 @@ public:
     void setGeometryOperation( GeometryOperation* geomOp ) { _geomOp = geomOp; }
     GeometryOperation* getGeometryOperation() { return( _geomOp.get() ); }
     const GeometryOperation* getGeometryOperation() const { return( _geomOp.get() ); }
+    void setDrawableMerge(bool setMerge)    { _attemptDrawableMerge = setMerge; }
+    bool getDrawableMerge(void) const { return _attemptDrawableMerge;}
 
     void reset();
 
@@ -67,6 +69,8 @@ protected:
 
     unsigned int _preVertices, _preIndices, _prePrimitives;
     unsigned int _postVertices, _postIndices, _postPrimitives;
+
+    bool _attemptDrawableMerge;
 };
 
 }
