@@ -23,6 +23,8 @@
 #include <osg/NodeVisitor>
 
 #include <string>
+#include <sstream>
+
 
 /* \cond */
 class ShowNodeNamesVisitor : public osg::NodeVisitor
@@ -36,15 +38,7 @@ public:
 
     void apply( osg::Node& n )
     {
-        int idx;
-        for( idx=0; idx<_level; idx++ )
-            osg::notify( osg::NOTICE ) << "  ";
-
-        if( !n.getName().empty() )
-            osg::notify( osg::NOTICE ) << n.getName();
-        else
-            osg::notify( osg::NOTICE ) << "NULL";
-        osg::notify( osg::NOTICE ) << " (" << n.className() << ")" << std::endl;
+        display( n.getName(), n.className() );
 
         _level++;
         traverse( n );
@@ -53,11 +47,29 @@ public:
 
     void apply( osg::Geode& n )
     {
-        if( _showGeodes )
-            apply( *( osg::Node* )&n );
+        if( !_showGeodes )
+            return;
+
+        // For Geodes, along with className, also include number of Drawables.
+        std::ostringstream ostr;
+        const unsigned int nd = n.getNumDrawables();
+        ostr << n.className() << " with " << nd << " Drawable" << ((nd!=1)?"s":"");
+        display( n.getName(), ostr.str() );
+
+        // No traverse for Geodes (they have no children, so it's a no-op).
     }
 
 protected:
+    void display( const std::string& name, const std::string& classInfo )
+    {
+        int idx;
+        for( idx=0; idx<_level; idx++ )
+            osg::notify( osg::NOTICE ) << "  ";
+
+        osg::notify( osg::NOTICE ) << ( ( !name.empty() ) ? name : "NULL" );
+        osg::notify( osg::NOTICE ) << " (" << classInfo << ")" << std::endl;
+    }
+
     int _level;
     bool _showGeodes;
 };

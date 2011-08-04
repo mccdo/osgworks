@@ -8,17 +8,21 @@ endif()
 set( HEADER_PATH ${PROJECT_SOURCE_DIR}/include/${LIB_NAME} )
 set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/QueryAPI.h
-    ${HEADER_PATH}/QueryBin.h
-    ${HEADER_PATH}/QueryDrawCB.h
+    ${HEADER_PATH}/QueryBenchmarks.h
+    ${HEADER_PATH}/QueryComputation.h
     ${HEADER_PATH}/QueryObject.h
+    ${HEADER_PATH}/QueryStats.h
+    ${HEADER_PATH}/QueryUtils.h
     ${HEADER_PATH}/Export.h
 )
 
 set( _osgwQuerySourceFiles
     QueryAPI.cpp
-    QueryBin.cpp
-    QueryDrawCB.cpp
+    QueryBenchmarks.cpp
+    QueryComputation.cpp
     QueryObject.cpp
+    QueryStats.cpp
+    QueryUtils.cpp
 )
 
 add_library( ${LIB_NAME}
@@ -26,17 +30,26 @@ add_library( ${LIB_NAME}
     ${_osgwQuerySourceFiles}
 )
 
+find_package( OpenGL REQUIRED )
+include_directories(
+    ${OPENGL_INCLUDE_DIR}
+)
+
 if( BUILD_SHARED_LIBS )
     # Shared libs must explicitly resolve all symbols.
     # Link against our dependency: OSG.
     target_link_libraries( ${LIB_NAME}
         ${OSG_LIBRARIES}
+        ${OPENGL_LIBRARIES}
     )
 
+    if( WIN32 )
+        set( RELATIVE_LIB_PATH ../../lib/ )
+    endif()
     # osgwQuery depends on osgwTools
     target_link_libraries( ${LIB_NAME}
         optimized "osgwTools"
-        debug "osgwTools${CMAKE_DEBUG_POSTFIX}"
+        debug "${RELATIVE_LIB_PATH}osgwTools${CMAKE_DEBUG_POSTFIX}"
     )
 endif()
 

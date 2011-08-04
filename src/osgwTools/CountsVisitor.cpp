@@ -192,6 +192,78 @@ CountsVisitor::dump( std::ostream& ostr )
     ostr << "Max depth: " << _maxDepth << std::endl;
 }
 
+
+void CountsVisitor::apply( osg::Drawable* draw )
+{
+    apply( draw->getStateSet() );
+
+    pushStateSet( draw->getStateSet() );
+
+    if( _countUserMode )
+    {
+        if( isSet( _userMode, _stateStack.back().get() ) )
+        {
+            if( isEnabled( _userMode, _stateStack.back().get() ) )
+                _drawUserModeOn++;
+            else
+                _drawUserModeOff++;
+        }
+        else
+            _drawUserModeNotSet++;
+    }
+
+    _totalDrawables++;
+    osg::Geometry* geom;
+    if (dynamic_cast<osgText::Text*>( draw ) != NULL)
+    {
+        _texts++;
+        osg::ref_ptr<osg::Object> rp = (osg::Object*)draw;
+        _uTexts.insert( rp );
+    }
+    else if ( (geom = dynamic_cast<osg::Geometry*>( draw )) != NULL)
+    {
+        _geometries++;
+        osg::ref_ptr<osg::Object> rp = (osg::Object*)geom;
+        _uGeometries.insert( rp );
+
+        if (!geom->areFastPathsUsed())
+            _slowPathGeometries++;
+
+        if (geom->getVertexArray())
+            _vertices += geom->getVertexArray()->getNumElements();
+        else
+            _nullGeometries++;
+        osg::ref_ptr<osg::Object> rpv = (osg::Object*)( geom->getVertexArray() );
+        _uVertices.insert( rpv );
+
+        if( geom->getNumPrimitiveSets() > 0 )
+        {
+            _primitiveSets += geom->getNumPrimitiveSets();
+            osg::Geometry::PrimitiveSetList& psl = geom->getPrimitiveSetList();
+            osg::Geometry::PrimitiveSetList::const_iterator pslit;
+            for( pslit = psl.begin(); pslit != psl.end(); pslit++ )
+            {
+                osg::ref_ptr<osg::Object> rpps = (osg::Object*)( pslit->get() );
+                _uPrimitiveSets.insert( rpps );
+                const osg::DrawArrays* da = dynamic_cast< const osg::DrawArrays* >( pslit->get() );
+                if( da )
+                {
+                    _drawArrays++;
+                    osg::ref_ptr<osg::Object> rpda = (osg::Object*)( da );
+                    _uDrawArrays.insert( rpda );
+                }
+            }
+        }
+    }
+    else
+    {
+        _drawables++;
+        osg::ref_ptr<osg::Object> rp = (osg::Object*)draw;
+        _uDrawables.insert( rp );
+    }
+
+    popStateSet();
+}
 void CountsVisitor::apply( osg::StateSet* stateSet )
 {
     if( stateSet == NULL )
@@ -457,74 +529,7 @@ CountsVisitor::apply( osg::Geode& node )
     for (idx=0; idx<node.getNumDrawables(); idx++)
     {
         osg::Drawable* draw = node.getDrawable( idx );
-        apply( draw->getStateSet() );
-
-        pushStateSet( draw->getStateSet() );
-
-        if( _countUserMode )
-        {
-            if( isSet( _userMode, _stateStack.back().get() ) )
-            {
-                if( isEnabled( _userMode, _stateStack.back().get() ) )
-                    _drawUserModeOn++;
-                else
-                    _drawUserModeOff++;
-            }
-            else
-                _drawUserModeNotSet++;
-        }
-
-        _totalDrawables++;
-        osg::Geometry* geom;
-        if (dynamic_cast<osgText::Text*>( draw ) != NULL)
-        {
-            _texts++;
-            osg::ref_ptr<osg::Object> rp = (osg::Object*)draw;
-            _uTexts.insert( rp );
-        }
-        else if ( (geom = dynamic_cast<osg::Geometry*>( draw )) != NULL)
-        {
-            _geometries++;
-            osg::ref_ptr<osg::Object> rp = (osg::Object*)geom;
-            _uGeometries.insert( rp );
-
-            if (!geom->areFastPathsUsed())
-                _slowPathGeometries++;
-
-            if (geom->getVertexArray())
-                _vertices += geom->getVertexArray()->getNumElements();
-            else
-                _nullGeometries++;
-            osg::ref_ptr<osg::Object> rpv = (osg::Object*)( geom->getVertexArray() );
-            _uVertices.insert( rpv );
-
-            if( geom->getNumPrimitiveSets() > 0 )
-            {
-                _primitiveSets += geom->getNumPrimitiveSets();
-                osg::Geometry::PrimitiveSetList& psl = geom->getPrimitiveSetList();
-                osg::Geometry::PrimitiveSetList::const_iterator pslit;
-                for( pslit = psl.begin(); pslit != psl.end(); pslit++ )
-                {
-                    osg::ref_ptr<osg::Object> rpps = (osg::Object*)( pslit->get() );
-                    _uPrimitiveSets.insert( rpps );
-                    const osg::DrawArrays* da = dynamic_cast< const osg::DrawArrays* >( pslit->get() );
-                    if( da )
-                    {
-                        _drawArrays++;
-                        osg::ref_ptr<osg::Object> rpda = (osg::Object*)( da );
-                        _uDrawArrays.insert( rpda );
-                    }
-                }
-            }
-        }
-        else
-        {
-            _drawables++;
-            osg::ref_ptr<osg::Object> rp = (osg::Object*)draw;
-            _uDrawables.insert( rp );
-        }
-
-        popStateSet();
+        apply( draw );
     }
 
     if (++_depth > _maxDepth)

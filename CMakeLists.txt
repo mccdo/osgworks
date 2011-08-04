@@ -86,7 +86,7 @@ if( OSGWORKS_INSTALL_DATA )
 endif()
 
 ADD_SUBDIRECTORY( src/osgwControls )
-# ADD_SUBDIRECTORY( src/osgwQuery )
+ADD_SUBDIRECTORY( src/osgwQuery )
 ADD_SUBDIRECTORY( src/osgwTools )
 ADD_SUBDIRECTORY( src/plugins )
 
