@@ -312,7 +312,7 @@ public:
 
         Point *other(Point const* const pThis) const
         {
-            return (pThis == _pA ? _pB: _pA);
+            return (pThis == _pA ? _pB.get(): _pA.get());
         }
 
         bool valid(void) const
@@ -534,7 +534,7 @@ public:
 
         bool coincidentEdge(const Edge& rhs) const
         {
-            return ((_p1->equals(rhs._p1) || _p1->equals(rhs._p2)) && (_p2->equals(rhs._p1) || _p2->equals(rhs._p2)));
+            return ((_p1->equals(rhs._p1.get()) || _p1->equals(rhs._p2.get())) && (_p2->equals(rhs._p1.get()) || _p2->equals(rhs._p2.get())));
         }
 
         void setOrderedPoints(Point* const p1, Point* const p2)
@@ -787,7 +787,7 @@ public:
         
         //edge->setErrorMetric( computeErrorMetric( edge.get()));
         // this sets optimal point which setErrorMetric does not do. It also checks for boundary conditions
-        setErrorMetricForEdgeNoInsert(edge);
+        setErrorMetricForEdgeNoInsert(edge.get());
 
         EdgeSet::iterator itr = _edgeSet.find(edge);
         if (itr==_edgeSet.end())
@@ -857,7 +857,7 @@ public:
                     // remove the edge from the list, as it is apparently superceded
                     if (itr2 != _edgeSet.end())
                         _edgeSet.erase(itr2);
-                    edge = (*itr);
+                    edge = (*itr).get();
                 }
                 // remove the edge from the list, as its position in the list
                 // may need to change once its values have been ammended 
@@ -1100,13 +1100,13 @@ public:
             for (; itr2 != _pointSet.end(); ++itr2)
             {
                 // thanks to the ordering of the point set, any points with same coordinates are arranged sequentially in the set
-                if ((*itr1)->equals((*itr2)))
+                if ((*itr1)->equals((*itr2).get()))
                 {
                     osg::ref_ptr<PointLink> pLink = new PointLink;
                     pLink->_pA = (*itr1);
                     pLink->_pB = (*itr2);
-                    (*itr1)->addLink(pLink);
-                    (*itr2)->addLink(pLink);
+                    (*itr1)->addLink(pLink.get());
+                    (*itr2)->addLink(pLink.get());
                     ++_linksFound;
                 }
                 else
@@ -1377,7 +1377,7 @@ public:
         {
             // we have another deletion point if this point is connected directly to the non-delete point by an edge
             // test to see which point of the PointLink is the current remove point
-            Point* pointLinkedToRemovePoint = point_remove == (*pitr)->_pA ? (*pitr)->_pB: (*pitr)->_pA;
+            Point* pointLinkedToRemovePoint = point_remove == (*pitr)->_pA ? (*pitr)->_pB.get(): (*pitr)->_pA.get();
 
             osg::ref_ptr<LinkedPointData> pLinkData = new LinkedPointData(pointLinkedToRemovePoint);
 
@@ -1388,7 +1388,7 @@ public:
             {
                 Triangle* triangle = const_cast<Triangle*>(titr->get());
                 // walk the points of the triangle looking for points co-located at the non-deletion point point_save
-                Point* pointLinkedToSavePoint = triangle->_p1->equals(point_save) ? triangle->_p1: triangle->_p2->equals(point_save) ? triangle->_p2: triangle->_p3->equals(point_save) ? triangle->_p3: 0;
+                Point* pointLinkedToSavePoint = triangle->_p1->equals(point_save.get()) ? triangle->_p1.get(): triangle->_p2->equals(point_save.get()) ? triangle->_p2.get(): triangle->_p3->equals(point_save.get()) ? triangle->_p3.get(): 0;
 
                 pLinkData->setSavePoint(pointLinkedToSavePoint);
 
@@ -1428,7 +1428,7 @@ public:
             ++titr)
         {
             Triangle* triangle = const_cast<Triangle*>(titr->get());
-            replaceTrianglePoint(triangle, point_remove, point_save);
+            replaceTrianglePoint(triangle, point_remove.get(), point_save.get());
             edges2UpdateErrorMetric.insert(triangle->_e1);
             edges2UpdateErrorMetric.insert(triangle->_e2);
             edges2UpdateErrorMetric.insert(triangle->_e3);
@@ -1467,7 +1467,7 @@ public:
             Point* p_remove = linkedPointData->getRemovePoint();
             Point* p_save = linkedPointData->getSavePoint();
             if (! p_save)
-                p_save = point_save;
+                p_save = point_save.get();
 
             //for all the triangles around the remove point except ones sharing the collapse edge.
             for(TriangleList::iterator titr=linkedPointData->_triToModify.begin();
