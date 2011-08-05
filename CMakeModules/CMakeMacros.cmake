@@ -52,6 +52,7 @@ MACRO( MAKE_EXECUTABLE EXENAME )
     )
     TARGET_LINK_LIBRARIES( ${EXENAME}
         ${OSG_LIBRARIES}
+        ${OPENGL_gl_LIBRARY}
     )
     if( CATEGORY STREQUAL "App" )
         install(
