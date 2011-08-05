@@ -77,7 +77,7 @@ public:
     unsigned int getNumVertices() const { return( _numVertices ); }
 
     void setBoundingBox( const osg::BoundingBox& bb ) { _bb = bb; }
-    osg::BoundingBox getBoundingBox() const { return( _bb ); }
+    const osg::BoundingBox& getBoundingBox() const { return( _bb ); }
 
     class QueryStatus
     {

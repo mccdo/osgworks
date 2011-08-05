@@ -95,10 +95,10 @@ int main( int argc, char** argv )
     {
         osgwTools::FindNamedNode fnn( debugNodeName );
         root->accept( fnn );
-        if( !( fnn._napl.empty() ) )
+        if( fnn._napl.empty() )
+            osg::notify( osg::ALWAYS ) << "Debug error: Couldn't find any nodes named " << debugNodeName << std::endl;
+        else
         {
-            osg::notify( osg::ALWAYS ) << "Stats for node " << fnn._napl[ 0 ].first->getName() <<
-                " (found " << fnn._napl.size() << ")" << std::endl;
             qs = new osgwQuery::QueryStats( fnn._napl[ 0 ].first );
             root->addChild( qs->getSceneGraph() );
 
