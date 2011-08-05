@@ -61,7 +61,7 @@ QueryComputation::QueryComputation( const QueryComputation& rhs, const osg::Copy
 }
 
 
-bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo, const osg::BoundingBox& bb )
+bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo )
 {
     if( !_initialized )
     {
@@ -73,7 +73,7 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
         OpenThreads::ScopedLock< OpenThreads::Mutex > lock( _lock );
 
         if( !( _queryDrawable.valid() ) )
-            init( bb, nv );
+            init( nv );
         _initialized = true;
     }
 
@@ -285,11 +285,11 @@ void QueryComputation::setCscrOi( double c, const osg::Camera* cam, unsigned int
 }
 
 
-void QueryComputation::init( osg::BoundingBox bb, osg::NodeVisitor* nv )
+void QueryComputation::init( osg::NodeVisitor* nv )
 {
-    _worldBB = osgwTools::transform( osg::computeLocalToWorld( nv->getNodePath() ), bb );
+    _worldBB = osgwTools::transform( osg::computeLocalToWorld( nv->getNodePath() ), _bb );
 
-    osg::Vec3 extents = bb._max - bb._min;
+    osg::Vec3 extents = _bb._max - _bb._min;
 
 
     //
@@ -306,7 +306,7 @@ void QueryComputation::init( osg::BoundingBox bb, osg::NodeVisitor* nv )
     // TBD osgwTools Shapes really does need to support non-origin centers.
     // Offset the query geometry box by the bounding box center.
     osg::Vec3Array* v = static_cast< osg::Vec3Array* >( geom->getVertexArray() );
-    const osg::Vec3 center = bb.center();
+    const osg::Vec3 center = _bb.center();
     unsigned int idx;
     for( idx=0; idx<v->size(); idx++ )
         (*v)[ idx ] += center;
@@ -351,7 +351,7 @@ void QueryComputation::init( osg::BoundingBox bb, osg::NodeVisitor* nv )
     _AbbOiOver6 = abbOi / 6.;
 
     // Ratio of actual object screen area to boulding box screen area.
-    const double aOi = 4. * osg::PI * bb.radius() * bb.radius();
+    const double aOi = 4. * osg::PI * _bb.radius() * _bb.radius();
     _RcovOi = ( 3. / 2. ) * ( aOi / abbOi );
 }
 

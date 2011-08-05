@@ -68,13 +68,16 @@ public:
     \return true if the calling node should continue traversing its children and adding
     them to the render graph. False if the calling code should not add its children to
     the render graph. */
-    virtual bool cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo, const osg::BoundingBox& bb );
+    virtual bool cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo );
 
     static double getCscrOi( const osg::Camera* cam, unsigned int contextID );
     static void setCscrOi( double c, const osg::Camera* cam, unsigned int contextID );
 
     void setNumVertices( unsigned int numVertices ) { _numVertices = numVertices; }
     unsigned int getNumVertices() const { return( _numVertices ); }
+
+    void setBoundingBox( const osg::BoundingBox& bb ) { _bb = bb; }
+    osg::BoundingBox getBoundingBox() const { return( _bb ); }
 
     class QueryStatus
     {
@@ -89,7 +92,7 @@ public:
 
 
 protected:
-    void init( osg::BoundingBox bb, osg::NodeVisitor* nv );
+    void init( osg::NodeVisitor* nv );
     bool _initialized;
 
     OpenThreads::Mutex _lock;
@@ -98,6 +101,7 @@ protected:
     static osg::ref_ptr< osg::StateSet > s_queryStateSet;
 
     unsigned int _numVertices;
+    osg::BoundingBox _bb;
     osg::BoundingBox _worldBB;
 
     // Guthe algorithm constants and variables.

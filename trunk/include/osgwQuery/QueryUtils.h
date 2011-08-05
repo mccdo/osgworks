@@ -52,12 +52,11 @@ public:
 
     virtual void operator()( osg::Node* node, osg::NodeVisitor* nv );
 
-    void attach( osg::Node* node, osgwQuery::QueryComputation* nd, osg::BoundingBox bb );
+    void attach( osg::Node* node, osgwQuery::QueryComputation* nd );
 
 protected:
     osg::Node* _node;
     osgwQuery::QueryComputation* _nd;
-    osg::BoundingBox _bb;
 };
 /** \class CameraResetCallback QueryUtils.h <osgwQuery/QueryUtils.h>
 \brief Resets the Guthe screen coverage CscrOi value for each

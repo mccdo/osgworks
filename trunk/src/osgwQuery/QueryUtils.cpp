@@ -59,18 +59,17 @@ void QueryCullCallback::operator()( osg::Node* node, osg::NodeVisitor* nv )
     osgUtil::CullVisitor* cv = static_cast< osgUtil::CullVisitor* >( nv );
     osg::RenderInfo& renderInfo = cv->getRenderInfo();
 
-    bool traverseChildren = _nd->cullOperation( nv, renderInfo, _bb );
+    bool traverseChildren = _nd->cullOperation( nv, renderInfo );
     if( !traverseChildren )
         return;
 
     traverse( node, nv );
 }
 
-void QueryCullCallback::attach( osg::Node* node, osgwQuery::QueryComputation* nd, osg::BoundingBox bb )
+void QueryCullCallback::attach( osg::Node* node, osgwQuery::QueryComputation* nd )
 {
     _node = node;
     _nd = nd;
-    _bb = bb;
 }
 
 
@@ -144,9 +143,10 @@ void AddQueries::apply( osg::Group& node )
         m.invert( m );
         bb = osgwTools::transform( m, bb );
     }
+    nd->setBoundingBox( bb );
 
     QueryCullCallback* qcc = new QueryCullCallback();
-    qcc->attach( &node, nd, bb );
+    qcc->attach( &node, nd );
     node.setCullCallback( qcc );
 
     _queryCount++;
