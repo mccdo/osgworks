@@ -76,6 +76,7 @@ int main( int argc, char** argv )
 
 
     osg::Group* root = new osg::Group;
+    root->setName( "Test root node" );
     osg::Node* models = osgDB::readNodeFiles( arguments );
     if( models != NULL )
     {

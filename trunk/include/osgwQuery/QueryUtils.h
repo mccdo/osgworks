@@ -54,6 +54,8 @@ public:
 
     void attach( osg::Node* node, osgwQuery::QueryComputation* nd );
 
+    osgwQuery::QueryComputation* getQueryComputation() const { return( _nd ); }
+
 protected:
     osg::Node* _node;
     osgwQuery::QueryComputation* _nd;
@@ -90,6 +92,8 @@ public:
     unsigned int getQueryCount() const { return( _queryCount ); }
 
 protected:
+    void addDataToNodePath( osg::NodePath& np, unsigned int numVertices, const osg::BoundingBox& bb );
+
     osgwQuery::QueryStats* _qs;
 
     unsigned int _queryCount;

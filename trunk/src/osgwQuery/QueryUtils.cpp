@@ -100,37 +100,47 @@ void AddQueries::apply( osg::Group& node )
 
     // Do not add callbacks to redundant Groups because the parent Group's
     // bounding volume (and query geometry) would also be redundant.
-    bool redundantGroup( true );
+    // This Group is not redundant if it has no parents, or if its parents
+    // are all Cameras, or if any one of its non-Camera parents has
+    // more than one child. Otherwise, it's redundant.
+    bool redundantGroup( false );
+    unsigned int parentsWithOneChild( 0 );
+    const unsigned int numParents( node.getNumParents() );
     unsigned int idx;
-    for( idx=0; idx < node.getNumParents(); idx++ )
+    for( idx=0; idx < numParents; idx++ )
     {
-        if( node.getParent( idx )->getNumChildren() > 1 )
+        osg::Group* parent = node.getParent( idx );
+        bool parentIsCamera = ( dynamic_cast< osg::Camera* >( parent ) != NULL );
+        if( parentIsCamera )
+            continue;
+        if( parent->getNumChildren() == 1 )
         {
-            redundantGroup = false;
-            break;
+            parentsWithOneChild++;
+            // If all parents have one child, then we are redundant.
+            if( numParents == parentsWithOneChild )
+                redundantGroup = true;
         }
     }
     if( redundantGroup )
     {
+        if( ( _qs != NULL ) && ( &node == _qs->getNode() ) )
+            osg::notify( osg::ALWAYS ) << "Debug: Unable to add QueryStats to redundant Group \"" << node.getName() << "\"." << std::endl;
         traverse( node );
         return;
     }
 
     // Create QueryComputation for this node.
-    // Add q QueryStats only if a) we have one and
+    // Add a QueryStats only if a) we have one and
     // b) the node addresses match.
     osgwQuery::QueryStats* debugStats( NULL );
     if( ( _qs != NULL ) && ( &node == _qs->getNode() ) )
+    {
+        osg::notify( osg::ALWAYS ) << "Debug: Adding QueryStats to node \"" << node.getName() << "\"." << std::endl;
         debugStats = _qs;
+    }
     QueryComputation* nd = new QueryComputation( debugStats );
 
-    osgwTools::CountsVisitor cv;
-    node.accept( cv );
-    nd->setNumVertices( cv.getVertices() );
-
-    osg::ComputeBoundsVisitor cbv;
-    node.accept( cbv );
-    osg::BoundingBox bb = cbv.getBoundingBox();
+    /*
     // We do not want a transformed bounding box, because the bb is used to create the
     // query geometry. If this node is a transform, this would result in the transform
     // being applied twice, rendering the geometry in the wrong location.
@@ -143,7 +153,7 @@ void AddQueries::apply( osg::Group& node )
         m.invert( m );
         bb = osgwTools::transform( m, bb );
     }
-    nd->setBoundingBox( bb );
+    */
 
     QueryCullCallback* qcc = new QueryCullCallback();
     qcc->attach( &node, nd );
@@ -152,10 +162,22 @@ void AddQueries::apply( osg::Group& node )
     _queryCount++;
 
     traverse( node );
+
+    /*
+    const unsigned int numVertices = nd->getNumVertices();
+    const osg::BoundingBox& bb = nd->getBoundingBox();
+    sumWithParents( node, numVertices, bb );
+    */
 }
 void AddQueries::apply( osg::Geode& node )
 {
     traverse( node );
+
+    osgwTools::CountsVisitor cv;
+    node.accept( cv );
+    const unsigned int numVertices = cv.getVertices();
+    const osg::BoundingBox& bb = node.getBoundingBox();
+    addDataToNodePath( getNodePath(), numVertices, bb );
 }
 void AddQueries::apply( osg::Camera& node )
 {
@@ -170,6 +192,38 @@ void AddQueries::apply( osg::Camera& node )
     node.setPostDrawCallback( crc );
 
     traverse( node );
+}
+
+void AddQueries::addDataToNodePath( osg::NodePath& np, unsigned int numVertices, const osg::BoundingBox& bb )
+{
+    osg::NodePath localNP;
+    osg::NodePath::reverse_iterator rit;
+    for( rit=np.rbegin(); rit!=np.rend(); rit++ )
+    {
+        osg::NodeCallback* cb = (*rit)->getCullCallback();
+        QueryCullCallback* qcc = dynamic_cast< QueryCullCallback* >( cb );
+
+        osgwQuery::QueryComputation* nd( NULL );
+        if( qcc != NULL )
+            nd = qcc->getQueryComputation();
+        if( nd != NULL )
+        {
+            nd->setNumVertices( nd->getNumVertices() + numVertices );
+
+            osg::BoundingBox xformBB = osgwTools::transform( osg::computeLocalToWorld( localNP ), bb );
+            osg::BoundingBox ndBB = nd->getBoundingBox();
+            ndBB.expandBy( xformBB );
+            nd->setBoundingBox( ndBB );
+        }
+
+        // Yuck. std::vector doesn't support push_back().
+        //localNP.push_front( *rit );
+        localNP.resize( localNP.size() + 1 );
+        unsigned int idx;
+        for( idx=localNP.size()-1; idx>0; idx-- )
+            localNP[ idx ] = localNP[ idx-1 ];
+        localNP[ 0 ] = *rit;
+    }
 }
 
 
