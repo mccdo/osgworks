@@ -27,6 +27,11 @@
 
 int main( int argc, char** argv )
 {
+    osg::notify( osg::ALWAYS ) <<
+        "This is a CTest regression test. To launch under Visual Studio, build the" << std::endl <<
+        "RUN_TESTS target. Under Linux, enter 'make test' at a shell prompty." << std::endl <<
+        std::endl;
+
     osgViewer::Viewer viewer;
     viewer.setUpViewInWindow( 0., 0., 1024., 768. );
     viewer.setThreadingModel( osgViewer::ViewerBase::SingleThreaded );
@@ -37,4 +42,6 @@ int main( int argc, char** argv )
     viewer.frame();
     // In some thread models, 2nd frame required before pre-draw callback executes.
     viewer.frame();
+
+    return( 0 );
 }
