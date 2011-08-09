@@ -39,8 +39,12 @@ namespace osgwQuery
 class QueryAPI;
 
 
+/** \addtogroup GutheQuery */
+/*@{*/
+
+
 /** \class QueryBenchmarks QueryBenchmarks.h <osgwQuery/QueryBenchmarks.h>
-\brief OpenGL query API benchmarks used in Guthe algorithm.
+\brief OpenGL occlusion query benchmarks used in Guthe algorithm.
 */
 class OSGWQUERY_EXPORT QueryBenchmarks : public osg::Referenced
 {
@@ -68,6 +72,9 @@ protected:
 OSGWQUERY_EXPORT QueryBenchmarks* getQueryBenchmarks( unsigned int contextID, osg::RenderInfo* ri=NULL );
 
 
+/** \class InitCallback QueryBenchmarks.h <osgwQuery/QueryBenchmarks.h>
+\brief A Camera pre-draw callback to gather Guthe benchmark values.
+*/
 struct OSGWQUERY_EXPORT InitCallback : public osg::Camera::DrawCallback
 {
     InitCallback() : _initialized( false ) {}
@@ -77,6 +84,7 @@ struct OSGWQUERY_EXPORT InitCallback : public osg::Camera::DrawCallback
     mutable bool _initialized;
 };
 
+/*@}*/
 
 
 // osgwQuery

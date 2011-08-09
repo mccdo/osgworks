@@ -300,7 +300,7 @@ void QueryComputation::init( osg::NodeVisitor* nv )
 
     QueryDrawCallback* qdc = new QueryDrawCallback();
     qdc->setName( nv->getNodePath().back()->getName() );
-    qdc->attach( geom, this );
+    qdc->attach( this );
     geom->setDrawCallback( qdc );
 
     // TBD osgwTools Shapes really does need to support non-origin centers.
@@ -368,20 +368,18 @@ QueryComputation::QueryStatus::QueryStatus()
 
 QueryDrawCallback::QueryDrawCallback()
   : osg::Drawable::DrawCallback(),
-    _drawable( NULL ),
     _nd( NULL )
 {
 }
 QueryDrawCallback::QueryDrawCallback( const QueryDrawCallback& rhs, const osg::CopyOp& copyop )
   : osg::Drawable::DrawCallback( rhs ),
-    _drawable( rhs._drawable ),
     _nd( rhs._nd )
 {
 }
 
 void QueryDrawCallback::drawImplementation( osg::RenderInfo& renderInfo, const osg::Drawable* drawable ) const
 {
-    if( ( _drawable == NULL ) || ( _nd == NULL ) )
+    if( _nd == NULL )
         return;
 
     const unsigned int contextID = renderInfo.getState()->getContextID();
@@ -392,15 +390,14 @@ void QueryDrawCallback::drawImplementation( osg::RenderInfo& renderInfo, const o
     osg::notify( osg::INFO ) << " ID: " << id << std::endl;
     qapi->glBeginQuery( GL_SAMPLES_PASSED, id );
 
-    _drawable->drawImplementation( renderInfo );
+    drawable->drawImplementation( renderInfo );
 
     qapi->glEndQuery( GL_SAMPLES_PASSED );
     qs._queryActive = true;
 }
 
-void QueryDrawCallback::attach( osg::Drawable* drawable, osgwQuery::QueryComputation* nd )
+void QueryDrawCallback::attach( osgwQuery::QueryComputation* nd )
 {
-    _drawable = drawable;
     _nd = nd;
 }
 

@@ -34,6 +34,13 @@ namespace osgwQuery
 {
 
 
+/** \addtogroup GutheQuery */
+/*@{*/
+
+
+/** \class QueryStats QueryStats.h <osgwQuery/QueryStats.h>
+\brief On-screen display of Guthe statistics regarding the query status of a given node.
+*/
 class OSGWQUERY_EXPORT QueryStats : public osg::Referenced
 {
 public:
@@ -88,6 +95,9 @@ protected:
 };
 
 
+/** \class QueryStatsHandler QueryStats.h <osgwQuery/QueryStats.h>
+\brief An event handler that toggles QueryStats active accumulation with the 'a' key.
+*/
 class OSGWQUERY_EXPORT QueryStatsHandler : public osgGA::GUIEventHandler
 {
 public:
@@ -98,6 +108,8 @@ public:
 protected:
     osg::ref_ptr< osgwQuery::QueryStats > _qs;
 };
+
+/*@}*/
 
 
 // osgwQuery
