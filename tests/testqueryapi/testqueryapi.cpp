@@ -62,6 +62,11 @@ protected:
 
 int main( int argc, char ** argv )
 {
+    osg::notify( osg::ALWAYS ) <<
+        "This is a CTest regression test. To launch under Visual Studio, build the" << std::endl <<
+        "RUN_TESTS target. Under Linux, enter 'make test' at a shell prompty." << std::endl <<
+        std::endl;
+
     osg::ref_ptr< PostDraw > pd = new PostDraw( std::string( argv[ 0 ] ) );
 
     osgViewer::Viewer viewer;

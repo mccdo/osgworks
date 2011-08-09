@@ -24,6 +24,11 @@
 
 int main( int argc, char ** argv )
 {
+    osg::notify( osg::ALWAYS ) <<
+        "This is a CTest regression test. To launch under Visual Studio, build the" << std::endl <<
+        "RUN_TESTS target. Under Linux, enter 'make test' at a shell prompty." << std::endl <<
+        std::endl;
+
     if( osgwTools::testNodePathUtils() != 0 )
         return( 1 );
 
