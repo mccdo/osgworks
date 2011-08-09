@@ -40,6 +40,69 @@ namespace osgwQuery
 {
 
 
+/** \defgroup GutheQuery OpenGL occlusion query support.
+\brief An OSG implementation of the Guthe occlusion query algorithm.
+
+The Guthe algorithm was published in "Near Optimal Hierarchical Culling:
+Performance Driven Use of Hardware Occlusion Queries", Eurographics, 2006.
+
+The QueryComputation class implements the Guthe algorithm in the
+QueryComputation::cullOperation() method. The QueryCullCallback class calls
+cullOperation() during the cull traversal. If cullOperation() determines that
+an occlusion query should be performed, it adds a query Geometry to the render
+graph. At draw time, the Geometry's QueryDrawCallback issues the necessary
+OpenGL occlusion query commands.
+
+This is only a partial implementation of the Guthe algorithm due to
+general-purpose rendering limitations within OSG itself. The parts of the Guthe
+algorithm aren't implemented:
+\li Guthe combines culling and drawing into a single operation, and requires
+issuing draw commands for foreground objects before making cull decisions about more
+distant objects. Cull and draw are two distinct operations in OSG and can't be
+combined. Combining them would require OSG to dynamically alter the contents of
+the render graph at draw-time, adding (or not adding) scene graph children based on 
+the occlusion state of a given parent. OSG's render graph contains no links back
+to the source scene graph, so this type of rendering is impossible in OSG.
+\li Guthe requires rendering in front-to-back order, which this implementation
+supports. However, Guthe treats cull and draw as synonymous operations (see above),
+and therefore also requires that cull occur in front-to-back order. Indeed, this is
+required for correct computation of P<sub>cov</sub>O<sub>i</sub>, the probability that a given object
+is covered. However, OSG's CullVisitor traverses children in child order and
+oesn't support traversing children in front-to-back order. As a result, this implementation
+calculates P<sub>cov</sub>O<sub>i</sub> incorrectly in most cases, causing non-optimal
+decisions about when to issue queries.
+
+The algorithm requires hardware performance characterization. The QueryBenchmarks
+class supports gathering these characteristics. The InitCallback class allows the
+characteristics to be gathered in a Camera pre-draw callback.
+
+The AddQueries NodeVisitor adds QueryCullCallback objects to nodes in the scene graph.
+Nodes receive a QueryCullCallback if they are Groups or derived from Group, not
+edundant Groups, and not Camera nodes. The AddQueries visitor adds a
+CameraResetCallback to Camera nodes to reset the Guthe coverage parameter
+before proceeding the the Camera subtree's cull.
+
+The queryStats and QueryStatsHandler classes are available as debugging
+aids.
+
+For an example of using the Guthe algorithm, see the testqueryguthe test program.
+The data directory also contains four model test files.
+\code
+testqueryguthe octest0.osg
+testqueryguthe octest1.osg
+testqueryguthe octest2.osg
+testqueryguthe octest3.osg
+\endcode
+
+To see the QueryStats class in action, try this:
+\code
+testqueryguthe octest3.osg --debug negXTruck
+\endcode
+
+*/
+/*@{*/
+
+    
 /** \class QueryComputation QueryComputation.h <osgwQuery/QueryComputation.h>
 \brief A support struct for the Guthe occlusion query algorithm.
 
@@ -55,6 +118,7 @@ public:
     META_Object(osgwQuery,QueryComputation);
 
     /** \brief Implements Guthe algorithm and tells calling code whether to render children.
+
     NOTE: Guthe assumes a concurrent cull/draw with an active rendering context. The
     cullOperation() method requires an active context in order to retrieve the active query
     result. If you call this function without an active context, results are undefined.
@@ -79,7 +143,10 @@ public:
     void setBoundingBox( const osg::BoundingBox& bb ) { _bb = bb; }
     const osg::BoundingBox& getBoundingBox() const { return( _bb ); }
 
-    class QueryStatus
+    /** \class QueryStatus QueryComputation.h <osgwQuery/QueryComputation.h>
+    \brief A struct for storing occlusion query status and results.
+    */
+    struct QueryStatus
     {
     public:
         QueryStatus();
@@ -89,7 +156,6 @@ public:
         osg::ref_ptr< osgwQuery::QueryObject > _queryObject;
     };
     QueryStatus& getQueryStatus( unsigned int contextID ) { return( _queries[ contextID ] ); }
-
 
 protected:
     void init( osg::NodeVisitor* nv );
@@ -129,7 +195,9 @@ protected:
 };
 
 
-
+/** \class QueryDrawCallback QueryComputation.h <osgwQuery/QueryComputation.h>
+\brief A draw-time callback that wraps begin/end query calls around the drawImplementation.
+*/
 class OSGWQUERY_EXPORT QueryDrawCallback : public osg::Drawable::DrawCallback
 {
 public:
@@ -139,12 +207,13 @@ public:
 
     virtual void drawImplementation( osg::RenderInfo& renderInfo, const osg::Drawable* drawable ) const;
 
-    void attach( osg::Drawable* drawable, osgwQuery::QueryComputation* nd );
+    void attach( osgwQuery::QueryComputation* nd );
 
 protected:
-    osg::Drawable* _drawable;
     osgwQuery::QueryComputation* _nd;
 };
+
+/*@}*/
 
 
 // osgwQuery

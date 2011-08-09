@@ -39,6 +39,10 @@ namespace osgwQuery
 {
 
 
+/** \addtogroup GutheQuery */
+/*@{*/
+
+
 /** \class QueryCullCallback QueryUtils.h <osgwQuery/QueryUtils.h>
 \brief Make a cull-time traverse/no-traverse decision based on Guthe
 algorithm criteria in the QueryComputation class.
@@ -98,6 +102,8 @@ protected:
 
     unsigned int _queryCount;
 };
+
+/*@}*/
 
 
 // osgwQuery
