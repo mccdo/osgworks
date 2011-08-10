@@ -217,6 +217,8 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
         queryReasonable = true;
         osg::notify( osg::INFO ) << "Case 4: True. default" << std::endl;
     }
+    // NOTE: Following is the portion of the Guthe algorithm that is not implemented,
+    // as OSG doesn't support dynamically editing the render graph.
     /*
     for each child
         if child render time < child query time
