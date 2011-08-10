@@ -184,7 +184,14 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
 
     unsigned int framesSinceLastQuery = currentFrame - _lastQueryFrame;
 
-    if( ( renderTime < queryTime ) /* ||
+    if( _numVertices < 1 )
+    {
+        // This is not part of Guthe, but we do occasionally encounter models like this.
+        // Don't do a query, just let OSG handle it however OSG handles it.
+        queryReasonable = false;
+    }
+
+    else if( ( renderTime < queryTime ) /* ||
             ( sum of child costs < node cost ) */ )
     {
         queryReasonable = false;
