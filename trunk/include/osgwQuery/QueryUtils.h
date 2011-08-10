@@ -96,6 +96,9 @@ public:
     unsigned int getQueryCount() const { return( _queryCount ); }
 
 protected:
+    /** Provides optimized accumulation of per-node vertices and bounding box. The alternative
+    is to run the CountsVisitor and ComputeBoundsVisitor at every Node, which would be
+    innefficient and delay init time severely for large models. */
     void addDataToNodePath( osg::NodePath& np, unsigned int numVertices, const osg::BoundingBox& bb );
 
     osgwQuery::QueryStats* _qs;

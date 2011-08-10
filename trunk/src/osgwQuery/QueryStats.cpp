@@ -33,7 +33,8 @@ namespace osgwQuery
 
 QueryStats::QueryStats( osg::Node* node )
   : _node( node ),
-    _accum( true )
+    _accum( true ),
+    _consoleDisplay( false )
 {
     clear();
 }
@@ -177,6 +178,19 @@ void QueryStats::clear()
 }
 unsigned int QueryStats::incFrames( unsigned int n )
 {
+    if( _consoleDisplay )
+    {
+        osg::notify( osg::ALWAYS ) << "frames: " << _numFrames << std::endl <<
+            "  queries: " << _numQueries << std::endl <<
+            "  occluded: " << _numOccluded << std::endl <<
+            "  No Q (Rt < Qt): " << _numRtLessQt << std::endl <<
+            "  No Q (Cost > Ben): " << _numCGreaterB << std::endl <<
+            "  Q (prev culled): " << _numFrustum << std::endl;
+        if( _poccl.valid() )
+            osg::notify( osg::ALWAYS ) << "  Poccl: " << 
+                _poccl->getText().createUTF8EncodedString() << std::endl;
+    }
+
     return( internalInc( _numFrames, _frames.get(), n ) );
 }
 unsigned int QueryStats::incQueries( unsigned int n )

@@ -59,6 +59,11 @@ public:
     without toggling, pass false for the \c toggle parameter. */
     bool toggleAccumulate( bool toggle=true );
 
+    /** Enables stats display to console. When enabled, current stats are written
+    to the console by the incFrame() method. Console display is off by default. */
+    void setConsoleDisplay( bool display=true ) { _consoleDisplay=display; }
+    bool getConsoleDisplay() const { return( _consoleDisplay ); }
+
     void clear();
     unsigned int incFrames( unsigned int n=1 );
     unsigned int incQueries( unsigned int n=1 );
@@ -75,6 +80,7 @@ protected:
     osg::ref_ptr< osg::Node > _node;
 
     bool _accum;
+    bool _consoleDisplay;
 
     unsigned int _numFrames;
     unsigned int _numQueries;

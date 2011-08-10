@@ -26,7 +26,6 @@
 #include <osgwTools/Transform.h>
 #include <OpenThreads/ScopedLock>
 #include <osgUtil/CullVisitor>
-#include <osg/ComputeBoundsVisitor>
 #include <osg/PolygonOffset>
 #include <osg/ColorMask>
 #include <osg/Depth>
@@ -140,34 +139,14 @@ void AddQueries::apply( osg::Group& node )
     }
     QueryComputation* nd = new QueryComputation( debugStats );
 
-    /*
-    // We do not want a transformed bounding box, because the bb is used to create the
-    // query geometry. If this node is a transform, this would result in the transform
-    // being applied twice, rendering the geometry in the wrong location.
-    osg::Transform* transform = node.asTransform();
-    if( transform != NULL )
-    {
-        // Remove the transform from the bounding box.
-        osg::Matrix m;
-        transform->computeLocalToWorldMatrix( m, NULL );
-        m.invert( m );
-        bb = osgwTools::transform( m, bb );
-    }
-    */
-
     QueryCullCallback* qcc = new QueryCullCallback();
+    qcc->setName( node.getName() );
     qcc->attach( &node, nd );
     node.setCullCallback( qcc );
 
     _queryCount++;
 
     traverse( node );
-
-    /*
-    const unsigned int numVertices = nd->getNumVertices();
-    const osg::BoundingBox& bb = nd->getBoundingBox();
-    sumWithParents( node, numVertices, bb );
-    */
 }
 void AddQueries::apply( osg::Geode& node )
 {
@@ -196,6 +175,10 @@ void AddQueries::apply( osg::Camera& node )
 
 void AddQueries::addDataToNodePath( osg::NodePath& np, unsigned int numVertices, const osg::BoundingBox& bb )
 {
+    // For every Node in the NodePath that has a QueryCullCallback and a 
+    // QueryComputation object, add the number of vertices and the transformed
+    // bounding box to that Node's QueryComputation.
+
     osg::NodePath localNP;
     osg::NodePath::reverse_iterator rit;
     for( rit=np.rbegin(); rit!=np.rend(); rit++ )

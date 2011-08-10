@@ -101,6 +101,7 @@ int main( int argc, char** argv )
         else
         {
             qs = new osgwQuery::QueryStats( fnn._napl[ 0 ].first );
+            //qs->setConsoleDisplay(); // In case nothing appears onscreen.
             root->addChild( qs->getSceneGraph() );
 
             viewer.addEventHandler( new osgwQuery::QueryStatsHandler( qs.get() ) );
