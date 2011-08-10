@@ -134,12 +134,20 @@ public:
     the render graph. */
     virtual bool cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& renderInfo );
 
+    /** Access the static C<sub>scr</sub>O<sub>i</sub> parameter, which is kept in
+    a static map keyed by the context/Camera pair. */
     static double getCscrOi( const osg::Camera* cam, unsigned int contextID );
     static void setCscrOi( double c, const osg::Camera* cam, unsigned int contextID );
 
+    /** Access the number of vertices contained in the subgraph rooted at the
+    node associated with this QueryComputation instance. */
     void setNumVertices( unsigned int numVertices ) { _numVertices = numVertices; }
     unsigned int getNumVertices() const { return( _numVertices ); }
 
+    /** Access the BoundingBox contained in the subgraph rooted at the
+    node associated with this QueryComputation instance. If the node is
+    a Transform, the BoundingBox is in untransformed (subgraph-local)
+    coordinates. */
     void setBoundingBox( const osg::BoundingBox& bb ) { _bb = bb; }
     const osg::BoundingBox& getBoundingBox() const { return( _bb ); }
 
