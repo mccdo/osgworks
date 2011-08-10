@@ -5,8 +5,9 @@
 #   OSGWORKS_LIBRARIES
 #   OSGWORKS_INCLUDE_DIR
 #   OSGWCONTROLS_LIBRARY
-#   OSGWTOOLS_LIBRARY
+#   OSGWMX_LIBRARY
 #   OSGWQUERY_LIBRARY
+#   OSGWTOOLS_LIBRARY
 #
 # This script will look in standard locations for installed osgWorks. However, if you
 # install osgWorks into a non-standard location, you can use the OSGWORKS_ROOT
@@ -95,9 +96,10 @@ macro( FIND_OSGWORKS_LIBRARY MYLIBRARY MYLIBRARYNAME )
 endmacro()
 
 unset( OSGWORKS_LIBRARIES )
-FIND_OSGWORKS_LIBRARY( OSGWTOOLS_LIBRARY osgwTools )
 FIND_OSGWORKS_LIBRARY( OSGWCONTROLS_LIBRARY osgwControls )
+FIND_OSGWORKS_LIBRARY( OSGWMX_LIBRARY osgwMx )
 FIND_OSGWORKS_LIBRARY( OSGWQUERY_LIBRARY osgwQuery )
+FIND_OSGWORKS_LIBRARY( OSGWTOOLS_LIBRARY osgwTools )
 
 # handle the QUIETLY and REQUIRED arguments and set FMOD_FOUND to TRUE if all listed variables are TRUE
 include( FindPackageHandleStandardArgs )
