@@ -110,7 +110,6 @@ OSGWTOOLS_EXPORT osg::Geometry* makeWirePlane( const osg::Vec3& corner, const os
 /*@{*/
 
 /** \brief Creates a box.
-
 This function makes an axis-aligned box using GL_TRIANGLE_STRIP PrimitiveSets. The dimensions
 are (halfExtents*2). By default, two triangles are on each side of the box, for
 a total of 12 triangles. However, the subdivision parameter can increase this, 
@@ -119,8 +118,11 @@ normal and texture coordinate (unit 0) data. The texture coordinate data
 is suitable for applying an entire texture map to each face of the box. */
 OSGWTOOLS_EXPORT osg::Geometry* makeBox( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions=osg::Vec3s(1,1,1), osg::Geometry* geometry=NULL );
 
-/** \brief Creates a wireframe box.
+/** \brief Creates a plain box with no normal, color, or texture coordinate information.
+Uses a minimum number of vertices (8). Suitable for low-cost display of bounding boxes. */
+OSGWTOOLS_EXPORT osg::Geometry* makePlainBox( const osg::Vec3& halfExtents, osg::Geometry* geometry=NULL );
 
+/** \brief Creates a wireframe box.
 This function doesn't create normal or texture coordinate data, and disables 
 GL_LIGHTING in the Geometry's StateSet. */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireBox( const osg::Vec3& halfExtents, osg::Geometry* geometry=NULL );

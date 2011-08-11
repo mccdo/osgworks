@@ -305,7 +305,7 @@ void QueryComputation::init( osg::NodeVisitor* nv )
     // Create box geometry for use as query geometry.
 
     osg::Vec3 halfExtents = extents / 2.;
-    osg::Geometry* geom = osgwTools::makeBox( halfExtents );
+    osg::Geometry* geom = osgwTools::makePlainBox( halfExtents );
 
     QueryDrawCallback* qdc = new QueryDrawCallback();
     qdc->setName( nv->getNodePath().back()->getName() );
@@ -324,9 +324,6 @@ void QueryComputation::init( osg::NodeVisitor* nv )
     // TBD Possibly display lists are better? Need to try on higher-end hardware.
     geom->setUseDisplayList( false );
     geom->setUseVertexBufferObjects( true );
-    geom->setTexCoordArray( 0, NULL );
-    geom->setNormalArray( NULL );
-    geom->setNormalBinding( osg::Geometry::BIND_OFF );
 
     _queryDrawable = geom;
 
