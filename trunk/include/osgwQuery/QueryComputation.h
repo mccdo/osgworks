@@ -151,27 +151,13 @@ public:
     void setBoundingBox( const osg::BoundingBox& bb ) { _bb = bb; }
     const osg::BoundingBox& getBoundingBox() const { return( _bb ); }
 
-    /** \class QueryStatus QueryComputation.h <osgwQuery/QueryComputation.h>
-    \brief A struct for storing occlusion query status and results.
-    */
-    struct QueryStatus
-    {
-    public:
-        QueryStatus();
-
-        bool _queryActive;
-        bool _wasOccluded;
-        osg::ref_ptr< osgwQuery::QueryObject > _queryObject;
-    };
-    QueryStatus& getQueryStatus( unsigned int contextID ) { return( _queries[ contextID ] ); }
-
 protected:
     void init( osg::NodeVisitor* nv );
     bool _initialized;
 
-    OpenThreads::Mutex _lock;
+    osg::Geometry* initQueryDrawable( osg::NodeVisitor* nv );
 
-    osg::ref_ptr< osg::Drawable > _queryDrawable;
+    OpenThreads::Mutex _lock;
     static osg::ref_ptr< osg::StateSet > s_queryStateSet;
 
     unsigned int _numVertices;
@@ -197,7 +183,7 @@ protected:
     static CscrOiMap s_CscrOiMap;
 
 
-    osg::buffered_object< QueryStatus > _queries;
+    osg::buffered_object< osg::ref_ptr< osg::Geometry > > _queryDrawables;
 
     osg::ref_ptr< osgwQuery::QueryStats > _debugStats;
 };
@@ -216,6 +202,10 @@ public:
     virtual void drawImplementation( osg::RenderInfo& renderInfo, const osg::Drawable* drawable ) const;
 
     void attach( osgwQuery::QueryComputation* nd );
+
+    mutable bool _queryActive;
+    bool _wasOccluded;
+    osg::ref_ptr< osgwQuery::QueryObject > _queryObject;
 
 protected:
     osgwQuery::QueryComputation* _nd;

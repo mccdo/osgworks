@@ -65,18 +65,18 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
 {
     if( !_initialized )
     {
-        // Must hold lock for 2 reasons:
-        // 1) Could be multiple culls operating on this at the same time. Only one needs
-        // to create _queryDrawable.
-        // 2) init() creates a static StateSet shared by all QueryComputation objects. Only need
-        // to create that StateSet once.
+        // Must hold lock: init() creates a static StateSet shared by all
+        // QueryComputation objects. Only need to create that StateSet once.
         OpenThreads::ScopedLock< OpenThreads::Mutex > lock( _lock );
 
-        if( !( _queryDrawable.valid() ) )
-            init( nv );
+        init( nv );
         _initialized = true;
     }
 
+    const unsigned int contextID = renderInfo.getState()->getContextID();
+    osg::ref_ptr< osg::Geometry >& queryDrawable = _queryDrawables[ contextID ];
+    if( !queryDrawable.valid() )
+        queryDrawable = initQueryDrawable( nv );
 
     osgUtil::CullVisitor* cv = static_cast< osgUtil::CullVisitor* >( nv );
     osg::RefMatrix* view = cv->getModelViewMatrix();
@@ -106,20 +106,20 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
     // Note that we will explicitly set wasFrustumCulled=false
     // if it turns out we have an active query.
 
-    const unsigned int contextID = renderInfo.getState()->getContextID();
     osgwQuery::QueryBenchmarks* qb = osgwQuery::getQueryBenchmarks( contextID, &renderInfo );
     osgwQuery::QueryAPI* qapi = osgwQuery::getQueryAPI( contextID );
-    QueryStatus& qs = _queries[ contextID ];
+
+    QueryDrawCallback* qdc = static_cast< QueryDrawCallback* >( queryDrawable->getDrawCallback() );
 
     // Retrieve any pending query result.
-    if( qs._queryActive )
+    if( qdc->_queryActive )
     {
         GLuint result;
-        const GLuint id = qs._queryObject->getID( contextID );
+        const GLuint id = qdc->_queryObject->getID( contextID );
         qapi->glGetQueryObjectuiv( id, GL_QUERY_RESULT, &result );
         osg::notify( osg::INFO ) << " ID: " << id << " Result: " << result << ", numV " << _numVertices << std::endl;
-        qs._wasOccluded = ( result < 25 ); // TBD need configurable threshold.
-        qs._queryActive = false;
+        qdc->_wasOccluded = ( result < 25 ); // TBD need configurable threshold.
+        qdc->_queryActive = false;
 
         // If query was active, we were _not_ frustum culled.
         wasFrustumCulled = false;
@@ -149,7 +149,7 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
     // (in reference to a hierarchy) also as "p sub o ( H sub i )".
     // This is from personal communication with author Michael Guthe.
     double pocclOi;
-    if( !qs._wasOccluded )
+    if( !qdc->_wasOccluded )
         // previously visible
         pocclOi = 0.5 * pcovOi * pcovOi;
     else if( wasFrustumCulled )
@@ -201,7 +201,7 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
             _debugStats->incRtLessQt();
     }
 
-    else if( qs._wasOccluded )
+    else if( qdc->_wasOccluded )
     {
         queryReasonable = true;
         osg::notify( osg::INFO ) << "Case 2: True. Was occluded" << std::endl;
@@ -238,11 +238,11 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
 
     if( queryReasonable )
     {
-        osg::StateSet* stateSet = _queryDrawable->getStateSet();
+        osg::StateSet* stateSet = queryDrawable->getStateSet();
         if( stateSet )
             cv->pushStateSet( stateSet );
 
-        cv->updateCalculatedNearFar( *view, *_queryDrawable, false );
+        cv->updateCalculatedNearFar( *view, *queryDrawable, false );
 
         // Issue query. Add the query drawable to the render graph just as
         // if CullVisitor had encountered it while processing a Geode.
@@ -255,7 +255,7 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
         else
         {
             osg::notify( osg::INFO ) << "Issued query" << std::endl;
-            cv->addDrawableAndDepth( _queryDrawable.get(), view, depth );
+            cv->addDrawableAndDepth( queryDrawable.get(), view, depth );
         }
 
         if( stateSet )
@@ -274,8 +274,8 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
     // per thread!
     setCscrOi( cscrOi + ( ( 1. - cscrOi ) * cbbOi ), cam, contextID );
 
-    osg::notify( osg::INFO ) << "  Was occluded? " << std::boolalpha << qs._wasOccluded << " numV " << _numVertices << std::endl;
-    return( !qs._wasOccluded );
+    osg::notify( osg::INFO ) << "  Was occluded? " << std::boolalpha << qdc->_wasOccluded << " numV " << _numVertices << std::endl;
+    return( !qdc->_wasOccluded );
 }
 
 double QueryComputation::getCscrOi( const osg::Camera* cam, unsigned int contextID )
@@ -298,12 +298,47 @@ void QueryComputation::init( osg::NodeVisitor* nv )
 {
     _worldBB = osgwTools::transform( osg::computeLocalToWorld( nv->getNodePath() ), _bb );
 
-    osg::Vec3 extents = _bb._max - _bb._min;
+    //
+    // Initialize a static StateSet used by all QueryComputation's queryDrawable objects.
+    if( !( s_queryStateSet.valid() ) )
+    {
+        s_queryStateSet = new osg::StateSet;
+
+        osg::PolygonOffset* po = new osg::PolygonOffset( -1.f, -1.f );
+        s_queryStateSet->setAttributeAndModes( po );
+
+        osg::ColorMask* cm = new osg::ColorMask( false, false, false, false );
+        s_queryStateSet->setAttributeAndModes( cm );
+
+        // Sadly, there is no way in OSG to set the depth mask without also setting
+        // the depth function and the viewport depth range values. So we go ahead and
+        // set them (we have no choice) and hope for the best.
+        osg::Depth* depth = new osg::Depth( osg::Depth::LESS, 0., 1., false );
+        s_queryStateSet->setAttributeAndModes( depth );
+    }
 
 
     //
+    // Compute and store constants defined in Guthe, section 3.1.
+
+    // 1/6th of the bounding box surface area.
+    osg::Vec3 extents = _bb._max - _bb._min;
+    const double abbOi = ( 2. * extents[ 0 ] * extents[ 1 ] ) +
+        ( 2. * extents[ 1 ] * extents[ 2 ] ) +
+        ( 2. * extents[ 2 ] * extents[ 0 ] );
+    _AbbOiOver6 = abbOi / 6.;
+
+    // Ratio of actual object screen area to boulding box screen area.
+    const double aOi = 4. * osg::PI * _bb.radius() * _bb.radius();
+    _RcovOi = ( 3. / 2. ) * ( aOi / abbOi );
+}
+
+osg::Geometry* QueryComputation::initQueryDrawable( osg::NodeVisitor* nv )
+{
+    //
     // Create box geometry for use as query geometry.
 
+    osg::Vec3 extents = _bb._max - _bb._min;
     osg::Vec3 halfExtents = extents / 2.;
     osg::Geometry* geom = osgwTools::makePlainBox( halfExtents );
 
@@ -325,61 +360,27 @@ void QueryComputation::init( osg::NodeVisitor* nv )
     geom->setUseDisplayList( false );
     geom->setUseVertexBufferObjects( true );
 
-    _queryDrawable = geom;
+    geom->setStateSet( s_queryStateSet.get() );
 
-    // Initialize a static StateSet used by all QueryComputation's _queryDrawable objects.
-    if( !( s_queryStateSet.valid() ) )
-    {
-        s_queryStateSet = new osg::StateSet;
-
-        osg::PolygonOffset* po = new osg::PolygonOffset( -1.f, -1.f );
-        s_queryStateSet->setAttributeAndModes( po );
-
-        osg::ColorMask* cm = new osg::ColorMask( false, false, false, false );
-        s_queryStateSet->setAttributeAndModes( cm );
-
-        // Sadly, there is no way in OSG to set the depth mask without also setting
-        // the depth function and the viewport depth range values. So we go ahead and
-        // set them (we have no choice) and hope for the best.
-        osg::Depth* depth = new osg::Depth( osg::Depth::LESS, 0., 1., false );
-        s_queryStateSet->setAttributeAndModes( depth );
-    }
-    _queryDrawable->setStateSet( s_queryStateSet.get() );
-
-
-    //
-    // Compute and store constants defined in Guthe, section 3.1.
-
-    // 1/6th of the bounding box surface area.
-    const double abbOi = ( 2. * extents[ 0 ] * extents[ 1 ] ) +
-        ( 2. * extents[ 1 ] * extents[ 2 ] ) +
-        ( 2. * extents[ 2 ] * extents[ 0 ] );
-    _AbbOiOver6 = abbOi / 6.;
-
-    // Ratio of actual object screen area to boulding box screen area.
-    const double aOi = 4. * osg::PI * _bb.radius() * _bb.radius();
-    _RcovOi = ( 3. / 2. ) * ( aOi / abbOi );
-}
-
-
-
-QueryComputation::QueryStatus::QueryStatus()
-  : _queryActive( false ),
-    _wasOccluded( false ),
-    _queryObject( new QueryObject() )
-{
+    return( geom );
 }
 
 
 
 QueryDrawCallback::QueryDrawCallback()
   : osg::Drawable::DrawCallback(),
-    _nd( NULL )
+    _nd( NULL ),
+    _queryActive( false ),
+    _wasOccluded( false ),
+    _queryObject( new QueryObject() )
 {
 }
 QueryDrawCallback::QueryDrawCallback( const QueryDrawCallback& rhs, const osg::CopyOp& copyop )
   : osg::Drawable::DrawCallback( rhs ),
-    _nd( rhs._nd )
+    _nd( rhs._nd ),
+    _queryActive( rhs._queryActive ),
+    _wasOccluded( rhs._wasOccluded ),
+    _queryObject( rhs._queryObject )
 {
 }
 
@@ -391,15 +392,14 @@ void QueryDrawCallback::drawImplementation( osg::RenderInfo& renderInfo, const o
     const unsigned int contextID = renderInfo.getState()->getContextID();
     osgwQuery::QueryAPI* qapi = osgwQuery::getQueryAPI( contextID );
 
-    QueryComputation::QueryStatus& qs = _nd->getQueryStatus( contextID );
-    const GLuint id = qs._queryObject->getID( contextID );
+    const GLuint id = _queryObject->getID( contextID );
     osg::notify( osg::INFO ) << " ID: " << id << std::endl;
     qapi->glBeginQuery( GL_SAMPLES_PASSED, id );
 
     drawable->drawImplementation( renderInfo );
 
     qapi->glEndQuery( GL_SAMPLES_PASSED );
-    qs._queryActive = true;
+    _queryActive = true;
 }
 
 void QueryDrawCallback::attach( osgwQuery::QueryComputation* nd )
