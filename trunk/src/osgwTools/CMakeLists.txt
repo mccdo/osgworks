@@ -20,6 +20,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/GeometryModifier.h
     ${HEADER_PATH}/GeometryOperation.h
     ${HEADER_PATH}/CollapseLOD.h
+    ${HEADER_PATH}/LODCreationNodeVisitor.h
     ${HEADER_PATH}/NodePathUtils.h
     ${HEADER_PATH}/NodeUtils.h
     ${HEADER_PATH}/InsertRemove.h
@@ -54,6 +55,7 @@ set( _osgwToolsSourceFiles
     GeometryModifier.cpp
     GeometryOperation.cpp
     CollapseLOD.cpp
+    LODCreationNodeVisitor.cpp
     NodePathUtils.cpp
     NodeUtils.cpp
     InsertRemove.cpp
