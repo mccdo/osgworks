@@ -183,7 +183,9 @@ protected:
     static CscrOiMap s_CscrOiMap;
 
 
-    osg::buffered_object< osg::ref_ptr< osg::Geometry > > _queryDrawables;
+    typedef osg::buffered_object< osg::ref_ptr< osg::Geometry > > QueryDrawableSet;
+    typedef std::map< osg::NodePath, QueryDrawableSet > QueryDrawables;
+    QueryDrawables _queryDrawables;
 
     osg::ref_ptr< osgwQuery::QueryStats > _debugStats;
 };

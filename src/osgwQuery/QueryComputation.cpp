@@ -74,7 +74,8 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
     }
 
     const unsigned int contextID = renderInfo.getState()->getContextID();
-    osg::ref_ptr< osg::Geometry >& queryDrawable = _queryDrawables[ contextID ];
+    QueryDrawableSet& qds = _queryDrawables[ nv->getNodePath() ];
+    osg::ref_ptr< osg::Geometry >& queryDrawable = qds[ contextID ];
     if( !queryDrawable.valid() )
         queryDrawable = initQueryDrawable( nv );
 
