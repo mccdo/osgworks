@@ -33,8 +33,8 @@ namespace osgwTools {
 /*@{*/
 
 #define OSGWORKS_MAJOR_VERSION 1
-#define OSGWORKS_MINOR_VERSION 1
-#define OSGWORKS_SUB_VERSION 53
+#define OSGWORKS_MINOR_VERSION 2
+#define OSGWORKS_SUB_VERSION 0
 
 /** \brief osgWorks version number as an integer
 
