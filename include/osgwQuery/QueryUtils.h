@@ -43,6 +43,15 @@ namespace osgwQuery
 /*@{*/
 
 
+/** \brief osg::RenderBin name for front-to-back rendering.
+Occlusion query benefits from front-to-back render order. This string is the
+OSG RenderBin name for front-to-back rendering. Prior to OSG v3.0.0, osgwQuery
+creates a static RenderBin prototype, but in v3.0.0 and later, OSG predefines
+a front-to-back bin, and osgwQuery just uses that bin. The name is the same in
+either case. */
+#define _QUERY_FRONT_TO_BACK_BIN_NAME "SORT_FRONT_TO_BACK"
+
+
 /** \class QueryCullCallback QueryUtils.h <osgwQuery/QueryUtils.h>
 \brief Make a cull-time traverse/no-traverse decision based on Guthe
 algorithm criteria in the QueryComputation class.
