@@ -26,6 +26,8 @@
 #include <osg/Geode>
 #include <osg/Geometry>
 
+#include <iterator>
+
 namespace osgwTools {
 
 typedef std::set<osg::Geode*> GeodeSet;
