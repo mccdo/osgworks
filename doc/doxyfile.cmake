@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = osgWorks
-PROJECT_NUMBER         = "osgWorks v1.1.52"
+PROJECT_NUMBER         = "osgWorks v1.02.00"
 OUTPUT_DIRECTORY       = "${PROJECT_BINARY_DIR}/doc"
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
