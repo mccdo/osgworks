@@ -94,19 +94,20 @@ postRender( osgViewer::Viewer& viewer )
 int
 main( int argc, char** argv )
 {
+    osg::notify( osg::ALWAYS ) <<
+// cols:  12345678901234567890123456789012345678901234567890123456789012345678901234567890
+         "This is an example of doing render to texture in OSG, with the result displayed" << std::endl <<
+         "on a fullscreen triangle pair. It uses only one osgWorks OSG version feature to" << std::endl <<
+         "configure the destination textures and RTT Cameras appropriately, and uses the" << std::endl <<
+         "plane shape <osgwTools/Shapes.h> for the final texture display." << std::endl;
+
     osg::ArgumentParser arguments( &argc, argv );
     osg::ref_ptr< osg::Group > root( new osg::Group );
     root->addChild( osgDB::readNodeFiles( arguments ) );
     if( root->getNumChildren() == 0 )
     {
         // Load default cow model.
-#if( OSGWORKS_OSG_VERSION < 30000 )
         std::string fileName( "cow.osg" );
-#else
-        // *.osg files were removed from OpenSceneGraph-Data shortly before
-        // the 3.0.0 release. Use .osgt instead.
-        std::string fileName( "cow.osgt" );
-#endif
         root->addChild( osgDB::readNodeFile( fileName ) );
     }
     if( root->getNumChildren() == 0 )
