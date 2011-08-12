@@ -38,6 +38,7 @@
 #include <osgwTools/SimplifierOp.h>
 #include <osgwTools/ShortEdgeOp.h>
 #include <osgwTools/DecimationTestModel.h>
+
 // TBD #include <osgBullet/VertexAggOp.h>
 
 #include <osg/NodeVisitor>
@@ -156,6 +157,9 @@ int main( int argc,
         }
     }
     
+    std::string modelname, namebase;
+    namebase = "C:\\OSGDev\\Stable\\data\\";
+    bool savefile = false;
     // builds a model for testing if no model file supplied
     osg::Node*  model = osgDB::readNodeFiles( arguments );
     if( !model )
@@ -175,6 +179,13 @@ int main( int argc,
             if (builtModel)
             {
                 model = builtModel->getModel();
+                if (savefile)
+                {
+                    char partNum[64];
+                    sprintf(partNum, "%1d_", numParts);
+                    namebase.append("DecimationTestModel_");
+                    namebase.append(partNum);
+                }
             }
             if (!model)
             {
@@ -183,9 +194,15 @@ int main( int argc,
             }
            
         }
+    else
+    {
+        namebase.append("LoadedTestModel_");
+    }
+
     osg::Group* grporig = new osg::Group;
     grporig->addChild(model);
     osg::notify( osg::INFO ) << "osgbpp: Loaded model(s)." << std::endl;
+
 
     osg::Group* grpcopy = new osg::Group( *grporig , osg::CopyOp::DEEP_COPY_ALL);
 
@@ -211,7 +228,7 @@ int main( int argc,
         seOp->setMaxFeature(shortEdgeFeature);
         seOp->setMaximumError(decimatorMaxError);
         seOp->setIgnoreBoundaries(decimatorIgnoreBoundaries);
-        seOp->setMinPrimatives(minprim);
+        seOp->setMinPrimitives(minprim);
         reducer = seOp;
     }
     else
@@ -231,7 +248,15 @@ int main( int argc,
         modifier.displayStatistics( osg::notify( osg::ALWAYS ) );
     }
 
-
+    if (savefile)
+    {
+        modelname.assign(namebase);
+        modelname.append("orig.osg");
+        osgDB::writeNodeFile(*grporig, modelname.c_str());
+        modelname.assign(namebase);
+        modelname.append("reduced.osg");
+        osgDB::writeNodeFile(*grpcopy, modelname.c_str());
+    }
 
     //
     // Viewer setup.
