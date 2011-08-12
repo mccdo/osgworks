@@ -1,3 +1,4 @@
 SET( CATEGORY Example )
 
 ADD_SUBDIRECTORY( rtt )
+ADD_SUBDIRECTORY( msmrt )
