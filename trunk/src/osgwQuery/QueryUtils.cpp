@@ -26,15 +26,23 @@
 #include <osgwTools/Transform.h>
 #include <OpenThreads/ScopedLock>
 #include <osgUtil/CullVisitor>
-#include <osg/PolygonOffset>
-#include <osg/ColorMask>
-#include <osg/Depth>
+#include <osgUtil/RenderBin>
 
 #include <osg/io_utils>
+#include <osgwTools/Version.h>
+
+#include <string>
 
 
 namespace osgwQuery
 {
+
+
+#if( OSGWORKS_OSG_VERSION < 30000 )
+    // Front-to-back bin is already defined in v3.0.0 and later.
+    osgUtil::RegisterRenderBinProxy s_registerQueryBinProxy( _QUERY_FRONT_TO_BACK_BIN_NAME,
+        new osgUtil::RenderBin( osgUtil::RenderBin::SORT_FRONT_TO_BACK ) );
+#endif
 
 
 QueryCullCallback::QueryCullCallback()

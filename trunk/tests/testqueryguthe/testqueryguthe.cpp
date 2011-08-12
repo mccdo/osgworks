@@ -64,9 +64,6 @@ int main( int argc, char** argv )
     std::string debugNodeName;
     bool debugStats( arguments.read( "--debug", debugNodeName ) );
 
-    osgUtil::RenderBin::setDefaultRenderBinSortMode(
-        osgUtil::RenderBin::SORT_FRONT_TO_BACK );
-
     osgViewer::Viewer viewer;
     viewer.setUpViewInWindow( 0., 0., 1024., 768. );
     viewer.setCameraManipulator( new osgGA::TrackballManipulator );
@@ -89,6 +86,9 @@ int main( int argc, char** argv )
         root->addChild( makeSceneA() );
         root->addChild( makeSceneB() );
     }
+    // Any models using occlusion query must render in front-to-back order.
+    root->getOrCreateStateSet()->setRenderBinDetails( 0, _QUERY_FRONT_TO_BACK_BIN_NAME );
+
 
     // Add the Query statistics HUD.
     osg::ref_ptr< osgwQuery::QueryStats > qs;
