@@ -28,6 +28,7 @@
 #include <osg/AutoTransform>
 #include <osg/PolygonMode>
 #include <osg/Point>
+#include <osg/BlendFunc>
 #include "osgwTools/Shapes.h"
 
 #include <osg/io_utils>
@@ -44,7 +45,6 @@ osg::Node* makeOrigin()
     at->addChild( geode.get() );
 
     osg::StateSet* ss = geode->getOrCreateStateSet();
-    ss->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
     ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
     ss->setAttributeAndModes( new osg::Point( 6. ) );
 
@@ -125,18 +125,25 @@ int main( int argc, char** argv )
     root->addChild( model.get() );
 
 
+    osg::ref_ptr< osg::Group > decorations = new osg::Group;
+    root->addChild( decorations.get() );
+    {
+        osg::StateSet* ss = decorations->getOrCreateStateSet();
+        ss->setMode( GL_LINE_SMOOTH, osg::StateAttribute::ON );
+        ss->setAttributeAndModes( new osg::BlendFunc );
+
+        ss->setAttributeAndModes( new osg::PolygonMode( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE ) );
+        ss->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+    }
+
     osg::ref_ptr< osg::MatrixTransform > mt;
     osg::ref_ptr< osg::Geode > geode;
     if( doSphere || doBox )
     {
         mt = new osg::MatrixTransform;
-        root->addChild( mt.get() );
+        decorations->addChild( mt.get() );
         geode = new osg::Geode;
         mt->addChild( geode.get() );
-
-        osg::StateSet* ss = mt->getOrCreateStateSet();
-        ss->setAttributeAndModes( new osg::PolygonMode( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE ) );
-        ss->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
     }
     if( doSphere )
     {
@@ -165,7 +172,7 @@ int main( int argc, char** argv )
     }
 
     if( displayOrigin )
-        root->addChild( makeOrigin() );
+        decorations->addChild( makeOrigin() );
 
 
     osgViewer::Viewer viewer;
