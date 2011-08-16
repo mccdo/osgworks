@@ -1,3 +1,3 @@
-MAKE_EXECUTABLE( geometryop
-    geometryop.cpp
+MAKE_EXECUTABLE( createlodvisitor
+    createlodvisitor.cpp
 )
