@@ -2,7 +2,8 @@
 CMAKE_MINIMUM_REQUIRED( VERSION 2.8 )
 PROJECT( osgWorks )
 
-set( OSGWORKS_VERSION 1.2.0 )
+# Please keep in sync with Version.h
+set( OSGWORKS_VERSION 1.02.00 )
 
 SET( CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}" )
 
