@@ -32,7 +32,7 @@
 namespace osgwTools {
 
 
-/** \cond */
+/* \cond */
 
 struct dereference_less
 {
@@ -1788,7 +1788,7 @@ void HalfEdgeCollapse::copyBackToGeometry()
 
 }
 
-/** \endcond */
+/* \endcond */
 
 DecimatorOp::DecimatorOp(double sampleRatio, double maximumError):
             _sampleRatio(sampleRatio),

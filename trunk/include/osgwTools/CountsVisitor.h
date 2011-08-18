@@ -17,7 +17,9 @@ namespace osgwTools
 {
 
 
-/** \brief Accumulate information about a scene graph.
+/** \class CountsVisitor CountsVisitor.h <osgwTools/CountsVisitor.h>
+\brief Accumulate information about a scene graph.
+
 TBD To be done: We should be able to "addUserMode/addUserAttribute" instead of just "set"
 so that we can accumulate counts for multiple modes and attributes. There needs to be an
 analogous system for adding texture modes and attributes. The dump() method should be able

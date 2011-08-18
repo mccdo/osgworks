@@ -32,7 +32,7 @@
 
 namespace osgwTools {
 
-/** \cond */
+/* \cond */
 
 struct SEdereference_less
 {
@@ -2031,7 +2031,7 @@ void ShortEdgeCollapse::copyBackToGeometry()
 
 }
 
-/** \endcond */
+/* \endcond */
 
 ShortEdgeOp::ShortEdgeOp(double sampleRatio, double maximumError, double maxFeature):
             _sampleRatio(sampleRatio),

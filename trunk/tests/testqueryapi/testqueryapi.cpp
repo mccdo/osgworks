@@ -26,7 +26,7 @@
 #include <string>
 
 
-/** \cond */
+/* \cond */
 class PostDraw : public osg::Camera::DrawCallback
 {
 public:
@@ -57,7 +57,7 @@ protected:
     mutable osgwQuery::QueryAPI* _qapi;
     std::string _name;
 };
-/** \endcond */
+/* \endcond */
 
 
 int main( int argc, char ** argv )
