@@ -28,7 +28,7 @@
 #include <string>
 
 
-/** \cond */
+/* \cond */
 class DrawCallback : public osg::Drawable::DrawCallback
 {
 public:
@@ -95,7 +95,7 @@ protected:
     mutable GLuint _pixelCount;
     mutable GLboolean _isQuery;
 };
-/** \endcond */
+/* \endcond */
 
 
 int main( int argc, char ** argv )

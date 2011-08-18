@@ -30,7 +30,7 @@
 #include <osgwTools/CallbackSupport.h>
 
 
-/** \cond */
+/* \cond */
 
 struct MyCallback : public osg::Camera::DrawCallback
 {
