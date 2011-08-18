@@ -61,6 +61,11 @@ vertex, normal, texture coordinate, and color data. The texture coordinates are
 configured for unit 0 and suitable for cube mapping. */
 OSGWTOOLS_EXPORT osg::Geometry* makeGeodesicSphere( const float radius=1., const unsigned int subdivisions=2, osg::Geometry* geometry=NULL );
 
+/** \brief A non-origin geodesic sphere.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeGeodesicSphere( const osg::Vec3& center, const float radius, const unsigned int subdivisions, osg::Geometry* geometry );
+
+
 /** \brief Creates an alt-az (or lat-long) sphere.
 
 Creates an alt-az sphere (also commonly called a lat-long sphere) using
@@ -72,12 +77,21 @@ Texture coordinates are suitable for applying a geographic projection texture.
 and s wraps around the sphere with 0 at +x, to +y, to -x, to -y, and ending with 1.0 at +x.) */
 OSGWTOOLS_EXPORT osg::Geometry* makeAltAzSphere( const float radius=1., const unsigned int subLat=8, const unsigned int subLong=16, osg::Geometry* geometry=NULL );
 
+/** \brief A non-origin alt-az sphere.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeAltAzSphere( const osg::Vec3& center, const float radius=1., const unsigned int subLat=8, const unsigned int subLong=16, osg::Geometry* geometry=NULL );
+
+
 /** \brief Creates a wireframe alt-az (or lat-long) sphere.
 
 Creates an alt-az sphere using GL_LINE_LOOP and GL_LINE_STRIP PrimitiveSets.
 This function doesn't create normal or texture coordinate data, and disables 
 GL_LIGHTING in the Geometry's StateSet. */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireAltAzSphere( const float radius=1., const unsigned int subLat=8, const unsigned int subLong=16, osg::Geometry* geometry=NULL );
+
+/** \brief A non-origin wireframe alt-az sphere.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeWireAltAzSphere( const osg::Vec3& center, const float radius=1., const unsigned int subLat=8, const unsigned int subLong=16, osg::Geometry* geometry=NULL );
 
 /*@}*/
 
@@ -110,6 +124,7 @@ OSGWTOOLS_EXPORT osg::Geometry* makeWirePlane( const osg::Vec3& corner, const os
 /*@{*/
 
 /** \brief Creates a box.
+
 This function makes an axis-aligned box using GL_TRIANGLE_STRIP PrimitiveSets. The dimensions
 are (halfExtents*2). By default, two triangles are on each side of the box, for
 a total of 12 triangles. However, the subdivision parameter can increase this, 
@@ -118,14 +133,29 @@ normal and texture coordinate (unit 0) data. The texture coordinate data
 is suitable for applying an entire texture map to each face of the box. */
 OSGWTOOLS_EXPORT osg::Geometry* makeBox( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions=osg::Vec3s(1,1,1), osg::Geometry* geometry=NULL );
 
+/** \brief A non-origin box.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeBox( const osg::Vec3& center, const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions=osg::Vec3s(1,1,1), osg::Geometry* geometry=NULL );
+
+
 /** \brief Creates a plain box with no normal, color, or texture coordinate information.
+
 Uses a minimum number of vertices (8). Suitable for low-cost display of bounding boxes. */
 OSGWTOOLS_EXPORT osg::Geometry* makePlainBox( const osg::Vec3& halfExtents, osg::Geometry* geometry=NULL );
+
+/** \brief A non-origin plain box.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makePlainBox( const osg::Vec3& center, const osg::Vec3& halfExtents, osg::Geometry* geometry=NULL );
+
 
 /** \brief Creates a wireframe box.
 This function doesn't create normal or texture coordinate data, and disables 
 GL_LIGHTING in the Geometry's StateSet. */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireBox( const osg::Vec3& halfExtents, osg::Geometry* geometry=NULL );
+
+/** \brief A non-origin wireframe box.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeWireBox( const osg::Vec3& center, const osg::Vec3& halfExtents, osg::Geometry* geometry=NULL );
 
 /*@}*/
 
@@ -142,10 +172,19 @@ The function creates normals per vertex and texture coordinates in unit 0. The t
 is suitable for applying an entire texture map to the face of the disk. */
 OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
+/** \brief A non-origin circle/disk.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const osg::Vec3& center, const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
+
+
 /** \brief Creates a wireframe circle.
 
 Makes an axis-aligned wireframe circle using GL_LINE_LOOP PrimitiveSets. */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
+
+/** \brief A non-origin wireframe circle/disk.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const osg::Vec3& center, const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
 /*@}*/
 
@@ -161,6 +200,10 @@ this code could use cylinder/cone support routines to provide complete
 control over approximation.
 Adds vertex and normal data with a single white color. */
 OSGWTOOLS_EXPORT osg::Geometry* makeArrow( osg::Geometry* geometry=NULL );
+
+/** \brief A non-origin arrow shape.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeArrow( const osg::Vec3& center, osg::Geometry* geometry=NULL );
 
 /*@}*/
 
