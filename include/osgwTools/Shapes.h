@@ -61,9 +61,9 @@ vertex, normal, texture coordinate, and color data. The texture coordinates are
 configured for unit 0 and suitable for cube mapping. */
 OSGWTOOLS_EXPORT osg::Geometry* makeGeodesicSphere( const float radius=1., const unsigned int subdivisions=2, osg::Geometry* geometry=NULL );
 
-/** \brief A non-origin geodesic sphere.
+/** \brief A transformed geodesic sphere.
 */
-OSGWTOOLS_EXPORT osg::Geometry* makeGeodesicSphere( const osg::Vec3& center, const float radius, const unsigned int subdivisions, osg::Geometry* geometry );
+OSGWTOOLS_EXPORT osg::Geometry* makeGeodesicSphere( const osg::Matrix& m, const float radius, const unsigned int subdivisions, osg::Geometry* geometry );
 
 
 /** \brief Creates an alt-az (or lat-long) sphere.
@@ -77,9 +77,9 @@ Texture coordinates are suitable for applying a geographic projection texture.
 and s wraps around the sphere with 0 at +x, to +y, to -x, to -y, and ending with 1.0 at +x.) */
 OSGWTOOLS_EXPORT osg::Geometry* makeAltAzSphere( const float radius=1., const unsigned int subLat=8, const unsigned int subLong=16, osg::Geometry* geometry=NULL );
 
-/** \brief A non-origin alt-az sphere.
+/** \brief A transformed alt-az sphere.
 */
-OSGWTOOLS_EXPORT osg::Geometry* makeAltAzSphere( const osg::Vec3& center, const float radius=1., const unsigned int subLat=8, const unsigned int subLong=16, osg::Geometry* geometry=NULL );
+OSGWTOOLS_EXPORT osg::Geometry* makeAltAzSphere( const osg::Matrix& m, const float radius=1., const unsigned int subLat=8, const unsigned int subLong=16, osg::Geometry* geometry=NULL );
 
 
 /** \brief Creates a wireframe alt-az (or lat-long) sphere.
@@ -89,9 +89,9 @@ This function doesn't create normal or texture coordinate data, and disables
 GL_LIGHTING in the Geometry's StateSet. */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireAltAzSphere( const float radius=1., const unsigned int subLat=8, const unsigned int subLong=16, osg::Geometry* geometry=NULL );
 
-/** \brief A non-origin wireframe alt-az sphere.
+/** \brief A transformed wireframe alt-az sphere.
 */
-OSGWTOOLS_EXPORT osg::Geometry* makeWireAltAzSphere( const osg::Vec3& center, const float radius=1., const unsigned int subLat=8, const unsigned int subLong=16, osg::Geometry* geometry=NULL );
+OSGWTOOLS_EXPORT osg::Geometry* makeWireAltAzSphere( const osg::Matrix& m, const float radius=1., const unsigned int subLat=8, const unsigned int subLong=16, osg::Geometry* geometry=NULL );
 
 /*@}*/
 
@@ -133,9 +133,9 @@ normal and texture coordinate (unit 0) data. The texture coordinate data
 is suitable for applying an entire texture map to each face of the box. */
 OSGWTOOLS_EXPORT osg::Geometry* makeBox( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions=osg::Vec3s(1,1,1), osg::Geometry* geometry=NULL );
 
-/** \brief A non-origin box.
+/** \brief A transformed box.
 */
-OSGWTOOLS_EXPORT osg::Geometry* makeBox( const osg::Vec3& center, const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions=osg::Vec3s(1,1,1), osg::Geometry* geometry=NULL );
+OSGWTOOLS_EXPORT osg::Geometry* makeBox( const osg::Matrix& m, const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions=osg::Vec3s(1,1,1), osg::Geometry* geometry=NULL );
 
 
 /** \brief Creates a plain box with no normal, color, or texture coordinate information.
@@ -143,9 +143,9 @@ OSGWTOOLS_EXPORT osg::Geometry* makeBox( const osg::Vec3& center, const osg::Vec
 Uses a minimum number of vertices (8). Suitable for low-cost display of bounding boxes. */
 OSGWTOOLS_EXPORT osg::Geometry* makePlainBox( const osg::Vec3& halfExtents, osg::Geometry* geometry=NULL );
 
-/** \brief A non-origin plain box.
+/** \brief A transformed plain box.
 */
-OSGWTOOLS_EXPORT osg::Geometry* makePlainBox( const osg::Vec3& center, const osg::Vec3& halfExtents, osg::Geometry* geometry=NULL );
+OSGWTOOLS_EXPORT osg::Geometry* makePlainBox( const osg::Matrix& m, const osg::Vec3& halfExtents, osg::Geometry* geometry=NULL );
 
 
 /** \brief Creates a wireframe box.
@@ -153,9 +153,9 @@ This function doesn't create normal or texture coordinate data, and disables
 GL_LIGHTING in the Geometry's StateSet. */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireBox( const osg::Vec3& halfExtents, osg::Geometry* geometry=NULL );
 
-/** \brief A non-origin wireframe box.
+/** \brief A transformed wireframe box.
 */
-OSGWTOOLS_EXPORT osg::Geometry* makeWireBox( const osg::Vec3& center, const osg::Vec3& halfExtents, osg::Geometry* geometry=NULL );
+OSGWTOOLS_EXPORT osg::Geometry* makeWireBox( const osg::Matrix& m, const osg::Vec3& halfExtents, osg::Geometry* geometry=NULL );
 
 /*@}*/
 
@@ -172,9 +172,9 @@ The function creates normals per vertex and texture coordinates in unit 0. The t
 is suitable for applying an entire texture map to the face of the disk. */
 OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
-/** \brief A non-origin circle/disk.
+/** \brief A transformed circle/disk.
 */
-OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const osg::Vec3& center, const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
+OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const osg::Matrix& m, const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
 
 /** \brief Creates a wireframe circle.
@@ -182,9 +182,9 @@ OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const osg::Vec3& center, const float
 Makes an axis-aligned wireframe circle using GL_LINE_LOOP PrimitiveSets. */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
-/** \brief A non-origin wireframe circle/disk.
+/** \brief A transformed wireframe circle/disk.
 */
-OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const osg::Vec3& center, const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
+OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const osg::Matrix& m, const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
 /*@}*/
 
@@ -201,9 +201,23 @@ control over approximation.
 Adds vertex and normal data with a single white color. */
 OSGWTOOLS_EXPORT osg::Geometry* makeArrow( osg::Geometry* geometry=NULL );
 
-/** \brief A non-origin arrow shape.
+/** \brief A transformed arrow shape.
 */
-OSGWTOOLS_EXPORT osg::Geometry* makeArrow( const osg::Vec3& center, osg::Geometry* geometry=NULL );
+OSGWTOOLS_EXPORT osg::Geometry* makeArrow( const osg::Matrix& m, osg::Geometry* geometry=NULL );
+
+/*@}*/
+
+
+/** \defgroup CylinderShapes Cylinder shape generation routines */
+/*@{*/
+
+/** \brief Creates an open-ended cylinder.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeOpenCylinder( const osg::Vec3& orientation=osg::Vec3(0.,0.,1.), const double length=1., const double radius0=1., const double radius1=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
+
+/** \brief A transformed open-ended cylinder.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeOpenCylinder( const osg::Matrix& m, const osg::Vec3& orientation=osg::Vec3(0.,0.,1.), const double length=1., const double radius0=1., const double radius1=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
 /*@}*/
 

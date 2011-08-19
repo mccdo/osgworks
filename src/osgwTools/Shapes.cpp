@@ -31,12 +31,24 @@
 #  pragma warning( disable : 4305 )
 #endif
 
-void translateVertices( osg::Geometry* geom, const osg::Vec3& center )
+void transformVertices( osg::Geometry* geom, const osg::Matrix& m )
 {
+    // Transform the vertices by the specified matrix.
     osg::Vec3Array* v = static_cast< osg::Vec3Array* >( geom->getVertexArray() );
-    unsigned int idx;
-    for( idx=0; idx<v->size(); idx++ )
-        (*v)[ idx ] = (*v)[ idx ] + center;
+    osg::Vec3Array::iterator itr;
+    for( itr = v->begin(); itr != v->end(); itr++ )
+        *itr = *itr * m;
+
+    // Transform the normals by the upper-left 3x3 matrix (no translation)
+    // and rescale the normals in case the matrix contains scalng.
+    osg::Matrix m3x3( m );
+    m3x3.setTrans( 0., 0., 0. );
+    osg::Vec3Array* n = static_cast< osg::Vec3Array* >( geom->getNormalArray() );
+    for( itr = n->begin(); itr != n->end(); itr++ )
+    {
+        *itr = *itr * m3x3;
+        itr->normalize();
+    }
 }
 
 inline unsigned int makeKey( const unsigned short a, const unsigned short b )
@@ -364,11 +376,11 @@ osgwTools::makeGeodesicSphere( const float radius, const unsigned int subdivisio
 }
 
 osg::Geometry*
-osgwTools::makeGeodesicSphere( const osg::Vec3& center, const float radius, const unsigned int subdivisions, osg::Geometry* geometry )
+osgwTools::makeGeodesicSphere( const osg::Matrix& m, const float radius, const unsigned int subdivisions, osg::Geometry* geometry )
 {
     osg::Geometry* geom = osgwTools::makeGeodesicSphere( radius, subdivisions, geometry );
     if( geom != NULL )
-        translateVertices( geom, center );
+        transformVertices( geom, m );
     return( geom );
 }
 
@@ -734,11 +746,11 @@ osgwTools::makeAltAzSphere( const float radius, const unsigned int subLat, const
 }
 
 osg::Geometry*
-osgwTools::makeAltAzSphere( const osg::Vec3& center, const float radius, const unsigned int subLat, const unsigned int subLong, osg::Geometry* geometry )
+osgwTools::makeAltAzSphere( const osg::Matrix& m, const float radius, const unsigned int subLat, const unsigned int subLong, osg::Geometry* geometry )
 {
     osg::Geometry* geom = osgwTools::makeAltAzSphere( radius, subLat, subLong, geometry );
     if( geom != NULL )
-        translateVertices( geom, center );
+        transformVertices( geom, m );
     return( geom );
 }
 
@@ -767,11 +779,11 @@ osgwTools::makeWireAltAzSphere( const float radius, const unsigned int subLat, c
 }
 
 osg::Geometry*
-osgwTools::makeWireAltAzSphere( const osg::Vec3& center, const float radius, const unsigned int subLat, const unsigned int subLong, osg::Geometry* geometry )
+osgwTools::makeWireAltAzSphere( const osg::Matrix& m, const float radius, const unsigned int subLat, const unsigned int subLong, osg::Geometry* geometry )
 {
     osg::Geometry* geom = osgwTools::makeWireAltAzSphere( radius, subLat, subLong, geometry );
     if( geom != NULL )
-        translateVertices( geom, center );
+        transformVertices( geom, m );
     return( geom );
 }
 
@@ -801,11 +813,11 @@ osgwTools::makeWireCircle( const float radius, const unsigned int subdivisions, 
 } // osgwTools::makeWireCircle
 
 osg::Geometry*
-osgwTools::makeWireCircle( const osg::Vec3& center, const float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geometry)
+osgwTools::makeWireCircle( const osg::Matrix& m, const float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geometry)
 {
     osg::Geometry* geom = osgwTools::makeWireCircle( radius, subdivisions, orientation, geometry );
     if( geom != NULL )
-        translateVertices( geom, center );
+        transformVertices( geom, m );
     return( geom );
 }
 
@@ -830,11 +842,11 @@ osgwTools::makeCircle( const float radius, const unsigned int subdivisions, cons
 } // osgwTools::makeCircle
 
 osg::Geometry*
-osgwTools::makeCircle( const osg::Vec3& center, const float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geometry)
+osgwTools::makeCircle( const osg::Matrix& m, const float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geometry)
 {
     osg::Geometry* geom = osgwTools::makeCircle( radius, subdivisions, orientation, geometry );
     if( geom != NULL )
-        translateVertices( geom, center );
+        transformVertices( geom, m );
     return( geom );
 }
 
@@ -1119,11 +1131,11 @@ osgwTools::makeBox( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions
 }
 
 osg::Geometry*
-osgwTools::makeBox( const osg::Vec3& center, const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions, osg::Geometry* geometry )
+osgwTools::makeBox( const osg::Matrix& m, const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions, osg::Geometry* geometry )
 {
     osg::Geometry* geom = osgwTools::makeBox( halfExtents, subdivisions, geometry );
     if( geom != NULL )
-        translateVertices( geom, center );
+        transformVertices( geom, m );
     return( geom );
 }
 
@@ -1145,11 +1157,11 @@ osgwTools::makePlainBox( const osg::Vec3& halfExtents, osg::Geometry* geometry )
 }
 
 osg::Geometry*
-osgwTools::makePlainBox( const osg::Vec3& center, const osg::Vec3& halfExtents, osg::Geometry* geometry )
+osgwTools::makePlainBox( const osg::Matrix& m, const osg::Vec3& halfExtents, osg::Geometry* geometry )
 {
     osg::Geometry* geom = osgwTools::makePlainBox( halfExtents, geometry );
     if( geom != NULL )
-        translateVertices( geom, center );
+        transformVertices( geom, m );
     return( geom );
 }
 
@@ -1229,11 +1241,11 @@ osgwTools::makeWireBox( const osg::Vec3& halfExtents, osg::Geometry* geometry )
 }
 
 osg::Geometry*
-osgwTools::makeWireBox( const osg::Vec3& center, const osg::Vec3& halfExtents, osg::Geometry* geometry )
+osgwTools::makeWireBox( const osg::Matrix& m, const osg::Vec3& halfExtents, osg::Geometry* geometry )
 {
     osg::Geometry* geom = osgwTools::makeWireBox( halfExtents, geometry );
     if( geom != NULL )
-        translateVertices( geom, center );
+        transformVertices( geom, m );
     return( geom );
 }
 
@@ -1351,10 +1363,45 @@ osgwTools::makeArrow( osg::Geometry* geometry )
 }
 
 osg::Geometry*
-osgwTools::makeArrow( const osg::Vec3& center, osg::Geometry* geometry )
+osgwTools::makeArrow( const osg::Matrix& m, osg::Geometry* geometry )
 {
     osg::Geometry* geom = osgwTools::makeArrow( geometry );
     if( geom != NULL )
-        translateVertices( geom, center );
+        transformVertices( geom, m );
+    return( geom );
+}
+
+
+
+
+bool
+buildCylinderData( const osg::Vec3& orientation, const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    return( false );
+}
+
+osg::Geometry*
+osgwTools::makeOpenCylinder( const osg::Vec3& orientation, const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    osg::ref_ptr< osg::Geometry > geom( geometry );
+    if( geom == NULL )
+        geom = new osg::Geometry;
+
+    bool result = buildCylinderData( orientation, length, radius0, radius1, subdivisions, geometry );
+    if( !result )
+    {
+        osg::notify( osg::WARN ) << "makeOpenCylinder: Error during cylinder build." << std::endl;
+        return( NULL );
+    }
+    else
+        return( geom.release() );
+}
+
+osg::Geometry*
+osgwTools::makeOpenCylinder( const osg::Matrix& m, const osg::Vec3& orientation, const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    osg::Geometry* geom = osgwTools::makeOpenCylinder( orientation, length, radius0, radius1, subdivisions, geometry );
+    if( geom != NULL )
+        transformVertices( geom, m );
     return( geom );
 }
