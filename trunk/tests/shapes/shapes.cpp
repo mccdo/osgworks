@@ -37,7 +37,10 @@ main( int argc,
 
     osg::ref_ptr< osg::Geode > geode;
     osg::ref_ptr< osg::MatrixTransform > mt;
-    
+
+
+    // Objects in foreground are transformed by parent Transform node.
+
     geode = new osg::Geode;
     geode->addDrawable( osgwTools::makeGeodesicSphere( 1., 2 ) );
     mt = new osg::MatrixTransform( osg::Matrix::translate( -3., 0., 3. ) );
@@ -99,6 +102,23 @@ main( int argc,
     mt = new osg::MatrixTransform( osg::Matrix::translate( 6., 0., 0. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
+
+
+    // Objects in background are transformed directly in Shapes generation code.
+
+    osg::Vec3 axis( 1., 2., 3. );
+    axis.normalize();
+
+    geode = new osg::Geode;
+    osg::Matrix m = osg::Matrix::rotate( .8, axis ) * osg::Matrix::translate( -3., 5., 0. );
+    geode->addDrawable( osgwTools::makeBox( m, osg::Vec3( .75, .75, .75 ), osg::Vec3s( 2, 2, 2 ) ) );
+    root->addChild( geode.get() );
+
+    geode = new osg::Geode;
+    m = osg::Matrix::rotate( .8, axis ) * osg::Matrix::translate( -3., 5., -3. );
+    geode->addDrawable( osgwTools::makeArrow( m ) );
+    root->addChild( geode.get() );
+
 
     osgGA::StateSetManipulator* ssmanip = new osgGA::StateSetManipulator;
     ssmanip->setStateSet( root->getOrCreateStateSet() );
