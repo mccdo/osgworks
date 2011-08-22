@@ -224,10 +224,7 @@ int main( int argc,
     }
     else if( useShortEdge )
     {
-        osgwTools::ShortEdgeOp* seOp = new osgwTools::ShortEdgeOp;
-        seOp->setSampleRatio(decimatorPercent);
-        seOp->setMaxFeature(shortEdgeFeature);
-        seOp->setMaximumError(decimatorMaxError);
+        osgwTools::ShortEdgeOp* seOp = new osgwTools::ShortEdgeOp(decimatorPercent, decimatorMaxError, shortEdgeFeature);
         seOp->setIgnoreBoundaries(decimatorIgnoreBoundaries);
         seOp->setMinPrimitives(minprim);
         reducer = seOp;
