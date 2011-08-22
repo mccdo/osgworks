@@ -37,7 +37,7 @@ class OSGWTOOLS_EXPORT ShortEdgeOp : public GeometryOperation
 {
 public:
 
-    ShortEdgeOp(double sampleRatio=1.0, double maximumError=FLT_MAX, double maxFeature=.1);
+    ShortEdgeOp(double sampleRatio=1.0, double maximumError=FLT_MAX, double maxFeature=.1, unsigned int maxSteps=UINT_MAX);
 
     ShortEdgeOp( const ShortEdgeOp& rhs, const osg::CopyOp& copyOp=osg::CopyOp::SHALLOW_COPY );
     META_Object(osgwTools,ShortEdgeOp);
@@ -63,6 +63,8 @@ public:
 
     void setMinPrimitives(unsigned int minPrim){_minPrim = minPrim;}
     unsigned int getMinPrimitives() const { return _minPrim;}
+
+    void setMaxSteps(unsigned int maxSteps){_maxSteps = maxSteps;}
 
     /** \brief Application control mechanism to continue or halt decimation.
     */
@@ -112,6 +114,7 @@ protected:
    bool  _smoothing;
    bool  _ignoreBoundaries;
    unsigned int   _minPrim;
+   unsigned int   _maxSteps;
 
     osg::ref_ptr<ContinueDecimationCallback> _continueDecimationCallback;
 };

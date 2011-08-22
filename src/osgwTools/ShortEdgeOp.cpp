@@ -2033,14 +2033,15 @@ void ShortEdgeCollapse::copyBackToGeometry()
 
 /* \endcond */
 
-ShortEdgeOp::ShortEdgeOp(double sampleRatio, double maximumError, double maxFeature):
+ShortEdgeOp::ShortEdgeOp(double sampleRatio, double maximumError, double maxFeature, unsigned int maxSteps):
             _sampleRatio(sampleRatio),
             _maximumError(maximumError),
             _maxFeature(maxFeature),
             _triStrip(true),
             _smoothing(false),
             _ignoreBoundaries(false),
-            _minPrim(4)
+            _minPrim(4),
+            _maxSteps(maxSteps) 
             {};
 
 ShortEdgeOp::ShortEdgeOp( const ShortEdgeOp& rhs, const osg::CopyOp& copyOp )
@@ -2051,6 +2052,8 @@ ShortEdgeOp::ShortEdgeOp( const ShortEdgeOp& rhs, const osg::CopyOp& copyOp )
     _triStrip = rhs._triStrip;
     _smoothing = rhs._smoothing;
     _ignoreBoundaries = rhs._ignoreBoundaries;
+    _minPrim = rhs._minPrim;
+    _maxSteps = rhs._maxSteps ;
 }
 
 void ShortEdgeOp::decimate(osg::Geometry& geometry)
@@ -2073,10 +2076,9 @@ void ShortEdgeOp::decimate(osg::Geometry& geometry)
     }
     if (getSampleRatio()<1.0 && getMaximumError()>0.0)
     {
-        int decCt( 0 );
+        unsigned int decCt( 0 );
         osg::notify(osg::INFO)<<"   Collapsed edge#="<<decCt<<" Triangles remaining="<<sec._triangleSet.size()<<" Next edge length="<<(*sec._edgeSet.begin())->getErrorMetric()<<" vs "<<getMaximumError()<<std::endl;
-        ++decCt;
-        while (!sec._edgeSet.empty() &&
+        while (!sec._edgeSet.empty() && decCt < _maxSteps &&
                continueDecimation((*sec._edgeSet.begin())->getErrorMetric() , numOriginalPrimitives, sec._triangleSet.size()) && 
                sec.collapseMinimumErrorEdge() && sec._triangleSet.size() > _minPrim)
         {
