@@ -222,7 +222,7 @@ int main( int argc,
         osgViewer::View* view = new osgViewer::View;
         view->setUpViewInWindow( 10, 30, width, height );
         viewer.addView(view);
-        view->setSceneData( grporig );
+        view->setSceneData( grporig.get() );
 
         camSS = view->getCamera()->getOrCreateStateSet();
         statesetManipulator->setStateSet( camSS.get() );
@@ -240,7 +240,7 @@ int main( int argc,
     {
         osgViewer::View* view = new osgViewer::View;
         viewer.addView(view);
-        view->setSceneData( grpcopy );
+        view->setSceneData( grpcopy.get() );
 
         view->getCamera()->setStateSet( camSS.get() );
         view->addEventHandler( statesetManipulator.get() );
