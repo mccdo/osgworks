@@ -164,12 +164,13 @@ int main( int argc,
         namebase.append("LoadedTestModel_");
     }
 
-    osg::Group* grporig = new osg::Group;
+    osg::ref_ptr<osg::Group> grporig = new osg::Group;
     grporig->addChild(model);
-    osg::notify( osg::INFO ) << "osgbpp: Loaded model(s)." << std::endl;
+    osg::notify( osg::INFO ) << "createlodvisitor: Loaded model(s)." << std::endl;
 
 
-    osg::Group* grpcopy = new osg::Group( *grporig , osg::CopyOp::DEEP_COPY_ALL);
+    osg::ref_ptr<osg::Group> grpcopy = new osg::Group( *grporig , osg::CopyOp::DEEP_COPY_ALL);
+    grpcopy->setName("grpcopy"); // for ease of debugging
 
     // test LODCreationNodeVisitor
     osgwTools::LODCreationNodeVisitor lodNodeVis(0);
