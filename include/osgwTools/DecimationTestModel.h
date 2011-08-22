@@ -39,7 +39,7 @@ public:
     #define decimationTestSidePoints 63
     #define decimationTestEdgePoints (decimationTestSidePoints * 2)
 
-    void buildOpening(osg::Vec3Array* vertices, float const xOff, float const yOff, float const zOff) const
+    void buildOpening(osg::Vec3Array* vertices, osg::Vec3Array* normals, float const xOff, float const yOff, float const zOff) const
     {
 	    vertices->push_back( osg::Vec3( xOff, 1 + yOff, zOff) ); // 0
 	    vertices->push_back( osg::Vec3( xOff, 2 + yOff, zOff) ); // 1
@@ -49,9 +49,16 @@ public:
 	    vertices->push_back( osg::Vec3( 3 + xOff, 1 + yOff, zOff) ); // 5
 	    vertices->push_back( osg::Vec3( 2 + xOff,  yOff, zOff) ); // 6
 	    vertices->push_back( osg::Vec3( 1 + xOff,  yOff, zOff) ); // 7
+
+        unsigned int loops = vertices->size() - normals->size();
+        float normalDirection = zOff > 0.0 ? 1.0: -1.0;
+        for (unsigned int i=0; i<loops; ++i)
+        {
+            normals->push_back( osg::Vec3( 0, 0, normalDirection) );
+        }
     }
 
-    void buildSide(osg::Vec3Array* vertices, float const zOff) const
+    void buildSide(osg::Vec3Array* vertices, osg::Vec3Array* normals, float const zOff) const
     {
 	    vertices->push_back( osg::Vec3( 0, 5, zOff) ); // 0
 	    vertices->push_back( osg::Vec3( 1, 3, zOff) ); // 1
@@ -77,11 +84,18 @@ public:
 	    vertices->push_back( osg::Vec3( 1, 24, zOff) ); // 21
 	    vertices->push_back( osg::Vec3( 0, 22, zOff) ); // 22
 
-        buildOpening(vertices, 5.0, 4.0, zOff);
-        buildOpening(vertices, 16.0, 4.0, zOff);
-        buildOpening(vertices, 20.0, 4.0, zOff);
-        buildOpening(vertices, 25.0, 4.0, zOff);
-        buildOpening(vertices, 34.0, 4.0, zOff);
+        unsigned int loops = vertices->size() - normals->size();
+        float normalDirection = zOff > 0.0 ? 1.0: -1.0;
+        for (unsigned int i=0; i<loops; ++i)
+        {
+            normals->push_back( osg::Vec3( 0, 0, normalDirection) );
+        }
+
+        buildOpening(vertices, normals, 5.0, 4.0, zOff);
+        buildOpening(vertices, normals, 16.0, 4.0, zOff);
+        buildOpening(vertices, normals, 20.0, 4.0, zOff);
+        buildOpening(vertices, normals, 25.0, 4.0, zOff);
+        buildOpening(vertices, normals, 34.0, 4.0, zOff);
     }
 
     bool triangulateSide(osg::Geometry* geometry, osg::Vec3Array* vertices, int winding, int vertexOffset) const
@@ -249,16 +263,19 @@ public:
 	        osg::Geometry* complexGeometry = new osg::Geometry();
             complexGeode->addDrawable(complexGeometry); 
             osg::Vec3Array* complexVertices = new osg::Vec3Array;
+            osg::Vec3Array* complexNormals = new osg::Vec3Array;
             float zOff = 1.0;
-            buildSide(complexVertices, 0.0);
+            buildSide(complexVertices, complexNormals, 0.0);
             if (buildParts == 4)
-                buildSide(complexVertices, 0.0);
-            buildSide(complexVertices, zOff);
+                buildSide(complexVertices, complexNormals, 0.0);
+            buildSide(complexVertices, complexNormals, zOff);
             if (buildParts == 4)
-                buildSide(complexVertices, zOff);
+                buildSide(complexVertices, complexNormals, zOff);
 
             //Associate this set of vertices with the geometry associated with the geode we added to the scene.
             complexGeometry->setVertexArray( complexVertices ); 
+            complexGeometry->setNormalArray( complexNormals ); 
+            complexGeometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX ); 
 
             // create primitives
             triangulateSide(complexGeometry, complexVertices, 1, 0);
@@ -291,11 +308,14 @@ public:
 	                //Using a right-handed coordinate system with 'z' up, array elements represent points in the object
 
 	                osg::Vec3Array* complexVertices = new osg::Vec3Array;
+	                osg::Vec3Array* complexNormals = new osg::Vec3Array;
                     float zOff = ( part == 0 ? 0.0: 1.0 );
-                    buildSide(complexVertices, zOff);
+                    buildSide(complexVertices, complexNormals, zOff);
 
 	                //Associate this set of vertices with the geometry associated with the geode we added to the scene.
 	                complexGeometry->setVertexArray( complexVertices ); 
+	                complexGeometry->setNormalArray( complexNormals ); 
+                    complexGeometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX ); 
 
                     // create primitives
                     triangulateSide(complexGeometry, complexVertices, part == 0 ? 1: -1, 0);
@@ -304,13 +324,16 @@ public:
                 {
                     // build model edge
 	                osg::Vec3Array* complexVertices = new osg::Vec3Array;
+	                osg::Vec3Array* complexNormals = new osg::Vec3Array;
                     float zOff = 1.0;
                     // build two side points
-                    buildSide(complexVertices, 0.0);
-                    buildSide(complexVertices, zOff);
+                    buildSide(complexVertices, complexNormals, 0.0);
+                    buildSide(complexVertices, complexNormals, zOff);
          	        
                     //Associate this set of vertices with the geometry associated with the geode we added to the scene.
 	                complexGeometry->setVertexArray( complexVertices ); 
+	                complexGeometry->setNormalArray( complexNormals ); 
+                    complexGeometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX ); 
 
                     // create primitives
                     triangulateEdge(complexGeometry, complexVertices, 0);
