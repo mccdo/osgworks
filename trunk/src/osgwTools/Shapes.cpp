@@ -31,7 +31,7 @@
 #  pragma warning( disable : 4305 )
 #endif
 
-void transformVertices( osg::Geometry* geom, const osg::Matrix& m )
+inline void transformVertices( osg::Geometry* geom, const osg::Matrix& m )
 {
     // Transform the vertices by the specified matrix.
     osg::Vec3Array* v = static_cast< osg::Vec3Array* >( geom->getVertexArray() );
@@ -387,7 +387,7 @@ osgwTools::makeGeodesicSphere( const osg::Matrix& m, const float radius, const u
 
 
 
-bool
+static bool
 buildAltAzSphereData( const float radius, const unsigned int subLat, const unsigned int subLong, osg::Geometry* geom, const bool wire )
 {
     unsigned int numLat( subLat );
@@ -588,7 +588,7 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
 }
 
 
-bool
+static bool
 const buildCircleData (float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geom, const bool wire )
 {
     unsigned int numSub( subdivisions );
@@ -851,7 +851,8 @@ osgwTools::makeCircle( const osg::Matrix& m, const float radius, const unsigned 
 }
 
 
-void
+
+static void
 addPlaneData( const osg::Vec3& corner,
              const osg::Vec3& u, unsigned short uSteps,
              const osg::Vec3& v, unsigned short vSteps,
@@ -892,7 +893,7 @@ addPlaneData( const osg::Vec3& corner,
     }
 }
 
-bool
+static bool
 buildPlaneData( const osg::Vec3& corner, const osg::Vec3& u, const osg::Vec3& v, const osg::Vec2s& subdivisions, osg::Geometry* geom )
 {
     if( ( subdivisions.x() <= 0. ) || ( subdivisions.y() <= 0. ) )
@@ -941,7 +942,7 @@ osgwTools::makePlane( const osg::Vec3& corner, const osg::Vec3& u, const osg::Ve
 
 
 
-bool
+static bool
 buildWirePlaneData( const osg::Vec3& corner, const osg::Vec3& u, const osg::Vec3& v, const osg::Vec2s& subdivisions, osg::Geometry* geom )
 {
     osg::Vec3Array* verts = new osg::Vec3Array;
@@ -998,7 +999,8 @@ osgwTools::makeWirePlane( const osg::Vec3& corner, const osg::Vec3& u, const osg
 
 
 
-bool buildBoxData( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions, osg::Geometry* geom )
+static bool
+buildBoxData( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions, osg::Geometry* geom )
 {
     if( ( subdivisions.x() <= 0. ) || ( subdivisions.y() <= 0. ) || ( subdivisions.z() <= 0. ) )
     {
@@ -1066,7 +1068,8 @@ bool buildBoxData( const osg::Vec3& halfExtents, const osg::Vec3s& subdivisions,
     return( true );
 }
 
-bool buildPlainBoxData( const osg::Vec3& halfExtents, osg::Geometry* geom )
+static bool
+buildPlainBoxData( const osg::Vec3& halfExtents, osg::Geometry* geom )
 {
     const float xMin( -halfExtents[ 0 ] );
     const float xMax( halfExtents[ 0 ] );
@@ -1168,7 +1171,7 @@ osgwTools::makePlainBox( const osg::Matrix& m, const osg::Vec3& halfExtents, osg
 
 
 
-bool
+static bool
 buildWireBoxData( const osg::Vec3& halfExtents, osg::Geometry* geom )
 {
     osg::Vec4Array* color( new osg::Vec4Array );
@@ -1252,7 +1255,7 @@ osgwTools::makeWireBox( const osg::Matrix& m, const osg::Vec3& halfExtents, osg:
 
 
 
-bool
+static bool
 buildArrowData( osg::Geometry* geom )
 {
     // Create an arrow pointing in the +z direction.
@@ -1374,9 +1377,16 @@ osgwTools::makeArrow( const osg::Matrix& m, osg::Geometry* geometry )
 
 
 
-bool
+static bool
 buildCylinderData( const osg::Vec3& orientation, const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
 {
+    int subCylinders = subdivisions[ 0 ];
+    if( subCylinders < 1 )
+        subCylinders = 1;
+    double radiusDelta = ( radius1 - radius0 ) / subCylinders;
+
+    osg::notify( osg::WARN ) << "Cylinder: Not yet implemented." << std::endl;
+
     return( false );
 }
 

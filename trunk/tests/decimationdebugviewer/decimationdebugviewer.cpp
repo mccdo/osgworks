@@ -472,10 +472,10 @@ int main( int argc,
     viewer.addEventHandler(keyHandler.get());
 
     osg::ref_ptr<osgViewer::HelpHandler> helpHandler = new osgViewer::HelpHandler(arguments.getApplicationUsage());
-    viewer.addEventHandler(helpHandler);
+    viewer.addEventHandler( helpHandler.get() );
     osg::ref_ptr<osgViewer::StatsHandler> statsHandler = new osgViewer::StatsHandler;
     //statsHandler->setKeyEventTogglesOnScreenStats('t');
-    viewer.addEventHandler(statsHandler);
+    viewer.addEventHandler( statsHandler.get() );
 
     viewer.realize();
 
