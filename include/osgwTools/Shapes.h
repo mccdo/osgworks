@@ -63,7 +63,7 @@ OSGWTOOLS_EXPORT osg::Geometry* makeGeodesicSphere( const float radius=1., const
 
 /** \brief A transformed geodesic sphere.
 */
-OSGWTOOLS_EXPORT osg::Geometry* makeGeodesicSphere( const osg::Matrix& m, const float radius, const unsigned int subdivisions, osg::Geometry* geometry );
+OSGWTOOLS_EXPORT osg::Geometry* makeGeodesicSphere( const osg::Matrix& m, const float radius=1., const unsigned int subdivisions=2, osg::Geometry* geometry=NULL );
 
 
 /** \brief Creates an alt-az (or lat-long) sphere.
