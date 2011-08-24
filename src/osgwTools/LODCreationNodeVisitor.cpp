@@ -93,10 +93,10 @@ unsigned int LODCreationNodeVisitor::finishProcessingGeodes(void)
             if (shortEdgeFeature > 0.0)
             {
                 osg::Geode* geodeCopy = new osg::Geode( *currentGeode.get() , osg::CopyOp::DEEP_COPY_ALL);
-                osgwTools::GeometryOperation* reducer;
                 osgwTools::ShortEdgeOp* seOp = new osgwTools::ShortEdgeOp;
-                //seOp->setSampleRatio(_maxDecPercent);
+                // this formula is used to prevent too much visual degradation which could otherwise result from blind setting of max feature size
                 float decPct = (1.0 - pitr->second) / ((1 + lodNum) * (1 + lodNum));
+                // if user has specified a lesser amount of decimation (greater retention), use that. 
                 if (decPct < _maxDecPercent)
                     decPct = _maxDecPercent;
                 seOp->setSampleRatio(decPct);
@@ -104,8 +104,7 @@ unsigned int LODCreationNodeVisitor::finishProcessingGeodes(void)
                 seOp->setMaximumError(shortEdgeFeature);
                 seOp->setIgnoreBoundaries(_decIgnoreBoundaries);
                 seOp->setMinPrimitives(_decMinPrimitives);
-                reducer = seOp;
-                osgwTools::GeometryModifier modifier(reducer);
+                osgwTools::GeometryModifier modifier(seOp);
                 modifier.setDrawableMerge(true);
                 geodeCopy->accept( modifier);
                 lodNode.get()->addChild(geodeCopy);
