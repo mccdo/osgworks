@@ -19,6 +19,7 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osgwTools/Shapes.h>
+#include <osgwTools/Transform.h>
 #include <osg/Geometry>
 
 #include <math.h>
@@ -31,25 +32,6 @@
 #  pragma warning( disable : 4305 )
 #endif
 
-inline void transformVertices( osg::Geometry* geom, const osg::Matrix& m )
-{
-    // Transform the vertices by the specified matrix.
-    osg::Vec3Array* v = static_cast< osg::Vec3Array* >( geom->getVertexArray() );
-    osg::Vec3Array::iterator itr;
-    for( itr = v->begin(); itr != v->end(); itr++ )
-        *itr = *itr * m;
-
-    // Transform the normals by the upper-left 3x3 matrix (no translation)
-    // and rescale the normals in case the matrix contains scalng.
-    osg::Matrix m3x3( m );
-    m3x3.setTrans( 0., 0., 0. );
-    osg::Vec3Array* n = static_cast< osg::Vec3Array* >( geom->getNormalArray() );
-    for( itr = n->begin(); itr != n->end(); itr++ )
-    {
-        *itr = *itr * m3x3;
-        itr->normalize();
-    }
-}
 
 inline unsigned int makeKey( const unsigned short a, const unsigned short b )
 {
@@ -380,7 +362,7 @@ osgwTools::makeGeodesicSphere( const osg::Matrix& m, const float radius, const u
 {
     osg::Geometry* geom = osgwTools::makeGeodesicSphere( radius, subdivisions, geometry );
     if( geom != NULL )
-        transformVertices( geom, m );
+        transform( m, geom );
     return( geom );
 }
 
@@ -750,7 +732,7 @@ osgwTools::makeAltAzSphere( const osg::Matrix& m, const float radius, const unsi
 {
     osg::Geometry* geom = osgwTools::makeAltAzSphere( radius, subLat, subLong, geometry );
     if( geom != NULL )
-        transformVertices( geom, m );
+        transform( m, geom );
     return( geom );
 }
 
@@ -783,7 +765,7 @@ osgwTools::makeWireAltAzSphere( const osg::Matrix& m, const float radius, const 
 {
     osg::Geometry* geom = osgwTools::makeWireAltAzSphere( radius, subLat, subLong, geometry );
     if( geom != NULL )
-        transformVertices( geom, m );
+        transform( m, geom );
     return( geom );
 }
 
@@ -817,7 +799,7 @@ osgwTools::makeWireCircle( const osg::Matrix& m, const float radius, const unsig
 {
     osg::Geometry* geom = osgwTools::makeWireCircle( radius, subdivisions, orientation, geometry );
     if( geom != NULL )
-        transformVertices( geom, m );
+        transform( m, geom );
     return( geom );
 }
 
@@ -846,7 +828,7 @@ osgwTools::makeCircle( const osg::Matrix& m, const float radius, const unsigned 
 {
     osg::Geometry* geom = osgwTools::makeCircle( radius, subdivisions, orientation, geometry );
     if( geom != NULL )
-        transformVertices( geom, m );
+        transform( m, geom );
     return( geom );
 }
 
@@ -1138,7 +1120,7 @@ osgwTools::makeBox( const osg::Matrix& m, const osg::Vec3& halfExtents, const os
 {
     osg::Geometry* geom = osgwTools::makeBox( halfExtents, subdivisions, geometry );
     if( geom != NULL )
-        transformVertices( geom, m );
+        transform( m, geom );
     return( geom );
 }
 
@@ -1164,7 +1146,7 @@ osgwTools::makePlainBox( const osg::Matrix& m, const osg::Vec3& halfExtents, osg
 {
     osg::Geometry* geom = osgwTools::makePlainBox( halfExtents, geometry );
     if( geom != NULL )
-        transformVertices( geom, m );
+        transform( m, geom );
     return( geom );
 }
 
@@ -1248,7 +1230,7 @@ osgwTools::makeWireBox( const osg::Matrix& m, const osg::Vec3& halfExtents, osg:
 {
     osg::Geometry* geom = osgwTools::makeWireBox( halfExtents, geometry );
     if( geom != NULL )
-        transformVertices( geom, m );
+        transform( m, geom );
     return( geom );
 }
 
@@ -1370,7 +1352,7 @@ osgwTools::makeArrow( const osg::Matrix& m, osg::Geometry* geometry )
 {
     osg::Geometry* geom = osgwTools::makeArrow( geometry );
     if( geom != NULL )
-        transformVertices( geom, m );
+        transform( m, geom );
     return( geom );
 }
 
@@ -1412,6 +1394,6 @@ osgwTools::makeOpenCylinder( const osg::Matrix& m, const osg::Vec3& orientation,
 {
     osg::Geometry* geom = osgwTools::makeOpenCylinder( orientation, length, radius0, radius1, subdivisions, geometry );
     if( geom != NULL )
-        transformVertices( geom, m );
+        transform( m, geom );
     return( geom );
 }
