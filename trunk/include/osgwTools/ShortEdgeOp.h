@@ -26,6 +26,9 @@
 #include <osg/Geode>
 #include <osg/Geometry>
 
+#include <limits.h>
+
+
 namespace osgwTools {
 
 
