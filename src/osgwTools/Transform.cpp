@@ -62,6 +62,7 @@ transform( const osg::Matrix& m, const osg::BoundingSphere& sphere )
 
     return( newSphere );
 }
+
 osg::BoundingBox
 transform( const osg::Matrix& m, const osg::BoundingBox& box )
 {
@@ -83,6 +84,62 @@ transform( const osg::Matrix& m, const osg::BoundingBox& box )
     newBox.expandBy( p7 * m );
 
     return( newBox );
+}
+
+void transform( const osg::Matrix& m, osg::Geometry* geom )
+{
+    if( geom == NULL )
+        return;
+
+    osg::Vec3Array::iterator itr;
+
+    // Transform the vertices by the specified matrix.
+    osg::Vec3Array* v = dynamic_cast< osg::Vec3Array* >( geom->getVertexArray() );
+    if( v != NULL )
+    {
+        for( itr = v->begin(); itr != v->end(); itr++ )
+            *itr = *itr * m;
+        v->dirty();
+    }
+
+    // Transform the normals by the upper-left 3x3 matrix (no translation)
+    // and rescale the normals in case the matrix contains scalng.
+    osg::Vec3Array* n = dynamic_cast< osg::Vec3Array* >( geom->getNormalArray() );
+    if( n != NULL )
+    {
+        osg::Matrix m3x3( m );
+        m3x3.setTrans( 0., 0., 0. );
+        for( itr = n->begin(); itr != n->end(); itr++ )
+        {
+            *itr = *itr * m3x3;
+            itr->normalize();
+        }
+        n->dirty();
+    }
+
+    geom->dirtyDisplayList();
+    geom->dirtyBound();
+}
+
+void transform( const osg::Matrix& m, osg::Geode* geode )
+{
+    if( geode == NULL )
+        return;
+
+    unsigned int idx;
+    for( idx=0; idx<geode->getNumDrawables(); idx++ )
+    {
+        osg::Geometry* geom = geode->getDrawable( idx )->asGeometry();
+        if( geom != NULL )
+        {
+            transform( m, geom );
+        }
+        else
+        {
+            // TBD need support for OSG shape drawables.
+            osg::notify( osg::WARN ) << "osgwTools::transform can't transform non-Geometry yet." << std::endl;
+        }
+    }
 }
 
 

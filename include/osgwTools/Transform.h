@@ -26,6 +26,8 @@
 
 #include <osg/BoundingSphere>
 #include <osg/BoundingBox>
+#include <osg/Geometry>
+#include <osg/Geode>
 #include <osg/Matrix>
 
 
@@ -47,6 +49,18 @@ OSGWTOOLS_EXPORT osg::BoundingSphere transform( const osg::Matrix& m, const osg:
 /** \brief Transforms a \c BoundingBox.
 */
 OSGWTOOLS_EXPORT osg::BoundingBox transform( const osg::Matrix& m, const osg::BoundingBox& box );
+
+/** \brief Transforms a \c Geometry in place.
+
+Vertices are transformed by the matrix \c m, and normals are transformed by the upper-left 3x3 portion of \c m.
+*/
+OSGWTOOLS_EXPORT void transform( const osg::Matrix& m, osg::Geometry* geom );
+
+/** \brief Transforms a \c Geode.
+
+Transforms the \c Geometry children of the \c Geode parameter.
+*/
+OSGWTOOLS_EXPORT void transform( const osg::Matrix& m, osg::Geode* geode );
 
 /*@}*/
 
