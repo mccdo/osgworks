@@ -17,6 +17,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/DecimationTestModel.h
     ${HEADER_PATH}/FBOUtils.h
     ${HEADER_PATH}/FindNamedNode.h
+    ${HEADER_PATH}/ForceFlattenTransforms.h
     ${HEADER_PATH}/GeometryModifier.h
     ${HEADER_PATH}/GeometryOperation.h
     ${HEADER_PATH}/CollapseLOD.h
@@ -52,6 +53,7 @@ set( _osgwToolsSourceFiles
     DecimatorOp.cpp
     FBOUtils.cpp
     FindNamedNode.cpp
+    ForceFlattenTransforms.cpp
     GeometryModifier.cpp
     GeometryOperation.cpp
     CollapseLOD.cpp
