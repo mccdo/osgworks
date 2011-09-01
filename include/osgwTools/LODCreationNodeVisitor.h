@@ -75,12 +75,12 @@ public:
                     osg::notify( osg::ALWAYS ) << "Warning! Geometry contains shared arrays" << std::endl;
 
                 // Get statistics
-                numVertices += geometry.get()->getVertexArray()->getNumElements();
+                numVertices += geometry->getVertexArray()->getNumElements();
 
                 unsigned int idx;
-                for( idx = 0; idx < geometry.get()->getNumPrimitiveSets(); ++idx )
+                for( idx = 0; idx < geometry->getNumPrimitiveSets(); ++idx )
                 {
-                    const osg::PrimitiveSet* ps( geometry.get()->getPrimitiveSet( idx ) );
+                    const osg::PrimitiveSet* ps( geometry->getPrimitiveSet( idx ) );
                     numPrimitives += ps->getNumPrimitives();
                 }
 

@@ -536,15 +536,15 @@ public:
             for(TriangleSet::iterator itr = _sister->_triangles.begin();
                 itr != _sister->_triangles.end(); ++itr)
             {
-                if(((*itr).get()->_p1 == _sister->_p1 && (*itr).get()->_p2 == _sister->_p2)
-                    ||((*itr).get()->_p1 == _sister->_p2 && (*itr).get()->_p2 == _sister->_p1))
-                         points.insert((*itr).get()->_p3);
-                if(((*itr).get()->_p2 == _sister->_p1 && (*itr).get()->_p3 == _sister->_p2)
-                    ||((*itr).get()->_p2 == _sister->_p2 && (*itr).get()->_p3 == _sister->_p1))
-                         points.insert((*itr).get()->_p1);
-                if(((*itr).get()->_p1 == _sister->_p1 && (*itr).get()->_p3 == _sister->_p2)
-                    ||((*itr).get()->_p1 == _sister->_p2 && (*itr).get()->_p3 == _sister->_p1))
-                         points.insert((*itr).get()->_p2);
+                if(((*itr)->_p1 == _sister->_p1 && (*itr)->_p2 == _sister->_p2)
+                    ||((*itr)->_p1 == _sister->_p2 && (*itr)->_p2 == _sister->_p1))
+                         points.insert((*itr)->_p3);
+                if(((*itr)->_p2 == _sister->_p1 && (*itr)->_p3 == _sister->_p2)
+                    ||((*itr)->_p2 == _sister->_p2 && (*itr)->_p3 == _sister->_p1))
+                         points.insert((*itr)->_p1);
+                if(((*itr)->_p1 == _sister->_p1 && (*itr)->_p3 == _sister->_p2)
+                    ||((*itr)->_p1 == _sister->_p2 && (*itr)->_p3 == _sister->_p1))
+                         points.insert((*itr)->_p2);
             }
 
             return points;
