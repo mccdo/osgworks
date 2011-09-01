@@ -80,14 +80,14 @@ unsigned int LODCreationNodeVisitor::finishProcessingGeodes(void)
         float prevMaxPixels = FLT_MAX;
         unsigned int lodNum = 0;
         osg::ref_ptr<osg::LOD> lodNode = new osg::LOD;
-        lodNode.get()->setRangeMode(osg::LOD::PIXEL_SIZE_ON_SCREEN);
-        lodNode.get()->setCenterMode(osg::LOD::USE_BOUNDING_SPHERE_CENTER);
+        lodNode->setRangeMode(osg::LOD::PIXEL_SIZE_ON_SCREEN);
+        lodNode->setCenterMode(osg::LOD::USE_BOUNDING_SPHERE_CENTER);
 
         for(LODPairList::iterator pitr = _lodPairList.begin();
             pitr != _lodPairList.end();
             ++pitr, ++lodNum)
         {
-            lodNode.get()->setRange(lodNum, pitr->first, prevMaxPixels);
+            lodNode->setRange(lodNum, pitr->first, prevMaxPixels);
             // do geometry reduction for this level and attach to LOD
             float shortEdgeFeature = pitr->second * currentDiameter;
             if (shortEdgeFeature > 0.0)
@@ -107,10 +107,10 @@ unsigned int LODCreationNodeVisitor::finishProcessingGeodes(void)
                 osgwTools::GeometryModifier modifier(seOp);
                 modifier.setDrawableMerge(true);
                 geodeCopy->accept( modifier);
-                lodNode.get()->addChild(geodeCopy);
+                lodNode->addChild(geodeCopy);
             }
             else
-                lodNode.get()->addChild(currentGeode.get());
+                lodNode->addChild(currentGeode.get());
 
             prevMaxPixels = pitr->first;
         }
@@ -121,7 +121,7 @@ unsigned int LODCreationNodeVisitor::finishProcessingGeodes(void)
             osg::ref_ptr<osg::Group> parentAsGroup = (*parentIter)->asGroup();
             if (parentAsGroup.valid())
             {
-                parentAsGroup.get()->replaceChild(currentGeode.get(), lodNode.get());
+                parentAsGroup->replaceChild(currentGeode.get(), lodNode.get());
             }
         }
 
