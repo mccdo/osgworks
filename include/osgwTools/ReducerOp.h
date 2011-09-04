@@ -34,6 +34,35 @@ namespace osgwTools {
 /** \brief Reduces geometry by removing vertices without adding new vertices.
 
 For more information, see \ref geomopt
+
+Reducer algorithm:
+
+\code
+Consider each vertex
+  Get a list of all triangles that share that vertex.
+  Use the group threshold to break that list of triangles into
+        possibly multiple groups of triangles.
+
+  If the vertex is completely contained within a group, remove it.
+  Else if the vertex is not completely contained, it is an edge vertex.
+
+  Handle edge vertex:
+  (Repeat this for each group that shares the vertex)
+    Idenify the two triangle edges that share the vertex and are on the same edge as the vertex.
+    If the two edges subtend an angle less than maxEdgeError, remove the vertex.
+
+  Handle removing a vertex:
+    Retessellate the remaining vertices by sorting the group's triangles
+          into an order that preserves the normals, then treat it as an OpenGL
+          polygon for purposes of triangulation.
+    Change the map entries for all vertices of affected triangles.
+    Add the removed vertex to a delete list.
+
+  Cleanup:
+    Erase (from the map) all vertices on the delete list.
+    Delete the vertices and associaed data from the Geometry.
+    Create a new TRIANGLES DEUI to replace the existing PrimitiveSet.
+\endcode
 */
 class OSGWTOOLS_EXPORT ReducerOp : public GeometryOperation
 {
@@ -45,12 +74,15 @@ public:
 
     virtual osg::Geometry* operator()( osg::Geometry& geom );
 
+    /** \brief Specify the group threshold in degrees. Default is 10. */
     void setGroupThreshold( float groupThreshold );
     float getGroupThreshold() const { return( _groupThreshold ); }
 
+    /** \brief Specify the maximum edge error in degrees. Default is 10. */
     void setMaxEdgeError( float maxEdgeError );
     float getMaxEdgeError() const { return( _maxEdgeError ); }
 
+    /** \brief Default is true */
     void setRemoveDegenerateAndRedundantTriangles( bool remove ) { _removeDegenerateAndRedundantTriangles = remove; }
     bool getRemoveDegenerateAndRedundantTriangles() const { return( _removeDegenerateAndRedundantTriangles ); }
 
@@ -130,8 +162,13 @@ protected:
 
     typedef std::vector< unsigned int > IndexList;
 
-
+//#define USE_FUNCTOR
+#ifdef USE_FUNCTOR
+    osg::Vec3Array* makeMap( VertToTriMap& v2t, const osg::Drawable& draw );
+#else
+    bool convertToDEUITriangles( osg::Geometry* geom );
     bool makeMap( VertToTriMap& v2t, const osg::Geometry& geom );
+#endif
     void makeGroups( TriListList& tll, const TriList& tl );
     EdgeList findBoundaryEdges( const TriList& tl, unsigned int vertIdx );
     bool removeableEdge( const EdgeList& el, const osg::Vec3Array* verts );
