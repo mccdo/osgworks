@@ -27,6 +27,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/NodeUtils.h
     ${HEADER_PATH}/InsertRemove.h
     ${HEADER_PATH}/ParallelVisitor.h
+    ${HEADER_PATH}/PrimitiveSetConversion.h
     ${HEADER_PATH}/Quat.h
     ${HEADER_PATH}/ReadFile.h
     ${HEADER_PATH}/ReducerOp.h
@@ -64,6 +65,7 @@ set( _osgwToolsSourceFiles
     InsertRemove.cpp
     ParallelVisitor.cpp
     PluginLoader.cpp
+    PrimitiveSetConversion.cpp
     Quat.cpp
     ReadFile.cpp
     ReducerOp.cpp

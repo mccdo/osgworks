@@ -19,8 +19,10 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osgwTools/ReducerOp.h>
+#include <osgwTools/PrimitiveSetConversion.h>
 #include <osg/Geode>
 #include <osg/Geometry>
+#include <osg/TriangleFunctor>
 #include <osg/CopyOp>
 #include <osg/io_utils>
 #include <osg/Math>
@@ -29,32 +31,6 @@
 #include <math.h>
 
 
-// Reducer algorithm:
-//
-// Consider each vertex
-//   Get a list of all triangles that share that vertex.
-//   Use the group threshold to break that list of triangles into
-//         possibly multiple groups of triangles.
-//
-//   If the vertex is completely contained within a group, remove it.
-//   Else if the vertex is not completely contained, it is an edge vertex.
-//
-//   Handle edge vertex:
-//   (Repeat this for each group that shares the vertex)
-//     Idenify the two triangle edges that share the vertex and are on the same edge as the vertex.
-//     If the two edges subtend an angle less than maxEdgeError, remove the vertex.
-//
-//   Handle removing a vertex:
-//     Retessellate the remaining vertices by sorting the group's triangles
-//           into an order that preserves the normals, then treat it as an OpenGL
-//           polygon for purposes of triangulation.
-//     Change the map entries for all vertices of affected triangles.
-//     Add the removed vertex to a delete list.
-//
-//   Cleanup:
-//     Erase (from the map) all vertices on the delete list.
-//     Delete the vertices and associaed data from the Geometry.
-//     Create a new TRIANGLES DEUI to replace the existing PrimitiveSet.
 
 namespace osgwTools {
 
@@ -89,13 +65,123 @@ ReducerOp::setMaxEdgeError( float maxEdgeError )
 }
 
 
+#ifdef USE_FUNCTOR
+
+struct ConvertToTriangles
+{
+    ConvertToTriangles()
+      : _verts( new osg::Vec3Array ),
+        _indices( new osg::UIntArray ),
+        _idx( 0 )
+    {}
+
+    void reset()
+    {
+        _verts->clear();
+        _indices->clear();
+    }
+
+    inline void operator()( const osg::Vec3& v0, const osg::Vec3& v1, const osg::Vec3& v2, bool )
+    {
+        _verts->push_back( v0 );
+        _indices->push_back( _idx++ );
+        _verts->push_back( v1 );
+        _indices->push_back( _idx++ );
+        _verts->push_back( v2 );
+        _indices->push_back( _idx++ );
+    }
+
+    osg::ref_ptr< osg::Vec3Array > _verts;
+    osg::ref_ptr< osg::UIntArray > _indices;
+
+    unsigned int _idx;
+};
+
+
+osg::Vec3Array* ReducerOp::makeMap( VertToTriMap& v2t, const osg::Drawable& draw )
+{
+    osg::TriangleFunctor< ConvertToTriangles > c2t;
+    draw.accept( c2t );
+
+    osg::UIntArray& indices = *( c2t._indices );
+    unsigned int totalVerts = c2t._verts->size();
+    unsigned int jdx;
+    for( jdx=0; (jdx+2) < totalVerts; jdx+=3 )
+    {
+        unsigned int v0( indices[ jdx ] );
+        unsigned int v1( indices[ jdx+1 ] );
+        unsigned int v2( indices[ jdx+2 ] );
+        if( _removeDegenerateAndRedundantTriangles &&
+            ( (v0==v1) || (v0==v2) || (v1 == v2) ) )
+            continue;
+        Tri tri( v0, v1, v2, c2t._verts.get() );
+        v2t[ v0 ].push_back( tri );
+        v2t[ v1 ].push_back( tri );
+        v2t[ v2 ].push_back( tri );
+    }
+
+    return( c2t._verts.release() );
+
+#if 0
+    {
+        // DEBUG dump out the map.
+        VertToTriMap::const_iterator itr;
+        for( itr=v2t.begin(); itr != v2t.end(); itr++ )
+        {
+            osg::notify( osg::ALWAYS ) << "Index " << itr->first << std::endl;
+            const TriList& trilist( itr->second );
+            TriList::const_iterator tlitr;
+            for( tlitr=trilist.begin(); tlitr != trilist.end(); tlitr++ )
+                osg::notify( osg::ALWAYS ) << "  " << tlitr->_v0 << " " << tlitr->_v1 << " " << tlitr->_v2 << std::endl;
+        }
+    }
+#endif
+
+#else
+
+bool ReducerOp::convertToDEUITriangles( osg::Geometry* geom )
+{
+    const osg::Geometry::PrimitiveSetList& pslIn = geom->getPrimitiveSetList();
+    osg::Geometry::PrimitiveSetList pslIntermed, pslOut;
+
+    // Convert everything to a DEUI
+    osg::Geometry::PrimitiveSetList::const_iterator it;
+    for( it=pslIn.begin(); it != pslIn.end(); it++ )
+    {
+        const osg::ref_ptr< osg::PrimitiveSet > primSet = *it;
+
+        if( primSet->getType() == osg::PrimitiveSet::DrawArraysPrimitiveType )
+            pslIntermed.push_back( convertToDEUI( static_cast< const osg::DrawArrays* >( primSet.get() ) ) );
+        else if( primSet->getType() == osg::PrimitiveSet::DrawArrayLengthsPrimitiveType )
+        {
+            osg::Geometry::PrimitiveSetList newPsl = convertToDEUI( static_cast< const osg::DrawArrayLengths* >( primSet.get() ) );
+            pslIntermed.insert( pslIntermed.end(), newPsl.begin(), newPsl.end() );
+        }
+        else if( primSet->getType() == osg::PrimitiveSet::DrawElementsUBytePrimitiveType )
+            pslIntermed.push_back( convertToDEUI( static_cast< const osg::DrawElementsUByte* >( primSet.get() ) ) );
+        else if( primSet->getType() == osg::PrimitiveSet::DrawElementsUShortPrimitiveType )
+            pslIntermed.push_back( convertToDEUI( static_cast< const osg::DrawElementsUShort* >( primSet.get() ) ) );
+        else if( primSet->getType() == osg::PrimitiveSet::DrawElementsUIntPrimitiveType )
+            pslIntermed.push_back( primSet );
+    }
+
+    // Convert all filled DEUIs to triangles DEUIs.
+    for( it=pslIntermed.begin(); it != pslIntermed.end(); it++ )
+    {
+        const osg::DrawElementsUInt* deui = static_cast< const osg::DrawElementsUInt* >( (*it).get() );
+        pslOut.push_back( convertAllFilledToTriangles( deui ) );
+    }
+    geom->setPrimitiveSetList( pslOut );
+
+    return( true );
+}
 
 bool
 ReducerOp::makeMap( VertToTriMap& v2t, const osg::Geometry& geom )
 {
     // TBD This needs to be more general-purpose. Right now it only works for
-    // DrawElementsUInt with mode TRIANGLES and Vec3Array vertices (suitable
-    // for PolyTrans output).
+    // DrawElements* and DrawArrays with mode TRIANGLES and Vec3Array
+    // vertices (suitable for PolyTrans output).
 
     const osg::Vec3Array* verts = dynamic_cast< const osg::Vec3Array* >( geom.getVertexArray() );
     if( verts == NULL )
@@ -192,6 +278,7 @@ ReducerOp::makeMap( VertToTriMap& v2t, const osg::Geometry& geom )
 #endif
 
     return( true );
+#endif
 }
 
 void
@@ -587,14 +674,29 @@ ReducerOp::deleteVertex( unsigned int removeIdx, const TriList& tl, VertToTriMap
 void
 ReducerOp::reduce( osg::Geometry& geom )
 {
-    osg::Array* vArray = geom.getVertexArray();
-    osg::Vec3Array* verts = dynamic_cast< osg::Vec3Array* >( vArray );
+    //
+    // Step 0: ReducerOp works only with DrawElementsUInt GL_TRIANGLES.
+    // Convert all PrimitiveSets to this format.
+    if( !( convertToDEUITriangles( &geom ) ) )
+    {
+        osg::notify( osg::WARN ) << "ReducerOp: Unable to convert to DrawElementsUInt TRIANGLES." << std::endl;
+        return;
+    }
+
 
     //
     // Step 1: Create a map of vertices to triangles. This is a 1 to many map.
     // Each triangle contains its three indices and a normalized facet normal.
     VertToTriMap v2t;
+#ifdef USE_FUNCTOR
+    osg::ref_ptr< osg::Vec3Array > verts = makeMap( v2t, geom );
+    const bool success( verts.valid() );
+#else
+    osg::Array* vArray = geom.getVertexArray();
+    osg::ref_ptr< osg::Vec3Array > verts = dynamic_cast< osg::Vec3Array* >( vArray );
+
     bool success = makeMap( v2t, geom );
+#endif
     if( !success )
     {
         osg::notify( osg::WARN ) << "ReducerOp: makeMap failed." << std::endl;
@@ -627,8 +729,8 @@ ReducerOp::reduce( osg::Geometry& geom )
             }
 
             EdgeList el = findBoundaryEdges( *gitr, currentVert->first );
-            if( !removeableEdge( el, verts ) ||
-                !removeableVertex( currentVert->first, *gitr, verts ) )
+            if( !removeableEdge( el, verts.get() ) ||
+                !removeableVertex( currentVert->first, *gitr, verts.get() ) )
             {
                 remove = false;
                 break;
@@ -654,8 +756,8 @@ ReducerOp::reduce( osg::Geometry& geom )
 
             // removeableEdge returns true of the EdgeList contains zero edges (the vertex is
             // contained), or it contains 2 edges who's angle differs by less than max edge error.
-            if( removeableEdge( el, verts ) )
-                deleteVertex( currentVert->first, *gitr, v2t, verts );
+            if( removeableEdge( el, verts.get() ) )
+                deleteVertex( currentVert->first, *gitr, v2t, verts.get() );
         }
     }
 
