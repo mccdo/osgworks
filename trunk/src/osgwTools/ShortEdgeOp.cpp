@@ -1771,7 +1771,7 @@ void ShortEdgeCollapse::setGeometry(osg::Geometry* const geometry)
     //report dimensions
     float xDim, yDim, zDim;
     getDimensions(xDim, yDim, zDim);
-    osg::notify(osg::ALWAYS)<<"  Bounding box dimensions x="<<xDim<<" y="<<yDim<<" z="<<zDim<<std::endl;
+    osg::notify( osg::INFO )<<"  Bounding box dimensions x="<<xDim<<" y="<<yDim<<" z="<<zDim<<std::endl;
 
     CollectTriangleIndexFunctorSE collectTrianglesSE;
     collectTrianglesSE.setShortEdgeCollapse(this);
@@ -2068,7 +2068,7 @@ void ShortEdgeOp::decimate(osg::Geometry& geometry)
     sec.linkCommonPoints();
     unsigned int numOriginalPrimitives = sec._triangleSet.size();
     osg::notify( osg::INFO ) << "  Primitives Available to Decimate: "<<numOriginalPrimitives<<std::endl;
-    osg::notify( osg::ALWAYS ) << "  Links found between points: "<<sec._linksFound<<std::endl;
+    osg::notify( osg::INFO ) << "  Links found between points: "<<sec._linksFound<<std::endl;
     
     if ((numOriginalPrimitives < _minPrim)){
        osg::notify( osg::INFO ) << "  Geometry too small to decimate: skipping...\n";

@@ -63,6 +63,15 @@ Consider each vertex
     Delete the vertices and associaed data from the Geometry.
     Create a new TRIANGLES DEUI to replace the existing PrimitiveSet.
 \endcode
+
+<b>Work To Be Done</b>
+
+Assume a vertex V is shared by multiple triangles, but due to the group threshold,
+the triangles are broken into multiple Groups. The edge threshold allows it to be
+removed from one group, but not from the remaining groups. This can cause incorrect
+holes in the output. This can be seen with the cow model with default reduction
+settings.
+
 */
 class OSGWTOOLS_EXPORT ReducerOp : public GeometryOperation
 {
@@ -162,13 +171,8 @@ protected:
 
     typedef std::vector< unsigned int > IndexList;
 
-//#define USE_FUNCTOR
-#ifdef USE_FUNCTOR
-    osg::Vec3Array* makeMap( VertToTriMap& v2t, const osg::Drawable& draw );
-#else
     bool convertToDEUITriangles( osg::Geometry* geom );
     bool makeMap( VertToTriMap& v2t, const osg::Geometry& geom );
-#endif
     void makeGroups( TriListList& tll, const TriList& tl );
     EdgeList findBoundaryEdges( const TriList& tl, unsigned int vertIdx );
     bool removeableEdge( const EdgeList& el, const osg::Vec3Array* verts );

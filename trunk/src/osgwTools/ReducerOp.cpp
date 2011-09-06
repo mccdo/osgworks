@@ -65,80 +65,6 @@ ReducerOp::setMaxEdgeError( float maxEdgeError )
 }
 
 
-#ifdef USE_FUNCTOR
-
-struct ConvertToTriangles
-{
-    ConvertToTriangles()
-      : _verts( new osg::Vec3Array ),
-        _indices( new osg::UIntArray ),
-        _idx( 0 )
-    {}
-
-    void reset()
-    {
-        _verts->clear();
-        _indices->clear();
-    }
-
-    inline void operator()( const osg::Vec3& v0, const osg::Vec3& v1, const osg::Vec3& v2, bool )
-    {
-        _verts->push_back( v0 );
-        _indices->push_back( _idx++ );
-        _verts->push_back( v1 );
-        _indices->push_back( _idx++ );
-        _verts->push_back( v2 );
-        _indices->push_back( _idx++ );
-    }
-
-    osg::ref_ptr< osg::Vec3Array > _verts;
-    osg::ref_ptr< osg::UIntArray > _indices;
-
-    unsigned int _idx;
-};
-
-
-osg::Vec3Array* ReducerOp::makeMap( VertToTriMap& v2t, const osg::Drawable& draw )
-{
-    osg::TriangleFunctor< ConvertToTriangles > c2t;
-    draw.accept( c2t );
-
-    osg::UIntArray& indices = *( c2t._indices );
-    unsigned int totalVerts = c2t._verts->size();
-    unsigned int jdx;
-    for( jdx=0; (jdx+2) < totalVerts; jdx+=3 )
-    {
-        unsigned int v0( indices[ jdx ] );
-        unsigned int v1( indices[ jdx+1 ] );
-        unsigned int v2( indices[ jdx+2 ] );
-        if( _removeDegenerateAndRedundantTriangles &&
-            ( (v0==v1) || (v0==v2) || (v1 == v2) ) )
-            continue;
-        Tri tri( v0, v1, v2, c2t._verts.get() );
-        v2t[ v0 ].push_back( tri );
-        v2t[ v1 ].push_back( tri );
-        v2t[ v2 ].push_back( tri );
-    }
-
-    return( c2t._verts.release() );
-
-#if 0
-    {
-        // DEBUG dump out the map.
-        VertToTriMap::const_iterator itr;
-        for( itr=v2t.begin(); itr != v2t.end(); itr++ )
-        {
-            osg::notify( osg::ALWAYS ) << "Index " << itr->first << std::endl;
-            const TriList& trilist( itr->second );
-            TriList::const_iterator tlitr;
-            for( tlitr=trilist.begin(); tlitr != trilist.end(); tlitr++ )
-                osg::notify( osg::ALWAYS ) << "  " << tlitr->_v0 << " " << tlitr->_v1 << " " << tlitr->_v2 << std::endl;
-        }
-    }
-#endif
-
-#else
-
 bool ReducerOp::convertToDEUITriangles( osg::Geometry* geom )
 {
     const osg::Geometry::PrimitiveSetList& pslIn = geom->getPrimitiveSetList();
@@ -278,7 +204,6 @@ ReducerOp::makeMap( VertToTriMap& v2t, const osg::Geometry& geom )
 #endif
 
     return( true );
-#endif
 }
 
 void
@@ -458,6 +383,18 @@ ReducerOp::removeableEdge( const EdgeList& el, const osg::Vec3Array* verts )
 void
 ReducerOp::orderVerts( unsigned int removeIdx, const TriList& tl, IndexList& idxList )
 {
+#if 0
+    {
+        osg::notify( osg::ALWAYS ) << "Remove: " << removeIdx << "  Tri dump:" << std::endl;
+        TriList::const_iterator tri;
+        for( tri = tl.begin(); tri != tl.end(); tri++ )
+        {
+            const Tri& t( *tri );
+            osg::notify( osg::ALWAYS ) << "  " << t._v0 << " " << t._v1 << "  " << t._v2 << std::endl;
+        }
+    }
+#endif
+
     // Make an ordered list of all the edges in the TriList that _don't_ contain the index being removed.
     EdgeList el;
     TriList::const_iterator tri;
@@ -486,7 +423,7 @@ ReducerOp::orderVerts( unsigned int removeIdx, const TriList& tl, IndexList& idx
     }
 
     // Find first edge. If the removed index was a boundary index, there will be
-    // an edge who's A index is not on any other edge; this is the starting edge.
+    // an edge whose A index is not on any other edge; this is the starting edge.
     // If we can't find an edge like this, it means the removed index was contained,
     // and any edge is suitable for starting, so we just use the first one.
     unsigned int eIdx;
@@ -523,11 +460,12 @@ ReducerOp::orderVerts( unsigned int removeIdx, const TriList& tl, IndexList& idx
             e1 = el[ tIdx ];
         if( ( e0._b != e1._a ) )
         {
-            osg::notify( osg::ALWAYS ) << "orderVerts, could not find next edge. Should never get here." << std::endl;
-            osg::notify( osg::ALWAYS ) << "     Edge list dump follows." << std::endl;
+            osg::notify( osg::WARN ) << "orderVerts, could not find next edge. Should never get here." << std::endl;
+            osg::notify( osg::WARN ) << "     Edge list dump follows." << std::endl;
             for( eIdx=0; eIdx<el.size(); eIdx++ )
-                osg::notify( osg::ALWAYS ) << "  " << el[eIdx]._a << " " << el[eIdx]._b;
-            osg::notify( osg::ALWAYS ) << std::endl;
+                osg::notify( osg::WARN ) << "  " << el[eIdx]._a << " " << el[eIdx]._b;
+            osg::notify( osg::WARN ) << std::endl;
+            idxList.clear();
             return;
         }
         if( eIdx+1 != tIdx ) 
@@ -675,28 +613,15 @@ void
 ReducerOp::reduce( osg::Geometry& geom )
 {
     //
-    // Step 0: ReducerOp works only with DrawElementsUInt GL_TRIANGLES.
-    // Convert all PrimitiveSets to this format.
-    if( !( convertToDEUITriangles( &geom ) ) )
-    {
-        osg::notify( osg::WARN ) << "ReducerOp: Unable to convert to DrawElementsUInt TRIANGLES." << std::endl;
-        return;
-    }
-
-
-    //
     // Step 1: Create a map of vertices to triangles. This is a 1 to many map.
     // Each triangle contains its three indices and a normalized facet normal.
-    VertToTriMap v2t;
-#ifdef USE_FUNCTOR
-    osg::ref_ptr< osg::Vec3Array > verts = makeMap( v2t, geom );
-    const bool success( verts.valid() );
-#else
     osg::Array* vArray = geom.getVertexArray();
     osg::ref_ptr< osg::Vec3Array > verts = dynamic_cast< osg::Vec3Array* >( vArray );
+    if( verts == NULL )
+        return;
 
+    VertToTriMap v2t;
     bool success = makeMap( v2t, geom );
-#endif
     if( !success )
     {
         osg::notify( osg::WARN ) << "ReducerOp: makeMap failed." << std::endl;
@@ -747,6 +672,10 @@ ReducerOp::reduce( osg::Geometry& geom )
                 // Can't reduce this group.
                 continue;
 
+#if 0
+// Shouldn't need to find and check the boundary edge again.
+// Should just be able to delete the vertex.
+
             // Step 3: For each group of triangles within the group threshold, generate a list
             // of "boundary edges": triangle edges that share the current vertex and are used
             // by only one triangle.
@@ -757,6 +686,7 @@ ReducerOp::reduce( osg::Geometry& geom )
             // removeableEdge returns true of the EdgeList contains zero edges (the vertex is
             // contained), or it contains 2 edges who's angle differs by less than max edge error.
             if( removeableEdge( el, verts.get() ) )
+#endif
                 deleteVertex( currentVert->first, *gitr, v2t, verts.get() );
         }
     }
@@ -832,6 +762,15 @@ ReducerOp::reduce( osg::Geometry& geom )
 osg::Geometry*
 ReducerOp::operator()( osg::Geometry& geom )
 {
+    // ReducerOp works only with DrawElementsUInt GL_TRIANGLES.
+    // Convert all PrimitiveSets to this format.
+    if( !( convertToDEUITriangles( &geom ) ) )
+    {
+        osg::notify( osg::WARN ) << "ReducerOp: Unable to convert to DrawElementsUInt TRIANGLES." << std::endl;
+        return( &geom );
+    }
+
+
     // Run possibly multiple passes to ensure complete reduction.
     unsigned int preIndices, postIndices( 0 );
 
