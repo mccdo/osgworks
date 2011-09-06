@@ -100,10 +100,10 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = "${osgWorks_SOURCE_DIR}/apps " \
-                         "${osgWorks_SOURCE_DIR}/include " \
-                         "${osgWorks_SOURCE_DIR}/src " \
-                         "${osgWorks_SOURCE_DIR}/tests "
+INPUT                  = "${osgWorks_SOURCE_DIR}/apps" \
+                         "${osgWorks_SOURCE_DIR}/include" \
+                         "${osgWorks_SOURCE_DIR}/src" \
+                         "${osgWorks_SOURCE_DIR}/tests"
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.cpp *.h
 RECURSIVE              = YES
@@ -273,7 +273,7 @@ PERL_PATH              = /usr/bin/perl
 
 DOT_PATH               = "${DOXYGEN_DOT_PATH}"
 HAVE_DOT               = ${HAVE_DOT}
-CLASS_DIAGRAMS         = NO
+CLASS_DIAGRAMS         = YES 
 MSCGEN_PATH            = 
 HIDE_UNDOC_RELATIONS   = YES
 DOT_NUM_THREADS        = 0
@@ -281,7 +281,7 @@ DOT_FONTNAME           = FreeSans.ttf
 DOT_FONTSIZE           = 10
 DOT_FONTPATH           = 
 CLASS_GRAPH            = YES
-COLLABORATION_GRAPH    = NO
+COLLABORATION_GRAPH    = YES 
 GROUP_GRAPHS           = YES
 UML_LOOK               = NO
 TEMPLATE_RELATIONS     = NO
