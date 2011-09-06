@@ -239,3 +239,4 @@ C:\Program Files\OpenSceneGraph\bin\osgPlugins-2.8.2\osgdb_dds.dll
 \bug osgwwhich has known issues finding dynamic libraries on OS X.
 
 */
+
