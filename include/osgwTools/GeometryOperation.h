@@ -21,7 +21,6 @@
 #ifndef __GEOMETRY_OPERATION_H__
 #define __GEOMETRY_OPERATION_H__
 
-//#include <osgBullet/Export.h>
 #include <osg/Object>
 #include <osg/Geometry>
 #include <osgwTools/Export.h>
@@ -225,3 +224,4 @@ impact the visual appearance of models when it runs aggressively, whereas Reduce
 does a better job of preserving model appearance.
 
 */
+
