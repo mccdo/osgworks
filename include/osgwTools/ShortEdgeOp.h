@@ -46,12 +46,15 @@ public:
     META_Object(osgwTools,ShortEdgeOp);
 
 
+    /** Default is 1.0 */
     void setSampleRatio(float sampleRatio) { _sampleRatio = sampleRatio; }
     float getSampleRatio() const { return _sampleRatio; }
 
+    /** Default is 0.1 */
     void setMaxFeature(float maxFeature) { _maxFeature = maxFeature; }
     float getMaxFeature() const { return _maxFeature; }
 
+    /** Default is FLT_MAX */
     void setMaximumError(float error) { _maximumError = error; }
     float getMaximumError() const { return _maximumError; }
 
@@ -67,6 +70,7 @@ public:
     void setMinPrimitives(unsigned int minPrim){_minPrim = minPrim;}
     unsigned int getMinPrimitives() const { return _minPrim;}
 
+    /** Default is UINT_MAX */
     void setMaxSteps(unsigned int maxSteps){_maxSteps = maxSteps;}
 
     /** \brief Application control mechanism to continue or halt decimation.

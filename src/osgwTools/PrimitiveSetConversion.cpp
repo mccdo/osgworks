@@ -86,7 +86,7 @@ osg::DrawElementsUInt* convertToDEUI( const osg::DrawElementsUShort* deus )
     deui->resize( deus->size() );
 
     unsigned int deuiIdx = 0;
-    const unsigned char* srcIdx = static_cast< const unsigned char* >( deus->getDataPointer() );
+    const unsigned short* srcIdx = static_cast< const unsigned short* >( deus->getDataPointer() );
     while( deuiIdx < deus->size() )
         (*deui)[ deuiIdx++ ] = *srcIdx++;
 
