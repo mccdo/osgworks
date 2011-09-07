@@ -44,8 +44,8 @@ void
 GeometryModifier::reset()
 {
     _drawableCount = _geometryCount = 0;
-    _preVertices = _preIndices = _prePrimitives = 0;
-    _postVertices = _postIndices = _postPrimitives = 0;
+    _preVertices = _preIndices = _preTriangles = 0;
+    _postVertices = _postIndices = _postTriangles = 0;
     _attemptDrawableMerge = 0;
 }
 
@@ -75,19 +75,19 @@ GeometryModifier::apply( osg::Geode& geode )
                 osg::notify( osg::ALWAYS ) << "Warning! Geometry contains shared arrays" << std::endl;
 
             // Get statistics before
-            incStatistics( geometry.get(), _preVertices, _preIndices, _prePrimitives );
+            incStatistics( geometry.get(), _preVertices, _preIndices, _preTriangles );
 
             osg::ref_ptr< osg::Geometry > newGeom = (*_geomOp)( *geometry );
             geode.replaceDrawable( geometry.get(), newGeom.get() );
 
             // Get statistics after
-            incStatistics( newGeom.get(), _postVertices, _postIndices, _postPrimitives );
+            incStatistics( newGeom.get(), _postVertices, _postIndices, _postTriangles );
         }
     }
 }
 
 void
-GeometryModifier::incStatistics( const osg::Geometry* geom, unsigned int& vert, unsigned int& ind, unsigned int& prim )
+GeometryModifier::incStatistics( const osg::Geometry* geom, unsigned int& vert, unsigned int& ind, unsigned int& tris )
 {
     vert += geom->getVertexArray()->getNumElements();
 
@@ -96,7 +96,26 @@ GeometryModifier::incStatistics( const osg::Geometry* geom, unsigned int& vert, 
     {
         const osg::PrimitiveSet* ps( geom->getPrimitiveSet( idx ) );
         ind += ps->getNumIndices();
-        prim += ps->getNumPrimitives();
+
+        switch( ps->getMode() )
+        {
+        case GL_TRIANGLES:
+            tris += ps->getNumPrimitives();
+            break;
+        case GL_TRIANGLE_STRIP:
+        case GL_QUAD_STRIP:
+            tris += ps->getNumIndices() - 2;
+            break;
+        case GL_TRIANGLE_FAN:
+        case GL_POLYGON:
+            tris += ps->getNumIndices() - 1;
+            break;
+        case GL_QUADS:
+            tris += ps->getNumPrimitives() * 2;
+            break;
+        default:
+            break;
+        }
     }
 }
 
@@ -109,7 +128,7 @@ GeometryModifier::displayStatistics( std::ostream& ostr ) const
     ostr << "              Before\tAfter" << std::endl;
     ostr << "  Vertices:   " << _preVertices << "\t" << _postVertices << std::endl;
     ostr << "  Indices:    " << _preIndices << "\t" << _postIndices << std::endl;
-    ostr << "  Primitives: " << _prePrimitives << "\t" << _postPrimitives << std::endl;
+    ostr << "  Triangles:  " << _preTriangles << "\t" << _postTriangles << std::endl;
 }
 
 }

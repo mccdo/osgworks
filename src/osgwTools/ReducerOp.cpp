@@ -68,7 +68,7 @@ ReducerOp::setMaxEdgeError( float maxEdgeError )
 bool ReducerOp::convertToDEUITriangles( osg::Geometry* geom )
 {
     const osg::Geometry::PrimitiveSetList& pslIn = geom->getPrimitiveSetList();
-    osg::Geometry::PrimitiveSetList pslIntermed, pslOut;
+    osg::Geometry::PrimitiveSetList pslIntermed, pslIntermed2, pslOut;
 
     // Convert everything to a DEUI
     osg::Geometry::PrimitiveSetList::const_iterator it;
@@ -95,8 +95,31 @@ bool ReducerOp::convertToDEUITriangles( osg::Geometry* geom )
     for( it=pslIntermed.begin(); it != pslIntermed.end(); it++ )
     {
         const osg::DrawElementsUInt* deui = static_cast< const osg::DrawElementsUInt* >( (*it).get() );
-        pslOut.push_back( convertAllFilledToTriangles( deui ) );
+        pslIntermed2.push_back( convertAllFilledToTriangles( deui ) );
     }
+
+    // Batch DEUI triangles into a minimum number of PrimitiveSets
+    osg::ref_ptr< osg::DrawElementsUInt > newDeui( new osg::DrawElementsUInt( GL_TRIANGLES ) );
+    pslOut.push_back( newDeui );
+    unsigned int remainder = 0xffffffff;
+    for( it=pslIntermed2.begin(); it != pslIntermed2.end(); it++ )
+    {
+        const osg::DrawElementsUInt* deui = static_cast< const osg::DrawElementsUInt* >( (*it).get() );
+        if( deui->getMode() == GL_TRIANGLES )
+        {
+            if( remainder < deui->size() )
+            {
+                // We filled the newDeui.
+                newDeui = new osg::DrawElementsUInt( GL_TRIANGLES );
+                pslOut.push_back( newDeui );
+                remainder = 0xffffffff;
+            }
+
+            newDeui->insert( newDeui->end(), deui->begin(), deui->end() );
+            remainder -= deui->size();
+        }
+    }
+
     geom->setPrimitiveSetList( pslOut );
 
     return( true );
