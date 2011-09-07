@@ -67,8 +67,8 @@ protected:
     unsigned int _drawableCount;
     unsigned int _geometryCount;
 
-    unsigned int _preVertices, _preIndices, _prePrimitives;
-    unsigned int _postVertices, _postIndices, _postPrimitives;
+    unsigned int _preVertices, _preIndices, _preTriangles;
+    unsigned int _postVertices, _postIndices, _postTriangles;
 
     bool _attemptDrawableMerge;
 };
