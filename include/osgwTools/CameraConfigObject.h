@@ -46,7 +46,7 @@ to osg::NOTICE and returns false.
 bool OSGWTOOLS_EXPORT configureViewer( osgViewer::Viewer& viewer, const std::string& configFile="" );
 
 
-/** \class CameraConfigInfo CameraConfigInfo.h <osgwTools/CameraConfigInfo.h>
+/** \class CameraConfigInfo CameraConfigObject.h <osgwTools/CameraConfigObject.h>
 \brief A chunk of info for configuring a single slave camera, as found in osgViewer::View.
 */
 class OSGWTOOLS_EXPORT CameraConfigInfo : public osg::Object

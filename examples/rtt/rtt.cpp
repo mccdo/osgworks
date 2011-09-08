@@ -18,14 +18,6 @@
  *
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
-/*
-This is a pure-OSG example that doesn't demonstrate any osgWorks-specific
-functionalitty. However, it demonstrates rendering to texture, then displaying
-that texture on a full-viewport quad, the basis of most modern GPU-based
-rendering. Furthermore, it demonstrates how to do this in a minimum amount of
-code, so that it's easy to see how the scene graph is configured.
-*/
-
 #include <osgDB/ReadFile>
 #include <osgViewer/Viewer>
 #include <osg/Camera>
@@ -125,3 +117,17 @@ main( int argc, char** argv )
 
     return( viewer.run() );
 }
+
+
+
+/** \page rtt The rtt Example
+rtt demonstrates rendering to texture and displaying that texture, with a
+minimum amount of code (less than 100 lines) and full osgGA camera manipulator
+support.
+
+This is a pure-OSG example that doesn't demonstrate any osgWorks-specific
+functionalitty. However, it demonstrates rendering to texture, then displaying
+that texture on a full-viewport quad, the basis of most modern GPU-based
+rendering. Furthermore, it demonstrates how to do this in a minimum amount of
+code, so that it's easy to see how the scene graph is configured.
+*/

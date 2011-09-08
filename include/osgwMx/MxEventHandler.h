@@ -53,13 +53,13 @@ as a template.
 
 \section User Interface
 
-* 'o': Toggle between orthographic and perspective (default).
-* 't': Switch to first person view.
-* Ctrl + shift + left click: Select view center and switch to third person (orbit) view.
-* Left mouse: rotation.
-* Shift + Left mouse: pan.
-* Right mouse: dolly forward/backward.
-* Scroll wheel: field of view.
+\li 'o': Toggle between orthographic and perspective (default).
+\li 't': Switch to first person view.
+\li Ctrl + shift + left click: Select view center and switch to third person (orbit) view.
+\li Left mouse: rotation.
+\li Shift + Left mouse: pan.
+\li Right mouse: dolly forward/backward.
+\li Scroll wheel: field of view.
 
 */
 class OSGWMX_EXPORT MxEventHandler : public osgGA::GUIEventHandler
