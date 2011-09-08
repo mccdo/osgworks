@@ -47,11 +47,11 @@ public:
 
 
     /** Default is 1.0 */
-    void setSampleRatio(float sampleRatio) { _sampleRatio = sampleRatio; }
+    void setSampleRatio( float sampleRatio ) { _sampleRatio = sampleRatio; }
     float getSampleRatio() const { return _sampleRatio; }
 
     /** Default is 0.1 */
-    void setMaxFeature(float maxFeature) { _maxFeature = maxFeature; }
+    void setMaxFeature( float maxFeature ) { _maxFeature = maxFeature; }
     float getMaxFeature() const { return _maxFeature; }
 
     /** Default is FLT_MAX */

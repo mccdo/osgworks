@@ -173,19 +173,19 @@ int main( int argc,
     grpcopy->setName("grpcopy"); // for ease of debugging
 
     // test LODCreationNodeVisitor
-    osgwTools::LODCreationNodeVisitor lodNodeVis(0);
+    osgwTools::LODCreationNodeVisitor lodNodeVis;
     // the minimum number of primitives necessary in a Geode in order for an LOD node or nodes to be generated
-    lodNodeVis.setTestMinVertices(50);
-    lodNodeVis.setTestMinPrimitives(minprim);
+    lodNodeVis.setTestMinVertices( 50 );
+    lodNodeVis.setTestMinPrimitives( minprim );
     // the desired number of remaining triangles in percent (0-1)
-    lodNodeVis.setMaxDecPercent(decimatorPercent);
-    lodNodeVis.setIgnoreBoundaries(decimatorIgnoreBoundaries);
+    lodNodeVis.setMaxDecPercent( decimatorPercent );
+    lodNodeVis.setIgnoreBoundaries( decimatorIgnoreBoundaries );
     // if you want to set the list of LOD pixel sizes and maximum feature sizes you must create an LODPairList
     //lodNodeVis.setLODPairs(LODPairList& lodPairList);
     grpcopy->accept( lodNodeVis );
     lodNodeVis.finishProcessingGeodes();
 
-    if (savefile)
+    if( savefile )
     {
         modelname.assign(namebase);
         modelname.append("orig.osg");
