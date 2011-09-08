@@ -56,8 +56,8 @@ public:
     void setIgnoreBoundaries(bool setting){_ignoreBoundaries = setting;}
     bool getIgnoreBoundaries(){return _ignoreBoundaries;}
 
-    void setMinPrimatives(unsigned int minPrim){_minPrim = minPrim;}
-    unsigned int getMinPrimatives() const { return _minPrim;}
+    void setMinPrimitives( unsigned int minPrim ) { _minPrim = minPrim; }
+    unsigned int getMinPrimitives() const { return( _minPrim ); }
 
     /** \class ContinueDecimationCallback DecimatorOp.h <osgwTools/DecimatorOp.h>
     \brief Application control mechanism to continue or halt decimation.
