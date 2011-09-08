@@ -1,34 +1,22 @@
-// Copyright (c) 2008 Skew Matrix Software LLC. All rights reserved.
-
-/*
-This example demonstrates how to render to multiple multisampled render
-targets. Typically, apps require that all multisampled color buffers
-get resolved. However, OSG currently inhibits this because it uses a
-single glBlitFramebuffer call where multiple calls would be required, one
-for each attached color buffer.
-
-To fix this issue, we leverage the Camera post draw callback to execute a
-second glBlitFramebuffer call after OSG executes the first blit. The
-MSMRTCallback class, below, contains the post-draw callback. The code
-assumes two color buffers are attached, and assumes OSG has already resolved
-the first color buffer (attachment 0). The code saves the texture attached
-as attachment 0, sets it to NULL (leaving only attachment 1), sets the draw
-and read buffers to attachment 1, then performs a blit. This resolves
-the multisampling in attachment 1. The callback then restores attachment 0.
-
-During development, it was discovered that OSG unbinds the FBOs after it
-performs a blit but before it calls the post-draw callback. However, our
-callback requires that the FBOs be bound. OSG's RenderStage class can be
-configured to keep these FBOs bound, with setDisableFboAfterRender( false ).
-It is difficult to call directly into a RenderStage. The only way to execute
-this call is with a cull callback, which can query the RenderStage from
-the CullVisitor. The KeepFBOsBoundCallback class, below, is responsible
-for doing this. In theory, it needs to be done once per cull thread, during
-the first frame (for example), then the cull callback can be removed.
-However, osgViewer's threading models require this be done for at least
-two frames.
-*/
-
+/*************** <auto-copyright.pl BEGIN do not edit this line> **************
+ *
+ * osgWorks is (C) Copyright 2009-2011 by Kenneth Mark Bryden
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License version 2.1 as published by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osg/Node>
 #include <osg/Camera>
@@ -40,6 +28,7 @@ two frames.
 #include <osgGA/TrackballManipulator>
 #include <osgDB/ReadFile>
 #include <osgViewer/Viewer>
+#include <osgwTools/FBOUtils.h>
 #include <osgwTools/Version.h>
 
 #include <string>
@@ -77,6 +66,7 @@ const int winW( 800 ), winH( 600 );
 #define GL_RENDERBUFFER 0x8D41
 #endif
 
+/* \cond */
 class MSMRTCallback : public osg::Camera::DrawCallback
 {
 public:
@@ -121,15 +111,9 @@ public:
         ctxInfo.__glGetFramebufferAttachmentParameteriv(
             GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
             GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &destColorTex0 );
-#if( OSGWORKS_OSG_VERSION > 20906 )
-        fboExt->glFramebufferTexture2D(
+        osgwTools::glFramebufferTexture2D( fboExt,
             GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
             GL_TEXTURE_2D, 0, 0 );
-#else
-        fboExt->glFramebufferTexture2DEXT(
-            GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-            GL_TEXTURE_2D, 0, 0 );
-#endif
 
         // Verification
         //osg::notify( osg::ALWAYS ) << "Dest " << std::hex << destColorTex0 << std::endl;
@@ -141,36 +125,22 @@ public:
 
         // Blit, from (multisampled read FBO) attachment1 to
         // (non-multisampled draw FBO) attachment1.
-#if( OSGWORKS_OSG_VERSION > 20906 )
-        fboExt->glBlitFramebuffer( 0, 0, width, height, 0, 0, width, height,
+        osgwTools::glBlitFramebuffer( fboExt, 0, 0, width, height, 0, 0, width, height,
             GL_COLOR_BUFFER_BIT, GL_NEAREST );
-#else
-        fboExt->glBlitFramebufferEXT( 0, 0, width, height, 0, 0, width, height,
-            GL_COLOR_BUFFER_BIT, GL_NEAREST );
-#endif
 
         // Restore draw and read buffers
         glDrawBuffer( GL_COLOR_ATTACHMENT0 );
         glReadBuffer( GL_COLOR_ATTACHMENT0 );
 
         // Restore the draw FBO's attachment0.
-#if( OSGWORKS_OSG_VERSION > 20906 )
-        fboExt->glFramebufferTexture2D(
+        osgwTools::glFramebufferTexture2D( fboExt,
             GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
             GL_TEXTURE_2D, destColorTex0, 0 );
-#else
-        fboExt->glFramebufferTexture2DEXT(
-            GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-            GL_TEXTURE_2D, destColorTex0, 0 );
-#endif
 
         // We disabled FBO unbinding in the RenderStage,
         // so do it ourself here.
-#if( OSGWORKS_OSG_VERSION > 20906 )
-        fboExt->glBindFramebuffer( GL_FRAMEBUFFER_EXT, 0 );
-#else
-        fboExt->glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
-#endif
+        /* TBD update to use FBOUtils.h */
+        osgwTools::glBindFramebuffer( fboExt, GL_FRAMEBUFFER, 0 );
     }
 
 protected:
@@ -225,6 +195,7 @@ public:
         traverse( node, nv );
     }
 };
+/* \endcond */
 
 
 // State set for writing two color values. Used when rendering
@@ -348,9 +319,9 @@ main( int argc, char** argv )
 {
     osg::notify( osg::ALWAYS ) <<
 // cols:  12345678901234567890123456789012345678901234567890123456789012345678901234567890
-         "This is an example of doing multisampled rendering to multiple render targets in" << std::endl <<
-         "OSG. It uses only one osgWorks feature to check for OSG version and configure" << std::endl <<
-         "the destination textures and RTT Cameras appropriately." << std::endl;
+         "This is an example of doing multisampled rendering to multiple render targets" << std::endl <<
+         "in OSG. It uses osgWorks only to check for OSG version and configure the" << std::endl <<
+         "destination textures and RTT Cameras appropriately." << std::endl;
 
     osg::ref_ptr< osg::Group > root( new osg::Group );
     root->addChild( osgDB::readNodeFile( "cow.osg" ) );
@@ -394,3 +365,35 @@ main( int argc, char** argv )
     }
     return( 0 );
 }
+
+
+/** \page msmrt The msmrt Example
+msmrt demonstrates rendering multisampled to multiple render targets.
+
+This example demonstrates how to render to multiple multisampled render
+targets. Typically, apps require that all multisampled color buffers
+get resolved. However, OSG currently inhibits this because it uses a
+single glBlitFramebuffer call where multiple calls would be required, one
+for each attached color buffer.
+
+To fix this issue, we leverage the Camera post draw callback to execute a
+second glBlitFramebuffer call after OSG executes the first blit. The
+MSMRTCallback class contains the post-draw callback. The code
+assumes two color buffers are attached, and assumes OSG has already resolved
+the first color buffer (attachment 0). The code saves the texture attached
+as attachment 0, sets it to NULL (leaving only attachment 1), sets the draw
+and read buffers to attachment 1, then performs a blit. This resolves
+the multisampling in attachment 1. The callback then restores attachment 0.
+
+During development, it was discovered that OSG unbinds the FBOs after it
+performs a blit but before it calls the post-draw callback. However, our
+callback requires that the FBOs be bound. OSG's RenderStage class can be
+configured to keep these FBOs bound, with setDisableFboAfterRender( false ).
+It is difficult to call directly into a RenderStage. The only way to execute
+this call is with a cull callback, which can query the RenderStage from
+the CullVisitor. The KeepFBOsBoundCallback class is responsible
+for doing this. In theory, it needs to be done once per cull thread, during
+the first frame (for example), then the cull callback can be removed.
+However, osgViewer's threading models require this be done for at least
+two frames.
+*/

@@ -32,7 +32,7 @@
 namespace osgwTools {
 
 
-/** \class CompositeDrawCallback CompositeDrawCallback.h <osgwTools/CompositeDrawCallback.h>
+/** \class CompositeDrawCallback CallbackSupport.h <osgwTools/CallbackSupport.h>
 \brief Support for multiple Camera draw callbacks
 
 In (at least) OSG 2.6.x and 2.8.x, Cameras can have only one DrawCallback attached

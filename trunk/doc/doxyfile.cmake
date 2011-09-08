@@ -101,6 +101,7 @@ WARN_LOGFILE           =
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = "${osgWorks_SOURCE_DIR}/apps" \
+                         "${osgWorks_SOURCE_DIR}/examples" \
                          "${osgWorks_SOURCE_DIR}/include" \
                          "${osgWorks_SOURCE_DIR}/src" \
                          "${osgWorks_SOURCE_DIR}/tests"
