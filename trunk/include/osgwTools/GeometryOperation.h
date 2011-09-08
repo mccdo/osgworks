@@ -41,7 +41,9 @@ public:
     /** Derived classes must override this method and return
      a pointer to a new Geometry object. */
     virtual osg::Geometry* operator()( osg::Geometry& geom ) = 0;
-    virtual void setMaxSteps(unsigned int maxSteps){};
+
+    /** \brief Currently for benefit of ShortEdgeOp only. */
+    virtual void setMaxSteps( unsigned int maxSteps){ };
 
 protected:
     virtual ~GeometryOperation();

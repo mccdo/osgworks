@@ -54,7 +54,7 @@ int main( int argc,
 
     arguments.getApplicationUsage()->addCommandLineOption( "--decPercent <n>", "Use DecimatorOp (also valid parameter for ShortEdgeOp). <n> is the target percentage of triangles to remain, in the range 0.0 to 1.0. Default 0.6" );
     arguments.getApplicationUsage()->addCommandLineOption( "--respectBoundaries", "Will not decimate boundary polygons, will not decimate fully but may fix some mesh errors. Default False" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--minPrimatives <n>", "Sets the minimum primitives a geometry must have to start Decimation. Default 1." );
+    arguments.getApplicationUsage()->addCommandLineOption( "--minPrimitives <n>", "Sets the minimum primitives a geometry must have to start Decimation. Default 1." );
     arguments.getApplicationUsage()->addCommandLineOption( "--attemptMerge <n>", "Attempts to merge drawables within the model prior to any geometry reduction using a Optimizer::MergeGeometryVisitor. In cases where there are multiple drawables, more functional decimation may result. Default False" );
     arguments.getApplicationUsage()->addCommandLineOption( "--numParts <n>", "Controls the geometry building process if user chooses to use a model built in software (see GeometryModifier.h). numParts controls the geometry and can be used to test different aspects of the decimation routines. Default 3. Range 0-4." );
 
@@ -98,7 +98,7 @@ int main( int argc,
         decimatorIgnoreBoundaries = false;
 
     int minprim(1);
-    if (arguments.read("--minPrimatives", str))
+    if (arguments.read("--minPrimitives", str))
     {
         if( sscanf( str.c_str(), "%u", &minprim ) != 1 )
         {

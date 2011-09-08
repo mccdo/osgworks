@@ -61,19 +61,16 @@ int main( int argc,
     arguments.getApplicationUsage()->setDescription( arguments.getApplicationName() + " shows a before and after image of the DecimatorOp module, using a default decimation of 0.6." );
     arguments.getApplicationUsage()->setCommandLineUsage( arguments.getApplicationName() + " [options] filename ..." );
 
-    arguments.getApplicationUsage()->addCommandLineOption( "--reducer", "Use ReducerOp." );
-    arguments.getApplicationUsage()->addCommandLineOption( "--shortedge", "Use ShortEdgeOp." );
-    arguments.getApplicationUsage()->addCommandLineOption( "--decPercent <n>", "Use DecimatorOp (also valid parameter for ShortEdgeOp). <n> is the target percentage of triangles to remain, in the range 0.0 to 1.0. Default 0.6" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--decMaxError <n>", "Specifies the Decimator maximum error tolerance. Geometry exceeding this tolerance is not reduced. <n> is in the range 0.0 to FLT_MAX. Default FLT_MAX" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--respectBoundaries", "Will not decimate boundary polygons, will not decimate fully but may fix some mesh errors. Default False" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--minPrimatives <n>", "Sets the minimum primitives a geometry must have to start Decimation. Default 1." );
+    arguments.getApplicationUsage()->addCommandLineOption( "--reducer", "Use ReducerOp. (Use DecimatorOp if neither --reducer nor --shortEdge are specified.)" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--shortEdge", "Use ShortEdgeOp. (Use DecimatorOp if neither --reducer nor --shortEdge are specified.)" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--percent <n>", "Reduction percentage for DecimatorOp and ShortEdgeOp. <n> is the target percentage of triangles to remain, in the range 0.0 to 1.0. Default 0.6" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--maxError <n>", "Maximum error tolerance for DecimatorOp and ShortEdgeOp. Geometry exceeding this tolerance is not reduced. <n> is in the range 0.0 to FLT_MAX. Default FLT_MAX" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--respectBoundaries", "Prevents DecimatorOp and ShortEdgeOp from removing boundary edges and polygons. Default False" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--minPrimitives <n>", "Minimum primitives in a geometry for DecimatorOp and ShortEdgeOp to consider it for reduction. Default 1." );
     arguments.getApplicationUsage()->addCommandLineOption( "--maxFeature <n>", "Specifies the ShortEdgeOp largest feature size to be removed, measured in model units. Can be combined with decPercent to limit the decimation using ShortEdgeOp. Default 0.1" );
     arguments.getApplicationUsage()->addCommandLineOption( "--attemptMerge <n>", "Attempts to merge drawables within the model prior to any geometry reduction using a MergeGeometryVisitor. In cases where there are multiple drawables, more functional decimation may result. Default False" );
     arguments.getApplicationUsage()->addCommandLineOption( "--numParts <n>", "Controls the geometry building process if user chooses to use a model built in software (see GeometryModifier.h). numParts controls the geometry and can be used to test different aspects of the decimation routines. Default 3. Range 0-4." );
     arguments.getApplicationUsage()->addCommandLineOption( "--attemptMerge <n>", "Attempt to merge geometry drawables into one using Optimizer::MergeGeometryVisitor before using specified geometry reduction operator." );
-
-    bool useReducer( arguments.find( "--reducer" ) >= 0 );
-    bool useShortEdge( arguments.find( "--shortedge" ) >= 0 );
 
     if( arguments.read( "-h" ) || arguments.read( "--help" ) )
     {
@@ -81,82 +78,27 @@ int main( int argc,
         return 1;
     }
 
-    if (arguments.errors())
-    {
-        arguments.writeErrorMessages( osg::notify( osg::FATAL ) );
-        return 1;
-    }
 
+    bool useReducer( arguments.find( "--reducer" ) >= 0 );
+    bool useShortEdge( arguments.find( "--shortedge" ) >= 0 );
+    bool useDecimator( !useReducer && !useShortEdge );
 
-    float decimatorPercent( .6 );
-    std::string str;
-    if ( arguments.read( "--decPercent", str ) )
-    {
-        if( sscanf( str.c_str(), "%f", &decimatorPercent ) != 1 )
-        {
-            arguments.getApplicationUsage()->write( osg::notify( osg::FATAL ) );
-            return 1;
-        }
+    float percent( .6 );
+    arguments.read( "--percent", percent );
 
-    }
-    float decimatorMaxError( FLT_MAX );
-    if ( arguments.read( "--decMaxError", str ) )
-    {
-        if( sscanf( str.c_str(), "%f", &decimatorMaxError ) != 1 )
-        {
-            arguments.getApplicationUsage()->write( osg::notify( osg::FATAL ) );
-            return 1;
-        }
-    }
-    bool decimatorIgnoreBoundaries = (true);
-    if (arguments.read( "--respectBoundaries" ))
-        decimatorIgnoreBoundaries = false;
+    float maxError( FLT_MAX );
+    arguments.read( "--maxError", maxError );
 
-    int minprim(1);
-    if (arguments.read("--minPrimatives", str))
-    {
-        if( sscanf( str.c_str(), "%u", &minprim ) != 1 )
-        {
-            arguments.getApplicationUsage()->write( osg::notify( osg::FATAL ) );
-            return 1;
-        }
-    }
-    if (decimatorPercent < 1.f )
-        osg::notify( osg::INFO ) << "DecimatorOp: " << decimatorPercent << ", " << decimatorMaxError << std::endl;
+    const bool ignoreBoundaries( arguments.read( "--respectBoundaries" ) == 0 );
 
-    float shortEdgeFeature( .1 );
-    if ( arguments.read( "--maxFeature", str ) )
-    {
-        if( sscanf( str.c_str(), "%f", &shortEdgeFeature ) != 1 )
-        {
-            arguments.getApplicationUsage()->write( osg::notify( osg::FATAL ) );
-            return 1;
-        }
-    }
-    bool attemptMerge = (false);
-    if (arguments.read( "--attemptMerge" ))
-        attemptMerge = true;
+    int minPrim( 1 );
+    arguments.read( "--minPrimitives", minPrim );
 
-    bool useAgg = false;
-    unsigned int aggMaxVerticies( 0 );
-    osg::Vec3 aggMinCellSize( 0., 0., 0. );
-    if(arguments.read( "--aggMaxVerts", str) )
-    {
-        if( sscanf( str.c_str(), "%u", &aggMaxVerticies) != 1 )
-        {
-            arguments.getApplicationUsage()->write( osg::notify( osg::FATAL ) );
-        }
-        useAgg = true;
-        if ( arguments.read( "--aggMinCellSize", str ) )
-        {
-            char comma;
-            std::istringstream oStr( str );
-            oStr >> aggMinCellSize[ 0 ] >> comma >>
-                aggMinCellSize[ 1 ] >> comma >>
-                aggMinCellSize[ 2 ];
-        }
-    }
-    
+    float maxFeature( .1 );
+    arguments.read( "--maxFeature", maxFeature );
+
+    bool attemptMerge( arguments.read( "--attemptMerge" ) != 0 );
+
     std::string modelname, namebase;
     namebase = "C:\\OSGDev\\Stable\\data\\";
     bool savefile = false;
@@ -167,14 +109,8 @@ int main( int argc,
             // built model can consist of one part or two or three. If one part, the front, back and sides can share vertices or have duplicate sets of vertices for the edge triangles. 
             // Merge results may differ depending which is modeled and how the decimation algorithm is implemented and whether or not a geometry merge is attempted prior to decimation.
             int numParts( 3 );
-            if ( arguments.read( "--numParts", str ) )
-            {
-                if( sscanf( str.c_str(), "%u", &numParts ) != 1 )
-                {
-                    arguments.getApplicationUsage()->write( osg::notify( osg::FATAL ) );
-                    return 1;
-                }
-            }
+            arguments.read( "--numParts", numParts );
+
             osgwTools::DecimationTestModel* builtModel = new osgwTools::DecimationTestModel(numParts);
             if (builtModel)
             {
@@ -208,45 +144,37 @@ int main( int argc,
     grpcopy->setName("grpcopy"); // for ease of debugging
 
     osgwTools::GeometryOperation* reducer;
-    if(!useAgg && !useReducer && !useShortEdge)
+    if( useDecimator )
     {
         osgwTools::DecimatorOp* decimate = new osgwTools::DecimatorOp;
-        decimate->setSampleRatio(decimatorPercent);
-        decimate->setMaximumError(decimatorMaxError);
-        decimate->setIgnoreBoundaries(decimatorIgnoreBoundaries);
-        decimate->setMinPrimatives(minprim);
+        decimate->setSampleRatio( percent );
+        decimate->setMaximumError( maxError );
+        decimate->setIgnoreBoundaries( ignoreBoundaries );
+        decimate->setMinPrimitives( minPrim );
         reducer = decimate;
+    }
+    else if( useShortEdge )
+    {
+        osgwTools::ShortEdgeOp* seOp = new osgwTools::ShortEdgeOp( percent, maxError, maxFeature );
+        seOp->setIgnoreBoundaries( ignoreBoundaries );
+        seOp->setMinPrimitives( minPrim );
+        reducer = seOp;
     }
     else if( useReducer )
     {
         osgwTools::ReducerOp* redOp = new osgwTools::ReducerOp;
         reducer = redOp;
     }
-    else if( useShortEdge )
-    {
-        osgwTools::ShortEdgeOp* seOp = new osgwTools::ShortEdgeOp(decimatorPercent, decimatorMaxError, shortEdgeFeature);
-        seOp->setIgnoreBoundaries(decimatorIgnoreBoundaries);
-        seOp->setMinPrimitives(minprim);
-        reducer = seOp;
-    }
-    else
-    {
-        /* TBD
-        osgBullet::VertexAggOp* vertagg = new osgBullet::VertexAggOp;
-        vertagg->setMaxVertsPerCell( aggMaxVerticies );
-        vertagg->setMinCellSize( aggMinCellSize );reducer = vertagg;
-        reducer = vertagg;
-        */
-    }
+
     if( reducer != NULL )
     {
-        osgwTools::GeometryModifier modifier(reducer);
-        modifier.setDrawableMerge(attemptMerge);
-        grpcopy->accept( modifier);
+        osgwTools::GeometryModifier modifier( reducer );
+        modifier.setDrawableMerge( attemptMerge );
+        grpcopy->accept( modifier );
         modifier.displayStatistics( osg::notify( osg::ALWAYS ) );
     }
 
-    if (savefile)
+    if( savefile )
     {
         modelname.assign(namebase);
         modelname.append("orig.osg");

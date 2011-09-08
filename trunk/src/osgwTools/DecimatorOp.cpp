@@ -1817,7 +1817,7 @@ void DecimatorOp::decimate(osg::Geometry& geometry)
     hec.setGeometry(&geometry);
     hec.updateErrorMetricForAllEdges();
     unsigned int numOriginalPrimitives = hec._triangleSet.size();
-    osg::notify( osg::INFO ) << "  Primatives Available to Decimate: "<<numOriginalPrimitives<<std::endl;
+    osg::notify( osg::INFO ) << "  Primitives Available to Decimate: "<<numOriginalPrimitives<<std::endl;
     
     if ((numOriginalPrimitives < _minPrim)){
        osg::notify( osg::INFO ) << "  Geomety too small to decimate: skipping...\n";
