@@ -29,6 +29,7 @@ MACRO( ADD_OSGPLUGIN TRGTNAME )
         osgwQuery
         osgwControls
         osgwTools
+        osgwMx
     )
     target_link_libraries( ${TRGTNAME}
         ${OSG_LIBRARIES}
@@ -49,6 +50,7 @@ MACRO( MAKE_EXECUTABLE EXENAME )
         osgwQuery
         osgwControls
         osgwTools
+        osgwMx
     )
     TARGET_LINK_LIBRARIES( ${EXENAME}
         ${OSG_LIBRARIES}
