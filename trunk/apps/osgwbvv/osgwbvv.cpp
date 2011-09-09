@@ -45,6 +45,7 @@ osg::Node* makeOrigin()
     at->addChild( geode.get() );
 
     osg::StateSet* ss = geode->getOrCreateStateSet();
+    ss->setRenderBinDetails( 0x7fffffff, "RenderBin" );
     ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
     ss->setAttributeAndModes( new osg::Point( 6. ) );
 
@@ -102,11 +103,7 @@ int main( int argc, char** argv )
     if( arguments.find( "--sphere" ) > 0 )
         doSphere = true;
     
-    bool displayOrigin( false );
-    if( arguments.find( "--origin" ) > 0 )
-    {
-        displayOrigin = true;
-    }
+    const bool displayOrigin( arguments.find( "--origin" ) > 0 );
 
     if( arguments.read( "-v" ) || arguments.read( "--version" ) )
     {
