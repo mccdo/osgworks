@@ -64,13 +64,13 @@ int main( int argc,
     arguments.getApplicationUsage()->addCommandLineOption( "--reducer", "Use ReducerOp. (Use DecimatorOp if neither --reducer nor --shortEdge are specified.)" );
     arguments.getApplicationUsage()->addCommandLineOption( "--shortEdge", "Use ShortEdgeOp. (Use DecimatorOp if neither --reducer nor --shortEdge are specified.)" );
     arguments.getApplicationUsage()->addCommandLineOption( "--percent <n>", "Reduction percentage for DecimatorOp and ShortEdgeOp. <n> is the target percentage of triangles to remain, in the range 0.0 to 1.0. Default 0.6" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--maxError <n>", "Maximum error tolerance for DecimatorOp and ShortEdgeOp. Geometry exceeding this tolerance is not reduced. <n> is in the range 0.0 to FLT_MAX. Default FLT_MAX" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--maxError <n>", "Maximum error tolerance for DecimatorOp, ReducerOp, and ShortEdgeOp. Geometry exceeding this tolerance is not reduced. <n> is in the range 0.0 to FLT_MAX. Default FLT_MAX" );
     arguments.getApplicationUsage()->addCommandLineOption( "--respectBoundaries", "Prevents DecimatorOp and ShortEdgeOp from removing boundary edges and polygons. Default False" );
     arguments.getApplicationUsage()->addCommandLineOption( "--minPrimitives <n>", "Minimum primitives in a geometry for DecimatorOp and ShortEdgeOp to consider it for reduction. Default 1." );
     arguments.getApplicationUsage()->addCommandLineOption( "--maxFeature <n>", "Specifies the ShortEdgeOp largest feature size to be removed, measured in model units. Can be combined with decPercent to limit the decimation using ShortEdgeOp. Default 0.1" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--attemptMerge <n>", "Attempts to merge drawables within the model prior to any geometry reduction using a MergeGeometryVisitor. In cases where there are multiple drawables, more functional decimation may result. Default False" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--numParts <n>", "Controls the geometry building process if user chooses to use a model built in software (see GeometryModifier.h). numParts controls the geometry and can be used to test different aspects of the decimation routines. Default 3. Range 0-4." );
-    arguments.getApplicationUsage()->addCommandLineOption( "--attemptMerge <n>", "Attempt to merge geometry drawables into one using Optimizer::MergeGeometryVisitor before using specified geometry reduction operator." );
+    arguments.getApplicationUsage()->addCommandLineOption( "--grpThreshold <n>", "Specifies the ReducderOp group threshold, in degrees. Default is 10.0" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--attemptMerge", "Attempt to merge geometry drawables into one using Optimizer::MergeGeometryVisitor before using specified geometry reduction operator." );
+    arguments.getApplicationUsage()->addCommandLineOption( "--save", "Attempt to merge geometry drawables into one using Optimizer::MergeGeometryVisitor before using specified geometry reduction operator." );
 
     if( arguments.read( "-h" ) || arguments.read( "--help" ) )
     {
@@ -80,7 +80,7 @@ int main( int argc,
 
 
     bool useReducer( arguments.find( "--reducer" ) >= 0 );
-    bool useShortEdge( arguments.find( "--shortedge" ) >= 0 );
+    bool useShortEdge( arguments.find( "--shortEdge" ) >= 0 );
     bool useDecimator( !useReducer && !useShortEdge );
 
     float percent( .6 );
@@ -97,42 +97,19 @@ int main( int argc,
     float maxFeature( .1 );
     arguments.read( "--maxFeature", maxFeature );
 
+    float grpThreshold( 10. );
+    arguments.read( "--grpThreshold", grpThreshold );
+
     bool attemptMerge( arguments.read( "--attemptMerge" ) != 0 );
 
-    std::string modelname, namebase;
-    namebase = "C:\\OSGDev\\Stable\\data\\";
-    bool savefile = false;
-    // builds a model for testing if no model file supplied
-    osg::Node*  model = osgDB::readNodeFiles( arguments );
-    if( !model )
-        {
-            // built model can consist of one part or two or three. If one part, the front, back and sides can share vertices or have duplicate sets of vertices for the edge triangles. 
-            // Merge results may differ depending which is modeled and how the decimation algorithm is implemented and whether or not a geometry merge is attempted prior to decimation.
-            int numParts( 3 );
-            arguments.read( "--numParts", numParts );
+    bool saveOutput( arguments.read( "--save" ) != 0 );
 
-            osgwTools::DecimationTestModel* builtModel = new osgwTools::DecimationTestModel(numParts);
-            if (builtModel)
-            {
-                model = builtModel->getModel();
-                if (savefile)
-                {
-                    char partNum[64];
-                    sprintf(partNum, "%1d_", numParts);
-                    namebase.append("DecimationTestModel_");
-                    namebase.append(partNum);
-                }
-            }
-            if (!model)
-            {
-                osg::notify( osg::FATAL ) << "Can't load input file(s)." << std::endl;
-                return 1;
-            }
-           
-        }
-    else
+    osg::Node*  model = osgDB::readNodeFiles( arguments );
+    if( model == NULL )
     {
-        namebase.append("LoadedTestModel_");
+        osg::notify( osg::ALWAYS ) << "Unable to load data file." << std::endl;
+        arguments.getApplicationUsage()->write( osg::notify( osg::ALWAYS ), osg::ApplicationUsage::COMMAND_LINE_OPTION );
+        return 1;
     }
 
     osg::ref_ptr<osg::Group> grporig = new osg::Group;
@@ -163,6 +140,8 @@ int main( int argc,
     else if( useReducer )
     {
         osgwTools::ReducerOp* redOp = new osgwTools::ReducerOp;
+        redOp->setGroupThreshold( grpThreshold );
+        redOp->setMaxEdgeError( maxError );
         reducer = redOp;
     }
 
@@ -174,14 +153,10 @@ int main( int argc,
         modifier.displayStatistics( osg::notify( osg::ALWAYS ) );
     }
 
-    if( savefile )
+    if( saveOutput )
     {
-        modelname.assign(namebase);
-        modelname.append("orig.osg");
-        osgDB::writeNodeFile(*grporig, modelname.c_str());
-        modelname.assign(namebase);
-        modelname.append("reduced.osg");
-        osgDB::writeNodeFile(*grpcopy, modelname.c_str());
+        std::string modelName( "reduced.osg" );
+        osgDB::writeNodeFile( *grpcopy, modelName );
     }
 
     //
