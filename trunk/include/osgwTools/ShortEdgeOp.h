@@ -58,9 +58,11 @@ public:
     void setMaximumError(float error) { _maximumError = error; }
     float getMaximumError() const { return _maximumError; }
 
+    /** Default is true. */
     void setDoTriStrip(bool on) { _triStrip = on; }
     bool getDoTriStrip() const { return _triStrip; }
 
+    /** Default is false. */
     void setSmoothing(bool on) { _smoothing = on; }
     bool getSmoothing() const { return _smoothing; }
 
@@ -70,7 +72,7 @@ public:
     void setMinPrimitives(unsigned int minPrim){_minPrim = minPrim;}
     unsigned int getMinPrimitives() const { return _minPrim;}
 
-    /** Default is UINT_MAX */
+    /** Default is UINT_MAX. */
     void setMaxSteps(unsigned int maxSteps){_maxSteps = maxSteps;}
 
     /** \brief Application control mechanism to continue or halt decimation.

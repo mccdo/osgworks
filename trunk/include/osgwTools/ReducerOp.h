@@ -83,11 +83,13 @@ public:
 
     virtual osg::Geometry* operator()( osg::Geometry& geom );
 
-    /** \brief Specify the group threshold in degrees. Default is 10. */
+    /** \brief Specify the group threshold in degrees. Default is 10.
+    Larger values result in greater geometry reduction. */
     void setGroupThreshold( float groupThreshold );
     float getGroupThreshold() const { return( _groupThreshold ); }
 
-    /** \brief Specify the maximum edge error in degrees. Default is 10. */
+    /** \brief Specify the maximum edge error in degrees. Default is 10.
+    Larger values result in greater geometry reduction. */
     void setMaxEdgeError( float maxEdgeError );
     float getMaxEdgeError() const { return( _maxEdgeError ); }
 
