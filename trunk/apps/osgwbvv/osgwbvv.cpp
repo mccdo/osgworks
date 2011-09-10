@@ -19,9 +19,14 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include "osgwTools/Version.h"
-#include <osg/ArgumentParser>
+#include "osgwTools/Shapes.h"
+
 #include <osgDB/ReadFile>
+
 #include <osgViewer/Viewer>
+#include <osgViewer/ViewerEventHandlers>
+
+#include <osg/ArgumentParser>
 #include <osg/ComputeBoundsVisitor>
 #include <osg/BoundingSphere>
 #include <osg/MatrixTransform>
@@ -172,7 +177,11 @@ int main( int argc, char** argv )
         decorations->addChild( makeOrigin() );
 
 
-    osgViewer::Viewer viewer;
+    osgViewer::Viewer viewer( arguments );
+
+    // add the window size toggle handler
+    viewer.addEventHandler(new osgViewer::WindowSizeHandler);
+    
     viewer.setSceneData( root.get() );
     return( viewer.run() );
 }
