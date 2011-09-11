@@ -72,7 +72,7 @@ GeometryModifier::apply( osg::Geode& geode )
         {
             _geometryCount++;
             if( geometry->containsSharedArrays() )
-                osg::notify( osg::ALWAYS ) << "Warning! Geometry contains shared arrays" << std::endl;
+                osg::notify( osg::DEBUG_INFO ) << "Warning! Geometry contains shared arrays" << std::endl;
 
             // Get statistics before
             incStatistics( geometry.get(), _preVertices, _preIndices, _preTriangles );
