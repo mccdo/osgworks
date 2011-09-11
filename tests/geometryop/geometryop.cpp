@@ -79,8 +79,8 @@ int main( int argc,
     }
 
 
-    bool useReducer( arguments.find( "--reducer" ) >= 0 );
-    bool useShortEdge( arguments.find( "--shortEdge" ) >= 0 );
+    bool useReducer( arguments.find( "--reducer" ) > 0 );
+    bool useShortEdge( arguments.find( "--shortEdge" ) > 0 );
     bool useDecimator( !useReducer && !useShortEdge );
 
     float percent( .6 );
@@ -100,9 +100,9 @@ int main( int argc,
     float grpThreshold( 10. );
     arguments.read( "--grpThreshold", grpThreshold );
 
-    bool attemptMerge( arguments.read( "--attemptMerge" ) != 0 );
+    bool attemptMerge( arguments.find( "--attemptMerge" ) > 0 );
 
-    bool saveOutput( arguments.read( "--save" ) != 0 );
+    bool saveOutput( arguments.find( "--save" ) > 0 );
 
     osg::Node*  model = osgDB::readNodeFiles( arguments );
     if( model == NULL )
