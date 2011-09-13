@@ -218,5 +218,29 @@ void AddQueries::addDataToNodePath( osg::NodePath& np, unsigned int numVertices,
 }
 
 
+
+void RemoveQueries::apply( osg::Node& node )
+{
+    osg::NodeCallback* cb = node.getCullCallback();
+    QueryCullCallback* qcc = dynamic_cast< QueryCullCallback* >( cb );
+
+    if( qcc != NULL )
+        node.setCullCallback( NULL );
+
+    traverse( node );
+}
+
+void RemoveQueries::apply( osg::Camera& node )
+{
+    osg::Camera::DrawCallback* cb = node.getPostDrawCallback();
+    CameraResetCallback* crc = dynamic_cast< CameraResetCallback* >( cb );
+
+    if( crc != NULL )
+        node.setPostDrawCallback( NULL );
+
+    traverse( node );
+}
+
+
 // osgwQuery
 }
