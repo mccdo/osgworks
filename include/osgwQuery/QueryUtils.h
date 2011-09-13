@@ -115,6 +115,22 @@ protected:
     unsigned int _queryCount;
 };
 
+/** \class RemoveQueries QueryUtils.h <osgwQuery/QueryUtils.h>
+\brief Remove the effects of an AddQueries visitor.
+*/
+class OSGWQUERY_EXPORT RemoveQueries : public osg::NodeVisitor
+{
+public:
+    RemoveQueries( osg::NodeVisitor::TraversalMode mode=osg::NodeVisitor::TRAVERSE_ALL_CHILDREN )
+      : osg::NodeVisitor( mode )
+    {}
+
+    virtual void apply( osg::Node& node );
+    virtual void apply( osg::Camera& node );
+
+protected:
+};
+
 /*@}*/
 
 
