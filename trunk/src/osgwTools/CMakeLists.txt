@@ -43,6 +43,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/TangentSpaceOp.h
     ${HEADER_PATH}/Transform.h
     ${HEADER_PATH}/TransparencyUtils.h
+    ${HEADER_PATH}/Uniqifier.h
     ${HEADER_PATH}/Version.h
 )
 
@@ -81,6 +82,7 @@ set( _osgwToolsSourceFiles
     TangentSpaceOp.cpp
     Transform.cpp
     TransparencyUtils.cpp
+    Uniqifier.cpp
     Version.cpp
 )
 
