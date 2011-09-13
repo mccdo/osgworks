@@ -30,7 +30,7 @@ namespace osgwTools
 
 
 /** \class Uniqifier Uniqifier.h <osgwTools/Uniqifier.h>
-\brief Eliminates multiparenting by turing shared nodes into unique nodes.
+\brief Eliminates multiparenting by turning shared nodes into unique nodes.
 */
 class OSGWTOOLS_EXPORT Uniqifier : public osg::NodeVisitor
 {
