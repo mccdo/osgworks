@@ -229,8 +229,15 @@ void CountsVisitor::apply( osg::Drawable* draw )
         if (!geom->areFastPathsUsed())
             _slowPathGeometries++;
 
-        if (geom->getVertexArray())
-            _vertices += geom->getVertexArray()->getNumElements();
+        if( geom->getNumPrimitiveSets() > 0 )
+        {
+            unsigned int idx;
+            for( idx=0; idx < geom->getNumPrimitiveSets(); idx++ )
+            {
+                osg::PrimitiveSet* ps = geom->getPrimitiveSet( idx );
+                _vertices += ps->getNumIndices();
+            }
+        }
         else
             _nullGeometries++;
         osg::ref_ptr<osg::Object> rpv = (osg::Object*)( geom->getVertexArray() );
