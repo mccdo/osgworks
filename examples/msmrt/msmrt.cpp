@@ -307,8 +307,6 @@ main( int argc, char** argv )
 
 
     osgViewer::Viewer viewer;
-    // TBD remove
-    //viewer.setThreadingModel( osgViewer::ViewerBase::SingleThreaded );
     viewer.getCamera()->setClearColor( osg::Vec4( 0., 0., 0., 1. ) );
     viewer.setCameraManipulator( new osgGA::TrackballManipulator );
     viewer.setUpViewInWindow( 10, 30, winW, winH );
