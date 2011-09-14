@@ -37,35 +37,6 @@
 const int winW( 800 ), winH( 600 );
 
 
-// Define some OpenGL constants for FBOs that OSG doesn't define/use.
-#ifndef GL_READ_FRAMEBUFFER
-#define GL_READ_FRAMEBUFFER 0x8CA8
-#endif
-#ifndef GL_DRAW_FRAMEBUFFER
-#define GL_DRAW_FRAMEBUFFER 0x8CA9
-#endif
-#ifndef GL_COLOR_ATTACHMENT0
-#define GL_COLOR_ATTACHMENT0 0x8CE0
-#endif
-#ifndef GL_COLOR_ATTACHMENT1
-#define GL_COLOR_ATTACHMENT1 (GL_COLOR_ATTACHMENT0+1)
-#endif
-#ifndef GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME
-#define GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME 0x8CD1 
-#endif
-#ifndef GL_FRAMEBUFFER_BINDING
-#define GL_FRAMEBUFFER_BINDING 0x8CA6
-#endif
-#ifndef GL_DRAW_FRAMEBUFFER_BINDING
-#define GL_DRAW_FRAMEBUFFER_BINDING GL_FRAMEBUFFER_BINDING
-#endif
-#ifndef GL_READ_FRAMEBUFFER_BINDING
-#define GL_READ_FRAMEBUFFER_BINDING 0x8CAA
-#endif
-#ifndef GL_RENDERBUFFER
-#define GL_RENDERBUFFER 0x8D41
-#endif
-
 /* \cond */
 class MSMRTCallback : public osg::Camera::DrawCallback
 {
@@ -186,7 +157,7 @@ public:
         // just before our post-draw MSMRTCallback is executed. We need them
         // bound in our callback so we can execute another glBlitFramebuffer.
         // After the blit, MSMRTCallback unbinds the FBOs.
-        osgUtil::CullVisitor* cv = dynamic_cast< osgUtil::CullVisitor* >( nv );
+        osgUtil::CullVisitor* cv = static_cast< osgUtil::CullVisitor* >( nv );
         // Don't use getRenderStage(). It returns the _root_ RenderStage.
         //osgUtil::RenderStage* rs = cv->getRenderStage();
         osgUtil::RenderStage* rs = cv->getCurrentRenderBin()->getStage();
@@ -338,7 +309,7 @@ main( int argc, char** argv )
     osgViewer::Viewer viewer;
     // TBD remove
     //viewer.setThreadingModel( osgViewer::ViewerBase::SingleThreaded );
-    viewer.getCamera()->setClearColor( osg::Vec4( .2, .2, .2, 1. ) );
+    viewer.getCamera()->setClearColor( osg::Vec4( 0., 0., 0., 1. ) );
     viewer.setCameraManipulator( new osgGA::TrackballManipulator );
     viewer.setUpViewInWindow( 10, 30, winW, winH );
     viewer.setSceneData( root.get() );
