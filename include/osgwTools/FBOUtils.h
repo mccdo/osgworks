@@ -44,6 +44,53 @@ OSG versions.
 #ifndef GL_FRAMEBUFFER
 #  define GL_FRAMEBUFFER 0x8D40
 #endif
+#ifndef GL_READ_FRAMEBUFFER
+#  define GL_READ_FRAMEBUFFER 0x8CA8
+#endif
+#ifndef GL_DRAW_FRAMEBUFFER
+#  define GL_DRAW_FRAMEBUFFER 0x8CA9
+#endif
+#ifndef GL_COLOR_ATTACHMENT0
+#  define GL_COLOR_ATTACHMENT0 0x8CE0
+#endif
+#ifndef GL_COLOR_ATTACHMENT1
+#  define GL_COLOR_ATTACHMENT1 (GL_COLOR_ATTACHMENT0+1)
+#endif
+#ifndef GL_COLOR_ATTACHMENT2
+#  define GL_COLOR_ATTACHMENT2 (GL_COLOR_ATTACHMENT0+2)
+#endif
+#ifndef GL_COLOR_ATTACHMENT3
+#  define GL_COLOR_ATTACHMENT3 (GL_COLOR_ATTACHMENT0+3)
+#endif
+#ifndef GL_COLOR_ATTACHMENT4
+#  define GL_COLOR_ATTACHMENT4 (GL_COLOR_ATTACHMENT0+4)
+#endif
+#ifndef GL_COLOR_ATTACHMENT5
+#  define GL_COLOR_ATTACHMENT5 (GL_COLOR_ATTACHMENT0+5)
+#endif
+#ifndef GL_COLOR_ATTACHMENT6
+#  define GL_COLOR_ATTACHMENT6 (GL_COLOR_ATTACHMENT0+6)
+#endif
+#ifndef GL_COLOR_ATTACHMENT7
+#  define GL_COLOR_ATTACHMENT7 (GL_COLOR_ATTACHMENT0+7)
+#endif
+#ifndef GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME
+#  define GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME 0x8CD1
+#endif
+#ifndef GL_FRAMEBUFFER_BINDING
+#  define GL_FRAMEBUFFER_BINDING 0x8CA6
+#endif
+#ifndef GL_DRAW_FRAMEBUFFER_BINDING
+#  define GL_DRAW_FRAMEBUFFER_BINDING GL_FRAMEBUFFER_BINDING
+#endif
+#ifndef GL_READ_FRAMEBUFFER_BINDING
+#  define GL_READ_FRAMEBUFFER_BINDING 0x8CAA
+#endif
+#ifndef GL_RENDERBUFFER
+#  define GL_RENDERBUFFER 0x8D41
+#endif
+
+
 
 
 GLvoid OSGWTOOLS_EXPORT glGenFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* framebuffer );
@@ -54,7 +101,6 @@ GLvoid OSGWTOOLS_EXPORT glFramebufferTexture2D( osg::FBOExtensions* fboExt, GLen
             GLenum textarget, GLuint texture, GLint level );
 GLvoid OSGWTOOLS_EXPORT glBlitFramebuffer(  osg::FBOExtensions* fboExt, GLint srcX0, GLint srcY0, GLint srcX1,
             GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter );
-
 
 
 /*@}*/
