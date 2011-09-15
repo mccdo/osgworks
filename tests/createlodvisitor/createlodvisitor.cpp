@@ -52,10 +52,10 @@ int main( int argc,
     arguments.getApplicationUsage()->setDescription( arguments.getApplicationName() + " shows a before and after image of the Create LOD Visitor module." );
     arguments.getApplicationUsage()->setCommandLineUsage( arguments.getApplicationName() + " [options] filename ..." );
 
-    arguments.getApplicationUsage()->addCommandLineOption( "--decPercent <n>", "Use DecimatorOp (also valid parameter for ShortEdgeOp). <n> is the target percentage of triangles to remain, in the range 0.0 to 1.0. Default 0.6" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--respectBoundaries", "Will not decimate boundary polygons, will not decimate fully but may fix some mesh errors. Default False" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--minPrimitives <n>", "Sets the minimum primitives a geometry must have to start Decimation. Default 1." );
-    arguments.getApplicationUsage()->addCommandLineOption( "--attemptMerge <n>", "Attempts to merge drawables within the model prior to any geometry reduction using a Optimizer::MergeGeometryVisitor. In cases where there are multiple drawables, more functional decimation may result. Default False" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--retPercent <n>", "<n> is the minimum percentage of triangles to remain, in the range 0.0 to 1.0. Default 0.01" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--ignoreBoundaries", "Will collapse boundary edges perhaps leading to greater reduction and more visual degradation. Default False" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--minPrimitives <n>", "Sets the minimum primitives a geometry must have to start LOD reduction. Default 100." );
+    arguments.getApplicationUsage()->addCommandLineOption( "--attemptMerge <n>", "Attempts to merge drawables within the model prior to any geometry reduction using a osgUtil::Optimizer::MergeGeometryVisitor. In cases where there are multiple drawables, more functional decimation may result. Default False" );
     arguments.getApplicationUsage()->addCommandLineOption( "--numParts <n>", "Controls the geometry building process if user chooses to use a model built in software (see GeometryModifier.h). numParts controls the geometry and can be used to test different aspects of the decimation routines. Default 3. Range 0-4." );
 
     bool useShortEdge( arguments.find( "--shortedge" ) >= 0 );
@@ -73,29 +73,20 @@ int main( int argc,
     }
 
 
-    float decimatorPercent( .6 );
+    float retainPercent( .01 );
     std::string str;
-    if ( arguments.read( "--decPercent", str ) )
+    if ( arguments.read( "--retPercent", str ) )
     {
-        if( sscanf( str.c_str(), "%f", &decimatorPercent ) != 1 )
+        if( sscanf( str.c_str(), "%f", &retainPercent ) != 1 )
         {
             arguments.getApplicationUsage()->write( osg::notify( osg::FATAL ) );
             return 1;
         }
 
     }
-    float decimatorMaxError( FLT_MAX );
-    if ( arguments.read( "--decMaxError", str ) )
-    {
-        if( sscanf( str.c_str(), "%f", &decimatorMaxError ) != 1 )
-        {
-            arguments.getApplicationUsage()->write( osg::notify( osg::FATAL ) );
-            return 1;
-        }
-    }
-    bool decimatorIgnoreBoundaries = (true);
-    if (arguments.read( "--respectBoundaries" ))
-        decimatorIgnoreBoundaries = false;
+    bool ignoreBoundaries = (false);
+    if (arguments.read( "--ignoreBoundaries" ))
+        ignoreBoundaries = true;
 
     int minprim(1);
     if (arguments.read("--minPrimitives", str))
@@ -106,18 +97,7 @@ int main( int argc,
             return 1;
         }
     }
-    if (decimatorPercent < 1.f )
-        osg::notify( osg::INFO ) << "DecimatorOp: " << decimatorPercent << ", " << decimatorMaxError << std::endl;
 
-    float shortEdgeFeature( .1 );
-    if ( arguments.read( "--maxFeature", str ) )
-    {
-        if( sscanf( str.c_str(), "%f", &shortEdgeFeature ) != 1 )
-        {
-            arguments.getApplicationUsage()->write( osg::notify( osg::FATAL ) );
-            return 1;
-        }
-    }
     bool attemptMerge = (false);
     if (arguments.read( "--attemptMerge" ))
         attemptMerge = true;
@@ -178,8 +158,9 @@ int main( int argc,
     lodNodeVis.setTestMinVertices( 50 );
     lodNodeVis.setTestMinPrimitives( minprim );
     // the desired number of remaining triangles in percent (0-1)
-    lodNodeVis.setMaxDecPercent( decimatorPercent );
-    lodNodeVis.setIgnoreBoundaries( decimatorIgnoreBoundaries );
+    lodNodeVis.setMinRetentionPercent( retainPercent );
+    lodNodeVis.setIgnoreBoundaries( ignoreBoundaries );
+    lodNodeVis.setAttemptMerge( attemptMerge );
     // if you want to set the list of LOD pixel sizes and maximum feature sizes you must create an LODPairList
     //lodNodeVis.setLODPairs(LODPairList& lodPairList);
     grpcopy->accept( lodNodeVis );

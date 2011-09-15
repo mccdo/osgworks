@@ -36,9 +36,8 @@ LODCreationNodeVisitor::LODCreationNodeVisitor(GeodeReducableCallback* reducable
     _geodesProcessed( 0 ),
     _minTestVertices( 100 ), 
     _minTestPrimitives( 100 ),
-    _maxDecPercent( .01f ),
-    _decIgnoreBoundaries( true ),
-    _decMinPrimitives( 1 ),
+    _minRetentionPercent( .01f ),
+    _decIgnoreBoundaries( false ),
     _geodeReducableCallback( reducableCallback )
 {
     // default values for geometry reduction
@@ -89,23 +88,28 @@ unsigned int LODCreationNodeVisitor::finishProcessingGeodes(void)
         {
             lodNode->setRange( lodNum, pitr->first, prevMaxPixels );
             // do geometry reduction for this level and attach to LOD
-            float shortEdgeFeature = pitr->second * currentDiameter;
+            float curFeaturePercent = pitr->second;
+            // clamp the reduction percentage 0-1
+            if (curFeaturePercent < 0.f)
+                curFeaturePercent = 0.f;
+            else if (curFeaturePercent > 1.f)
+                curFeaturePercent = 1.f;
+            float shortEdgeFeature = curFeaturePercent * currentDiameter;
             if( shortEdgeFeature > 0.f )
             {
                 osg::Geode* geodeCopy = new osg::Geode( *currentGeode, osg::CopyOp::DEEP_COPY_ALL );
                 osgwTools::ShortEdgeOp* seOp = new osgwTools::ShortEdgeOp;
                 // this formula is used to prevent too much visual degradation which could otherwise result from blind setting of max feature size
-                float decPct = ( 1.f - pitr->second ) / ( float )( ( 1 + lodNum ) * ( 1 + lodNum ) );
+                float retentionPct = ( 1.f - curFeaturePercent ) / ( float )( ( 1 + lodNum ) * ( 1 + lodNum ) );
                 // if user has specified a lesser amount of decimation (greater retention), use that. 
-                if( decPct < _maxDecPercent )
-                    decPct = _maxDecPercent;
-                seOp->setSampleRatio( decPct );
+                if( retentionPct < _minRetentionPercent )
+                    retentionPct = _minRetentionPercent;
+                seOp->setSampleRatio( retentionPct );
                 seOp->setMaxFeature( shortEdgeFeature );
-                seOp->setMaximumError( shortEdgeFeature );
                 seOp->setIgnoreBoundaries( _decIgnoreBoundaries );
-                seOp->setMinPrimitives( _decMinPrimitives );
+                seOp->setMinPrimitives( _minTestPrimitives );
                 osgwTools::GeometryModifier modifier( seOp );
-                modifier.setDrawableMerge( true );
+                modifier.setDrawableMerge( _attemptMerge );
                 geodeCopy->accept( modifier );
                 lodNode->addChild( geodeCopy );
             }

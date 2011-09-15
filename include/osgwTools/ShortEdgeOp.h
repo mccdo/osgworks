@@ -40,7 +40,7 @@ class OSGWTOOLS_EXPORT ShortEdgeOp : public GeometryOperation
 {
 public:
 
-    ShortEdgeOp(double sampleRatio=1.0, double maximumError=FLT_MAX, double maxFeature=.1, unsigned int maxSteps=UINT_MAX);
+    ShortEdgeOp(double sampleRatio=1.0, double maxFeature=.1, unsigned int maxSteps=UINT_MAX);
 
     ShortEdgeOp( const ShortEdgeOp& rhs, const osg::CopyOp& copyOp=osg::CopyOp::SHALLOW_COPY );
     META_Object(osgwTools,ShortEdgeOp);
@@ -54,10 +54,6 @@ public:
     void setMaxFeature( float maxFeature ) { _maxFeature = maxFeature; }
     float getMaxFeature() const { return _maxFeature; }
 
-    /** Default is FLT_MAX */
-    void setMaximumError(float error) { _maximumError = error; }
-    float getMaximumError() const { return _maximumError; }
-
     /** Default is true. */
     void setDoTriStrip(bool on) { _triStrip = on; }
     bool getDoTriStrip() const { return _triStrip; }
@@ -66,6 +62,7 @@ public:
     void setSmoothing(bool on) { _smoothing = on; }
     bool getSmoothing() const { return _smoothing; }
 
+    /** Default is false. */
     void setIgnoreBoundaries(bool setting){_ignoreBoundaries = setting;}
     bool getIgnoreBoundaries() const {return _ignoreBoundaries;}
 
@@ -101,7 +98,7 @@ public:
      }
      virtual bool continueDecimationImplementation(float nextError, unsigned int numOriginalPrimitives, unsigned int numRemainingPrimitives) const
      {
-         return ((float)numRemainingPrimitives > ((float)numOriginalPrimitives) * getSampleRatio()) && nextError<=getMaximumError();
+         return ((float)numRemainingPrimitives > ((float)numOriginalPrimitives) * getSampleRatio()) && nextError<=getMaxFeature();
         
      }
 
@@ -118,7 +115,6 @@ protected:
     
    double _sampleRatio;
    double _maxFeature;
-   float _maximumError;
    bool  _triStrip;
    bool  _smoothing;
    bool  _ignoreBoundaries;
