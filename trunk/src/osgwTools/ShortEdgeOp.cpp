@@ -2033,9 +2033,8 @@ void ShortEdgeCollapse::copyBackToGeometry()
 
 /* \endcond */
 
-ShortEdgeOp::ShortEdgeOp(double sampleRatio, double maximumError, double maxFeature, unsigned int maxSteps):
+ShortEdgeOp::ShortEdgeOp(double sampleRatio, double maxFeature, unsigned int maxSteps):
             _sampleRatio(sampleRatio),
-            _maximumError(maximumError),
             _maxFeature(maxFeature),
             _triStrip(true),
             _smoothing(false),
@@ -2047,7 +2046,6 @@ ShortEdgeOp::ShortEdgeOp(double sampleRatio, double maximumError, double maxFeat
 ShortEdgeOp::ShortEdgeOp( const ShortEdgeOp& rhs, const osg::CopyOp& copyOp )
 {
     _sampleRatio = rhs._sampleRatio;
-    _maximumError = rhs._maximumError;
     _maxFeature = rhs._maxFeature;
     _triStrip = rhs._triStrip;
     _smoothing = rhs._smoothing;
@@ -2063,26 +2061,25 @@ void ShortEdgeOp::decimate(osg::Geometry& geometry)
     ShortEdgeCollapse sec;
     sec.setIgnoreBoundaries( _ignoreBoundaries );
     sec.setGeometry(&geometry);
-    setMaximumError(getMaxFeature());
     sec.updateErrorMetricForAllEdges();
     sec.linkCommonPoints();
     unsigned int numOriginalPrimitives = sec._triangleSet.size();
     osg::notify( osg::INFO ) << "  Primitives Available to Decimate: "<<numOriginalPrimitives<<std::endl;
     osg::notify( osg::INFO ) << "  Links found between points: "<<sec._linksFound<<std::endl;
     
-    if ((numOriginalPrimitives < _minPrim)){
+    if (numOriginalPrimitives < getMinPrimitives()){
        osg::notify( osg::INFO ) << "  Geometry too small to decimate: skipping...\n";
         return;
     }
-    if (getSampleRatio()<1.0 && getMaximumError()>0.0)
+    if (getSampleRatio()<1.0 && getMaxFeature()>0.0)
     {
         unsigned int decCt( 0 );
-        osg::notify(osg::INFO)<<"   Collapsed edge#="<<decCt<<" Triangles remaining="<<sec._triangleSet.size()<<" Next edge length="<<(*sec._edgeSet.begin())->getErrorMetric()<<" vs "<<getMaximumError()<<std::endl;
+        osg::notify(osg::INFO)<<"   Collapsed edge#="<<decCt<<" Triangles remaining="<<sec._triangleSet.size()<<" Next edge length="<<(*sec._edgeSet.begin())->getErrorMetric()<<" vs "<<getMaxFeature()<<std::endl;
         while (!sec._edgeSet.empty() && decCt < _maxSteps &&
                continueDecimation((*sec._edgeSet.begin())->getErrorMetric() , numOriginalPrimitives, sec._triangleSet.size()) && 
                sec.collapseMinimumErrorEdge() && sec._triangleSet.size() > _minPrim)
         {
-            osg::notify(osg::INFO)<<"   Collapsed edge#="<<decCt<<" Triangles remaining="<<sec._triangleSet.size()<<" Next edge length="<<(*sec._edgeSet.begin())->getErrorMetric()<<" vs "<<getMaximumError()<<std::endl;
+            osg::notify(osg::INFO)<<"   Collapsed edge#="<<decCt<<" Triangles remaining="<<sec._triangleSet.size()<<" Next edge length="<<(*sec._edgeSet.begin())->getErrorMetric()<<" vs "<<getMaxFeature()<<std::endl;
             ++decCt;
         }
 
@@ -2099,7 +2096,7 @@ void ShortEdgeOp::decimate(osg::Geometry& geometry)
 
     if (!sec._edgeSet.empty())
     {
-        osg::notify(osg::INFO)<<std::endl<<"Short Edge Op, Polygons in = "<<numOriginalPrimitives<<"\t;out = "<<sec._triangleSet.size()<<"\terror="<<(*sec._edgeSet.begin())->getErrorMetric()<<"\tvs "<<getMaximumError()<<std::endl<<std::endl;
+        osg::notify(osg::INFO)<<std::endl<<"Short Edge Op, Polygons in = "<<numOriginalPrimitives<<"\t;out = "<<sec._triangleSet.size()<<"\terror="<<(*sec._edgeSet.begin())->getErrorMetric()<<"\tvs "<<getMaxFeature()<<std::endl<<std::endl;
         osg::notify(osg::INFO)<<           "        !sec._edgeSet.empty()  = "<<!sec._edgeSet.empty()<<std::endl;
         osg::notify(osg::INFO)<<           "        continueDecimation(,,)  = "<<continueDecimation((*sec._edgeSet.begin())->getErrorMetric() , numOriginalPrimitives, sec._triangleSet.size())<<std::endl;
     }

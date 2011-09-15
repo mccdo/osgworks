@@ -108,14 +108,16 @@ public:
         // copy the pairs
         std::copy( lodPairList.begin(), lodPairList.end(), std::inserter( _lodPairList, _lodPairList.begin() ) );
     }
-    /** Default is 100. */
+    /** Minimum vertices in order to proceed with LOD reduction. Default is 100. */
     void setTestMinVertices( unsigned int minVertices ) { _minTestVertices = minVertices; }
-    /** Default is 100. */
-    void setTestMinPrimitives( unsigned int minPrimitives ) { _minTestPrimitives = minPrimitives; _decMinPrimitives = minPrimitives;}
-    /** Default is 0.01f. */
-    void setMaxDecPercent( float maxDec ) { _maxDecPercent = maxDec; }
-    /** Default is true. */
+    /** Minimum primitives in order to proceed with LOD reduction. Default is 100. */
+    void setTestMinPrimitives( unsigned int minPrimitives ) { _minTestPrimitives = minPrimitives;}
+    /** Minimum percent of retained primitives. Default is 0.01f. */
+    void setMinRetentionPercent( float maxDec ) { _minRetentionPercent = maxDec; }
+    /** Treat boundary edges like any other. False prevents boundary edges from being collapsed. Default is false. */
     void setIgnoreBoundaries( bool ignore ) { _decIgnoreBoundaries = ignore; }
+    /** Attempt to merge drawables for simultaneous processing. Default is true. */
+    void setAttemptMerge( bool attempt ) { _attemptMerge = attempt; }
 
     GeodeSet& getLODCandidates( void ) { return (_lodCandidates); }
     LODPairList& getLODPairs( void ) { return (_lodPairList); }
@@ -135,18 +137,18 @@ protected:
     Order of items in pairs is 1) smallest pixel size for LOD to be used, 
     2) maximum feature size to be removed as % of node bounding sphere diameter. */
     LODPairList _lodPairList;
-    /** if set, _decIgnoreBoundaries prevents elimination of edges that are bounded by only one triangle. */
+    /** if false, _decIgnoreBoundaries prevents elimination of edges that are bounded by only one triangle. */
     bool _decIgnoreBoundaries;
+    /** if set, _attemptMerge attempts to merge drawables in model file prior to executing lod reduction. 
+    Subject to limitations of osgUtil::Optimizer::MergeGeometryVisitor. */
+    bool _attemptMerge;
     /** _geodesLocated, _geodesProcessed for internal control. */
 	unsigned int _geodesLocated, _geodesProcessed;
     /** _minTestVertices, _minTestPrimitives can be supplied to control which Geodes will be selected for
     decimation using the default callback function. */
     unsigned int _minTestVertices, _minTestPrimitives;
-    /** _decMinPrimitives sets a minimum number of triangles that will be required to be present in the final
-    output Geodes. */
-    unsigned int _decMinPrimitives;
-    /** maximum amount of triangle reduction that will be allowed. */
-    float _maxDecPercent;
+    /** Minimum percent of primitives that will be retained. */
+    float _minRetentionPercent;
 
     /** Calling code can supply a callback function to decide which Geodes should be decimated or rely on
     default method based on _minTestVertices and _minTestPrimitives. */
