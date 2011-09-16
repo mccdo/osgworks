@@ -118,6 +118,10 @@ public:
     void setIgnoreBoundaries( bool ignore ) { _decIgnoreBoundaries = ignore; }
     /** Attempt to merge drawables for simultaneous processing. Default is true. */
     void setAttemptMerge( bool attempt ) { _attemptMerge = attempt; }
+    /** Attempts to create triangle strips after decimation. Default is true. */
+    void setDoTriStrip(bool on) { _triStrip = on; }
+    /** Smoothing is run after decimation. Default is false. */
+    void setSmoothing(bool on) { _smoothing = on; }
 
     GeodeSet& getLODCandidates( void ) { return (_lodCandidates); }
     LODPairList& getLODPairs( void ) { return (_lodPairList); }
@@ -139,6 +143,10 @@ protected:
     LODPairList _lodPairList;
     /** if false, _decIgnoreBoundaries prevents elimination of edges that are bounded by only one triangle. */
     bool _decIgnoreBoundaries;
+    /** if true, osgUtil::SmoothingVisitor::smooth() is called after decimation. */
+    bool _smoothing;
+    /** if true, osgUtil::TriStripVisitor::stripify() is called after decimation and optional smoothing. */
+    bool _triStrip;
     /** if set, _attemptMerge attempts to merge drawables in model file prior to executing lod reduction. 
     Subject to limitations of osgUtil::Optimizer::MergeGeometryVisitor. */
     bool _attemptMerge;
