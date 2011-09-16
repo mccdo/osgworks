@@ -2036,11 +2036,11 @@ void ShortEdgeCollapse::copyBackToGeometry()
 ShortEdgeOp::ShortEdgeOp(double sampleRatio, double maxFeature, unsigned int maxSteps):
             _sampleRatio(sampleRatio),
             _maxFeature(maxFeature),
-            _triStrip(true),
-            _smoothing(false),
-            _ignoreBoundaries(false),
-            _minPrim(4),
-            _maxSteps(maxSteps) 
+            _triStrip( false ),
+            _smoothing( false ),
+            _ignoreBoundaries( false ),
+            _minPrim( 4 ),
+            _maxSteps( maxSteps ) 
             {};
 
 ShortEdgeOp::ShortEdgeOp( const ShortEdgeOp& rhs, const osg::CopyOp& copyOp )

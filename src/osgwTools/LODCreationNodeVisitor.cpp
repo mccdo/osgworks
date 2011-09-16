@@ -40,6 +40,7 @@ LODCreationNodeVisitor::LODCreationNodeVisitor(GeodeReducableCallback* reducable
     _decIgnoreBoundaries( false ),
     _smoothing( false ),
     _triStrip( false ),
+    _attemptMerge( false ),
     _geodeReducableCallback( reducableCallback )
 {
     // default values for geometry reduction
