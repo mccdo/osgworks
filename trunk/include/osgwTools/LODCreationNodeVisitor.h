@@ -35,7 +35,7 @@ typedef std::pair<double, double> LODPair;
 typedef std::vector< LODPair > LODPairList;
 typedef std::vector< osg::ref_ptr<osg::LOD> > LODList;
 
-/** GeodeReducableCallback
+/** \class GeodeReducableCallback LODCreationNodeVisitor.h <osgwTools/LODCreationNodeVisitor.h>
 \brief Callback to decide which Geodes to store */
 class OSGWTOOLS_EXPORT GeodeReducableCallback : public osg::Referenced
 {
@@ -52,8 +52,9 @@ public:
 
 
 
-/** \brief Callback to select highest LOD child */
-class BasicGeodeReducableCallback : public osgwTools::GeodeReducableCallback
+/** \class BasicGeodeReducableCallback LODCreationNodeVisitor.h <osgwTools/LODCreationNodeVisitor.h>
+\brief Callback to select highest LOD child */
+class OSGWTOOLS_EXPORT BasicGeodeReducableCallback : public osgwTools::GeodeReducableCallback
 {
 public:
     /** returns true if Geode should be added to set for later treatment */
@@ -92,7 +93,8 @@ public:
 }; // BasicGeodeReducableCallback
 
 
-/** \brief A node visitor for creating LOD nodes to replace Geodes with simplified geometry
+/** \class LODCreationNodeVisitor LODCreationNodeVisitor.h <osgwTools/LODCreationNodeVisitor.h>
+\brief A node visitor for creating LOD nodes to replace Geodes with simplified geometry
 at user-supplied levels of detail and pixel size constraints.
 
 */
@@ -114,11 +116,13 @@ public:
     void setTestMinPrimitives( unsigned int minPrimitives ) { _minTestPrimitives = minPrimitives;}
     /** Minimum percent of retained primitives. Default is 0.01f. */
     void setMinRetentionPercent( float maxDec ) { _minRetentionPercent = maxDec; }
-    /** Treat boundary edges like any other. False prevents boundary edges from being collapsed. Default is false. */
+    /** Controls boundary edge treatment. If false (default, boundary edges are
+    considered for removal like any other edge. Setting to true prevents boundary
+    edges from being removed. Default is false. */
     void setIgnoreBoundaries( bool ignore ) { _decIgnoreBoundaries = ignore; }
-    /** Attempt to merge drawables for simultaneous processing. Default is true. */
+    /** Attempt to merge drawables for simultaneous processing. Default is false. */
     void setAttemptMerge( bool attempt ) { _attemptMerge = attempt; }
-    /** Attempts to create triangle strips after decimation. Default is true. */
+    /** Attempts to create triangle strips after decimation. Default is false. */
     void setDoTriStrip(bool on) { _triStrip = on; }
     /** Smoothing is run after decimation. Default is false. */
     void setSmoothing(bool on) { _smoothing = on; }
