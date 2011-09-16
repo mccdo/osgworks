@@ -46,30 +46,31 @@ public:
     META_Object(osgwTools,ShortEdgeOp);
 
 
-    /** Default is 1.0 */
+    /** Percent of retained primitives. Default is 1.0 */
     void setSampleRatio( float sampleRatio ) { _sampleRatio = sampleRatio; }
     float getSampleRatio() const { return _sampleRatio; }
 
-    /** Default is 0.1 */
+    /** Edge length in model units, below which edges are candidates for removal. Default is 0.1 */
     void setMaxFeature( float maxFeature ) { _maxFeature = maxFeature; }
     float getMaxFeature() const { return _maxFeature; }
 
-    /** Default is true. */
+    /** Perform stripification after reduction. Default is true. */
     void setDoTriStrip(bool on) { _triStrip = on; }
     bool getDoTriStrip() const { return _triStrip; }
 
-    /** Default is false. */
+    /** Smooth model after reduction. Default is false. */
     void setSmoothing(bool on) { _smoothing = on; }
     bool getSmoothing() const { return _smoothing; }
 
-    /** Default is false. */
+    /** Treat boundary edges like any other. False prevents boundary edges from being collapsed. Default is false. */
     void setIgnoreBoundaries(bool setting){_ignoreBoundaries = setting;}
     bool getIgnoreBoundaries() const {return _ignoreBoundaries;}
 
+    /** Minimum number of primitives (triangles) that must be present in the drawable in order for recuction to proceed. Default is 4 */
     void setMinPrimitives(unsigned int minPrim){_minPrim = minPrim;}
     unsigned int getMinPrimitives() const { return _minPrim;}
 
-    /** Default is UINT_MAX. */
+    /** Maximum number of reduction steps to be executed. Default is UINT_MAX. */
     void setMaxSteps(unsigned int maxSteps){_maxSteps = maxSteps;}
 
     /** \brief Application control mechanism to continue or halt decimation.
@@ -113,12 +114,19 @@ public:
 
 protected:
     
+    /** Minimum percent of primitives that will be retained. */
    double _sampleRatio;
+    /** Edge length in model units, below which edges are candidates for removal. Default is 0.1 */
    double _maxFeature;
+    /** if true, osgUtil::TriStripVisitor::stripify() is called after decimation and optional smoothing. */
    bool  _triStrip;
+    /** if true, osgUtil::SmoothingVisitor::smooth() is called after decimation. */
    bool  _smoothing;
+    /** if false, _IgnoreBoundaries prevents elimination of edges that are bounded by only one triangle. */
    bool  _ignoreBoundaries;
+    /** Minimum number of primitives (triangles) that must be present in the drawable in order for recuction to proceed. */
    unsigned int   _minPrim;
+    /** Maximum number of reduction steps to be executed subject to limitations of _sampleRatio, _maxFeature and _ignoreBoundaries. */
    unsigned int   _maxSteps;
 
     osg::ref_ptr<ContinueDecimationCallback> _continueDecimationCallback;

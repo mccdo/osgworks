@@ -38,6 +38,8 @@ LODCreationNodeVisitor::LODCreationNodeVisitor(GeodeReducableCallback* reducable
     _minTestPrimitives( 100 ),
     _minRetentionPercent( .01f ),
     _decIgnoreBoundaries( false ),
+    _smoothing( false ),
+    _triStrip( false ),
     _geodeReducableCallback( reducableCallback )
 {
     // default values for geometry reduction
@@ -107,6 +109,8 @@ unsigned int LODCreationNodeVisitor::finishProcessingGeodes(void)
                 seOp->setSampleRatio( retentionPct );
                 seOp->setMaxFeature( shortEdgeFeature );
                 seOp->setIgnoreBoundaries( _decIgnoreBoundaries );
+                seOp->setDoTriStrip( _triStrip );
+                seOp->setSmoothing( _smoothing );
                 seOp->setMinPrimitives( _minTestPrimitives );
                 osgwTools::GeometryModifier modifier( seOp );
                 modifier.setDrawableMerge( _attemptMerge );
