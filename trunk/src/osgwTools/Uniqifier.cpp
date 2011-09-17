@@ -27,6 +27,49 @@ namespace osgwTools
 {
 
 
+osg::Node* uniqify( osg::Node* child, osg::Group* parent )
+{
+    if( ( child == NULL ) || ( parent == NULL ) )
+    {
+        osg::notify( osg::WARN ) << "uniqify: One or more NULL parameters." << std::endl;
+        return( NULL );
+    }
+
+    osg::Node* newChild = static_cast< osg::Node* >( child->clone( osg::CopyOp::SHALLOW_COPY ) );
+    parent->replaceChild( child, newChild );
+    return( newChild );
+}
+
+
+osg::NodePath uniqify( const osg::NodePath& np )
+{
+    if( np.size() < 2 )
+    {
+        osg::notify( osg::WARN ) << "uniqify: NodePath has size < 2." << std::endl;
+        return( np );
+    }
+
+    osg::NodePath newPath;
+    newPath.push_back( np.front() );
+
+    unsigned int idx;
+    for( idx=1; idx < np.size(); idx++ )
+    {
+        osg::Node* currentNode( np[ idx ] );
+        if( currentNode->getNumParents() > 1 )
+        {
+            osg::Node* newNode = uniqify( np[ idx ], np[ idx-1 ]->asGroup() );
+            if( newNode != NULL )
+                newPath.push_back( newNode );
+        }
+        else
+            newPath.push_back( currentNode );
+    }
+
+    return( newPath );
+}
+
+
 Uniqifier::Uniqifier( osg::NodeVisitor::TraversalMode mode )
   : osg::NodeVisitor( mode )
 {
@@ -53,12 +96,9 @@ void Uniqifier::apply( osg::Group& node )
         // Only need to make copies if getNumParents() > 1.
         while( sourceCandidate->getNumParents() > 1 )
         {
-            // Make a copy of the current node.
-            osg::Node* newNode = static_cast< osg::Node* >( sourceCandidate->clone( osg::CopyOp::SHALLOW_COPY ) );
-
-            // We'll leave sourceCandidate attached to parent 0. Get parent 1.
-            osg::Group* currentParent = sourceCandidate->getParent( 1 );
-            currentParent->replaceChild( sourceCandidate, newNode );
+            // Make a shallow copy of sourceCandidate and replace parent 1's
+            // sourceCandidate child with the new shallow copy.
+            uniqify( sourceCandidate, sourceCandidate->getParent( 1 ) );
 
             // sourceCandidate's parent count has now decreased by 1.
             // Continue looping until the parent count equals 1.

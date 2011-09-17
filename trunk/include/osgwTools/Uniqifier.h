@@ -29,6 +29,38 @@ namespace osgwTools
 {
 
 
+/** \defgroup uniqifiers Node Uniqification Tools
+\brief Tools to eliminate shared nodes and multiparenting.
+
+These tools make shallow copies of shared nodes, all shared nodes in a NodePath, and
+all shared nodes in an entire scene graph. The shared nodes are replaced with the shallow
+copies so that all nodes are unique, but data is still shared.
+
+These tools are useful in cases where your scene graph makes use of node sharing,
+but you need to perform a specific operation on just one of the shared instances,
+and the decorator design pattern can't be used (for whatever reason). */
+/*@{*/
+
+    
+/** \brief Uniqify a shared Node.
+
+Remove \c child from \c parent's child list and replace it
+with a shallow copy of \c child.
+\return The address of the new shallow copy of \c child. */
+OSGWTOOLS_EXPORT osg::Node* uniqify( osg::Node* child, osg::Group* parent );
+
+/** \brief Uniqify a NodePath to eliminate all shared Nodes.
+
+Starting with the second Node in \c np, iterate over \c np
+and call uniqify(osg::Node*,osg::Group*) so that the entire
+NodePath contains no multiparenting.
+
+Because uniqify(osg::Node*,osg::Group*) creates shallow copies
+with new addresses, \c np is invalid after this operation. Use
+the return value instead.
+\return A new NodePath that references the created nodes. */
+OSGWTOOLS_EXPORT osg::NodePath uniqify( const osg::NodePath& np );
+
 /** \class Uniqifier Uniqifier.h <osgwTools/Uniqifier.h>
 \brief Eliminates multiparenting by turning shared nodes into unique nodes.
 */
@@ -43,6 +75,9 @@ public:
 
 protected:
 };
+
+
+/*@}*/
 
 
 // osgwTools
