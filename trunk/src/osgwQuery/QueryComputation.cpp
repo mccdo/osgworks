@@ -83,6 +83,7 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
     osg::RefMatrix* view = cv->getModelViewMatrix();
     const osg::Camera* cam = cv->getCurrentCamera();
 
+
     // Obtain cull-time constants (possibly different per cull in multidisplay).
     //     Distance from the Drawble to the viewpoint.
     const double dOi = cv->getDistanceFromEyePoint( _worldBB.center(), false );
@@ -185,7 +186,19 @@ bool QueryComputation::cullOperation( osg::NodeVisitor* nv, osg::RenderInfo& ren
 
     unsigned int framesSinceLastQuery = currentFrame - _lastQueryFrame;
 
-    if( _numVertices < 1 )
+
+
+    if( dOi < _worldBB.radius() )
+    {
+        // Not part of Guthe, but required for correct functionality in
+        // real apps, especially OSG with autocompute near/far enabled.
+        // Eyepoint is quite close to (or inside) bounding volome.
+        // Don't waste time issuing a query, just traverse the children.
+        queryReasonable = false;
+        qdc->_wasOccluded = false;
+    }
+
+    else if( _numVertices < 1 )
     {
         // This is not part of Guthe, but we do occasionally encounter models like this.
         // Don't do a query, just let OSG handle it however OSG handles it.
