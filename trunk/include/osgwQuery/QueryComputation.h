@@ -30,6 +30,7 @@
 
 #include <osg/Node>
 #include <osg/Geode>
+#include <osg/Geometry>
 #include <osg/NodeVisitor>
 #include <osg/buffered_value>
 
