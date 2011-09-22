@@ -210,7 +210,6 @@ protected:
     osg::Vec3d _baseUp, _baseNorth;
     osg::Vec3d _lastCross, _viewUp, _viewDir, _viewCenter;
     double _viewDistance;
-    double _initialViewDistance;
 
     osg::Vec4d _panPlane;
 

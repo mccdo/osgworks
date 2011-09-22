@@ -107,7 +107,7 @@ void MxCore::computeInitialView()
     float distance = _scene->getBound().radius() /
         tan( osg::DegreesToRadians( _fovy/2. ) );
 
-    _viewDistance = _initialViewDistance = distance;
+    _viewDistance = distance;
 }
 
 
