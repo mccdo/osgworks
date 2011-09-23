@@ -46,6 +46,9 @@ if( Boost_FOUND )
     include_directories( ${Boost_INCLUDE_DIR} )
 endif()
 
+# find the optional Directx SDK (for DirectInput game pad support).
+find_package( DirectInput QUIET )
+
 # Add OSG for entire project for include & lib paths
 INCLUDE_DIRECTORIES( 
     ${PROJECT_SOURCE_DIR}/include
