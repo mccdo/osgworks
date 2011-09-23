@@ -186,34 +186,17 @@ void MxMovementStyleGamePad::zoomHandler(double ts, double rate)
       // make sure some time has ellapsed since the last call.
       else if ((ts - _lastZoomTime) > 0)
          {
-//         rate *= ts - _lastZoomTime;
+         rate *= ts - _lastZoomTime;
          _lastZoomTime = ts;
          double chg = _inputAdapter->rangeValues[MOVE_Y_AXIS_IDX] * rate;
          // check for reversed direction.
          if (_reverseZoom)
             chg = -chg;
+         _mxCore->setFovyScale(1.0 + abs(chg));
          if (chg > 0)
-            {
             _mxCore->fovyScaleUp();
-            // fovy scaling doesn't take a change amount, so have to simulate speed
-            // difference if the 'fast' button is held down.
-            if (rate > _chgRate)
-               {
-               _mxCore->fovyScaleUp();
-               _mxCore->fovyScaleUp();
-               _mxCore->fovyScaleUp();
-               }
-            }
          else
-            {
             _mxCore->fovyScaleDown();
-            if (rate > _chgRate)
-               {
-               _mxCore->fovyScaleDown();
-               _mxCore->fovyScaleDown();
-               _mxCore->fovyScaleDown();
-               }
-            }
          }
       }
    // shut down the operation when the input stops.
