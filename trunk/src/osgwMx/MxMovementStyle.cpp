@@ -24,10 +24,6 @@ MxMovementStyle::MxMovementStyle(MxInputAdapter *ia) :
    _reverseZoom(false)
 
 {
-   if (_mxCore.valid())
-      {
-      _mxCore->setFovyScale(1.01);  // scale amount with each call.
-      }
 }
 
 // **************************************************************************
