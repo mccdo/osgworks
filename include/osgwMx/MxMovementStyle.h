@@ -38,8 +38,8 @@ class OSGWMX_EXPORT MxMovementStyle : public osg::Referenced
       void setChangeRate(double rate) {_chgRate = rate;}
       double getChangeRate() const {return _chgRate;}
 
-      MxCore *getMxCore() {return _mxCore;}
-      MxInputAdapter *getInputAdapter() {return _inputAdapter.get();}
+      MxCore *getMxCore() { return( _mxCore.get() ); }
+      MxInputAdapter *getInputAdapter() { return( _inputAdapter.get() ); }
       osg::NodeCallback *getMatrixCallback();
 
       // for reversing the movement directions.
@@ -62,7 +62,7 @@ class OSGWMX_EXPORT MxMovementStyle : public osg::Referenced
       // on the matrix based on the MxInputAdapter data.
       virtual void matrixTransform(double ts) = 0;
 
-      osg::ref_ptr<MxCore> _mxCore;
+      osg::ref_ptr< MxCore > _mxCore;
       osg::ref_ptr<MxInputAdapter> _inputAdapter;
       osg::ref_ptr<CameraUpdateCallback> _cameraUpdateCallback;
 
