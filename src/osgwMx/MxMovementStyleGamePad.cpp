@@ -9,7 +9,8 @@ namespace osgwMx
 #define ROTATE_Y_AXIS_IDX 5      // the range value index to be used for Y axis rotation.
 #define MOVE_X_AXIS_IDX 0        // the range value index to be used for X axis movement.
 #define MOVE_Y_AXIS_IDX 1        // the range value index to be used for Y axis movement.
-#define ZOOM_BTN_IDX 0           // the index of the button that, when pressed, turns MOVE_Y_AXIS_IDX into a zoom.
+#define ZOOM_BTN_IDX 1           // the index of the button that, when pressed, turns MOVE_Y_AXIS_IDX into a zoom.
+#define DOLLY_BTN_IDX 0          // the index of the button that, when pressed, turns MOVE_Y_AXIS_IDX into a dolly.
 #define SLOW_RATE_BTN_IDX 6      // the index of the button that, when pressed, slows the change rate by a factor of 4.
 #define FAST_RATE_BTN_IDX 4      // the index of the button that, when pressed, speeds up the change rate by a factor of 4.
 #define RESET_MATRIX_BTN_IDX 5   // the index of the button that, when pressed, will reset the view matrix to its original state.
@@ -50,7 +51,8 @@ void MxMovementStyleGamePad::matrixTransform(double ts)
    rotateHandler(ts, rate);
    moveHandler(ts, rate);
    moveDpadHandler(ts, rate);
-   zoomHandler(ts, rate);
+//   zoomHandler(ts, rate);
+   dollyHandler(ts, rate);
 }
 
 // **************************************************************************
@@ -95,7 +97,7 @@ void MxMovementStyleGamePad::moveHandler(double ts, double rate)
 
 {
    if ((_inputAdapter->rangeValues[MOVE_X_AXIS_IDX] || _inputAdapter->rangeValues[MOVE_Y_AXIS_IDX]) &&
-      (_inputAdapter->buttons[ZOOM_BTN_IDX] == false))
+      (_inputAdapter->buttons[ZOOM_BTN_IDX] == false) && (_inputAdapter->buttons[DOLLY_BTN_IDX] == false))
       {
       // check if just starting the operation.
       if (_moving == false)
@@ -202,6 +204,37 @@ void MxMovementStyleGamePad::zoomHandler(double ts, double rate)
    // shut down the operation when the input stops.
    else if (_zooming)
       _zooming = false;
+}
+
+// **************************************************************************
+
+void MxMovementStyleGamePad::dollyHandler(double ts, double rate)
+
+{
+   // if the dolly button is pressed, then use the Y movement axis as a dolly.
+   if (_inputAdapter->buttons[DOLLY_BTN_IDX] && _inputAdapter->rangeValues[MOVE_Y_AXIS_IDX])
+      {
+      // check if just starting the operation.
+      if (_dollying == false)
+         {
+         _dollying = true;
+         _lastDollyTime = ts;
+         }
+      // make sure some time has ellapsed since the last call.
+      else if ((ts - _lastDollyTime) > 0)
+         {
+         rate *= ts - _lastDollyTime;
+         _lastDollyTime = ts;
+         double chg = _inputAdapter->rangeValues[MOVE_Y_AXIS_IDX] * rate;
+         // check for reversed direction.
+         if (_reverseDolly)
+            chg = -chg;
+         _mxCore->dolly(chg);
+         }
+      }
+   // shut down the operation when the input stops.
+   else if (_dollying)
+      _dollying = false;
 }
 
 // osgwMx

@@ -56,6 +56,8 @@ class OSGWMX_EXPORT MxMovementStyle : public osg::Referenced
       bool getReverseMoveY() const {return _reverseMoveY;}
       void setReverseZoom(bool state) {_reverseZoom = state;}
       bool getReverseZoom() const {return _reverseZoom;}
+      void setReverseDolly(bool state) {_reverseDolly = state;}
+      bool getReverseDolly() const {return _reverseDolly;}
 
    protected:
       // inheriting class must implement this function to perform transformations
@@ -70,14 +72,17 @@ class OSGWMX_EXPORT MxMovementStyle : public osg::Referenced
       double _lastRotateTime;       // the last rotation timestamp when rotating is active.
       double _lastMoveTime;         // the last move timestamp when moving is active.
       double _lastZoomTime;         // the last zoom timestamp when zooming is active.
+      double _lastDollyTime;        // the last dolly timestamp when dollying is active.
       bool _rotating;               // true if rotating
       bool _moving;                 // true if moving
       bool _zooming;                // true if zooming
+      bool _dollying;               // true if dollying
       bool _reverseRotateX;         // true if should reverse normal X rotation
       bool _reverseRotateY;         // true if should reverse normal Y rotation
       bool _reverseMoveX;
       bool _reverseMoveY;
       bool _reverseZoom;
+      bool _reverseDolly;
 
    private:
       MxMovementStyle() {}    // don't allow instantiation without an input adapter.

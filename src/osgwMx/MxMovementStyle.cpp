@@ -14,14 +14,17 @@ MxMovementStyle::MxMovementStyle(MxInputAdapter *ia) :
    _rotating(false),
    _moving(false),
    _zooming(false),
+   _dollying(false),
    _lastRotateTime(0),
    _lastMoveTime(0),
    _lastZoomTime(0),
+   _lastDollyTime(0),
    _reverseRotateX(false),
    _reverseRotateY(false),
    _reverseMoveX(false),
    _reverseMoveY(false),
-   _reverseZoom(false)
+   _reverseZoom(false),
+   _reverseDolly(false)
 
 {
 }
