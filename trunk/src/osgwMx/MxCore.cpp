@@ -284,13 +284,21 @@ void MxCore::dolly( const double deltaMovement )
         // app control so that it can be disabled if desired.
         const osg::BoundingSphere& bs = _scene->getBound();
         scale = bs._radius * .5;
+
         if( _viewDistance > bs._radius )
              scale *= ( _viewDistance / bs._radius );
     }
 
-    _viewDistance += ( deltaMovement * scale );
-    if( _viewDistance < 0. )
-        _viewDistance = 0.;
+    if( _mode == THIRD_PERSON )
+    {
+        _viewDistance += ( deltaMovement * scale );
+        if( _viewDistance < 0. )
+            _viewDistance = 0.;
+    }
+    else
+    {
+        _viewCenter += ( _viewDir * deltaMovement * scale );
+    }
 }
 
 
