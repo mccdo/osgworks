@@ -27,6 +27,7 @@ MxMovementStyle::MxMovementStyle(MxInputAdapter *ia) :
    _reverseDolly(false)
 
 {
+    _mxCore->setMxCoreMode( MxCore::FIRST_PERSON );
 }
 
 // **************************************************************************

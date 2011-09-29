@@ -50,6 +50,7 @@ public:
     by computeProjection() to compute appropriate zNear and zFar planes. */
     void setSceneData( osg::Node* scene );
 
+    /** Documentation is TBD */
     void computeInitialView();
 
 
@@ -78,9 +79,9 @@ public:
     */
     void rotate( osg::Vec2d start, osg::Vec2d dir );
 
-    /** Pass in a delta motion vector. pan() creates a viewer coordinate
-    system in which +x to the right and +y up, then changes
-    the view center by \c deltaMovement in this coordinate system. */
+    /** Pass in a delta motion vector. pan() moves the viewer and \c _viewCenter
+    by interpreting the input parameters as normalized delta motion on the
+    pan plane defined with setPanStart(). */
     void pan( const double ndcX, const double ndcY );
 
     /** Dolly the camera forwards and backwards. Changes the view distance.
