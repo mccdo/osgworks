@@ -75,8 +75,8 @@ void MxMovementStyleGamePad::rotateHandler(double ts, double rate)
          // modify the change rate by the time difference since last call.
          rate *= ts - _lastRotateTime;
          _lastRotateTime = ts;
-         double x = _inputAdapter->rangeValues[ROTATE_X_AXIS_IDX] * rate;
-         double y = -(_inputAdapter->rangeValues[ROTATE_Y_AXIS_IDX] * rate);
+         double x = -(_inputAdapter->rangeValues[ROTATE_X_AXIS_IDX] * rate);
+         double y = _inputAdapter->rangeValues[ROTATE_Y_AXIS_IDX] * rate;
          // check for reversed direction.
          if (_reverseRotateX)
             x = -x;
@@ -112,8 +112,8 @@ void MxMovementStyleGamePad::moveHandler(double ts, double rate)
          // modify the change rate by the time difference since last call.
          rate *= ts - _lastMoveTime;
          _lastMoveTime = ts;
-         double x = _inputAdapter->rangeValues[MOVE_X_AXIS_IDX] * rate;
-         double y = -(_inputAdapter->rangeValues[MOVE_Y_AXIS_IDX] * rate);
+         double x = -(_inputAdapter->rangeValues[MOVE_X_AXIS_IDX] * rate);
+         double y = _inputAdapter->rangeValues[MOVE_Y_AXIS_IDX] * rate;
          // check for reversed direction.
          if (_reverseMoveX)
             x = -x;
@@ -149,13 +149,13 @@ void MxMovementStyleGamePad::moveDpadHandler(double ts, double rate)
          _lastMoveDpadTime = ts;
          double x = 0, y = 0;
          if (_inputAdapter->dpad.left)
-            x = -_dpadMoveAmount;
-         else if (_inputAdapter->dpad.right)
             x = _dpadMoveAmount;
+         else if (_inputAdapter->dpad.right)
+            x = -_dpadMoveAmount;
          if (_inputAdapter->dpad.up)
-            y = _dpadMoveAmount;
-         else if (_inputAdapter->dpad.down)
             y = -_dpadMoveAmount;
+         else if (_inputAdapter->dpad.down)
+            y = _dpadMoveAmount;
          x *= rate;
          y *= rate;
          // check for reversed direction.
@@ -190,7 +190,7 @@ void MxMovementStyleGamePad::zoomHandler(double ts, double rate)
          {
          rate *= ts - _lastZoomTime;
          _lastZoomTime = ts;
-         double chg = _inputAdapter->rangeValues[MOVE_Y_AXIS_IDX] * rate;
+         double chg = -(_inputAdapter->rangeValues[MOVE_Y_AXIS_IDX] * rate);
          // check for reversed direction.
          if (_reverseZoom)
             chg = -chg;
@@ -225,7 +225,7 @@ void MxMovementStyleGamePad::dollyHandler(double ts, double rate)
          {
          rate *= ts - _lastDollyTime;
          _lastDollyTime = ts;
-         double chg = _inputAdapter->rangeValues[MOVE_Y_AXIS_IDX] * rate;
+         double chg = -(_inputAdapter->rangeValues[MOVE_Y_AXIS_IDX] * rate);
          // check for reversed direction.
          if (_reverseDolly)
             chg = -chg;
