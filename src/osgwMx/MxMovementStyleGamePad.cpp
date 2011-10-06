@@ -2,6 +2,8 @@
 
 #include <osgwMx/MxMovementStyleGamePad.h>
 
+using std::abs;
+
 namespace osgwMx
 {
 
