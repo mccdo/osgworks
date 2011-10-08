@@ -2,6 +2,18 @@
 
 <wiki:toc />
 
+= v2.0 Release Candidate 1 =
+
+This is a release candidate for v2.0.
+
+== Source ==
+
+[http://osgworks.googlecode.com/files/osgWorks_02_00_00-rc1.zip osgWorks_02_00_00-rc1.zip]
+
+Use this URL to checkout a v2.0 RC1 source tree:
+
+`http://osgworks.googlecode.com/svn/tags/osgWorks_02_00_00-rc1`
+
 = v1.1 Current Release =
 
 Released 11 Sept 2010, v1.1 is the current stable release.
