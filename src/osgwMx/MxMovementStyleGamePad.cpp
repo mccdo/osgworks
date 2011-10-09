@@ -77,8 +77,8 @@ void MxMovementStyleGamePad::rotateHandler(double ts, double rate)
          // modify the change rate by the time difference since last call.
          rate *= ts - _lastRotateTime;
          _lastRotateTime = ts;
-         double x = -(_inputAdapter->rangeValues[ROTATE_X_AXIS_IDX] * rate);
-         double y = _inputAdapter->rangeValues[ROTATE_Y_AXIS_IDX] * rate;
+         double x = -(_inputAdapter->rangeValues[ROTATE_Y_AXIS_IDX] * rate);
+         double y = -(_inputAdapter->rangeValues[ROTATE_X_AXIS_IDX] * rate);
          // check for reversed direction.
          if (_reverseRotateX)
             x = -x;
