@@ -13,28 +13,34 @@
 namespace osgwMx
 {
 
+/** \class MxMovementStyle MxMovementStyle.h <osgwMx/MxMovementStyle.h>
+\brief An abstract base class to maintain an input adapter and an MxCore matrix.
+Inheriting classes must implement matrixTransform() in order to interpret the
+data contained in the input adapter and perform transformations on the MxCore matrix.
+*/
+
 class OSGWMX_EXPORT MxMovementStyle : public osg::Referenced
    {
    public:
       MxMovementStyle(MxInputAdapter *ia);
       virtual ~MxMovementStyle() {}
 
-      // a necessary setup step for the MxCore matrix. Hand this the root node of the
-      // scene or sub-scene to be manipulated.
+      /** a necessary setup step for the MxCore matrix. Hand this the root node of the
+          scene or sub-scene to be manipulated. */
       void setSceneData(osg::Node *scene) {if (_mxCore.valid()) _mxCore->setSceneData(scene);}
 
-      // read the input adapter data, polling if necessary, and perform
-      // any necessary transformations on the matrix.
-      // the timestamp (ts) passed in is the ellapsed time in seconds and partial
-      // seconds. The time start is irrelevant for this purpose. It is used only
-      // to track the passage of time and manipulate the matrix at a predictable rate.
+      /** read the input adapter data, polling if necessary, and perform
+          any necessary transformations on the matrix.
+          the timestamp (ts) passed in is the ellapsed time in seconds and partial
+          seconds. The time start is irrelevant for this purpose. It is used only
+          to track the passage of time and manipulate the matrix at a predictable rate. */
       void updateData(double ts) {if (_inputAdapter.valid()) {_inputAdapter->updateData(); matrixTransform(ts);}}
 
-      // this resets the matrix to its original state.
+      /** this resets the matrix to its original state. */
       void resetMatrix() {if (_mxCore.valid()) _mxCore->computeInitialView();}
 
-      // this is the rate of change in seconds and partial seconds.
-      // Affect any change at this rate. Smaller values are faster. Default is 1 second.
+      /** this is the rate of change in seconds and partial seconds.
+          Affect any change at this rate. Smaller values are faster. Default is 1 second. */
       void setChangeRate(double rate) {_chgRate = rate;}
       double getChangeRate() const {return _chgRate;}
 
@@ -42,10 +48,10 @@ class OSGWMX_EXPORT MxMovementStyle : public osg::Referenced
       MxInputAdapter *getInputAdapter() { return( _inputAdapter.get() ); }
       osg::NodeCallback *getMatrixCallback();
 
-      // for reversing the movement directions.
-      // NOTE: it is up to the inheriting class to implement, but
-      // there are here to dictate implementation.
-      // set to 'true' to reverse the normal direction.
+      /** for reversing the movement directions.
+          NOTE: it is up to the inheriting class to implement, but
+          these are here to dictate implementation.
+          set to 'true' to reverse the normal direction. */
       void setReverseRotateX(bool state) {_reverseRotateX = state;}
       bool getReverseRotateX() const {return _reverseRotateX;}
       void setReverseRotateY(bool state) {_reverseRotateY = state;}
@@ -60,8 +66,8 @@ class OSGWMX_EXPORT MxMovementStyle : public osg::Referenced
       bool getReverseDolly() const {return _reverseDolly;}
 
    protected:
-      // inheriting class must implement this function to perform transformations
-      // on the matrix based on the MxInputAdapter data.
+      /** inheriting class must implement this function to perform transformations
+          on the matrix based on the MxInputAdapter data. */
       virtual void matrixTransform(double ts) = 0;
 
       osg::ref_ptr< MxCore > _mxCore;
