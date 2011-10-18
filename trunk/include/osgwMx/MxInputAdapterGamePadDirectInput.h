@@ -12,8 +12,11 @@
 namespace osgwMx
 {
 
-// Note: this class is not meant to be copied. An instance will create
-// and make use of DirectInput references / handles, etc.
+/** \class MxInputAdapterGamePadDirectInput MxInputAdapterGamePadDirectInput.h <osgwMx/MxInputAdapterGamePadDirectInput.h>
+\brief A class derived from MxInputAdapter to receive game pad input from DirectInput (part of DirectX).
+DirectX usage is completely transparent and self-contained.
+Note: unlike the MxInputAdapter base class, this class is not meant to be copied.
+An instance will create and make use of DirectInput references / handles, etc. */
 
 class OSGWMX_EXPORT MxInputAdapterGamePadDirectInput : public MxInputAdapter
    {
@@ -21,15 +24,15 @@ class OSGWMX_EXPORT MxInputAdapterGamePadDirectInput : public MxInputAdapter
       MxInputAdapterGamePadDirectInput();
       ~MxInputAdapterGamePadDirectInput();
 
-      // by default, instantiating this object will try to make use of the
-      // first gaming device it finds on the system. A specific device can be
-      // selected with the following call, which will deallocate any device
-      // it decided to use, and return 'true' if it successfully allocated
-      // the specified device.
-      // note: device name must match exactly.
+      /** by default, instantiating this object will try to make use of the
+          first gaming device it finds on the system. A specific device can be
+          selected with the following call, which will deallocate any device
+          it decided to use, and return 'true' if it successfully allocated
+          the specified device.
+          note: device name is case dependent and must match exactly. */
       bool SelectDevice(const std::string &deviceName);
 
-      // inherited from MxInputAdapter, and called to poll device data.
+      /** inherited from MxInputAdapter, and called to poll device data. */
       virtual void updateData();
 
    private:

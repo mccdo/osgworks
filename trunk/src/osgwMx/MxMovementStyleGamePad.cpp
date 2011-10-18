@@ -58,11 +58,14 @@ void MxMovementStyleGamePad::matrixTransform(double ts)
 }
 
 // **************************************************************************
+// this takes the range values indexed at ROTATE_X_AXIS_IDX and ROTATE_Y_AXIS_IDX
+// (see #define's at the top of this file), modified by the change rate, and
+// feeds them as X & Y values to MxCore::rotate().
 
 void MxMovementStyleGamePad::rotateHandler(double ts, double rate)
 
 {
-   // check rotational axis.
+   // check rotational axis. If an X and/or Y axis is not centered...
    if (_inputAdapter->rangeValues[ROTATE_X_AXIS_IDX] || _inputAdapter->rangeValues[ROTATE_Y_AXIS_IDX])
       {
       // check if just starting the operation.
@@ -94,6 +97,10 @@ void MxMovementStyleGamePad::rotateHandler(double ts, double rate)
 }
 
 // **************************************************************************
+// this takes the range values indexed at MOVE_X_AXIS_IDX and MOVE_Y_AXIS_IDX
+// (see #define's at the top of this file), modified by the change rate, and
+// feeds them as X & Y values to MxCore::pan(). This happens if neither the
+// zoom button or dolly button are held down.
 
 void MxMovementStyleGamePad::moveHandler(double ts, double rate)
 
@@ -130,6 +137,8 @@ void MxMovementStyleGamePad::moveHandler(double ts, double rate)
 }
 
 // **************************************************************************
+// given any dpad 'true' (boolean) input, feed the time-modied dpad movement
+// as x and y values to MxCore::pan().
 
 void MxMovementStyleGamePad::moveDpadHandler(double ts, double rate)
 
@@ -174,6 +183,10 @@ void MxMovementStyleGamePad::moveDpadHandler(double ts, double rate)
 }
 
 // **************************************************************************
+// if the ZOOM_BTN_IDX button is pressed and the range value MOVE_Y_AXIS_IDX
+// is non-zero, feed the time-modied MOVE_Y_AXIS_IDX range value to
+// MxCore::fovyScaleUp() or MxCore::fovyScaleDown(). This acts as a viewing "zoom"
+// (magnification).
 
 void MxMovementStyleGamePad::zoomHandler(double ts, double rate)
 
@@ -209,6 +222,9 @@ void MxMovementStyleGamePad::zoomHandler(double ts, double rate)
 }
 
 // **************************************************************************
+// if the DOLLY_BTN_IDX button is pressed and the range value MOVE_Y_AXIS_IDX
+// is non-zero, feed the time-modied MOVE_Y_AXIS_IDX range value to
+// MxCore::dolly() in order to change the viewing position. Superior to zoom.
 
 void MxMovementStyleGamePad::dollyHandler(double ts, double rate)
 

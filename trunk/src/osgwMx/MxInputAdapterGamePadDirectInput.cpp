@@ -29,9 +29,12 @@ bool MxInputAdapterGamePadDirectInput::winClassRegistered = false;      // true 
 MxInputAdapterGamePadDirectInput::MxInputAdapterGamePadDirectInput() : pDI(0), pDIDevice(0)
 
 {
+   // DirectInput requires a Window from the app, so try to create one now.
+   // This window will be a top-level window (not a child window), but will be
+   // invisible to the user.
    if ((hDIWindow = CreateInvisiWindow()) == 0)
       return;
-   // try to open DirectInput 8 for use.
+   // try to open DirectInput 8 for use. This works as far back as Windows 95 (DirectX 8.0a sdk).
    if (OpenDirectInput())
       SelectFirstDevice();    // try to select the first gaming device on the system.
 }
@@ -60,6 +63,8 @@ HWND MxInputAdapterGamePadDirectInput::CreateInvisiWindow()
 }
 
 // **************************************************************************
+// Our window procedure callback handles nothing, but passes it all down to
+// the default handler. No work happens here.
 
 static LRESULT CALLBACK WinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
@@ -69,6 +74,7 @@ static LRESULT CALLBACK WinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 // **************************************************************************
 // try to open DirectInput 8 for use.
+// example error handling code provided in comments.
 
 bool MxInputAdapterGamePadDirectInput::OpenDirectInput()
 
@@ -156,11 +162,13 @@ void MxInputAdapterGamePadDirectInput::DestroyWindow()
 }
 
 // **************************************************************************
-// note: device name must match exactly.
+// Select a specific device for use. Any device previously acquired will be released.
+// note: device name must match exactly (case dependent).
 
 bool MxInputAdapterGamePadDirectInput::SelectDevice(const std::string &deviceName)
 
 {
+   // an empty string will try to select the first device DX can find.
    if (deviceName.size() == 0)
       return SelectFirstDevice();
    EnumDevices();
@@ -192,6 +200,7 @@ bool MxInputAdapterGamePadDirectInput::SelectFirstDevice()
 }
 
 // **************************************************************************
+// Enumerate all gaming devices attached to the system.
 
 bool MxInputAdapterGamePadDirectInput::EnumDevices()
 
@@ -236,6 +245,7 @@ BOOL CALLBACK EnumDevicesCallback(const DIDEVICEINSTANCE *pdidInstance, void *pU
 }
 
 // **************************************************************************
+// select a device by its previously enumerated device instance.
 
 bool MxInputAdapterGamePadDirectInput::SelectDevice(const DIDEVICEINSTANCE &device)
 
@@ -347,6 +357,7 @@ void MxInputAdapterGamePadDirectInput::ExtractButtons(const DIJOYSTATE2 &devStat
 
 // **************************************************************************
 // extract point-of-view / dpad information from DirectInput info.
+// yes, this is strange, but these are the values that DirectInput uses.
 
 void MxInputAdapterGamePadDirectInput::ExtractPOV(const DIJOYSTATE2 &devState)
 
@@ -547,6 +558,8 @@ void MxInputAdapterGamePadDirectInput::ExtractAxis(const DIJOYSTATE2 &devState)
 }
 
 // **************************************************************************
+// return a normalized value based on the maximum we previously handed to
+// DirectX for all axis.
 
 double MxInputAdapterGamePadDirectInput::GetNormalizedAxisValue(LONG av)
 

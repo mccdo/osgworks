@@ -8,6 +8,10 @@
 namespace osgwMx
 {
 
+/** \class MxMovementStyleGamePad MxMovementStyleGamePad.h <osgwMx/MxMovementStyleGamePad.h>
+\brief A class to make matrix transformations based on a game pad input adapter.
+*/
+
 class OSGWMX_EXPORT MxMovementStyleGamePad : public MxMovementStyle
    {
    public:
@@ -16,15 +20,15 @@ class OSGWMX_EXPORT MxMovementStyleGamePad : public MxMovementStyle
       void setDpadMoveAmount(double chg) {_dpadMoveAmount = chg;}
       double getDPadMoveAmount() const {return _dpadMoveAmount;}
 
-      // for reversing the movement directions specific to a game pad.
+      /** for reversing the movement directions specific to a game pad. */
       void setReverseMoveDpadX(bool state) {_reverseMoveDpadX = state;}
       bool getReverseMoveDpadX() const {return _reverseMoveDpadX;}
       void setReverseMoveDpadY(bool state) {_reverseMoveDpadY = state;}
       bool getReverseMoveDpadY() const {return _reverseMoveDpadY;}
 
    protected:
-      // this is the function that is called from MxMovementStyle::updateData(),
-      // and modifies the matrix according to game pad input.
+      /** this is the function that is called from MxMovementStyle::updateData(),
+          and modifies the matrix according to game pad input. */
       virtual void matrixTransform(double ts);
 
       void rotateHandler(double ts, double rate);
