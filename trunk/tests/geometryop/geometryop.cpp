@@ -63,11 +63,11 @@ int main( int argc,
 
     arguments.getApplicationUsage()->addCommandLineOption( "--reducer", "Use ReducerOp. (Use DecimatorOp if neither --reducer nor --shortEdge are specified.)" );
     arguments.getApplicationUsage()->addCommandLineOption( "--shortEdge", "Use ShortEdgeOp. (Use DecimatorOp if neither --reducer nor --shortEdge are specified.)" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--percent <n>", "Reduction percentage for DecimatorOp and ShortEdgeOp. <n> is the target percentage of triangles to remain, in the range 0.0 to 1.0. Default 0.6" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--maxError <n>", "Maximum error tolerance for DecimatorOp, ReducerOp. Geometry exceeding this tolerance is not reduced. <n> is in the range 0.0 to FLT_MAX. Default FLT_MAX" );
-    arguments.getApplicationUsage()->addCommandLineOption( "--respectBoundaries", "Prevents DecimatorOp and ShortEdgeOp from removing boundary edges and polygons. Default False" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--percent <n>", "Reduction percentage for DecimatorOp and ShortEdgeOp. <n> is the target percentage of triangles to remain, in the range 0.0 to 1.0. Default 0.6." );
+    arguments.getApplicationUsage()->addCommandLineOption( "--maxError <n>", "Maximum error tolerance for DecimatorOp, ReducerOp. Geometry exceeding this tolerance is not reduced. <n> is in the range 0.0 to FLT_MAX. Default 10.0." );
+    arguments.getApplicationUsage()->addCommandLineOption( "--respectBoundaries", "Prevents DecimatorOp and ShortEdgeOp from removing boundary edges and polygons. Default False." );
     arguments.getApplicationUsage()->addCommandLineOption( "--minPrimitives <n>", "Minimum primitives in a geometry for DecimatorOp and ShortEdgeOp to consider it for reduction. Default 1." );
-    arguments.getApplicationUsage()->addCommandLineOption( "--maxFeature <n>", "Specifies the ShortEdgeOp largest feature size to be removed, measured in model units. Can be combined with --decPercent to limit the decimation using ShortEdgeOp. Default 0.1" );
+    arguments.getApplicationUsage()->addCommandLineOption( "--maxFeature <n>", "Specifies the ShortEdgeOp largest feature size to be removed, measured in model units. Can be combined with --percent to limit the decimation using ShortEdgeOp. Default 0.1" );
     arguments.getApplicationUsage()->addCommandLineOption( "--grpThreshold <n>", "Specifies the ReducderOp group threshold, in degrees. Default is 10.0" );
     arguments.getApplicationUsage()->addCommandLineOption( "--attemptMerge", "Attempt to merge geometry drawables into one using osgUtil::Optimizer::MergeGeometryVisitor before using specified geometry reduction operator." );
     arguments.getApplicationUsage()->addCommandLineOption( "--save", "Attempt to merge geometry drawables into one using Optimizer::MergeGeometryVisitor before using specified geometry reduction operator." );
@@ -83,10 +83,10 @@ int main( int argc,
     bool useShortEdge( arguments.find( "--shortEdge" ) > 0 );
     bool useDecimator( !useReducer && !useShortEdge );
 
-    float percent( .6 );
+    float percent( .6f );
     arguments.read( "--percent", percent );
 
-    float maxError( FLT_MAX );
+    float maxError( 10.f );
     arguments.read( "--maxError", maxError );
 
     const bool ignoreBoundaries( arguments.read( "--respectBoundaries" ) == 0 );
@@ -94,10 +94,10 @@ int main( int argc,
     int minPrim( 1 );
     arguments.read( "--minPrimitives", minPrim );
 
-    float maxFeature( .1 );
+    float maxFeature( .1f );
     arguments.read( "--maxFeature", maxFeature );
 
-    float grpThreshold( 10. );
+    float grpThreshold( 10.f );
     arguments.read( "--grpThreshold", grpThreshold );
 
     bool attemptMerge( arguments.find( "--attemptMerge" ) > 0 );
