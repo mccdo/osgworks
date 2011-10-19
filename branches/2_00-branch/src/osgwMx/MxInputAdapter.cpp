@@ -16,7 +16,8 @@ void MxInputAdapter::init()
    for (cnt = 0; cnt < RANGE_VALUE_COUNT; cnt++)
       {
       rangeValues[cnt] = 0;
-      rangeValueAttenuate[cnt] = 0.10;          // by default, throw away the lower 10%. Should allow all but the most terrible / broken hardware to be used.
+      // create the dead zone for range values such as analog sticks on a game pad.
+      rangeValueAttenuate[cnt] = 0.10;          // by default, throw away the lower +/-10%. Should allow all but the most terrible / broken hardware to be used effectively.
       }
    for (cnt = 0; cnt < MOVEMENT_VALUE_COUNT; cnt++)
       {
