@@ -59,7 +59,7 @@ public:
     \c fovy is in degrees. These values are used in the reset() and
     getYawPitchRoll() functions.
 
-    \c up default to (0., 0., 1.), \c dir default to (0., 1., 0.),
+    \c up defaults to (0., 0., 1.), \c dir defaults to (0., 1., 0.),
     \c pos defaults to (0., 0., 0.), and \c fovy defaults to 30.0. */
     void setInitialValues( const osg::Vec3d& up, const osg::Vec3d& dir,
         const osg::Vec3d& pos, double fovy=30. );
@@ -69,12 +69,12 @@ public:
     void reset();
 
 
-    /** Access the view up vector. */
+    /** Access the current view up vector. */
     void setUp( const osg::Vec3d& up ) { _viewUp = up; }
     osg::Vec3d getUp() { return( _viewUp ); }
     const osg::Vec3d& getUp() const { return( _viewUp ); }
 
-    /** Access the view direction vector. */
+    /** Access the current view direction vector. */
     void setDir( const osg::Vec3d& dir ) { _viewDir = dir; }
     osg::Vec3d getDir() { return( _viewDir ); }
     const osg::Vec3d& getDir() const { return( _viewDir ); }
@@ -84,14 +84,14 @@ public:
     osg::Vec3d getPosition() { return( _position ); }
     const osg::Vec3d& getPosition() const { return( _position ); }
 
-    /** Simply returns the cross product of \c _viewDir and \c _viewUp.
+    /** Convenience routine to return the cross product of \c _viewDir and \c _viewUp.
     */
-    osg::Vec3d getCross() const;
+    osg::Vec3d getCross() const { return( _viewDir ^ _viewUp ); }
 
     /** Changes the view direction (and possibly the up vector), but
     keeps the view position constant. To keep the up vector constant,
     pass the current up vector as the \c axis parameter. This function
-    support first person viewing. \c angle is in radians. */
+    supports first person viewing. \c angle is in radians. */
     void rotate( double angle, const osg::Vec3d& axis );
     /** Rotates the view position about a point in world coordinates. This
     function supports an orbit-type view. \c angle is in radians. */
@@ -101,10 +101,9 @@ public:
     /** Move the view position by a delta amount in world coordinate space.
     */
     void moveWorldCoords( osg::Vec3d delta );
-    /** Move the view position by a delta amount in view-relative coordinates.
+    /** Move the view position by a delta amount in left-handed view-relative coordinates.
     \c delta[0] is movement to the right (+) or left (-), \c delta[1] is movement
-    up (+) or down (-), and \c delta[2] is movement forward (+) ir backward (-).
-    */
+    up (+) or down (-), and \c delta[2] is movement backward (+) or forward (-). */
     void move( osg::Vec3d delta );
 
     /** Get current yaw/pitch/roll angles for the current view.
@@ -132,16 +131,15 @@ public:
     matrix. */
     void setAspect( double aspect ) { _aspect = aspect; }
 
-    /** Modify \c proj so that it used \c _fovy for its field of view in y,
-    maintaining the same aspect ratio, and near and far plane values. This
+    /** Modify \c proj so that it uses \c _fovy for its field of view in y,
+    maintaining the same aspect ratio and near and far plane values. This
     function works for both symmetrical and assymetrical view volumes. */
     void updateFovy( osg::Matrixd& proj ) const;
-    /** Conpute a projection matrix from specified aspect and fovy. Creates
-    a symmetrical projection matrix. zNear and zFar planes are computed from
-    the proximity of view position to scene data. */
+    /** Conpute a symmetrical projection matrix using the specified zNear and
+    zFar planes. */
     osg::Matrixd computeProjection( const osg::Vec2d& nearFar ) const;
 
-    /** Set the field of view in y (fovy) in degrees. Default is 30 degrees. */
+    /** Set the field of view in y (fovy) in degrees. Default is 30.0 degrees. */
     void setFovy( double fovy );
     double getFovy() const { return( _fovy ); }
     double getFovyRadians() const;
@@ -152,7 +150,7 @@ public:
 
     /** Percentage to increase the fovy in a fovyScaleUp() call.
     For example, to increase fovy by 120% in that call, pass 1.2. Default is
-    1.1 (110%). The inverse (1.0 / fovyScale) is used in the fovyScaleDown()
+    1.1 (110%). The inverse (1.0 / \c fovyScale) is used in the fovyScaleDown()
     call. */
     void setFovyScale( double fovyScale ) { _fovyScale = fovyScale; }
     double getFovyScale() const { return( _fovyScale ); }

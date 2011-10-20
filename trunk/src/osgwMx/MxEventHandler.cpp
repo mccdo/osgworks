@@ -117,10 +117,14 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
                 else
                 {
                     // Left mouse, no shift and no ctrl: orbit
-                    // Angle is in radians, so normalized x works fine.
-                    // TBD replace with trackball-style rotation.
-                    _mxCore->rotate( -deltaX, _mxCore->getUp(), _orbitCenter );
-                    _mxCore->rotate( deltaY, _mxCore->getCross(), _orbitCenter );
+                    double angle;
+                    osg::Vec3d axis;
+                    osgwMx::computeTrackball( angle, axis,
+                        osg::Vec2d( _lastX, _lastY ), osg::Vec2d( deltaX, deltaY ),
+                        _mxCore->getOrientationMatrix() );
+
+                    _mxCore->rotate( angle, axis, _orbitCenter );
+
                     handled = true;
                 }
             }
