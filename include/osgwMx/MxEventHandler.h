@@ -53,13 +53,16 @@ as a template.
 
 \section User Interface
 
-\li 'o': Toggle between orthographic and perspective (default).
-\li 't': Switch to first person view.
-\li Ctrl + shift + left click: Select view center and switch to third person (orbit) view.
-\li Left mouse: rotation.
-\li Shift + Left mouse: pan.
-\li Right mouse: dolly forward/backward.
+\li Shift + leftmouse drag: pan.
+\li Ctrl + leftmouse drag: turn head.
+\li Leftmouse drag: trackball-style orbit.
+\li Ctrl + shift + leftmouse click: Pick trackball center point.
+\li Shift + rightmouse drag: Move left-right and up-down.
+\li Rightmouse drag: Move forward-backward (dolly).
 \li Scroll wheel: field of view.
+\li 'o': Toggle between orthographic and perspective (default).
+\li 'd': Display current view yaw/pitch/roll values.
+\li ' ': Return to home position.
 
 */
 class OSGWMX_EXPORT MxEventHandler : public osgGA::GUIEventHandler
@@ -73,7 +76,8 @@ public:
     virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us );
 
 
-    void setSceneData( osg::Node* scene );
+    void setSceneData( osg::Node* scene ) { _scene = scene; }
+    void setWorldUpVector( const osg::Vec3d& worldUp ) { _worldUp = worldUp; }
 
     MxCore* getMxCore();
     osg::NodeCallback* getMatrixCallback();
@@ -82,11 +86,18 @@ protected:
     ~MxEventHandler();
 
     osg::ref_ptr< MxCore > _mxCore;
+    osg::ref_ptr< osg::Node > _scene;
     osg::ref_ptr< CameraUpdateCallback > _cameraUpdateCallback;
+
+    osg::Vec3d _worldUp;
 
     double _lastX, _lastY;
     float _lastXPixel, _lastYPixel;
     bool _leftDragging, _leftClick;
+
+    osg::Vec4d _panPlane;
+    osg::Vec3d _orbitCenter;
+    double _moveScale;
 };
 
 

@@ -33,8 +33,8 @@ namespace osgwTools {
 /*@{*/
 
 // Please keep in sync with top-level CMakeLists.txt OSGWORKS_VERSION variable.
-#define OSGWORKS_MAJOR_VERSION 1
-#define OSGWORKS_MINOR_VERSION 9
+#define OSGWORKS_MAJOR_VERSION 2
+#define OSGWORKS_MINOR_VERSION 0
 #define OSGWORKS_SUB_VERSION 1
 
 /** \brief osgWorks version number as an integer
