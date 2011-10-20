@@ -244,37 +244,30 @@ bool intersectRayPlane( osg::Vec3d& result, const osg::Vec4d& plane, const osg::
 
 
 
-#ifdef old_trackball_code
-        const osg::Matrixd orientMat = getOrientationMatrix();
+void computeTrackball( double& angle, osg::Vec3d& axis,
+    const osg::Vec2d& start, const osg::Vec2d& delta,
+    const osg::Matrix& orientMat, const double sensitivity )
+{
+    // Take the spin direction 'delta' and rotate it 90 degrees
+    // to get our base axis (still in the window plane).
+    // Simultaneously convert to current view space.
+    osg::Vec2d screenAxis( -delta[ 1 ], delta[ 0 ] );
+    const osg::Vec3d baseAxis = osg::Vec3d( screenAxis[ 0 ], screenAxis[ 1 ], 0. ) * orientMat;
+    osg::Vec3d dir3 = osg::Vec3d( delta[ 0 ], delta[ 1 ], 0. ) * orientMat;
+    dir3.normalize();
 
-        // Take the spin direction 'dir' and rotate it 90 degrees
-        // to get our base axis (still in the window plane).
-        // Simultaneously convert to current view space.
-        osg::Vec2d screenAxis( -dir[ 1 ], dir[ 0 ] );
-        const osg::Vec3d baseAxis = osg::Vec3d( screenAxis[ 0 ], screenAxis[ 1 ], 0. ) * orientMat;
-        osg::Vec3d dir3 = osg::Vec3d( dir[ 0 ], dir[ 1 ], 0. ) * orientMat;
-        dir3.normalize();
+    // The distance from center, along with the roll sensitivity,
+    // tells us how much to rotate the baseAxis (ballTouchAngle) to get
+    // the actual ballAxis.
+    const double distance = start.length();
+    const double rotationDir( ( screenAxis * start > 0. ) ? -1. : 1. );
+    const double ballTouchAngle = rotationDir * sensitivity * distance;
+    osg::Vec3d ballAxis = baseAxis * osg::Matrixd::rotate( ballTouchAngle, dir3 );
+    ballAxis.normalize();
 
-        // The distance from center, along with the roll sensitivity,
-        // tells us how much to rotate the baseAxis (ballTouchAngle) to get
-        // the actual ballAxis.
-        const double distance = start.length();
-        const double rotationDir( ( screenAxis * start > 0. ) ? -1. : 1. );
-        const double ballTouchAngle = rotationDir * _trackballRollSensitivity * distance;
-        osg::Vec3d ballAxis = baseAxis * osg::Matrixd::rotate( ballTouchAngle, dir3 );
-        ballAxis.normalize();
-
-        osg::Matrixd m = osg::Matrixd::rotate( -( dir.length() ), ballAxis );
-
-        // Re-orient the basis.
-        _viewDir = _viewDir * m;
-        _viewUp = _viewUp * m;
-        // Orthonormalize.
-        osg::Vec3d cross = _viewDir ^ _viewUp;
-        _viewUp = cross ^ _viewDir;
-        _viewDir.normalize();
-        _viewUp.normalize();
-#endif
+    angle = -( delta.length() );
+    axis = ballAxis;
+}
 
 
 // osgwMx

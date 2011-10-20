@@ -144,11 +144,6 @@ void MxCore::reset()
 }
 
 
-osg::Vec3d MxCore::getCross() const
-{
-    return( _viewDir ^ _viewUp );
-}
-
 void MxCore::rotate( double angle, const osg::Vec3d& axis )
 {
     osg::Matrix r = osg::Matrix::rotate( angle, axis );
@@ -173,8 +168,7 @@ void MxCore::moveWorldCoords( osg::Vec3d delta )
 }
 void MxCore::move( osg::Vec3d delta )
 {
-    osg::Vec3d flipZ( delta[0], delta[1], -delta[2] );
-    _position += flipZ * getOrientationMatrix();
+    _position += ( delta * getOrientationMatrix() );
 }
 
 

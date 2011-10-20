@@ -52,6 +52,23 @@ osg::Vec3d OSGWMX_EXPORT pickCenter( osg::Node* scene, const osgwMx::MxCore* mxC
 /** Intersect a ray with a plane. OSG doesn't appear to have this utility. */
 bool OSGWMX_EXPORT intersectRayPlane( osg::Vec3d& result, const osg::Vec4d& plane, const osg::Vec3d& p0, const osg::Vec3d& p1 );
 
+/** \brief Computes an angle and axis of rotation for a simulated trackball.
+
+The returned \c axis and \c angle values are intended to be passed to the MxCore::rotate() function.
+
+\param start The xy start position in normalized (-1 to 1 ) windows coordinates.
+\param delta The delta xy morion in normalized (-1 to 1 ) windows coordinates.
+\param orientMat The current view orientation matrix.
+\param sensitivity Controls simulated trackball sensitivity. Smaller values produce less
+of a rool effect, while larger values produce a more pronounced roll effect. Valid range
+is 0.0 to pi/2. Default is 1.3.
+\return angle The computed rotation angle in radians.
+\return axis The axis to rotate about.
+*/
+void OSGWMX_EXPORT computeTrackball( double& angle, osg::Vec3d& axis,
+    const osg::Vec2d& start, const osg::Vec2d& delta,
+    const osg::Matrix& orientMat, const double sensitivity=1.3 );
+
 
 // osgwMx
 }
