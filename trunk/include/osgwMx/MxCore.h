@@ -63,6 +63,8 @@ public:
     \c pos defaults to (0., 0., 0.), and \c fovy defaults to 30.0. */
     void setInitialValues( const osg::Vec3d& up, const osg::Vec3d& dir,
         const osg::Vec3d& pos, double fovy=30. );
+    void getInitialValues( osg::Vec3d& up, osg::Vec3d& dir,
+        osg::Vec3d& pos, double& fovy );
 
     /** Sets the view up, view dir, view position, and fovy values to their initial
     values (see setInitialValues()), and disables orthographic projection. */
@@ -91,20 +93,37 @@ public:
     /** Changes the view direction (and possibly the up vector), but
     keeps the view position constant. To keep the up vector constant,
     pass the current up vector as the \c axis parameter. This function
-    supports first person viewing. \c angle is in radians. */
+    supports first person viewing. \c angle is in radians.
+    See setRotateScale(). */
     void rotate( double angle, const osg::Vec3d& axis );
     /** Rotates the view position about a point in world coordinates. This
-    function supports an orbit-type view. \c angle is in radians. */
+    function supports an orbit-type view. \c angle is in radians.
+    See setRotateScale(). */
     void rotate( double angle, const osg::Vec3d& axis, const osg::Vec3d& point );
+
+    /** Sets the rotation angle scale. The rotate() functions multiply their \c angle
+    parameter by the specified \c rotateScale value before performing the rotation.
+    The default rotate scale value is 1.0 (no scaling). */
+    void setRotateScale( double rotateScale ) { _rotateScale = rotateScale; }
+    double getRotateScale() const { return( _rotateScale ); }
 
 
     /** Move the view position by a delta amount in world coordinate space.
-    */
+    See setMoveScale(). */
     void moveWorldCoords( osg::Vec3d delta );
     /** Move the view position by a delta amount in left-handed view-relative coordinates.
     \c delta[0] is movement to the right (+) or left (-), \c delta[1] is movement
-    up (+) or down (-), and \c delta[2] is movement backward (+) or forward (-). */
+    up (+) or down (-), and \c delta[2] is movement backward (+) or forward (-).
+    See setMoveScale(). */
     void move( osg::Vec3d delta );
+
+    /** Sets the movement scale. The move() and moveWorldCoords functions perform an
+    element-wise multiplication between their \c delta parameter and the specified
+    \c moveScale vector before performing the translatkion. The default movement
+    scale vector is (1., 1., 1.) (no scaling). */
+    void setMoveScale( const osg::Vec3d& moveScale ) { _moveScale = moveScale; }
+    osg::Vec3d getMoveScale() { return( _moveScale ); }
+    const osg::Vec3d& getMoveScale() const { return( _moveScale ); }
 
     /** Get current yaw/pitch/roll angles for the current view.
     Values are computed relative to the initial up and dir vectors
@@ -166,6 +185,9 @@ protected:
 
     osg::Vec3d _viewUp, _viewDir, _position;
     osg::Vec3d _initialUp, _initialDir, _initialPosition;
+
+    double _rotateScale;
+    osg::Vec3d _moveScale;
 
     bool _ortho;
     double _aspect;

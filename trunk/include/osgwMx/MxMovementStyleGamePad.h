@@ -52,8 +52,6 @@ protected:
     void rotateHandler(double ts, double rate);
     void moveHandler(double ts, double rate);
     void moveDpadHandler(double ts, double rate);
-    void zoomHandler(double ts, double rate);
-    void dollyHandler(double ts, double rate);
 
 private:
     double _dpadMoveAmount;       // amount of change to affect (at the specified rate) when holding the dpad down.

@@ -20,20 +20,25 @@
 
 #include <osgwMx/MxMovementStyleGamePad.h>
 
+#include <stdio.h>
+#include <ostream>
+#include <iostream>
+
 using std::abs;
 
 namespace osgwMx
 {
 
+
 #define ROTATE_X_AXIS_IDX 2      // the range value (axis) index to be used for X axis rotation.
 #define ROTATE_Y_AXIS_IDX 5      // the range value index to be used for Y axis rotation.
 #define MOVE_X_AXIS_IDX 0        // the range value index to be used for X axis movement.
 #define MOVE_Y_AXIS_IDX 1        // the range value index to be used for Y axis movement.
-#define ZOOM_BTN_IDX 1           // the index of the button that, when pressed, turns MOVE_Y_AXIS_IDX into a zoom.
-#define DOLLY_BTN_IDX 0          // the index of the button that, when pressed, turns MOVE_Y_AXIS_IDX into a dolly.
+#define UPDOWN_BTN_IDX 1         // when pressed, this button makes the MOVE_Y_AXIS_IDX stick move up-down.
 #define SLOW_RATE_BTN_IDX 6      // the index of the button that, when pressed, slows the change rate by a factor of 4.
-#define FAST_RATE_BTN_IDX 4      // the index of the button that, when pressed, speeds up the change rate by a factor of 4.
+#define FAST_RATE_BTN_IDX 7      // the index of the button that, when pressed, speeds up the change rate by a factor of 4.
 #define RESET_MATRIX_BTN_IDX 5   // the index of the button that, when pressed, will reset the view matrix to its original state.
+#define JUMP_TO_ORIGIN_BTN_IDX 4 // This butten sets the view position to the origin.
 
 // **************************************************************************
 
@@ -45,6 +50,7 @@ MxMovementStyleGamePad::MxMovementStyleGamePad(MxInputAdapter *ia)
     _reverseMoveDpadX(false),
     _reverseMoveDpadY(false)
 {
+    _mxCore->setMoveScale( osg::Vec3d( 8., 8., 8. ) );
 }
 
 // **************************************************************************
@@ -58,22 +64,28 @@ void MxMovementStyleGamePad::matrixTransform(double ts)
         return;
 
     // check if need to reset the matrix.
-    if( _inputAdapter->buttons[RESET_MATRIX_BTN_IDX] )
+    if( _inputAdapter->buttons[ RESET_MATRIX_BTN_IDX ] )
         _mxCore->reset();
+    if( _inputAdapter->buttons[ JUMP_TO_ORIGIN_BTN_IDX ] )
+        _mxCore->setPosition( osg::Vec3d( 0., 0., 0. ) );
 
     // determine the rate of change, accounting for speed modifier buttons.
-    double rate = _chgRate;
-    if (_inputAdapter->buttons[FAST_RATE_BTN_IDX])
-        rate *= 4;
-    else if (_inputAdapter->buttons[SLOW_RATE_BTN_IDX])
-        rate /= 4;
+    if( ( _inputAdapter->buttons[FAST_RATE_BTN_IDX] ) ||
+        ( _inputAdapter->buttons[SLOW_RATE_BTN_IDX] ) )
+    {
+        osg::Vec3d moveScale = _mxCore->getMoveScale();
+        if( _inputAdapter->buttons[ FAST_RATE_BTN_IDX ] )
+            moveScale *= 1.01;
+        else if( _inputAdapter->buttons[ SLOW_RATE_BTN_IDX ] )
+            moveScale /= 1.01;
+        _mxCore->setMoveScale( moveScale );
+    }
+
     // call the rotational, movement, and zoom functions to do their thing
     // depending on the input supplied by the input adapter.
-    rotateHandler(ts, rate);
-    moveHandler(ts, rate);
-    moveDpadHandler(ts, rate);
-    //   zoomHandler(ts, rate);
-    dollyHandler(ts, rate);
+    rotateHandler(ts, 1.);
+    moveHandler(ts, 1.);
+    //moveDpadHandler(ts, 1.);
 }
 
 // **************************************************************************
@@ -100,13 +112,13 @@ void MxMovementStyleGamePad::rotateHandler(double ts, double rate)
             rate *= ts - _lastRotateTime;
             _lastRotateTime = ts;
             double x = -(_inputAdapter->rangeValues[ROTATE_Y_AXIS_IDX] * rate);
-            double y = -(_inputAdapter->rangeValues[ROTATE_X_AXIS_IDX] * rate);
+            double y = _inputAdapter->rangeValues[ROTATE_X_AXIS_IDX] * rate;
             // check for reversed direction.
             if (_reverseRotateX)
                 x = -x;
             if (_reverseRotateY)
                 y = -y;
-            double angleScale( 0.005 );
+            double angleScale( 0.4 );
             _mxCore->rotate( x * angleScale, _mxCore->getUp() );
             _mxCore->rotate( y * angleScale, _mxCore->getCross() );
         }
@@ -125,8 +137,7 @@ void MxMovementStyleGamePad::rotateHandler(double ts, double rate)
 void MxMovementStyleGamePad::moveHandler(double ts, double rate)
 
 {
-    if ((_inputAdapter->rangeValues[MOVE_X_AXIS_IDX] || _inputAdapter->rangeValues[MOVE_Y_AXIS_IDX]) &&
-        (_inputAdapter->buttons[ZOOM_BTN_IDX] == false) && (_inputAdapter->buttons[DOLLY_BTN_IDX] == false))
+    if( (_inputAdapter->rangeValues[MOVE_X_AXIS_IDX] || _inputAdapter->rangeValues[MOVE_Y_AXIS_IDX]) )
     {
         // check if just starting the operation.
         if (_moving == false)
@@ -140,15 +151,20 @@ void MxMovementStyleGamePad::moveHandler(double ts, double rate)
             // modify the change rate by the time difference since last call.
             rate *= ts - _lastMoveTime;
             _lastMoveTime = ts;
-            double x = -(_inputAdapter->rangeValues[MOVE_X_AXIS_IDX] * rate);
+            double x = _inputAdapter->rangeValues[MOVE_X_AXIS_IDX] * rate;
             double y = _inputAdapter->rangeValues[MOVE_Y_AXIS_IDX] * rate;
             // check for reversed direction.
             if (_reverseMoveX)
                 x = -x;
             if (_reverseMoveY)
                 y = -y;
-            const double moveScale( 1. );
-            _mxCore->move( osg::Vec3d( x, 0., y ) * moveScale );
+
+            osg::Vec3d movement;
+            if( _inputAdapter->buttons[UPDOWN_BTN_IDX] )
+                movement.set( 0., -y, 0. );
+            else
+                movement.set( x, 0., y );
+            _mxCore->move( movement );
         }
     }
     // shut down the operation when the input stops.
@@ -157,7 +173,7 @@ void MxMovementStyleGamePad::moveHandler(double ts, double rate)
 }
 
 // **************************************************************************
-// given any dpad 'true' (boolean) input, feed the time-modied dpad movement
+// given any dpad 'true' (boolean) input, feed the time-modified dpad movement
 // as x and y values to MxCore::pan().
 
 void MxMovementStyleGamePad::moveDpadHandler(double ts, double rate)
@@ -174,9 +190,6 @@ void MxMovementStyleGamePad::moveDpadHandler(double ts, double rate)
         // make sure some time has ellapsed since the last call.
         else if ((ts - _lastMoveDpadTime) > 0)
         {
-            // modify the change rate by the time difference since last call.
-            rate *= ts - _lastMoveDpadTime;
-            _lastMoveDpadTime = ts;
             double x = 0, y = 0;
             if (_inputAdapter->dpad.left)
                 x = _dpadMoveAmount;
@@ -186,15 +199,24 @@ void MxMovementStyleGamePad::moveDpadHandler(double ts, double rate)
                 y = -_dpadMoveAmount;
             else if (_inputAdapter->dpad.down)
                 y = _dpadMoveAmount;
-            x *= rate;
-            y *= rate;
+
+            // modify the change rate by the time difference since last call.
+            x *= ( ts - _lastMoveDpadTime );
+            y *= ( ts - _lastMoveDpadTime );
+            _lastMoveDpadTime = ts;
+
             // check for reversed direction.
             if (_reverseMoveDpadX)
                 x = -x;
             if (_reverseMoveDpadY)
                 y = -y;
-            const double moveScale( 1. );
-            _mxCore->move( osg::Vec3d( x, y, 0. ) * moveScale );
+
+            osg::Vec3d up, dir, pos;
+            double fovy;
+            _mxCore->getInitialValues( up, dir, pos, fovy );
+
+            //_mxCore->rotate( x, up, _pickCenter );
+            //_mxCore->rotate( y, _mxCore->getCross(), _pickCenter );
         }
     }
     // shut down the operation when the input stops.
@@ -202,79 +224,6 @@ void MxMovementStyleGamePad::moveDpadHandler(double ts, double rate)
         _movingDpad = false;
 }
 
-// **************************************************************************
-// if the ZOOM_BTN_IDX button is pressed and the range value MOVE_Y_AXIS_IDX
-// is non-zero, feed the time-modied MOVE_Y_AXIS_IDX range value to
-// MxCore::fovyScaleUp() or MxCore::fovyScaleDown(). This acts as a viewing "zoom"
-// (magnification).
-
-void MxMovementStyleGamePad::zoomHandler(double ts, double rate)
-
-{
-    // if the zoom button is pressed, then use the Y movement axis as a zoom.
-    if (_inputAdapter->buttons[ZOOM_BTN_IDX] && _inputAdapter->rangeValues[MOVE_Y_AXIS_IDX])
-    {
-        // check if just starting the operation.
-        if (_zooming == false)
-        {
-            _zooming = true;
-            _lastZoomTime = ts;
-        }
-        // make sure some time has ellapsed since the last call.
-        else if ((ts - _lastZoomTime) > 0)
-        {
-            rate *= ts - _lastZoomTime;
-            _lastZoomTime = ts;
-            double chg = -(_inputAdapter->rangeValues[MOVE_Y_AXIS_IDX] * rate);
-            // check for reversed direction.
-            if (_reverseZoom)
-                chg = -chg;
-            _mxCore->setFovyScale(1.0 + abs(chg));
-            if (chg > 0)
-                _mxCore->fovyScaleUp();
-            else
-                _mxCore->fovyScaleDown();
-        }
-    }
-    // shut down the operation when the input stops.
-    else if (_zooming)
-        _zooming = false;
-}
-
-// **************************************************************************
-// if the DOLLY_BTN_IDX button is pressed and the range value MOVE_Y_AXIS_IDX
-// is non-zero, feed the time-modied MOVE_Y_AXIS_IDX range value to
-// MxCore::dolly() in order to change the viewing position. Superior to zoom.
-
-void MxMovementStyleGamePad::dollyHandler(double ts, double rate)
-
-{
-    // if the dolly button is pressed, then use the Y movement axis as a dolly.
-    if (_inputAdapter->buttons[DOLLY_BTN_IDX] && _inputAdapter->rangeValues[MOVE_Y_AXIS_IDX])
-    {
-        // check if just starting the operation.
-        if (_dollying == false)
-        {
-            _dollying = true;
-            _lastDollyTime = ts;
-        }
-        // make sure some time has ellapsed since the last call.
-        else if ((ts - _lastDollyTime) > 0)
-        {
-            rate *= ts - _lastDollyTime;
-            _lastDollyTime = ts;
-            double chg = -(_inputAdapter->rangeValues[MOVE_Y_AXIS_IDX] * rate);
-            // check for reversed direction.
-            if (_reverseDolly)
-                chg = -chg;
-            const double moveScale( 1. );
-            _mxCore->move( osg::Vec3d( 0., chg, 0. ) * moveScale );
-        }
-    }
-    // shut down the operation when the input stops.
-    else if (_dollying)
-        _dollying = false;
-}
 
 // osgwMx
 }

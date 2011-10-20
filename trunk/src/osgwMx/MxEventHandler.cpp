@@ -191,14 +191,9 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
             osg::notify( osg::ALWAYS ) << "Yaw: " << y << "\tPitch: " << p << "\tRoll: " << r << std::endl;
             break;
         }
-        case ' ': // Compute and go to initial view.
+        case ' ': // Reset to initial values.
         {
-            _mxCore->setUp( _worldUp );
-            _mxCore->setDir( osg::Vec3d( 0., 1., 0. ) );
-            // TBD need to handle the case where dir and up are coincident.
-            const osg::BoundingSphere& bs = _scene->getBound();
-            double distance = osgwMx::computeInitialDistanceFromFOVY( bs, _mxCore->getFovy() );
-            _mxCore->setPosition( bs.center() - ( _mxCore->getDir() * distance ) );
+            _mxCore->reset();
             handled = true;
             break;
         }

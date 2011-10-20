@@ -39,6 +39,8 @@ MxCore::MxCore()
     _initialUp( osg::Vec3d( 0., 0., 1. ) ),
     _initialDir( osg::Vec3d( 0., 1., 0. ) ),
     _initialPosition( osg::Vec3d( 0., 0., 0. ) ),
+    _rotateScale( 1. ),
+    _moveScale( osg::Vec3d( 1., 1., 1. ) ),
     _ortho( false ),
     _aspect( 1.0 ),
     _fovy( 30.0 ),
@@ -57,9 +59,13 @@ MxCore::MxCore( const MxCore& rhs, const osg::CopyOp& copyop )
     _position( rhs._position ),
     _initialUp( rhs._initialUp ),
     _initialDir( rhs._initialDir ),
+    _initialPosition( rhs._initialPosition ),
+    _rotateScale( rhs._rotateScale ),
+    _moveScale( rhs._moveScale ),
     _ortho( rhs._ortho ),
     _aspect( rhs._aspect ),
     _fovy( rhs._fovy ),
+    _initialFovy( rhs._initialFovy ),
     _fovyScale( rhs._fovyScale ),
     _clampFovyScale( rhs._clampFovyScale ),
     _clampFovyRange( rhs._clampFovyRange ),
@@ -131,6 +137,15 @@ void MxCore::setInitialValues( const osg::Vec3d& up, const osg::Vec3d& dir,
     _initialUp.normalize();
     _initialDir.normalize();
 }
+void MxCore::getInitialValues( osg::Vec3d& up, osg::Vec3d& dir,
+    osg::Vec3d& pos, double& fovy )
+{
+    up = _initialUp;
+    dir = _initialDir;
+    pos = _initialPosition;
+    fovy = _initialFovy;
+}
+
 
 void MxCore::reset()
 {
@@ -146,7 +161,7 @@ void MxCore::reset()
 
 void MxCore::rotate( double angle, const osg::Vec3d& axis )
 {
-    osg::Matrix r = osg::Matrix::rotate( angle, axis );
+    osg::Matrix r = osg::Matrix::rotate( angle * _rotateScale, axis );
     _viewDir = _viewDir * r;
     _viewUp = _viewUp * r;
     orthonormalize();
@@ -154,7 +169,7 @@ void MxCore::rotate( double angle, const osg::Vec3d& axis )
 
 void MxCore::rotate( double angle, const osg::Vec3d& axis, const osg::Vec3d& point )
 {
-    osg::Matrix r = osg::Matrix::rotate( angle, axis );
+    osg::Matrix r = osg::Matrix::rotate( angle * _rotateScale, axis );
 
     _position = ( _position - point ) * r + point;
     _viewDir = _viewDir * r;
@@ -164,11 +179,15 @@ void MxCore::rotate( double angle, const osg::Vec3d& axis, const osg::Vec3d& poi
 
 void MxCore::moveWorldCoords( osg::Vec3d delta )
 {
-    _position += delta;
+    osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
+        delta[1] * _moveScale[1], delta[2] * _moveScale[2] );
+    _position += scaledDelta;
 }
 void MxCore::move( osg::Vec3d delta )
 {
-    _position += ( delta * getOrientationMatrix() );
+    osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
+        delta[1] * _moveScale[1], delta[2] * _moveScale[2] );
+    _position += ( scaledDelta * getOrientationMatrix() );
 }
 
 
