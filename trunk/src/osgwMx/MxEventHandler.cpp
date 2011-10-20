@@ -20,6 +20,7 @@
 
 #include <osgwMx/MxEventHandler.h>
 #include <osgwMx/MxCore.h>
+#include <osgwMx/MxUtils.h>
 
 #include <osg/Notify>
 
@@ -30,25 +31,31 @@ namespace osgwMx
 
 MxEventHandler::MxEventHandler()
   : _mxCore( new MxCore ),
+    _scene( NULL ),
     _cameraUpdateCallback( NULL ),
+    _worldUp( osg::Vec3d( 0., 0., 1. ) ),
     _lastX( 0.0 ),
     _lastY( 0.0 ),
     _lastXPixel( 0.f ),
     _lastYPixel( 0.f ),
     _leftDragging( false ),
-    _leftClick( false )
+    _leftClick( false ),
+    _moveScale( 10.f )
 {
 }
 MxEventHandler::MxEventHandler( const MxEventHandler& rhs, const osg::CopyOp& copyop )
   : osgGA::GUIEventHandler( rhs, copyop ),
     _mxCore( rhs._mxCore ),
+    _scene( rhs._scene ),
     _cameraUpdateCallback( rhs._cameraUpdateCallback ),
+    _worldUp( rhs._worldUp ),
     _lastX( rhs._lastX ),
     _lastY( rhs._lastY ),
     _lastXPixel( rhs._lastXPixel ),
     _lastYPixel( rhs._lastYPixel ),
     _leftDragging( rhs._leftDragging ),
-    _leftClick( rhs._leftClick )
+    _leftClick( rhs._leftClick ),
+    _moveScale( rhs._moveScale )
 {
 }
 MxEventHandler::~MxEventHandler()
@@ -72,7 +79,7 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
 
         _leftClick = ( ( ea.getButtonMask() & osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) != 0 );
         if( _leftClick )
-            _mxCore->setPanStart( _lastX, _lastY );
+            _panPlane = osgwMx::computePanPlane( _scene.get(), _mxCore.get(), _lastX, _lastY );
 
         handled = true;
         break;
@@ -90,24 +97,42 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
                 ( ( osg::absolute< float >( ea.getX() - _lastXPixel ) +
                     osg::absolute< float >( ea.getY() - _lastYPixel ) ) > 5 ) );
 
-            if( !shiftKey )
-            {
-                // Left mouse, unshifted: rotation
-                _mxCore->rotate( osg::Vec2d( _lastX, _lastY ),
-                    osg::Vec2d( deltaX, deltaY ) );
-                handled = true;
-            }
-            else if( shiftKey )
+            if( shiftKey )
             {
                 // Left mouse, shifted: pan
-                _mxCore->pan( deltaX, deltaY );
+                osg::Vec3d panDelta = osgwMx::pan( _scene.get(), _mxCore.get(), _panPlane, -deltaX, -deltaY );
+                _mxCore->moveWorldCoords( panDelta );
                 handled = true;
+            }
+            else
+            {
+                // Not shifted.
+                if( ctrlKey )
+                {
+                    // Left mouse, ctrl but no shift: turn head.
+                    _mxCore->rotate( deltaX, _mxCore->getUp() );
+                    _mxCore->rotate( -deltaY, _mxCore->getCross() );
+                    handled = true;
+                }
+                else
+                {
+                    // Left mouse, no shift and no ctrl: orbit
+                    // Angle is in radians, so normalized x works fine.
+                    // TBD replace with trackball-style rotation.
+                    _mxCore->rotate( -deltaX, _mxCore->getUp(), _orbitCenter );
+                    _mxCore->rotate( deltaY, _mxCore->getCross(), _orbitCenter );
+                    handled = true;
+                }
             }
         }
         else if( ( ea.getButtonMask() & osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON ) != 0 )
         {
-            // Right mouse: dolly forward/backward
-            _mxCore->dolly( deltaY );
+            if( shiftKey )
+                // Shift right mouse: move left-right and up-down.
+                _mxCore->move( osg::Vec3d( deltaX, deltaY, 0. ) * _moveScale );
+            else
+                // Right mouse, no shift: dolly forward-backward
+                _mxCore->move( osg::Vec3d( 0., 0., deltaY ) * _moveScale );
             handled = true;
         }
         _lastX = ea.getXnormalized();
@@ -121,11 +146,8 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
             if( !_leftDragging && ctrlKey && shiftKey )
             {
                 // Parameters are NDC coordinates in range -1.0,1.0.
-                _mxCore->pickCenter(
-                    ea.getXnormalized(),
-                    ea.getYnormalized() );
-                // Go to third person (orbit) view
-                _mxCore->setMxCoreMode( MxCore::THIRD_PERSON );
+                _orbitCenter = pickCenter( _scene.get(), _mxCore.get(),
+                    ea.getXnormalized(), ea.getYnormalized() );
             }
             _leftDragging = false;
             _leftClick = false;
@@ -152,17 +174,12 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
         switch (ea.getKey())
         {
         case 'o': // toggle orthographic
-            _mxCore->setOrtho( !( _mxCore->getOrtho() ) );
+        {
+            const double viewDistance = ( _orbitCenter - _mxCore->getPosition() ).length();
+            _mxCore->setOrtho( !( _mxCore->getOrtho() ), viewDistance );
             handled = true;
             break;
-        case 't': // Go to first person view.
-            _mxCore->setMxCoreMode( MxCore::FIRST_PERSON );
-            handled = true;
-            break;
-        case 'b': // View the bottom of the model.
-            _mxCore->viewBottom();
-            handled = true;
-            break;
+        }
         case 'd': // Display current yaw / pitch / roll values
         {
             double y, p, r;
@@ -171,9 +188,16 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
             break;
         }
         case ' ': // Compute and go to initial view.
-            _mxCore->computeInitialView();
+        {
+            _mxCore->setUp( _worldUp );
+            _mxCore->setDir( osg::Vec3d( 0., 1., 0. ) );
+            // TBD need to handle the case where dir and up are coincident.
+            const osg::BoundingSphere& bs = _scene->getBound();
+            double distance = osgwMx::computeInitialDistanceFromFOVY( bs, _mxCore->getFovy() );
+            _mxCore->setPosition( bs.center() - ( _mxCore->getDir() * distance ) );
             handled = true;
             break;
+        }
         }
         break;
     }
@@ -185,11 +209,6 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
     return( handled );
 }
 
-
-void MxEventHandler::setSceneData( osg::Node* scene )
-{
-    _mxCore->setSceneData( scene );
-}
 
 MxCore* MxEventHandler::getMxCore()
 {

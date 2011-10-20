@@ -43,19 +43,12 @@ public:
     MxMovementStyle(MxInputAdapter *ia);
     virtual ~MxMovementStyle() {}
 
-    /** a necessary setup step for the MxCore matrix. Hand this the root node of the
-    scene or sub-scene to be manipulated. */
-    void setSceneData(osg::Node *scene) {if (_mxCore.valid()) _mxCore->setSceneData(scene);}
-
     /** read the input adapter data, polling if necessary, and perform
     any necessary transformations on the matrix.
     the timestamp (ts) passed in is the ellapsed time in seconds and partial
     seconds. The time start is irrelevant for this purpose. It is used only
     to track the passage of time and manipulate the matrix at a predictable rate. */
     void updateData(double ts) {if (_inputAdapter.valid()) {_inputAdapter->updateData(); matrixTransform(ts);}}
-
-    /** this resets the matrix to its original state. */
-    void resetMatrix() {if (_mxCore.valid()) _mxCore->computeInitialView();}
 
     /** this is the rate of change in seconds and partial seconds.
     Affect any change at this rate. Smaller values are faster. Default is 1 second. */
