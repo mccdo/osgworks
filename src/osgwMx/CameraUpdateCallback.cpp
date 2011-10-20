@@ -71,6 +71,9 @@ CameraUpdateCallback::operator()( osg::Node* node, osg::NodeVisitor* nv )
         double distance = osgwMx::computeInitialDistanceFromFOVY( bs, _mxCore->getFovy() );
         _mxCore->setPosition( bs.center() - ( _mxCore->getDir() * distance ) );
 
+        _mxCore->setInitialValues( _mxCore->getUp(),
+            _mxCore->getDir(), _mxCore->getPosition() );
+
         _firstUpdate = false;
     }
 
