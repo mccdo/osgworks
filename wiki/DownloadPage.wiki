@@ -8,7 +8,7 @@ This is a release candidate for v2.0.
 
 == Source ==
 
-[http://osgworks.googlecode.com/files/osgWorks_02_00_00-rc2.zip osgWorks_02_00_00-rc2.zip]
+[http://osgworks.googlecode.com/files/osgWorks_2_00_00-rc2.zip osgWorks_02_00_00-rc2.zip]
 
 Use this URL to checkout a v2.0 RC2 source tree:
 
