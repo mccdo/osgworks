@@ -54,12 +54,6 @@ OSG-based NodeVisitors, custom Nodes, utility functions, and other useful tools.
 
 osgwControls is a partially implemented 3D UI toolkit.
 
-\subsection osgwMx osgwMx
-
-osgwMx contains matrix support routines, including a flexible viewing manipulator
-and event handler that supports variable FOV and toggling between perspective and
-orthographic projections.
-
 \subsection osgwQuery osgwQuery
 
 osgwQuery contains OpenGL occlusion query support utilities, including an implementation
