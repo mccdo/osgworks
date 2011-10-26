@@ -20,7 +20,6 @@
 
 #include <osgwMx/CameraUpdateCallback.h>
 #include <osgwMx/MxCore.h>
-#include <osgwMx/MxUtils.h>
 
 #include <osg/Camera>
 
@@ -53,37 +52,20 @@ CameraUpdateCallback::operator()( osg::Node* node, osg::NodeVisitor* nv )
         return;
     }
 
-    osg::Camera* cam = static_cast< osg::Camera* >( node );
-
-    osg::BoundingSphere bs;
-    unsigned int idx;
-    for( idx=0; idx<cam->getNumChildren(); idx++ )
-    {
-        if( idx==0 )
-            bs = cam->getChild( idx )->getBound();
-        else
-            bs.expandBy( cam->getChild( idx )->getBound() );
-    }
-
     if( _firstUpdate )
     {
-        // Set the initial view.
-        double distance = osgwMx::computeInitialDistanceFromFOVY( bs, _mxCore->getFovy() );
-        _mxCore->setPosition( bs.center() - ( _mxCore->getDir() * distance ) );
-
-        _mxCore->setInitialValues( _mxCore->getUp(),
-            _mxCore->getDir(), _mxCore->getPosition() );
-
+        _mxCore->computeInitialView();
         _firstUpdate = false;
     }
+
+    osg::Camera* cam = static_cast< osg::Camera* >( node );
 
     // Update the aspect ratio before we query the projection matrix.
     const osg::Viewport* vp = cam->getViewport();
     _mxCore->setAspect( vp->width() / vp->height() );
 
     cam->setViewMatrix( _mxCore->getInverseMatrix() );
-    cam->setProjectionMatrix( _mxCore->computeProjection(
-        osgwMx::computeOptimalNearFar( _mxCore->getPosition(), bs, _mxCore->getOrtho() ) ) );
+    cam->setProjectionMatrix( _mxCore->computeProjection() );
 
     traverse( node, nv );
 }

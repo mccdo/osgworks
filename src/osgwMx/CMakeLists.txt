@@ -13,7 +13,6 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/MxInputAdapter.h
     ${HEADER_PATH}/MxMovementStyle.h
     ${HEADER_PATH}/MxMovementStyleGamePad.h
-    ${HEADER_PATH}/MxUtils.h
 )
 
 set( _osgwMxSourceFiles
@@ -23,7 +22,6 @@ set( _osgwMxSourceFiles
     MxInputAdapter.cpp
     MxMovementStyle.cpp
     MxMovementStyleGamePad.cpp
-    MxUtils.cpp
 )
 
 if( DIRECTINPUT_FOUND )

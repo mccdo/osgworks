@@ -34,6 +34,8 @@ int main( int argc, char** argv )
    // create a game pad input handler and data interpreter to control the view.
    osg::ref_ptr<MxInputAdapterGamePadDirectInput> gpIn = new MxInputAdapterGamePadDirectInput;
    MxMovementStyleGamePad mxGamePad(gpIn.get());
+   // Must specify the scene graph being viewed; used internally for zillions of things.
+   mxGamePad.setSceneData(root.get());
 
    // Get the update callback from mxGamePad and attach it as an update
    // callback to the viewer's internal Camera node. This will update the view and

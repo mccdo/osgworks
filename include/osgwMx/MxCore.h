@@ -45,89 +45,99 @@ public:
     META_Object(osgwMx,MxCore);
 
 
-    /** Returns a matrix suitable for orienting/positioning an object in the
-    world. The object's +z axis will be aligned with the view direction, and
-    the object's +y axis will be aligned with the view up vector. */
+    /** Specify the scene. Used to create appropriate view volume boundaries
+    when switching from perspective to ortho in the setOrtho() function. Used
+    by computeProjection() to compute appropriate zNear and zFar planes. */
+    void setSceneData( osg::Node* scene );
+
+    /** Documentation is TBD */
+    void computeInitialView();
+
+
+    /** Return a matrix using \c _viewDistance and \c _viewCenter as a translation,
+    and \c _viewDir and \c _viewUp as an orientation basis. */
     osg::Matrixd getMatrix() const;
-    /** Same as getMatrix() except without the translation. */
+    /** Just orientation, without the translation. */
     osg::Matrixd getOrientationMatrix() const;
-    /** Returns a matrix suitable for use as a view matrix. The view's
-    position, direction, and up vector are taken from this class. */
+    /** Return the inverse of the getMatrix() function. */
     osg::Matrixd getInverseMatrix() const;
 
-    /** Sets the initial values for the up, dir, and position vectors.
-    \c fovy is in degrees. These values are used in the reset() and
-    getYawPitchRoll() functions.
+    /** Causes the view to rotate. How the code changes the view depends on
+    the viewing mode (setMxCoreMode()).
 
-    \c up defaults to (0., 0., 1.), \c dir defaults to (0., 1., 0.),
-    \c pos defaults to (0., 0., 0.), and \c fovy defaults to 30.0. */
-    void setInitialValues( const osg::Vec3d& up, const osg::Vec3d& dir,
-        const osg::Vec3d& pos, double fovy=30. );
-    void getInitialValues( osg::Vec3d& up, osg::Vec3d& dir,
-        osg::Vec3d& pos, double& fovy );
+    In FIRST_PERSON mode, the view direction changes while the view position
+    remains constant. The \c start parameter is ignored, \c dir[0] is taken as
+    a delta left/right angle in radians, and \c dir[1] is taken as a delta
+    up/down angle in radians.
 
-    /** Sets the view up, view dir, view position, and fovy values to their initial
-    values (see setInitialValues()), and disables orthographic projection. */
-    void reset();
-
-
-    /** Access the current view up vector. */
-    void setUp( const osg::Vec3d& up ) { _viewUp = up; }
-    osg::Vec3d getUp() { return( _viewUp ); }
-    const osg::Vec3d& getUp() const { return( _viewUp ); }
-
-    /** Access the current view direction vector. */
-    void setDir( const osg::Vec3d& dir ) { _viewDir = dir; }
-    osg::Vec3d getDir() { return( _viewDir ); }
-    const osg::Vec3d& getDir() const { return( _viewDir ); }
-
-    /** Access the current view position). */
-    void setPosition( const osg::Vec3d& newPos ) { _position = newPos; }
-    osg::Vec3d getPosition() { return( _position ); }
-    const osg::Vec3d& getPosition() const { return( _position ); }
-
-    /** Convenience routine to return the cross product of \c _viewDir and \c _viewUp.
+    In THIRD_PERSON mode, the code rotates the view position around a
+    constant center point (selected with pickCenter()). Rotation emulates a
+    trackball. The \c start parameter indicates a normalized location on the
+    trackball surface, with (0.,0.) corresponding to the lower left window
+    corner and (1.,1.) to the upper right. \c dir indicates the direction of
+    rotation in normalized window space. Rotation alters the view up vector.
     */
-    osg::Vec3d getCross() const { return( _viewDir ^ _viewUp ); }
+    void rotate( osg::Vec2d start, osg::Vec2d dir );
 
-    /** Changes the view direction (and possibly the up vector), but
-    keeps the view position constant. To keep the up vector constant,
-    pass the current up vector as the \c axis parameter. This function
-    supports first person viewing. \c angle is in radians.
-    See setRotateScale(). */
-    void rotate( double angle, const osg::Vec3d& axis );
-    /** Rotates the view position about a point in world coordinates. This
-    function supports an orbit-type view. \c angle is in radians.
-    See setRotateScale(). */
-    void rotate( double angle, const osg::Vec3d& axis, const osg::Vec3d& point );
+    /** Pass in a delta motion vector. pan() moves the viewer and \c _viewCenter
+    by interpreting the input parameters as normalized delta motion on the
+    pan plane defined with setPanStart(). */
+    void pan( const double ndcX, const double ndcY );
 
-    /** Sets the rotation angle scale. The rotate() functions multiply their \c angle
-    parameter by the specified \c rotateScale value before performing the rotation.
-    The default rotate scale value is 1.0 (no scaling). */
-    void setRotateScale( double rotateScale ) { _rotateScale = rotateScale; }
-    double getRotateScale() const { return( _rotateScale ); }
+    /** Dolly the camera forwards and backwards. Changes the view distance.
+    This function is a no-op for orthographic projections. */
+    void dolly( const double deltaMovement );
 
+    /** Set the initial location for panning. The UI typically calls this function for
+    a click event, then calls \c pan() for subsequent drag events.
 
-    /** Move the view position by a delta amount in world coordinate space.
-    See setMoveScale(). */
-    void moveWorldCoords( osg::Vec3d delta );
-    /** Move the view position by a delta amount in left-handed view-relative coordinates.
-    \c delta[0] is movement to the right (+) or left (-), \c delta[1] is movement
-    up (+) or down (-), and \c delta[2] is movement backward (+) or forward (-).
-    See setMoveScale(). */
-    void move( osg::Vec3d delta );
+    This function creates a pan plane that is used by \c pan() to calculate the world
+    coordinate motion. To define the pan plane, this function performs an intersection
+    test with the scene. If an intersection occurs, the picked point is used to define
+    the plane. Otherwise, \c _viewCenter is used. The plane created passes through the
+    point (either the intersection point or \c _viewCenter and uses \c _viewDir as the
+    plane normal. */
+    void setPanStart( const double ndcX, const double ndcY );
 
-    /** Sets the movement scale. The move() and moveWorldCoords functions perform an
-    element-wise multiplication between their \c delta parameter and the specified
-    \c moveScale vector before performing the translatkion. The default movement
-    scale vector is (1., 1., 1.) (no scaling). */
-    void setMoveScale( const osg::Vec3d& moveScale ) { _moveScale = moveScale; }
-    osg::Vec3d getMoveScale() { return( _moveScale ); }
-    const osg::Vec3d& getMoveScale() const { return( _moveScale ); }
+    typedef enum {
+        FIRST_PERSON,
+        THIRD_PERSON
+    } MxCoreMode;
+    /** Specify FIRST_PERSON or the THIRD_PERSON viewing modes. The viewing mode
+    is THIRD_PERSON by default. The viewing mode affects interpretation of
+    the rotate() parameters. See rotate() for more information. */
+    void setMxCoreMode( MxCoreMode mode ); 
+    MxCoreMode getMxCoreMode() const { return( _mode ); }
+
+    /** Select a new view center. This function back-transforms the input NDC xy values
+    into world space and uses them to create a LineSegmentIntersector to pick a new
+    \c _center for the view matrix. */
+    void pickCenter( const double ndcX, const double ndcY );
+
+    /** Get the current eye position. */
+    inline osg::Vec3d getEyePosition() const;
+
+    /** When the viewing mode is THIRD_PERSON, the code emulates a trackball
+    in which mouse motion along the window boundary rolls the current view.
+    The application can use this function to adjust the sensitivity of the
+    emulated trackball. Smaller values produce less of a roll effect, while
+    larger values produce more pronounced roll effects.
+
+    \c rollSensitivity is literally the maximum angle of the trackball's
+    rotation axis relative to the view plane. This value is scaled by
+    the mouse's normalized distance from the window center.
+    \param rollSensitivity Clamped to range 0.0 to pi/2. Default is 1.3. */
+    void setTrackballRollSensitivity( double rollSensitivity );
+
+    /** Set world space vectors used to compute yaw/pitch/roll (see
+    getYawPitchRoll() ). The \c up vector corresponds to pitch (pi/2)
+    and defines a horison plane corresponding to pitch 0.0. The \c north
+    vector corresponds to yaw 0.0. */
+    void setBaseUpNorth( const osg::Vec3d& up, const osg::Vec3d& north );
 
     /** Get current yaw/pitch/roll angles for the current view.
-    Values are computed relative to the initial up and dir vectors
-    (see setInitialValues() ). All return values are in degrees.
+    Values are computed relative to the base up and north vectors
+    (see setBaseUpNorth() ). All return values are in degrees.
     \param yaw Heading value. 0.0 <= yaw < 360.0.
     \param pitch Elevation value. -(pi/2.0) <= pitch <= (pi/2.0).
     \param roll Twist value. 0.0 <= roll < 360.0.
@@ -143,22 +153,23 @@ public:
     Specify \c true to enable orthographic mode, and false to disable
     orthographic mode (and use perspective instead). The default is
     false (perspective). */
-    void setOrtho( bool ortho, const double viewDistance=1. );
+    void setOrtho( bool ortho );
     bool getOrtho() const { return( _ortho ); }
 
     /** Set the aspect ratio. This value is used in the computation of the projection
     matrix. */
     void setAspect( double aspect ) { _aspect = aspect; }
 
-    /** Modify \c proj so that it uses \c _fovy for its field of view in y,
-    maintaining the same aspect ratio and near and far plane values. This
+    /** Modify \c proj so that it used \c _fovy for its field of view in y,
+    maintaining the same aspect ratio, and near and far plane values. This
     function works for both symmetrical and assymetrical view volumes. */
     void updateFovy( osg::Matrixd& proj ) const;
-    /** Conpute a symmetrical projection matrix using the specified zNear and
-    zFar planes. */
-    osg::Matrixd computeProjection( const osg::Vec2d& nearFar ) const;
+    /** Conpute a projection matrix from specified aspect and fovy. Creates
+    a symmetrical projection matrix. zNear and zFar planes are computed from
+    the proximity of view position to scene data. */
+    osg::Matrixd computeProjection() const;
 
-    /** Set the field of view in y (fovy) in degrees. Default is 30.0 degrees. */
+    /** Set the field of view in y (fovy) in degrees. Default is 30 degrees. */
     void setFovy( double fovy );
     double getFovy() const { return( _fovy ); }
     double getFovyRadians() const;
@@ -169,7 +180,7 @@ public:
 
     /** Percentage to increase the fovy in a fovyScaleUp() call.
     For example, to increase fovy by 120% in that call, pass 1.2. Default is
-    1.1 (110%). The inverse (1.0 / \c fovyScale) is used in the fovyScaleDown()
+    1.1 (110%). The inverse (1.0 / fovyScale) is used in the fovyScaleDown()
     call. */
     void setFovyScale( double fovyScale ) { _fovyScale = fovyScale; }
     double getFovyScale() const { return( _fovyScale ); }
@@ -178,27 +189,51 @@ public:
     as first paramter to disable clamping. */
     void setClampFovyScale( bool clamp, osg::Vec2d clampFovyRange=osg::Vec2d(1.0,140.0) );
 
+    void viewTop();
+    void viewBottom();
+    void viewRight();
+    void viewLeft();
+    void viewFront();
+    void viewBack();
+
 
 protected:
     ~MxCore();
-    void orthonormalize();
 
-    osg::Vec3d _viewUp, _viewDir, _position;
-    osg::Vec3d _initialUp, _initialDir, _initialPosition;
 
-    double _rotateScale;
-    osg::Vec3d _moveScale;
+    bool intersect( osg::Vec3d& result, const osg::Vec3d& farPoint );
 
+    /** OSG doesn't appear to have a utility function to intersect a plane and a ray.
+    TBD This should probably go in osgWorks. */
+    bool intersectPlaneRay( osg::Vec3d& result, const osg::Vec4d& plane, const osg::Vec3d& p0, const osg::Vec3d& p1 );
+
+    double _trackballRollSensitivity;
+    osg::Vec3d _baseUp, _baseNorth;
+    osg::Vec3d _lastCross, _viewUp, _viewDir, _viewCenter;
+    double _viewDistance;
+
+    osg::Vec4d _panPlane;
+
+    MxCoreMode _mode;
+
+
+    // Projection matrix and field of view support.
     bool _ortho;
+    osg::ref_ptr< osg::Node > _scene;
     double _aspect;
 
     double _fovy;
-    double _initialFovy;
     double _fovyScale;
     bool _clampFovyScale;
     osg::Vec2d _clampFovyRange;
     double _orthoBottom, _orthoTop;
 };
+
+
+osg::Vec3d MxCore::getEyePosition() const
+{
+    return( _viewCenter - ( _viewDir * _viewDistance ) );
+}
 
 
 // osgwMx
