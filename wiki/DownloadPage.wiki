@@ -9,7 +9,7 @@ Released 26 Oct 2011, v2.0 is the current stable release.
 
 == Source ==
 
-Source packages for v1.1 are available.
+Source packages for v2.0 are available.
 
 [http://osgworks.googlecode.com/files/osgWorks_02_00_00.zip osgWorks_02_00_00.zip]
 
