@@ -2,15 +2,19 @@
 
 <wiki:toc />
 
-= v2.0 =
-
-*Release date:* Expected late 2010
-
+= v2.1 =
 *Status:* Not yet started.
 
- * *osgBullet compatibility* - v2.0 will probably contain some support for the upcoming *osgBullet* v2.0.
 
- * *Remove Grid* - v2.0 will remove the deprecated Grid class and Grid.cpp/.h.
+= v2.0 =
+
+*Released 26 Oct 2011*
+
+This release is not backwards-compatible with osgWorks v1.xx-based applications.
+
+ * Compatibility with osgBullet v2.0.
+
+ * Deprecated functionality, such as the *Grid* class, has been removed.
 
 = v1.1 =
 
