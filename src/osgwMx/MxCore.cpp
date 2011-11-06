@@ -112,6 +112,7 @@ osg::Matrixd MxCore::getOrientationMatrix() const
 }
 osg::Matrixd MxCore::getInverseMatrix() const
 {
+    // TBD for efficiency, reimplement without calling invert().
     osg::Matrixd m;
     m.invert( getMatrix() );
     return( m );
