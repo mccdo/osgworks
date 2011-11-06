@@ -6,13 +6,14 @@ endif()
 
 set( HEADER_PATH ${PROJECT_SOURCE_DIR}/include/${LIB_NAME} )
 set( LIB_PUBLIC_HEADERS
+    ${HEADER_PATH}/Export.h
     ${HEADER_PATH}/CameraUpdateCallback.h
     ${HEADER_PATH}/MxCore.h
     ${HEADER_PATH}/MxEventHandler.h
-    ${HEADER_PATH}/Export.h
-    ${HEADER_PATH}/MxInputAdapter.h
-    ${HEADER_PATH}/MxMovementStyle.h
-    ${HEADER_PATH}/MxMovementStyleGamePad.h
+    ${HEADER_PATH}/MxGamePad.h
+#    ${HEADER_PATH}/MxInputAdapter.h
+#    ${HEADER_PATH}/MxMovementStyle.h
+#    ${HEADER_PATH}/MxMovementStyleGamePad.h
     ${HEADER_PATH}/MxUtils.h
 )
 
@@ -20,20 +21,23 @@ set( _osgwMxSourceFiles
     CameraUpdateCallback.cpp
     MxCore.cpp
     MxEventHandler.cpp
-    MxInputAdapter.cpp
-    MxMovementStyle.cpp
-    MxMovementStyleGamePad.cpp
+    MxGamePad.cpp
+#    MxInputAdapter.cpp
+#    MxMovementStyle.cpp
+#    MxMovementStyleGamePad.cpp
     MxUtils.cpp
 )
 
 if( DIRECTINPUT_FOUND )
-   include_directories( ${DIRECTINPUT_INCLUDE_DIR} )
-   set( DX_DEPENDENT_HEADERS
-      ${HEADER_PATH}/MxInputAdapterGamePadDirectInput.h
-      )
-   set( DX_DEPENDENT_SRC
-      MxInputAdapterGamePadDirectInput.cpp
-      )
+    include_directories( ${DIRECTINPUT_INCLUDE_DIR} )
+    set( DX_DEPENDENT_HEADERS
+        ${HEADER_PATH}/MxGamePadDX.h
+#        ${HEADER_PATH}/MxInputAdapterGamePadDirectInput.h
+    )
+    set( DX_DEPENDENT_SRC
+        MxGamePadDX.cpp
+#        MxInputAdapterGamePadDirectInput.cpp
+    )
 endif()
 
 add_library( ${LIB_NAME}

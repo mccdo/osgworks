@@ -5,53 +5,56 @@
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 
-#include <osgwMx/MxEventHandler.h>
-#include <osgwMx/MxInputAdapterGamePadDirectInput.h>
-#include <osgwMx/MxMovementStyleGamePad.h>
+#include <osgwMx/MxGamePadDX.h>
+#include <osgwMx/MxCore.h>
+
 
 using namespace osgwMx;
 
 int main( int argc, char** argv )
 {
-   osg::ArgumentParser arguments( &argc, argv );
+    osg::ArgumentParser arguments( &argc, argv );
 
-   osg::ref_ptr< osg::Node > root = osgDB::readNodeFiles( arguments );
-   if( !( root.valid() ) )
-   {
-      root = osgDB::readNodeFile( "dumptruck.osg" );
-      if( !( root.valid() ) )
-      {
-         osg::notify( osg::FATAL ) << "Can't load input file." << std::endl;
-         return( 1 );
-      }
-   }
+    osg::ref_ptr< osg::Node > root = osgDB::readNodeFiles( arguments );
+    if( !( root.valid() ) )
+    {
+        root = osgDB::readNodeFile( "dumptruck.osg" );
+        if( !( root.valid() ) )
+        {
+            osg::notify( osg::FATAL ) << "Can't load input file." << std::endl;
+            return( 1 );
+        }
+    }
 
-   osgViewer::Viewer viewer;
-   viewer.setUpViewInWindow( 30, 30, 768, 480 );
-   viewer.setSceneData( root.get() );
-   viewer.addEventHandler( new osgViewer::StatsHandler );
+    osgViewer::Viewer viewer;
+    viewer.setUpViewInWindow( 30, 30, 800, 450 );
+    viewer.setSceneData( root.get() );
+    viewer.addEventHandler( new osgViewer::StatsHandler );
 
-   // create a game pad input handler and data interpreter to control the view.
-   osg::ref_ptr<MxInputAdapterGamePadDirectInput> gpIn = new MxInputAdapterGamePadDirectInput;
-   MxMovementStyleGamePad mxGamePad(gpIn.get());
+    // create a game pad input handler and data interpreter to control the view.
+    osg::ref_ptr< MxGamePadDX > gamePad = new MxGamePadDX;
 
-   // Get the update callback from mxGamePad and attach it as an update
-   // callback to the viewer's internal Camera node. This will update the view and
-   // projection matrices each frame.
-   viewer.getCamera()->setUpdateCallback(mxGamePad.getMatrixCallback());
-   // We'll modify the Camera node, so mark it as DYNAMIC for thread safety.
-   viewer.getCamera()->setDataVariance( osg::Object::DYNAMIC );
+    // Set some MxCore defaults:
+    osgwMx::MxCore* mxCore = gamePad->getMxCore();
+    mxCore->setInitialValues( osg::Vec3d( 0., 0., 1. ), osg::Vec3d( 0., 1., 0. ),
+        osg::Vec3d( 0., -30., 0. ) );
+    mxCore->setMoveScale( osg::Vec3d( .4, .4, .4 ) );
+    mxCore->reset();
 
-   // Do not use viewer.run(), which automatically adds a camera manipulator
-   // if one doesn't already exist.
-   const osg::FrameStamp *fs;
-   while( !viewer.done() )
-      {
-      // need to pass the current simulation time (seconds & partial seconds as a double)
-      // to the updateData() function in order to manage matrix manipulation at a
-      // predictable rate.
-      fs = viewer.getFrameStamp();
-      mxGamePad.updateData(fs->getSimulationTime());
-      viewer.frame();
-      }
+
+    // We'll modify the Camera node, so mark it as DYNAMIC for thread safety.
+    viewer.getCamera()->setDataVariance( osg::Object::DYNAMIC );
+
+    // Do not use viewer.run(), which automatically adds a camera manipulator
+    // if one doesn't already exist.
+    while( !viewer.done() )
+    {
+        // DX uses polling; other VR device SDKs might send events.
+        gamePad->poll();
+
+        // Update the current view matrix.
+        viewer.getCamera()->setViewMatrix( mxCore->getInverseMatrix() );
+
+        viewer.frame();
+    }
 }
