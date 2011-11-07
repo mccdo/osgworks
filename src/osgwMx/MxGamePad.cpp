@@ -34,7 +34,9 @@ MxGamePad::MxGamePad()
     _leftStick( osg::Vec2f( 0.f, 0.f ) ),
     _rightStick( osg::Vec2f( 0.f, 0.f ) ),
     _buttons( 0 ),
-    _deadZone( 0.f )
+    _deadZone( 0.f ),
+    _leftRate( 1. ),
+    _rightRate( 60. )
 {
     _mxCore = new osgwMx::MxCore;
 }
@@ -44,7 +46,9 @@ MxGamePad::MxGamePad( const MxGamePad& rhs, const osg::CopyOp& copyop )
     _leftStick( rhs._leftStick ),
     _rightStick( rhs._rightStick ),
     _buttons( rhs._buttons ),
-    _deadZone( rhs._deadZone )
+    _deadZone( rhs._deadZone ),
+    _leftRate( rhs._leftRate ),
+    _rightRate( rhs._rightRate )
 {
     if( !( _mxCore.valid() ) )
         _mxCore = new osgwMx::MxCore;
@@ -62,25 +66,36 @@ void MxGamePad::setLeftStick( const float x, const float y )
     float myX( deadZone( x ) );
     float myY( deadZone( y ) );
 
-    // Scale movement based on depressed buttons.
-    float scale( 1.f );
-    if( ( _buttons & RightShoulderBottom ) != 0 )
-        scale = 0.3333;
-    else if( ( _buttons & RightShoulderTop ) != 0 )
-        scale = 3.;
+    internalLeftStick( myX, myY );
+}
+void MxGamePad::setLeftStick( const float x, const float y, const double elapsedSeconds )
+{
+    _leftStick.set( x, y );
 
-    // Either move left/right/forward/backward, or move up/down.
+    // Zero the values if they fall within the dead zone.
+    const float myX( deadZone( x ) );
+    const float myY( deadZone( y ) );
+
+    // How far do we go at 100% movement?
+    const float maxDistance = (float)( _leftRate * elapsedSeconds );
+
+    internalLeftStick( myX * maxDistance, myY * maxDistance );
+}
+void MxGamePad::internalLeftStick( const float x, const float y )
+{
+    // Check BottomButton for forward/backward or up/down.
     osg::Vec3d movement;
     if( ( _buttons & BottomButton ) != 0 )
-        // Move up/down. Positive values move up, so negate myY.
-        movement.set( 0., -myY, 0. );
+        // Move left/right and up/down.
+        // Positive values move up, so negate y.
+        movement.set( x, -y, 0. );
     else
         // Move left/right and forwards/backwards.
-        movement.set( myX, 0., myY );
+        movement.set( x, 0., y );
 
     // Don't bother changing the position unless the movement vector has non-zero length.
     if( movement.length2() > 0. )
-        _mxCore->move( movement * scale );
+        _mxCore->move( movement );
 }
 
 void MxGamePad::setRightStick( const float x, const float y )
@@ -90,12 +105,30 @@ void MxGamePad::setRightStick( const float x, const float y )
     // Zero the values if they fall within the dead zone.
     float myX( deadZone( x ) );
     float myY( deadZone( y ) );
-    if( ( myX == 0.f ) && ( myY == 0.f ) )
+
+    internalRightStick( myX, myY );
+}
+void MxGamePad::setRightStick( const float x, const float y, const double elapsedSeconds )
+{
+    _rightStick.set( x, y );
+
+    // Zero the values if they fall within the dead zone.
+    float myX( deadZone( x ) );
+    float myY( deadZone( y ) );
+
+    // How far do we turn at 100% rotation?
+    const float maxDegrees = (float)( _rightRate * elapsedSeconds );
+
+    internalRightStick( myX * maxDegrees, myY * maxDegrees );
+}
+void MxGamePad::internalRightStick( const float x, const float y )
+{
+    if( ( x == 0.f ) && ( y == 0.f ) )
         return;
 
     // Input is degrees, but MxCore wants radians.
-    myX = osg::DegreesToRadians( myX );
-    myY = osg::DegreesToRadians( myY );
+    const double myX = osg::DegreesToRadians( x );
+    const double myY = osg::DegreesToRadians( y );
 
     _mxCore->rotate( myX, _mxCore->getUp() );
     _mxCore->rotate( myY, _mxCore->getCross() );
@@ -103,13 +136,25 @@ void MxGamePad::setRightStick( const float x, const float y )
 
 void MxGamePad::setButtons( const unsigned int buttons )
 {
-    // Determine which buttons just entered a pressed state.
-    unsigned int delta = ( buttons ^ _buttons ) & buttons;
+    // Determine which buttons just entered a pressed or released state.
+    const unsigned int deltaPressed = ( buttons ^ _buttons ) & buttons;
+    const unsigned int deltaReleased = ( buttons ^ _buttons ) & _buttons;
 
-    if( ( delta & LeftButton ) != 0 )
+    // Scale movement based on right shoulder button state.
+    if( ( deltaPressed & RightShoulderBottom ) != 0 )
+        _mxCore->setMoveScale( osg::Vec3d( .33, .33, .33 ) );
+    else if( ( deltaPressed & RightShoulderTop ) != 0 )
+        _mxCore->setMoveScale( osg::Vec3d( 3., 3., 3. ) );
+    if( ( ( deltaReleased & RightShoulderBottom ) != 0 ) ||
+        ( ( deltaReleased & RightShoulderTop ) != 0 ) )
+        _mxCore->setMoveScale( osg::Vec3d( 1., 1., 1. ) );
+
+    if( ( deltaPressed & LeftButton ) != 0 )
         _mxCore->reset();
-    if( ( delta & TopButton ) != 0 )
+    if( ( deltaPressed & TopButton ) != 0 )
         _mxCore->setPosition( osg::Vec3( 0., 0., 0. ) );
+    if( ( deltaPressed & RightButton ) != 0 )
+        _mxCore->level();
 
     _buttons = buttons;
 }

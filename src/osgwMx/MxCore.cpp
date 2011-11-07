@@ -159,6 +159,19 @@ void MxCore::reset()
     setOrtho( false );
 }
 
+void MxCore::level()
+{
+    _viewUp = _initialUp;
+
+    // Check for vurrent view dir coincident with initial up vector. If so,
+    // we can't preserve the current view dir and need to set it to the
+    // initial view dir.
+    if( osg::absolute< double >( _initialUp * _initialDir ) > 0.99 )
+        _viewDir = _initialDir;
+    else
+        _viewDir = _viewUp ^ getCross();
+}
+
 
 void MxCore::rotate( double angle, const osg::Vec3d& axis )
 {

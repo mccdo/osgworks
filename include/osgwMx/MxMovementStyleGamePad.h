@@ -25,6 +25,7 @@
 
 namespace osgwMx
 {
+/** \cond */
 
 
 /** \class MxMovementStyleGamePad MxMovementStyleGamePad.h <osgwMx/MxMovementStyleGamePad.h>
@@ -62,6 +63,7 @@ private:
 };
 
 
+/* \endcond */
 // osgwMx
 }
 

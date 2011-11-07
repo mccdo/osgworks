@@ -30,6 +30,7 @@
 
 namespace osgwMx
 {
+/** \cond */
 
 
 /** \class MxMovementStyle MxMovementStyle.h <osgwMx/MxMovementStyle.h>
@@ -106,6 +107,7 @@ private:
 };
 
 
+/* \endcond */
 // osgwMx
 }
 

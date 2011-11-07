@@ -84,7 +84,7 @@ MxGamePadDX::~MxGamePadDX()
 {
 }
 
-bool MxGamePadDX::poll()
+bool MxGamePadDX::poll( const double elapsedSeconds )
 {
     if( _pDIDevice == 0 )
         return( false );
@@ -108,7 +108,7 @@ bool MxGamePadDX::poll()
     // Button pressed or not pressed could alter behavior of sticks/dpad,
     // so process buttons first.
     processButtons( devState );
-    processSticks( devState );
+    processSticks( devState, elapsedSeconds );
     processDPad( devState );
 
     return( true ); // Success.
@@ -141,7 +141,7 @@ void MxGamePadDX::processButtons( const DIJOYSTATE2& devState )
     setButtons( buttons );
 }
 
-void MxGamePadDX::processSticks( const DIJOYSTATE2& devState )
+void MxGamePadDX::processSticks( const DIJOYSTATE2& devState, const double elapsedSeconds )
 {
     float x, y;
 
@@ -150,7 +150,7 @@ void MxGamePadDX::processSticks( const DIJOYSTATE2& devState )
     // These are units to move in world coordinates per event or per frame.
     x = normalizeAxisValue( devState.lX );
     y = normalizeAxisValue( devState.lY );
-    setLeftStick( x, y );
+    setLeftStick( x, y, elapsedSeconds );
 
     // Right stick: Rotate.
     // Base class angle values are in degrees. By calling
@@ -162,7 +162,7 @@ void MxGamePadDX::processSticks( const DIJOYSTATE2& devState )
     //    the left gamepad stick.
     x = -normalizeAxisValue( devState.lRz );
     y = normalizeAxisValue( devState.lZ );
-    setRightStick( x, y );
+    setRightStick( x, y, elapsedSeconds );
 }
 
 void MxGamePadDX::processDPad( const DIJOYSTATE2& devState )

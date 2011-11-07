@@ -29,6 +29,7 @@
 
 namespace osgwMx
 {
+/** \cond */
 
 
 /** \class DPad MxInputAdapter.h <osgwMx/MxInputAdapter.h>
@@ -109,6 +110,7 @@ protected:
 };
 
 
+/* \endcond */
 // osgwMx
 }
 

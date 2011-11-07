@@ -29,6 +29,7 @@
 
 namespace osgwMx
 {
+/** \cond */
 
 
 /** \class MxInputAdapterGamePadDirectInput MxInputAdapterGamePadDirectInput.h <osgwMx/MxInputAdapterGamePadDirectInput.h>
@@ -80,6 +81,7 @@ private:
 };
 
 
+/* \endcond */
 // osgwMx
 }
 
