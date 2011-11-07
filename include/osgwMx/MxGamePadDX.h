@@ -68,7 +68,7 @@ protected:
 
     static bool s_winClassRegistered;       // true if the window class has been registered
 
-    friend static BOOL CALLBACK EnumDevicesCallback(const DIDEVICEINSTANCE *pdidInstance, void *pContext);
+    friend static BOOL CALLBACK enumDevicesCallback(const DIDEVICEINSTANCE *pdidInstance, void *pContext);
 
     HWND _hDIWindow;                        // handle to the top-level window that DirectInput needs.
     LPDIRECTINPUT8 _pDI;                    // a pointer to the DirectInput v8 COM interface.
@@ -78,12 +78,14 @@ protected:
     typedef std::list< DIDEVICEINSTANCE > DeviceList;
     DeviceList _devList;   // list of gaming devices on the system.
 
-    HWND CreateInvisiWindow();
-    bool OpenDirectInput();
-    bool SelectFirstDevice();
-    bool EnumDevices();
-    bool SelectDevice( const DIDEVICEINSTANCE& device );
-    void FreeDevice();
+    HWND createInvisiWindow();
+    bool openDirectInput();
+    bool selectFirstDevice();
+    bool enumDevices();
+    bool selectDevice( const DIDEVICEINSTANCE& device );
+    void freeDevice();
+    void freeDirectInput();
+    void destroyWindow();
 
     void processButtons( const DIJOYSTATE2& devState );
     void processSticks( const DIJOYSTATE2& devState, const double elapsedSeconds );

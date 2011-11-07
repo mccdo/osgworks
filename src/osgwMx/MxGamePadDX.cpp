@@ -65,12 +65,12 @@ MxGamePadDX::MxGamePadDX()
     // DirectInput requires a Window from the app, so try to create one now.
     // This window will be a top-level window (not a child window), but will be
     // invisible to the user.
-    if( ( _hDIWindow = CreateInvisiWindow() ) == 0 )
+    if( ( _hDIWindow = createInvisiWindow() ) == 0 )
         return;
 
     // try to open DirectInput 8 for use. This works as far back as Windows 95 (DirectX 8.0a sdk).
-    if( OpenDirectInput() )
-        SelectFirstDevice();    // try to select the first gaming device on the system.
+    if( openDirectInput() )
+        selectFirstDevice();    // try to select the first gaming device on the system.
 }
 MxGamePadDX::MxGamePadDX( const MxGamePadDX& rhs, const osg::CopyOp& copyop )
   : MxGamePad( rhs, copyop ),
@@ -82,6 +82,8 @@ MxGamePadDX::MxGamePadDX( const MxGamePadDX& rhs, const osg::CopyOp& copyop )
 }
 MxGamePadDX::~MxGamePadDX()
 {
+    freeDirectInput();
+    destroyWindow();
 }
 
 bool MxGamePadDX::poll( const double elapsedSeconds )
@@ -171,7 +173,7 @@ void MxGamePadDX::processDPad( const DIJOYSTATE2& devState )
 
 
 
-HWND MxGamePadDX::CreateInvisiWindow()
+HWND MxGamePadDX::createInvisiWindow()
 {
     HINSTANCE hMod = ( HINSTANCE )( GetModuleHandle( 0 ) );
     LPCTSTR className = _T( "MxInputAdapterGamePadDirectInput Window" );
@@ -191,7 +193,7 @@ HWND MxGamePadDX::CreateInvisiWindow()
     return( ::CreateWindow( className, _T( "DirectInput Window" ), WS_POPUP, 0, 0, 1, 1, 0, 0, hMod, 0 ) );
 }
 
-bool MxGamePadDX::OpenDirectInput()
+bool MxGamePadDX::openDirectInput()
 {
     if( _pDI != 0 )
         return true;
@@ -204,20 +206,20 @@ bool MxGamePadDX::OpenDirectInput()
     return( rc == DI_OK );
 }
 
-bool MxGamePadDX::SelectFirstDevice()
+bool MxGamePadDX::selectFirstDevice()
 {
     // if no devices attached to the system, then return failure.
-    EnumDevices();
+    enumDevices();
     if( _devList.empty() )
         return( false );
 
-    return( SelectDevice( *( _devList.begin() ) ) );
+    return( selectDevice( *( _devList.begin() ) ) );
 }
 
-bool MxGamePadDX::SelectDevice( const DIDEVICEINSTANCE& device )
+bool MxGamePadDX::selectDevice( const DIDEVICEINSTANCE& device )
 {
     // release any currently held device.
-    FreeDevice();
+    freeDevice();
 
     // create a device interface for the specified device.
     if( _pDI->CreateDevice( device.guidInstance, &_pDIDevice, 0 ) != DI_OK )
@@ -231,7 +233,7 @@ bool MxGamePadDX::SelectDevice( const DIDEVICEINSTANCE& device )
     if( _pDIDevice->SetDataFormat( &c_dfDIJoystick2 ) != DI_OK )
     {
         osg::notify( osg::WARN ) << "MxGamePadDX: SetDataFormat() failed." << std::endl;
-        FreeDevice();
+        freeDevice();
         return( false );
     }
 
@@ -241,7 +243,7 @@ bool MxGamePadDX::SelectDevice( const DIDEVICEINSTANCE& device )
     if( _pDIDevice->SetCooperativeLevel( _hDIWindow, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE ) != DI_OK )
     {
         osg::notify( osg::WARN ) << "MxGamePadDX: SetCooperativeLevel() failed." << std::endl;
-        FreeDevice();
+        freeDevice();
         return( false );
     }
 
@@ -249,7 +251,7 @@ bool MxGamePadDX::SelectDevice( const DIDEVICEINSTANCE& device )
     if( _pDIDevice->GetCapabilities( &_devCaps ) != DI_OK )
     {
         osg::notify( osg::WARN ) << "MxGamePadDX: GetCapabilities() failed." << std::endl;
-        FreeDevice();
+        freeDevice();
         return( false );
     }
 
@@ -257,7 +259,7 @@ bool MxGamePadDX::SelectDevice( const DIDEVICEINSTANCE& device )
     if( _pDIDevice->EnumObjects( EnumAxisCallback, _pDIDevice, DIDFT_AXIS ) != DI_OK )
     {
         osg::notify( osg::WARN ) << "MxGamePadDX: EnumObjects() failed." << std::endl;
-        FreeDevice();
+        freeDevice();
         return( false );
     }
 
@@ -267,34 +269,53 @@ bool MxGamePadDX::SelectDevice( const DIDEVICEINSTANCE& device )
         ( rc != S_FALSE ) )
     {
         osg::notify( osg::WARN ) << "MxGamePadDX: Failure to acquire device." << std::endl;
-        FreeDevice();
+        freeDevice();
         return( false );
     }
 
     return( true );
 }
 
-bool MxGamePadDX::EnumDevices()
+bool MxGamePadDX::enumDevices()
 {
     if( _pDI == 0 )
         return( false );
 
     _devList.clear();
 
-    HRESULT rc = _pDI->EnumDevices( DI8DEVCLASS_GAMECTRL, EnumDevicesCallback, this, DIEDFL_ATTACHEDONLY );
+    HRESULT rc = _pDI->EnumDevices( DI8DEVCLASS_GAMECTRL, enumDevicesCallback, this, DIEDFL_ATTACHEDONLY );
     if( rc != DI_OK )
-        osg::notify( osg::WARN ) << "MxGamePadDX: EnumDevices failed." << std::endl;
+        osg::notify( osg::WARN ) << "MxGamePadDX: enumDevices failed." << std::endl;
 
     return( rc == DI_OK );
 }
 
-void MxGamePadDX::FreeDevice()
+void MxGamePadDX::freeDevice()
 {
     if( _pDIDevice )
     {
         _pDIDevice->Unacquire();
         _pDIDevice->Release();
         _pDIDevice = 0;
+    }
+}
+
+void MxGamePadDX::freeDirectInput()
+{
+    freeDevice();
+    if( _pDI )
+    {
+        _pDI->Release();
+        _pDI = 0;
+    }
+}
+
+void MxGamePadDX::destroyWindow()
+{
+    if( _hDIWindow )
+    {
+        ::DestroyWindow( _hDIWindow );
+        _hDIWindow = 0;
     }
 }
 
@@ -314,7 +335,7 @@ BOOL CALLBACK EnumAxisCallback( const DIDEVICEOBJECTINSTANCE* pDIDOI, void* pCon
     return( DIENUM_CONTINUE );                   // let's do 'em all, thank you
 }
 
-BOOL CALLBACK EnumDevicesCallback( const DIDEVICEINSTANCE* pdidInstance, void* pUser )
+BOOL CALLBACK enumDevicesCallback( const DIDEVICEINSTANCE* pdidInstance, void* pUser )
 {
     ( ( MxGamePadDX* )pUser )->_devList.push_back( *pdidInstance );
     return( DIENUM_CONTINUE );                   // next please
