@@ -90,6 +90,12 @@ public:
     */
     osg::Vec3d getCross() const { return( _viewDir ^ _viewUp ); }
 
+    /** Sets the current up vector to the initial up vector, with
+    a minimum change to the view direction vector. If initial up
+    vector and current view direction are nearly coincident, the
+    view dir is set to the initial view dir. */
+    void level();
+
     /** Changes the view direction (and possibly the up vector), but
     keeps the view position constant. To keep the up vector constant,
     pass the current up vector as the \c axis parameter. This function

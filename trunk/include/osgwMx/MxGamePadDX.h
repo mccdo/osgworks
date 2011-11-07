@@ -53,7 +53,7 @@ public:
     your events. Use poll() as a model for how to call into the base
     class in response to the events you receive.
     */
-    bool poll();
+    bool poll( const double elapsedSeconds );
 
 protected:
     virtual ~MxGamePadDX();
@@ -86,7 +86,7 @@ protected:
     void FreeDevice();
 
     void processButtons( const DIJOYSTATE2& devState );
-    void processSticks( const DIJOYSTATE2& devState );
+    void processSticks( const DIJOYSTATE2& devState, const double elapsedSeconds );
     void processDPad( const DIJOYSTATE2& devState );
 };
 

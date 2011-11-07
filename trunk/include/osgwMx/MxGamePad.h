@@ -60,31 +60,42 @@ public:
     MxGamePad( const MxGamePad& rhs, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY );
     META_Object(osgwMx,MxGamePad);
 
-    /* \brief Set the left stick position.
+    /** Set the left stick position.
 
-    Left stick controls movement. setLeftStick modifies the MxCore position based on the
+    Left stick controls movement. setLeftStick(float,float) modifies the MxCore position based on the
     specified values once per function call. For example, calling setLeftStick( -1., 0. )
     twice in a row will move the MxCore position -2.0 in x.
 
-    With no buttons depressed, left stick x axis moves the position left/right, and y
-    axis moves the position forward/backward. Negative values move left and backward,
-    while positive values move right and forward. If the BottomButton is depressed
-    ("RGB" buttons in front of right stick), then left stick y axis moves the position
-    up and down. Positive values move up.
+    Left stick \c x axis moves the position left/right. With no buttons depressed, \c y
+    axis moves the position forward/backward. If the BottomButton is depressed ("RGB"
+    buttons in front of right stick), then left stick \c y axis moves the position up
+    and down. Negative values move left, backward, and down, while positive values move
+    right, forward, and up.
 
-    If RightShoulderBottom is depressed, move speed scales by 1/3 (slows down). If
-    RightShoulderTop is depressed, move speed increases 3x. (This is useful for short-
-    duration speed changes; but apps will probably want to call MxCore::setMoveScale()
-    as appropriate depending on their world coordinate units.)
+    Movement is scaled by the right shoulder buttons. RightShoulderBottom decreases speed
+    to 0.33x, and RightShoulderTop increases speed to 3x. Movement is further scaled
+    by MxCore::setMoveScale(). While movement scaling is sufficient for small demos, it's
+    often insufficient to move at a specified rate. Consider using setLeftStick(float,float,double)
+    instead. See also setStickRate() and setStickRates().
     */
     virtual void setLeftStick( const float x, const float y );
     void getLeftStick( float& x, float& y ) const
     {
-        x = _leftStick[0];
-        y = _leftStick[1];
+        x = _leftStick[0]; y = _leftStick[1];
     }
+    /** Move at a specified rate.
 
-    /* \brief Set the right stick position.
+    Behavior is idential to that of setLeftStick(float,float), except that \c x and \c y
+    values are taken as normalized percentages in the range -1.0 to 1.0 of a desired
+    movement rate in units/second. The movement rate for the left stick is set with
+    setStickRate() (see also setStickRates()).
+    
+    \param elapsedSeconds Specifies the elapsed time in seconds since the last call to
+    setLeftStick(float,float,double). This function computes the delta motion based on
+    \c _leftRate and \c elapsedSeconds, then scales that motion by \c x and \c y. */
+    virtual void setLeftStick( const float x, const float y, const double elapsedSeconds );
+
+    /** Set the right stick position.
 
     Right stick controls rotation. The x value rotates around the current
     view up vector. The y value rotates around the "right" vector (the
@@ -99,16 +110,26 @@ public:
     virtual void setRightStick( const float x, const float y );
     void getRightStick( float& x, float& y ) const
     {
-        x = _rightStick[0];
-        y = _rightStick[1];
+        x = _rightStick[0]; y = _rightStick[1];
     }
+    /** Rotate at a specified rate.
 
-    /* \brief Set the stick dead zone.
+    Behavior is idential to that of setRightStick(float,float), except that \c x and \c y
+    values are taken as normalized percentages in the range -1.0 to 1.0 of a desired
+    rotateion rate in degrees/second. The rotation rate for the right stick is set with
+    setStickRates().
+    
+    \param elapsedSeconds Specifies the elapsed time in seconds since the last call to
+    setRightStick(float,float,double). This function computes the delta rotation based on
+    \c _rightRate and \c elapsedSeconds, then scales that rotation by \c x and \c y. */
+    virtual void setRightStick( const float x, const float y, const double elapsedSeconds );
+
+    /** Set the stick dead zone.
 
     Specify a non-zero dead zone to eliminate non-zero values from
     idle game pad sticks.
 
-    Both setLeftStick and setRightStick check their input parameters
+    Both setLeftStick() and setRightStick() check their input parameters
     against the specified dead zone value. If the absolute value of
     a parameter is less that \c dz, the value is zeroed. The default
     dead zone value is 0.0.
@@ -119,13 +140,35 @@ public:
     As an example usage, where setLeftStick and setRightStick are called
     with \c x and \c y values in the range -1 to 1, a \c dz dead zone value
     of 0.05 would mean that 5% around the stick center position would be
-    trated as a zero value. */
+    treated as a zero value. */
     void setStickDeadZone( const float dz ) { _deadZone = dz; }
     float getStickDeadZone() const { return( _deadZone ); }
 
+    /** Set the left stick (movement) rate in units/second. See setLeftStick(float,float,double).
+    The default is 1.0.
+    */
+    void setStickRate( const double leftRate )
+    {
+        _leftRate = leftRate;
+    }
+    /** Set both the left and right stick (movement and rotation) rates. See
+    setLeftStick(float,float,double) and setRightStick(float,float,double).
+    The default for \c leftRate movement is 1.0 units/second, and the default
+    for \c rightRate rotation is 60.0 degrees/second. */
+    void setStickRates( const double leftRate, const double rightRate )
+    {
+        _leftRate = leftRate; _rightRate = rightRate;
+    }
+    void getStickRates( double& leftRate, double& rightRate )
+    {
+        leftRate = _leftRate; rightRate = _rightRate;
+    }
+
+    /** Enumerant button values. Bitwise OR enumerants that correspond to
+    pressed device buttons, and pass the result to setButtons(). */
     typedef enum {
         TopButton = ( 0x1 << 0 ),             // Jump to world origin.
-        RightButton = ( 0x1 << 1 ),           // Unused.
+        RightButton = ( 0x1 << 1 ),           // Level the view..
         BottomButton = ( 0x1 << 2 ),          // When held, left stick moves up/down.
         LeftButton = ( 0x1 << 3 ),            // Jump to home position.
         LeftShoulderBottom = ( 0x1 << 4 ),    // Unused.
@@ -133,12 +176,12 @@ public:
         RightShoulderBottom = ( 0x1 << 6 ),   // When held, move speed scales by 0.3333x.
         RightShoulderTop = ( 0x1 << 7 )       // When held, move speed scales by 3x.
     } ButtonValues;
-    /* \brief Set the current button state.
+    /** Set the current button state.
 
-    \param buttons A bit mask of ButtonValues.
+    \param buttons A bit mask composed of MxGamePad::ButtonValues.
 
     \li Top RGB Button: Jump to world origin.
-    \li Right RGB Button: Unused.
+    \li Right RGB Button: Level the view.
     \li Bottom RGB Button: When held, left stick moves up/down.
     \li Left RGB Button: Jump to home position.
     \li Left Shoulder Bottom: Unused.
@@ -151,24 +194,28 @@ public:
     virtual void setButtons( const unsigned int buttons );
     unsigned int getButtons() const { return( _buttons ); }
 
-    /* \brief Get the MxCore for access to the managed matrix.
-    */
+    /* Get the MxCore for access to the managed matrix. */
     MxCore* getMxCore() { return( _mxCore.get() ); }
     const MxCore* getMxCore() const { return( _mxCore.get() ); }
 
 protected:
     virtual ~MxGamePad();
 
-    virtual float deadZone( const float value )
+    inline float deadZone( const float value )
     {
         return( ( osg::absolute< float >( value ) > _deadZone ) ? value : 0.f );
     }
+
+    virtual void internalLeftStick( const float x, const float y );
+    virtual void internalRightStick( const float x, const float y );
 
     osg::Vec2f _leftStick;
     osg::Vec2f _rightStick;
     unsigned int _buttons;
 
     float _deadZone;
+
+    double _leftRate, _rightRate;
 
     osg::ref_ptr< MxCore > _mxCore;
 };
