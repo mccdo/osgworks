@@ -95,20 +95,17 @@ ADD_SUBDIRECTORY( src )
 
 #
 # Doxygen
-#INCLUDE( ${CMAKE_ROOT}/Modules/Documentation.cmake OPTIONAL )
-OPTION( OSGWORKS_DOCUMENTATION "Enable to create build target for Doxygen documentation." OFF )
-MARK_AS_ADVANCED( CLEAR OSGWORKS_DOCUMENTATION )
-IF( OSGWORKS_DOCUMENTATION )
-    FIND_PACKAGE( Doxygen REQUIRED )
-    SET( HAVE_DOT "NO" )
-    IF( DOXYGEN_DOT_PATH )
-        SET( HAVE_DOT "YES" )
-    ENDIF( DOXYGEN_DOT_PATH )
+find_package( Doxygen )
+if( DOXYGEN_FOUND )
+    set( HAVE_DOT "NO" )
+    if( DOXYGEN_DOT_PATH )
+        set( HAVE_DOT "YES" )
+    endif()
     
-    CONFIGURE_FILE( ${PROJECT_SOURCE_DIR}/doc/doxyfile.cmake
+    configure_file( ${PROJECT_SOURCE_DIR}/doc/doxyfile.cmake
         ${PROJECT_BINARY_DIR}/doc/doxyfile
     )
-    ADD_CUSTOM_TARGET( Documentation ${DOXYGEN_EXECUTABLE}
+    add_custom_target( Documentation ${DOXYGEN_EXECUTABLE}
         ${PROJECT_BINARY_DIR}/doc/doxyfile
     )
     
