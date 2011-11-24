@@ -284,13 +284,13 @@ osg::Node* NodeData::findNode( osg::Group* parent ) const
     if( badIndex || badClassName || badObjectName )
     {
         if( badIndex )
-            osg::notify( osg::WARN ) << "NodeData::findNode: Index out of range: " << _index <<
+            osg::notify( osg::WARN ) << "osgwTools::NodeData::findNode: Index out of range: " << _index <<
                 ", parent has " << parent->getNumChildren() << std::endl;
         else if( badClassName )
-            osg::notify( osg::WARN ) << "NodeData::findNode: _className: " << _className <<
+            osg::notify( osg::WARN ) << "osgwTools::NodeData::findNode: _className: " << _className <<
                 ", doesn't match indexChild " << _index << ": " << indexChild->className() << std::endl;
         else if( badObjectName )
-            osg::notify( osg::WARN ) << "NodeData::findNode: _objectName: " << _objectName <<
+            osg::notify( osg::WARN ) << "osgwTools::NodeData::findNode: _objectName: " << _objectName <<
                 ", doesn't match indexChild " << _index << ": " << indexChild->getName() << std::endl;
 
         unsigned int bestMatchIdx( 0 );
