@@ -77,11 +77,10 @@ public:
     void setReverseDolly(bool state) {_reverseDolly = state;}
     bool getReverseDolly() const {return _reverseDolly;}
 
-protected:
     /** inheriting class must implement this function to perform transformations
     on the matrix based on the MxInputAdapter data. */
     virtual void matrixTransform(double ts) = 0;
-
+protected:
     osg::ref_ptr< MxCore > _mxCore;
     osg::ref_ptr<MxInputAdapter> _inputAdapter;
     osg::ref_ptr<CameraUpdateCallback> _cameraUpdateCallback;
