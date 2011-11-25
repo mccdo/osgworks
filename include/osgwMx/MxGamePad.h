@@ -198,6 +198,10 @@ public:
     MxCore* getMxCore() { return( _mxCore.get() ); }
     const MxCore* getMxCore() const { return( _mxCore.get() ); }
 
+    /** Set whether we are going to use the MxCore::move or 
+    MxCore::moveWorldCoords in the left stick event handler.*/
+    void setWorldCoordMove( bool worldCoordMove );
+
 protected:
     virtual ~MxGamePad();
 
@@ -218,6 +222,8 @@ protected:
     double _leftRate, _rightRate;
 
     osg::ref_ptr< MxCore > _mxCore;
+    
+    bool _worldCoordMove;
 };
 
 
