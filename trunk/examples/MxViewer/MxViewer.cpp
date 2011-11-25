@@ -41,7 +41,7 @@ int main( int argc, char** argv )
     }
 
     osgViewer::Viewer viewer;
-    viewer.setUpViewInWindow( 30, 30, 768, 480 );
+    viewer.setUpViewInWindow( 30, 30, 800, 450 );
     viewer.setSceneData( root.get() );
     viewer.addEventHandler( new osgViewer::StatsHandler );
 
