@@ -58,7 +58,7 @@ MxGamePad::~MxGamePad()
 }
 
 
-void MxGamePad::setLeftStick( const float x, const float y )
+bool MxGamePad::setLeftStick( const float x, const float y )
 {
     _leftStick.set( x, y );
 
@@ -66,9 +66,16 @@ void MxGamePad::setLeftStick( const float x, const float y )
     float myX( deadZone( x ) );
     float myY( deadZone( y ) );
 
+    if( myX == 0 && myY == 0 )
+    {
+        return( false );
+    }
+    
     internalLeftStick( myX, myY );
+    
+    return( true );
 }
-void MxGamePad::setLeftStick( const float x, const float y, const double elapsedSeconds )
+bool MxGamePad::setLeftStick( const float x, const float y, const double elapsedSeconds )
 {
     _leftStick.set( x, y );
 
@@ -76,10 +83,17 @@ void MxGamePad::setLeftStick( const float x, const float y, const double elapsed
     const float myX( deadZone( x ) );
     const float myY( deadZone( y ) );
 
+    if( myX == 0 && myY == 0 )
+    {
+        return( false );
+    }
+    
     // How far do we go at 100% movement?
     const float maxDistance = (float)( _leftRate * elapsedSeconds );
 
     internalLeftStick( myX * maxDistance, myY * maxDistance );
+    
+    return( true );
 }
 void MxGamePad::internalLeftStick( const float x, const float y )
 {
@@ -93,12 +107,10 @@ void MxGamePad::internalLeftStick( const float x, const float y )
         // Move left/right and forwards/backwards.
         movement.set( x, 0., y );
 
-    // Don't bother changing the position unless the movement vector has non-zero length.
-    if( movement.length2() > 0. )
-        _mxCore->move( movement );
+    _mxCore->move( movement );
 }
 
-void MxGamePad::setRightStick( const float x, const float y )
+bool MxGamePad::setRightStick( const float x, const float y )
 {
     _rightStick.set( x, y );
 
@@ -106,26 +118,37 @@ void MxGamePad::setRightStick( const float x, const float y )
     float myX( deadZone( x ) );
     float myY( deadZone( y ) );
 
+    if( myX == 0 && myY == 0 )
+    {
+        return( false );
+    }
+    
     internalRightStick( myX, myY );
+    
+    return( true );
 }
-void MxGamePad::setRightStick( const float x, const float y, const double elapsedSeconds )
+bool MxGamePad::setRightStick( const float x, const float y, const double elapsedSeconds )
 {
     _rightStick.set( x, y );
 
     // Zero the values if they fall within the dead zone.
     float myX( deadZone( x ) );
     float myY( deadZone( y ) );
+
+    if( myX == 0 && myY == 0 )
+    {
+        return( false );
+    }
 
     // How far do we turn at 100% rotation?
     const float maxDegrees = (float)( _rightRate * elapsedSeconds );
-
+    
     internalRightStick( myX * maxDegrees, myY * maxDegrees );
+    
+    return( true );
 }
 void MxGamePad::internalRightStick( const float x, const float y )
 {
-    if( ( x == 0.f ) && ( y == 0.f ) )
-        return;
-
     // Input is degrees, but MxCore wants radians.
     const double myX = osg::DegreesToRadians( x );
     const double myY = osg::DegreesToRadians( y );
