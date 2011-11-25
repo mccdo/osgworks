@@ -36,7 +36,8 @@ MxGamePad::MxGamePad()
     _buttons( 0 ),
     _deadZone( 0.f ),
     _leftRate( 1. ),
-    _rightRate( 60. )
+    _rightRate( 60. ),
+    _worldCoordMove( false )
 {
     _mxCore = new osgwMx::MxCore;
 }
@@ -48,7 +49,8 @@ MxGamePad::MxGamePad( const MxGamePad& rhs, const osg::CopyOp& copyop )
     _buttons( rhs._buttons ),
     _deadZone( rhs._deadZone ),
     _leftRate( rhs._leftRate ),
-    _rightRate( rhs._rightRate )
+    _rightRate( rhs._rightRate ),
+    _worldCoordMove( rhs._worldCoordMove )
 {
     if( !( _mxCore.valid() ) )
         _mxCore = new osgwMx::MxCore;
@@ -107,7 +109,14 @@ void MxGamePad::internalLeftStick( const float x, const float y )
         // Move left/right and forwards/backwards.
         movement.set( x, 0., y );
 
-    _mxCore->move( movement );
+    if( _worldCoordMove )
+    {
+        _mxCore->moveWorldCoords( movement );
+    }
+    else
+    {
+        _mxCore->move( movement );
+    }
 }
 
 bool MxGamePad::setRightStick( const float x, const float y )
@@ -182,6 +191,9 @@ void MxGamePad::setButtons( const unsigned int buttons )
     _buttons = buttons;
 }
 
-
+void MxGamePad::setWorldCoordMove( bool worldCoordMove )
+{
+    _worldCoordMove = worldCoordMove;
+}
 // osgwMx
 }
