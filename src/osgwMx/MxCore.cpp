@@ -159,6 +159,17 @@ void MxCore::reset()
     setOrtho( false );
 }
 
+void MxCore::setByMatrix( const osg::Matrix& m )
+{
+    _viewUp.set( m( 1, 0 ), m( 1, 1 ), m( 1, 2 ) );
+    _viewDir.set( -m( 2, 0 ), -m( 2, 1 ), -m( 2, 2 ) );
+    _position.set( m( 3, 0 ), m( 3, 1 ), m( 3, 2 ) );
+}
+void MxCore::setByInverseMatrix( const osg::Matrix& m )
+{
+    setByMatrix( osg::Matrix::inverse( m ) );
+}
+
 void MxCore::level()
 {
     _viewUp = _initialUp;

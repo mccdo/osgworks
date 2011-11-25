@@ -86,6 +86,11 @@ public:
     osg::Vec3d getPosition() { return( _position ); }
     const osg::Vec3d& getPosition() const { return( _position ); }
 
+    /** \brief Sets the current up, dir, and position from \c m. */
+    void setByMatrix( const osg::Matrix& m );
+    /** \brief Same as setByMatrix(), but assume \c m is an inverse or view matrix. */
+    void setByInverseMatrix( const osg::Matrix& m );
+
     /** Convenience routine to return the cross product of \c _viewDir and \c _viewUp.
     */
     osg::Vec3d getCross() const { return( _viewDir ^ _viewUp ); }
