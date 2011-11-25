@@ -78,7 +78,7 @@ public:
     often insufficient to move at a specified rate. Consider using setLeftStick(float,float,double)
     instead. See also setStickRate() and setStickRates().
     */
-    virtual void setLeftStick( const float x, const float y );
+    virtual bool setLeftStick( const float x, const float y );
     void getLeftStick( float& x, float& y ) const
     {
         x = _leftStick[0]; y = _leftStick[1];
@@ -93,7 +93,7 @@ public:
     \param elapsedSeconds Specifies the elapsed time in seconds since the last call to
     setLeftStick(float,float,double). This function computes the delta motion based on
     \c _leftRate and \c elapsedSeconds, then scales that motion by \c x and \c y. */
-    virtual void setLeftStick( const float x, const float y, const double elapsedSeconds );
+    virtual bool setLeftStick( const float x, const float y, const double elapsedSeconds );
 
     /** Set the right stick position.
 
@@ -107,7 +107,7 @@ public:
     the up vector, resulting in "turning your head left". In the same situation,
     a positive y value "looks up".
     */
-    virtual void setRightStick( const float x, const float y );
+    virtual bool setRightStick( const float x, const float y );
     void getRightStick( float& x, float& y ) const
     {
         x = _rightStick[0]; y = _rightStick[1];
@@ -122,7 +122,7 @@ public:
     \param elapsedSeconds Specifies the elapsed time in seconds since the last call to
     setRightStick(float,float,double). This function computes the delta rotation based on
     \c _rightRate and \c elapsedSeconds, then scales that rotation by \c x and \c y. */
-    virtual void setRightStick( const float x, const float y, const double elapsedSeconds );
+    virtual bool setRightStick( const float x, const float y, const double elapsedSeconds );
 
     /** Set the stick dead zone.
 
