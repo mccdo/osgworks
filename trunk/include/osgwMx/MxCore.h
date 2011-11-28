@@ -124,13 +124,36 @@ public:
 
 
     /** Move the view position by a delta amount in world coordinate space.
-    See setMoveScale(). */
-    void moveWorldCoords( osg::Vec3d delta );
-    /** Move the view position by a delta amount in left-handed view-relative coordinates.
+
+    Note that movement is scaled (see setMoveScale()). */
+    void moveWorldCoords( const osg::Vec3d& delta );
+    /** \brief Move the view position by a delta amount in left-handed view-relative coordinates.
+
+    This is an intuitive and generally useful for movement in an arbitrary view-centric
+    coordinate system. See also moveConstrainted() for a variant to allow movement in
+    a typical up-oriented 3D environment.
+
     \c delta[0] is movement to the right (+) or left (-), \c delta[1] is movement
     up (+) or down (-), and \c delta[2] is movement backward (+) or forward (-).
-    See setMoveScale(). */
-    void move( osg::Vec3d delta );
+    See setMoveScale().
+    
+    Note that movement is scaled (see setMoveScale()). */
+    void move( const osg::Vec3d& delta );
+    /** \brief Move in local coordinates constrained by the world (initial) up vector.
+
+    This is probably the most useful of the three move*() function variants, as
+    it allows the user to move in a world defined by the \c _initialUp vector and
+    its implied ground plane. As an example, this function allows flat horizontal
+    movement even when the view is looking up or down relative to the horizon.
+
+    Uses the initial up vector \c _initialUp to define a ground plan", and then
+    moves in that environment as follows: \c delta[0] moves in the ground plane
+    right (+) or left (-); \c delta[1] moves along \c _viewUp in the up (+) and
+    down (-) directions; \c delta[2] moves in the ground plane backward (+) or
+    forward (-).
+
+    Note that movement is scaled (see setMoveScale()). */
+    void moveConstrained( const osg::Vec3d& delta );
 
     /** Sets the movement scale. The move() and moveWorldCoords functions perform an
     element-wise multiplication between their \c delta parameter and the specified

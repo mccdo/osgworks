@@ -213,17 +213,32 @@ void MxCore::rotate( double angle, const osg::Vec3d& axis, const osg::Vec3d& poi
     orthonormalize();
 }
 
-void MxCore::moveWorldCoords( osg::Vec3d delta )
+void MxCore::moveWorldCoords( const osg::Vec3d& delta )
 {
-    osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
+    const osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
         delta[1] * _moveScale[1], delta[2] * _moveScale[2] );
     _position += scaledDelta;
 }
-void MxCore::move( osg::Vec3d delta )
+void MxCore::move( const osg::Vec3d& delta )
 {
-    osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
+    const osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
         delta[1] * _moveScale[1], delta[2] * _moveScale[2] );
     _position += ( scaledDelta * getOrientationMatrix() );
+}
+void MxCore::moveConstrained( const osg::Vec3d& delta )
+{
+    const osg::Vec3d c = getCross();
+    const osg::Vec3d& u = _initialUp;
+    const osg::Vec3d back = c ^ u;
+    const osg::Matrix orient(
+        c[ 0 ], c[ 1 ], c[ 2 ], 0.,
+        u[ 0 ], u[ 1 ], u[ 2 ], 0.,
+        back[ 0 ], back[ 1 ], back[ 2 ], 0.,
+        0., 0., 0., 1. );
+
+    const osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
+        delta[1] * _moveScale[1], delta[2] * _moveScale[2] );
+    _position += ( scaledDelta * orient );
 }
 
 
