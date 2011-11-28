@@ -209,6 +209,11 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
 }
 
 
+void MxEventHandler::setMxCore( osgwMx::MxCore* mxCore )
+{
+    _mxCore = mxCore;
+}
+
 MxCore* MxEventHandler::getMxCore()
 {
     return( _mxCore.get() );

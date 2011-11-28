@@ -194,7 +194,10 @@ public:
     virtual void setButtons( const unsigned int buttons );
     unsigned int getButtons() const { return( _buttons ); }
 
-    /* Get the MxCore for access to the managed matrix. */
+    /** Set the MxCore. This allows sharing an MxCore between multiple device
+    handlers, such as MxEventHandler and MxGamePad. */
+    void setMxCore( osgwMx::MxCore* mxCore ) { _mxCore = mxCore; }
+    /** Get the MxCore for access to the managed matrix. */
     MxCore* getMxCore() { return( _mxCore.get() ); }
     const MxCore* getMxCore() const { return( _mxCore.get() ); }
 
