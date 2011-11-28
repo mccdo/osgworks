@@ -79,6 +79,10 @@ public:
     void setSceneData( osg::Node* scene ) { _scene = scene; }
     void setWorldUpVector( const osg::Vec3d& worldUp ) { _worldUp = worldUp; }
 
+    /** Set the MxCore. This allows sharing an MxCore between multiple device
+    handlers, such as MxEventHandler and MxGamePad. */
+    void setMxCore( osgwMx::MxCore* mxCore );
+    /** Get the MxCore for access to the managed matrix. */
     MxCore* getMxCore();
     osg::NodeCallback* getMatrixCallback();
 
