@@ -178,7 +178,7 @@ public:
         Button8  = ( 0x1 <<  8 ),     // Move in world coordinate space.
         Button9  = ( 0x1 <<  9 ),     // Move with the osgwMx::MxCore::moveConstrained function.
         Button10 = ( 0x1 << 10 ),     // Rotate about a point with the right stick.
-        Button11 = ( 0x1 << 11 ),     // Unused.
+        Button11 = ( 0x1 << 11 ),     // Rotate about the direction vector and cross vector.
         Button12 = ( 0x1 << 12 ),     // Unused.
         Button13 = ( 0x1 << 13 ),     // Unused.
         Button14 = ( 0x1 << 14 ),     // Unused.
