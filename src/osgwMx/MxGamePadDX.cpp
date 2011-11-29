@@ -122,21 +122,21 @@ void MxGamePadDX::processButtons( const DIJOYSTATE2& devState )
 
     // Map DX GamePad buttons to base class button enums.
     if( devState.rgbButtons[ 0 ] )
-        buttons |= BottomButton;
+        buttons |= Button2;
     if( devState.rgbButtons[ 1 ] )
-        buttons |= RightButton;
+        buttons |= Button1;
     if( devState.rgbButtons[ 2 ] )
-        buttons |= LeftButton;
+        buttons |= Button3;
     if( devState.rgbButtons[ 3 ] )
-        buttons |= TopButton;
+        buttons |= Button0;
     if( devState.rgbButtons[ 4 ] )
-        buttons |= LeftShoulderTop;
+        buttons |= Button5;
     if( devState.rgbButtons[ 5 ] )
-        buttons |= LeftShoulderBottom;
+        buttons |= Button4;
     if( devState.rgbButtons[ 6 ] )
-        buttons |= RightShoulderTop;
+        buttons |= Button7;
     if( devState.rgbButtons[ 7 ] )
-        buttons |= RightShoulderBottom;
+        buttons |= Button6;
 
     // Must call into base class even if all buttons are zero
     // so that base class can detect deltas (press events).
