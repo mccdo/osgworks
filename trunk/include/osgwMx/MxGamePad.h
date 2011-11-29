@@ -167,18 +167,42 @@ public:
     /** Enumerant button values. Bitwise OR enumerants that correspond to
     pressed device buttons, and pass the result to setButtons(). */
     typedef enum {
-        TopButton = ( 0x1 << 0 ),             // Jump to world origin.
-        RightButton = ( 0x1 << 1 ),           // Level the view..
-        BottomButton = ( 0x1 << 2 ),          // When held, left stick moves up/down.
-        LeftButton = ( 0x1 << 3 ),            // Jump to home position.
-        LeftShoulderBottom = ( 0x1 << 4 ),    // Unused.
-        LeftShoulderTop = ( 0x1 << 5 ),       // Unused.
-        RightShoulderBottom = ( 0x1 << 6 ),   // When held, move speed scales by 0.3333x.
-        RightShoulderTop = ( 0x1 << 7 )       // When held, move speed scales by 3x.
-    } ButtonValues;
+        Button0  = ( 0x1 <<  0 ),     // Jump to world origin.
+        Button1  = ( 0x1 <<  1 ),     // Level the view..
+        Button2  = ( 0x1 <<  2 ),     // When held, left stick moves up/down.
+        Button3  = ( 0x1 <<  3 ),     // Jump to home position.
+        Button4  = ( 0x1 <<  4 ),     // Unused.
+        Button5  = ( 0x1 <<  5 ),     // Unused.
+        Button6  = ( 0x1 <<  6 ),     // When held, move speed scales by 0.3333x.
+        Button7  = ( 0x1 <<  7 ),     // When held, move speed scales by 3x.
+        Button8  = ( 0x1 <<  8 ),     // Move in world coordinate space.
+        Button9  = ( 0x1 <<  9 ),     // Move with the osgwMx::MxCore::moveConstrained function.
+        Button10 = ( 0x1 << 10 ),     // Unused.
+        Button11 = ( 0x1 << 11 ),     // Unused.
+        Button12 = ( 0x1 << 12 ),     // Unused.
+        Button13 = ( 0x1 << 13 ),     // Unused.
+        Button14 = ( 0x1 << 14 ),     // Unused.
+        Button15 = ( 0x1 << 15 ),     // Unused.
+        Button16 = ( 0x1 << 16 ),     // Unused.
+        Button17 = ( 0x1 << 17 ),     // Unused.
+        Button18 = ( 0x1 << 18 ),     // Unused.
+        Button19 = ( 0x1 << 19 ),     // Unused.
+        Button20 = ( 0x1 << 20 ),     // Unused.
+        Button21 = ( 0x1 << 21 ),     // Unused.
+        Button22 = ( 0x1 << 22 ),     // Unused.
+        Button23 = ( 0x1 << 23 ),     // Unused.
+        Button24 = ( 0x1 << 24 ),     // Unused.
+        Button25 = ( 0x1 << 25 ),     // Unused.
+        Button26 = ( 0x1 << 26 ),     // Unused.
+        Button27 = ( 0x1 << 27 ),     // Unused.
+        Button28 = ( 0x1 << 28 ),     // Unused.
+        Button29 = ( 0x1 << 29 ),     // Unused.
+        Button30 = ( 0x1 << 30 ),     // Unused.
+        Button31 = ( 0x1 << 31 )      // Unused.
+    } Buttons;
     /** Set the current button state.
 
-    \param buttons A bit mask composed of MxGamePad::ButtonValues.
+    \param buttons A bit mask composed of MxGamePad::Buttons.
 
     \li Top RGB Button: Jump to world origin.
     \li Right RGB Button: Level the view.
@@ -201,10 +225,6 @@ public:
     MxCore* getMxCore() { return( _mxCore.get() ); }
     const MxCore* getMxCore() const { return( _mxCore.get() ); }
 
-    /** Set whether we are going to use the MxCore::move or 
-    MxCore::moveWorldCoords in the left stick event handler.*/
-    void setWorldCoordMove( bool worldCoordMove );
-
 protected:
     virtual ~MxGamePad();
 
@@ -225,8 +245,6 @@ protected:
     double _leftRate, _rightRate;
 
     osg::ref_ptr< MxCore > _mxCore;
-    
-    bool _worldCoordMove;
 };
 
 

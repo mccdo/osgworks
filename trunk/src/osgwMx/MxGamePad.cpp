@@ -36,8 +36,7 @@ MxGamePad::MxGamePad()
     _buttons( 0 ),
     _deadZone( 0.f ),
     _leftRate( 1. ),
-    _rightRate( 60. ),
-    _worldCoordMove( false )
+    _rightRate( 60. )
 {
     _mxCore = new osgwMx::MxCore;
 }
@@ -49,8 +48,7 @@ MxGamePad::MxGamePad( const MxGamePad& rhs, const osg::CopyOp& copyop )
     _buttons( rhs._buttons ),
     _deadZone( rhs._deadZone ),
     _leftRate( rhs._leftRate ),
-    _rightRate( rhs._rightRate ),
-    _worldCoordMove( rhs._worldCoordMove )
+    _rightRate( rhs._rightRate )
 {
     if( !( _mxCore.valid() ) )
         _mxCore = new osgwMx::MxCore;
@@ -99,9 +97,9 @@ bool MxGamePad::setLeftStick( const float x, const float y, const double elapsed
 }
 void MxGamePad::internalLeftStick( const float x, const float y )
 {
-    // Check BottomButton for forward/backward or up/down.
+    // Check Button2 for forward/backward or up/down.
     osg::Vec3d movement;
-    if( ( _buttons & BottomButton ) != 0 )
+    if( ( _buttons & Button2 ) != 0 )
         // Move left/right and up/down.
         // Positive values move up, so negate y.
         movement.set( x, -y, 0. );
@@ -109,14 +107,20 @@ void MxGamePad::internalLeftStick( const float x, const float y )
         // Move left/right and forwards/backwards.
         movement.set( x, 0., y );
 
-    if( _worldCoordMove )
+    if( _buttons & Button8 )
     {
         _mxCore->moveWorldCoords( movement );
+        return;
     }
-    else
+    
+    if( _buttons & Button9 )
     {
-        _mxCore->move( movement );
+        _mxCore->moveConstrained( movement );
+        return;
     }
+    
+    ///By default we will move in local coordinate space
+    _mxCore->move( movement );
 }
 
 bool MxGamePad::setRightStick( const float x, const float y )
@@ -173,27 +177,22 @@ void MxGamePad::setButtons( const unsigned int buttons )
     const unsigned int deltaReleased = ( buttons ^ _buttons ) & _buttons;
 
     // Scale movement based on right shoulder button state.
-    if( ( deltaPressed & RightShoulderBottom ) != 0 )
+    if( ( deltaPressed & Button6 ) != 0 )
         _mxCore->setMoveScale( osg::Vec3d( .33, .33, .33 ) );
-    else if( ( deltaPressed & RightShoulderTop ) != 0 )
+    else if( ( deltaPressed & Button7 ) != 0 )
         _mxCore->setMoveScale( osg::Vec3d( 3., 3., 3. ) );
-    if( ( ( deltaReleased & RightShoulderBottom ) != 0 ) ||
-        ( ( deltaReleased & RightShoulderTop ) != 0 ) )
+    if( ( ( deltaReleased & Button6 ) != 0 ) ||
+        ( ( deltaReleased & Button7 ) != 0 ) )
         _mxCore->setMoveScale( osg::Vec3d( 1., 1., 1. ) );
 
-    if( ( deltaPressed & LeftButton ) != 0 )
+    if( ( deltaPressed & Button3 ) != 0 )
         _mxCore->reset();
-    if( ( deltaPressed & TopButton ) != 0 )
+    if( ( deltaPressed & Button0 ) != 0 )
         _mxCore->setPosition( osg::Vec3( 0., 0., 0. ) );
-    if( ( deltaPressed & RightButton ) != 0 )
+    if( ( deltaPressed & Button1 ) != 0 )
         _mxCore->level();
 
     _buttons = buttons;
-}
-
-void MxGamePad::setWorldCoordMove( bool worldCoordMove )
-{
-    _worldCoordMove = worldCoordMove;
 }
 // osgwMx
 }
