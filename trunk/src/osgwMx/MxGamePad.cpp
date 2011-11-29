@@ -36,7 +36,8 @@ MxGamePad::MxGamePad()
     _buttons( 0 ),
     _deadZone( 0.f ),
     _leftRate( 1. ),
-    _rightRate( 60. )
+    _rightRate( 60. ),
+    _rotationPoint( osg::Vec3d( 0.f, 0.f, 0.f ) )
 {
     _mxCore = new osgwMx::MxCore;
 }
@@ -48,7 +49,8 @@ MxGamePad::MxGamePad( const MxGamePad& rhs, const osg::CopyOp& copyop )
     _buttons( rhs._buttons ),
     _deadZone( rhs._deadZone ),
     _leftRate( rhs._leftRate ),
-    _rightRate( rhs._rightRate )
+    _rightRate( rhs._rightRate ),
+    _rotationPoint( rhs._rotationPoint )
 {
     if( !( _mxCore.valid() ) )
         _mxCore = new osgwMx::MxCore;
@@ -56,7 +58,6 @@ MxGamePad::MxGamePad( const MxGamePad& rhs, const osg::CopyOp& copyop )
 MxGamePad::~MxGamePad()
 {
 }
-
 
 bool MxGamePad::setLeftStick( const float x, const float y )
 {
@@ -166,10 +167,16 @@ void MxGamePad::internalRightStick( const float x, const float y )
     const double myX = osg::DegreesToRadians( x );
     const double myY = osg::DegreesToRadians( y );
 
+    if( _buttons & Button10 )
+    {
+        _mxCore->rotate( myX, _mxCore->getUp(), _rotationPoint );
+        _mxCore->rotate( myY, _mxCore->getCross(), _rotationPoint );
+        return;
+    }
+
     _mxCore->rotate( myX, _mxCore->getUp() );
     _mxCore->rotate( myY, _mxCore->getCross() );
 }
-
 void MxGamePad::setButtons( const unsigned int buttons )
 {
     // Determine which buttons just entered a pressed or released state.

@@ -177,7 +177,7 @@ public:
         Button7  = ( 0x1 <<  7 ),     // When held, move speed scales by 3x.
         Button8  = ( 0x1 <<  8 ),     // Move in world coordinate space.
         Button9  = ( 0x1 <<  9 ),     // Move with the osgwMx::MxCore::moveConstrained function.
-        Button10 = ( 0x1 << 10 ),     // Unused.
+        Button10 = ( 0x1 << 10 ),     // Rotate about a point with the right stick.
         Button11 = ( 0x1 << 11 ),     // Unused.
         Button12 = ( 0x1 << 12 ),     // Unused.
         Button13 = ( 0x1 << 13 ),     // Unused.
@@ -225,6 +225,11 @@ public:
     MxCore* getMxCore() { return( _mxCore.get() ); }
     const MxCore* getMxCore() const { return( _mxCore.get() ); }
 
+    /** Set the point of rotation for the right stick rotations. This allows the
+    user to press button 10 and rotate about an arbitrary point in space with 
+    the right stick control.*/
+    void setRotationPoint( const osg::Vec3d& point ) { _rotationPoint = point; }
+    
 protected:
     virtual ~MxGamePad();
 
@@ -245,6 +250,8 @@ protected:
     double _leftRate, _rightRate;
 
     osg::ref_ptr< MxCore > _mxCore;
+    
+    osg::Vec3d _rotationPoint;
 };
 
 
