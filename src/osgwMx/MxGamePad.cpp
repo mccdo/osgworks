@@ -169,11 +169,25 @@ void MxGamePad::internalRightStick( const float x, const float y )
 
     if( _buttons & Button10 )
     {
+        if( _buttons & Button11 )
+        {
+            _mxCore->rotate( myX, _mxCore->getDir(), _rotationPoint );
+            _mxCore->rotate( myY, _mxCore->getCross(), _rotationPoint );
+            return;
+        }
+
         _mxCore->rotate( myX, _mxCore->getUp(), _rotationPoint );
         _mxCore->rotate( myY, _mxCore->getCross(), _rotationPoint );
         return;
     }
 
+    if( _buttons & Button11 )
+    {
+        _mxCore->rotate( myX, _mxCore->getDir() );
+        _mxCore->rotate( myY, _mxCore->getCross() );
+        return;
+    }
+    
     _mxCore->rotate( myX, _mxCore->getUp() );
     _mxCore->rotate( myY, _mxCore->getCross() );
 }
