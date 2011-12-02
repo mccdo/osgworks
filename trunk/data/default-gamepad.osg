@@ -1,0 +1,34 @@
+osgwTools::FunctionalMap {
+  1 JumpToWorldOrigin
+  2 LevelView
+  4 MoveModifyUpDown
+  8 JumpToHomePosition
+  10 NoOp
+  20 NoOp
+  40 ScaleMoveSpeedDown
+  80 ScaleMoveSpeedUp
+  100 MoveModeWorld
+  200 MoveModeConstrained
+  400 RotateModeOrbit
+  800 RotateModeRoll
+  1000 NoOp
+  2000 NoOp
+  4000 NoOp
+  8000 NoOp
+  10000 NoOp
+  20000 NoOp
+  40000 NoOp
+  80000 NoOp
+  100000 NoOp
+  200000 NoOp
+  400000 NoOp
+  800000 NoOp
+  1000000 NoOp
+  2000000 NoOp
+  4000000 NoOp
+  8000000 NoOp
+  10000000 NoOp
+  20000000 NoOp
+  40000000 NoOp
+  80000000 NoOp
+}

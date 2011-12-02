@@ -40,20 +40,32 @@ MxGamePad::MxGamePad()
     _rotationPoint( osg::Vec3d( 0.f, 0.f, 0.f ) )
 {
     _mxCore = new osgwMx::MxCore;
+
+    // Create a default functional map.
+    _map = new osgwMx::FunctionalMap;
+    _map->configure( Button0, FunctionalMap::JumpToWorldOrigin );
+    _map->configure( Button1, FunctionalMap::LevelView );
+    _map->configure( Button2, FunctionalMap::MoveModifyUpDown );
+    _map->configure( Button3, FunctionalMap::JumpToHomePosition );
+    _map->configure( Button6, FunctionalMap::ScaleMoveSpeedDown );
+    _map->configure( Button7, FunctionalMap::ScaleMoveSpeedUp );
+    _map->configure( Button8, FunctionalMap::MoveModeWorld );
+    _map->configure( Button9, FunctionalMap::MoveModeConstrained );
+    _map->configure( Button10, FunctionalMap::RotateModeOrbit );
+    _map->configure( Button11, FunctionalMap::RotateModeRoll );
 }
 MxGamePad::MxGamePad( const MxGamePad& rhs, const osg::CopyOp& copyop )
   : osg::Object( rhs, copyop ),
-    _mxCore( rhs._mxCore ),
     _leftStick( rhs._leftStick ),
     _rightStick( rhs._rightStick ),
     _buttons( rhs._buttons ),
     _deadZone( rhs._deadZone ),
     _leftRate( rhs._leftRate ),
     _rightRate( rhs._rightRate ),
-    _rotationPoint( rhs._rotationPoint )
+    _rotationPoint( rhs._rotationPoint ),
+    _mxCore( new osgwMx::MxCore( *( rhs._mxCore ), copyop ) ),
+    _map( new osgwMx::FunctionalMap( *( rhs._map ), copyop ) )
 {
-    if( !( _mxCore.valid() ) )
-        _mxCore = new osgwMx::MxCore;
 }
 MxGamePad::~MxGamePad()
 {
@@ -98,9 +110,9 @@ bool MxGamePad::setLeftStick( const float x, const float y, const double elapsed
 }
 void MxGamePad::internalLeftStick( const float x, const float y )
 {
-    // Check Button2 for forward/backward or up/down.
+    // Check for forward/backward or up/down.
     osg::Vec3d movement;
-    if( ( _buttons & Button2 ) != 0 )
+    if( _map->isSet( FunctionalMap::MoveModifyUpDown ) )
         // Move left/right and up/down.
         // Positive values move up, so negate y.
         movement.set( x, -y, 0. );
@@ -108,13 +120,13 @@ void MxGamePad::internalLeftStick( const float x, const float y )
         // Move left/right and forwards/backwards.
         movement.set( x, 0., y );
 
-    if( _buttons & Button8 )
+    if( _map->isSet( FunctionalMap::MoveModeWorld ) )
     {
         _mxCore->moveWorldCoords( movement );
         return;
     }
     
-    if( _buttons & Button9 )
+    if( _map->isSet( FunctionalMap::MoveModeConstrained ) )
     {
         _mxCore->moveConstrained( movement );
         return;
@@ -167,9 +179,9 @@ void MxGamePad::internalRightStick( const float x, const float y )
     const double myX = osg::DegreesToRadians( x );
     const double myY = osg::DegreesToRadians( y );
 
-    if( _buttons & Button10 )
+    if( _map->isSet( FunctionalMap::RotateModeOrbit ) )
     {
-        if( _buttons & Button11 )
+        if( _map->isSet( FunctionalMap::RotateModeRoll ) )
         {
             _mxCore->rotate( myX, _mxCore->getDir(), _rotationPoint );
             _mxCore->rotate( myY, _mxCore->getCross(), _rotationPoint );
@@ -181,7 +193,7 @@ void MxGamePad::internalRightStick( const float x, const float y )
         return;
     }
 
-    if( _buttons & Button11 )
+    if( _map->isSet( FunctionalMap::RotateModeRoll ) )
     {
         _mxCore->rotate( myX, _mxCore->getDir() );
         _mxCore->rotate( myY, _mxCore->getCross() );
@@ -197,23 +209,32 @@ void MxGamePad::setButtons( const unsigned int buttons )
     const unsigned int deltaPressed = ( buttons ^ _buttons ) & buttons;
     const unsigned int deltaReleased = ( buttons ^ _buttons ) & _buttons;
 
-    // Scale movement based on right shoulder button state.
-    if( ( deltaPressed & Button6 ) != 0 )
-        _mxCore->setMoveScale( osg::Vec3d( .33, .33, .33 ) );
-    else if( ( deltaPressed & Button7 ) != 0 )
-        _mxCore->setMoveScale( osg::Vec3d( 3., 3., 3. ) );
-    if( ( ( deltaReleased & Button6 ) != 0 ) ||
-        ( ( deltaReleased & Button7 ) != 0 ) )
-        _mxCore->setMoveScale( osg::Vec3d( 1., 1., 1. ) );
+    _map->setFromBitmask( deltaPressed );
 
-    if( ( deltaPressed & Button3 ) != 0 )
+    if( _map->isSet( FunctionalMap::JumpToHomePosition ) )
         _mxCore->reset();
-    if( ( deltaPressed & Button0 ) != 0 )
+    if( _map->isSet( FunctionalMap::JumpToWorldOrigin ) )
         _mxCore->setPosition( osg::Vec3( 0., 0., 0. ) );
-    if( ( deltaPressed & Button1 ) != 0 )
+    if( _map->isSet( FunctionalMap::LevelView ) )
         _mxCore->level();
 
+    // Scale movement based on right shoulder button state.
+    if( _map->isSet( FunctionalMap::ScaleMoveSpeedDown ) )
+        _mxCore->setMoveScale( osg::Vec3d( .33, .33, .33 ) );
+    else if( _map->isSet( FunctionalMap::ScaleMoveSpeedUp ) )
+        _mxCore->setMoveScale( osg::Vec3d( 3., 3., 3. ) );
+
+    // If either the ScaleUp or ScaleDown buttons were released, restore
+    // the move speed.
+    _map->setFromBitmask( deltaReleased );
+    if( _map->isSet( FunctionalMap::ScaleMoveSpeedDown ) ||
+        _map->isSet( FunctionalMap::ScaleMoveSpeedUp ) )
+        _mxCore->setMoveScale( osg::Vec3d( 1., 1., 1. ) );
+
     _buttons = buttons;
+    _map->setFromBitmask( buttons );
 }
+
+
 // osgwMx
 }

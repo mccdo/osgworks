@@ -24,6 +24,7 @@
 
 #include <osgwMx/Export.h>
 #include <osgwMx/MxCore.h>
+#include <osgwMx/MxUtils.h>
 #include <osg/Object>
 #include <osg/ref_ptr>
 #include <osg/Vec2f>
@@ -168,13 +169,13 @@ public:
     pressed device buttons, and pass the result to setButtons(). */
     typedef enum {
         Button0  = ( 0x1 <<  0 ),     // Jump to world origin.
-        Button1  = ( 0x1 <<  1 ),     // Level the view..
+        Button1  = ( 0x1 <<  1 ),     // Level the view.
         Button2  = ( 0x1 <<  2 ),     // When held, left stick moves up/down.
         Button3  = ( 0x1 <<  3 ),     // Jump to home position.
         Button4  = ( 0x1 <<  4 ),     // Unused.
         Button5  = ( 0x1 <<  5 ),     // Unused.
-        Button6  = ( 0x1 <<  6 ),     // When held, move speed scales by 0.3333x.
-        Button7  = ( 0x1 <<  7 ),     // When held, move speed scales by 3x.
+        Button6  = ( 0x1 <<  6 ),     // When held, move speed scaled by 0.3333x.
+        Button7  = ( 0x1 <<  7 ),     // When held, move speed scaled by 3x.
         Button8  = ( 0x1 <<  8 ),     // Move in world coordinate space.
         Button9  = ( 0x1 <<  9 ),     // Move with the osgwMx::MxCore::moveConstrained function.
         Button10 = ( 0x1 << 10 ),     // Rotate about a point with the right stick.
@@ -218,6 +219,11 @@ public:
     virtual void setButtons( const unsigned int buttons );
     unsigned int getButtons() const { return( _buttons ); }
 
+    /** Access the mapping of buttons to functionality. */
+    void setFunctionalMap( osgwMx::FunctionalMap* map ) { _map = map; }
+    osgwMx::FunctionalMap* getFunctionalMap() { return( _map.get() ); }
+    const osgwMx::FunctionalMap* getFunctionalMap() const { return( _map.get() ); }
+
     /** Set the MxCore. This allows sharing an MxCore between multiple device
     handlers, such as MxEventHandler and MxGamePad. */
     void setMxCore( osgwMx::MxCore* mxCore ) { _mxCore = mxCore; }
@@ -250,7 +256,9 @@ protected:
     double _leftRate, _rightRate;
 
     osg::ref_ptr< MxCore > _mxCore;
-    
+
+    osg::ref_ptr< FunctionalMap > _map;
+
     osg::Vec3d _rotationPoint;
 };
 

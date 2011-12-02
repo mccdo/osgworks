@@ -270,5 +270,121 @@ void computeTrackball( double& angle, osg::Vec3d& axis,
 }
 
 
+
+FunctionalMap::FunctionalMap()
+  : Object()
+{
+    reset();
+}
+FunctionalMap::FunctionalMap( const FunctionalMap& rhs, osg::CopyOp copyop )
+  : Object( rhs ),
+    _map( rhs._map ),
+    _state( rhs._state )
+{
+}
+FunctionalMap::~FunctionalMap()
+{
+}
+
+void FunctionalMap::configure( const unsigned int key, FunctionType func )
+{
+    _map[ key ] = func;
+}
+FunctionalMap::FunctionType FunctionalMap::getConfiguration( const unsigned int key ) const
+{
+    FunctionMapType::const_iterator it = _map.find( key );
+    if( it != _map.end() )
+        return( it->second );
+    else
+        return( NoOp );
+}
+
+std::string FunctionalMap::asString( FunctionType func )
+{
+    switch( func )
+    {
+    case LevelView: return( "LevelView" ); break;
+    case JumpToWorldOrigin: return( "JumpToWorldOrigin" ); break;
+    case JumpToHomePosition: return( "JumpToHomePosition" ); break;
+    case ScaleMoveSpeedDown: return( "ScaleMoveSpeedDown" ); break;
+    case ScaleMoveSpeedUp: return( "ScaleMoveSpeedUp" ); break;
+    case MoveModeLocal: return( "MoveModeLocal" ); break;
+    case MoveModeConstrained: return( "MoveModeConstrained" ); break;
+    case MoveModeWorld: return( "MoveModeWorld" ); break;
+    case MoveModeCycle: return( "MoveModeCycle" ); break;
+    case MoveModifyUpDown: return( "MoveModifyUpDown" ); break;
+    case MoveUpAtRate: return( "MoveUpAtRate" ); break;
+    case MoveDownAtRate: return( "MoveDownAtRate" ); break;
+    case RotateModeLocal: return( "RotateModeLocal" ); break;
+    case RotateModeOrbit: return( "RotateModeOrbit" ); break;
+    case RotateModeRoll: return( "RotateModeRoll" ); break;
+    case RotateModeArcball: return( "RotateModeArcball" ); break;
+    case RotateModeCycle: return( "RotateModeCycle" ); break;
+    default:
+    case NoOp: return( "NoOp" ); break;
+    }
+}
+FunctionalMap::FunctionType FunctionalMap::asFunctionType( const std::string& str )
+{
+    if( str == std::string( "LevelView" ) ) return( LevelView );
+    else if( str == std::string( "JumpToWorldOrigin" ) ) return( JumpToWorldOrigin );
+    else if( str == std::string( "JumpToHomePosition" ) ) return( JumpToHomePosition );
+    else if( str == std::string( "ScaleMoveSpeedDown" ) ) return( ScaleMoveSpeedDown );
+    else if( str == std::string( "ScaleMoveSpeedUp" ) ) return( ScaleMoveSpeedUp );
+    else if( str == std::string( "MoveModeLocal" ) ) return( MoveModeLocal );
+    else if( str == std::string( "MoveModeConstrained" ) ) return( MoveModeConstrained );
+    else if( str == std::string( "MoveModeWorld" ) ) return( MoveModeWorld );
+    else if( str == std::string( "MoveModeCycle" ) ) return( MoveModeCycle );
+    else if( str == std::string( "MoveModifyUpDown" ) ) return( MoveModifyUpDown );
+    else if( str == std::string( "MoveUpAtRate" ) ) return( MoveUpAtRate );
+    else if( str == std::string( "MoveDownAtRate" ) ) return( MoveDownAtRate );
+    else if( str == std::string( "RotateModeLocal" ) ) return( RotateModeLocal );
+    else if( str == std::string( "RotateModeOrbit" ) ) return( RotateModeOrbit );
+    else if( str == std::string( "RotateModeRoll" ) ) return( RotateModeRoll );
+    else if( str == std::string( "RotateModeArcball" ) ) return( RotateModeArcball );
+    else if( str == std::string( "RotateModeCycle" ) ) return( RotateModeCycle );
+    else return( NoOp );
+}
+
+void FunctionalMap::set( const unsigned int key, bool enable )
+{
+    const FunctionType func = getConfiguration( key );
+    if( func == NoOp )
+        return;
+
+    _state[ func ] = enable;
+}
+void FunctionalMap::setFromBitmask( const unsigned int mask )
+{
+    unsigned int key( 1 );
+    int idx;
+    for( idx=0; idx<32; idx++, key<<=1 )
+        set( key, ( ( mask & key ) != 0 ) );
+}
+
+bool FunctionalMap::isSet( const unsigned int key ) const
+{
+    const FunctionType func = getConfiguration( key );
+    if( func == NoOp )
+        return( false );
+
+    return isSet( func );
+}
+bool FunctionalMap::isSet( const FunctionType func ) const
+{
+    return( _state[ func ] );
+}
+
+void FunctionalMap::reset()
+{
+    _map.clear();
+
+    const int maxEnum( (int)NoOp );
+    _state.resize( maxEnum );
+    for( int idx=0; idx<maxEnum; idx++ )
+        _state[ idx ] = false;
+}
+
+
 // osgwMx
 }
