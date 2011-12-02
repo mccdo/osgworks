@@ -18,6 +18,9 @@ int main( int argc, char** argv )
     double moveRate( 1. );
     arguments.read( "--rate", moveRate );
 
+    std::string mapFile( "" );
+    arguments.read( "--map", mapFile );
+
     osg::ref_ptr< osg::Node > root = osgDB::readNodeFiles( arguments );
     if( !( root.valid() ) )
     {
@@ -37,6 +40,15 @@ int main( int argc, char** argv )
     // create a game pad input handler and data interpreter to control the view.
     osg::ref_ptr< MxGamePadDX > gamePad = new MxGamePadDX;
     gamePad->setStickRate( moveRate );
+
+    // Load the optional gamepad functional mapping, if specified.
+    if( !( mapFile.empty() ) )
+    {
+        osgwMx::FunctionalMap* map = dynamic_cast< osgwMx::FunctionalMap* >(
+            osgDB::readObjectFile( mapFile ) );
+        if( map != NULL )
+            gamePad->setFunctionalMap( map );
+    }
 
     // Set some MxCore defaults:
     osgwMx::MxCore* mxCore = gamePad->getMxCore();

@@ -32,6 +32,11 @@ namespace osgwMx
 {
 
 
+/** \defgroup mxutils Utilities for MxCore-based device interface classes.
+*/
+/*@{*/
+
+
 double OSGWMX_EXPORT computeInitialFOVYFromDistance( const osg::BoundingSphere& bs, const double distance );
 double OSGWMX_EXPORT computeInitialDistanceFromFOVY( const osg::BoundingSphere& bs, const double distance );
 
@@ -68,6 +73,129 @@ is 0.0 to pi/2. Default is 1.3.
 void OSGWMX_EXPORT computeTrackball( double& angle, osg::Vec3d& axis,
     const osg::Vec2d& start, const osg::Vec2d& delta,
     const osg::Matrix& orientMat, const double sensitivity=1.3 );
+
+
+/** \class FunctionalMap MxUtils.h <osgwMx/MxUtils.h>
+\brief Maps an unsigned int to a particular function.
+
+This class is presently used for arbitrary mapping of MxGamePad buttons,
+where each bit is a single bit in a 32-bit unsigned int. In this usage,
+the class supports the dot OSG file format, which means a FunctionalMap
+can be read from or written to a .osg file as an osg::Object, thus providing
+"config file" support for game pads.
+
+The class can be used to map arbitrary unsigned int values (not bit values),
+but currently this usage is not supported with the dot OSG file format.
+
+The MxGamePad base class owns an instance of FunctionalMap, which can be
+shared amongst game pad instances. The copy constructor is fully supported.
+
+Applications can set the function mapping in two ways:
+\li FunctionalMap::configure(), passing in a specific unsigned int \c key value
+and a FunctionalMap::FunctionType.
+\li Read the FunctionalMap osg::Object from a .osg file (and set it in the game
+pas with a call to MxGamePad::setFunctionalMap()).
+
+Future work:
+\li Support non-bitfield keys in dot OSG.
+\li Possible changes to support devices other than game pad (such as space
+ball, kbd/mouse, etc).
+*/
+class OSGWMX_EXPORT FunctionalMap : public osg::Object
+{
+public:
+    FunctionalMap();
+    FunctionalMap( const FunctionalMap& rhs, osg::CopyOp copyop=osg::CopyOp::SHALLOW_COPY );
+    // Note that lib name="osgwTools" is currently required because we only have one dot OSG plugin.
+    META_Object(osgwTools,FunctionalMap);
+
+    /** Various game pad functions. */
+    typedef enum {
+        /** Set the view direction so it's level with the ground plane, defined
+        by the initial up vector. */
+        LevelView=0,
+
+        /** Warp the position to the world coordinate origin. */
+        JumpToWorldOrigin,
+        /** Warp the position to the initial / home position, resetting the view
+        direction and up vector. */
+        JumpToHomePosition,
+
+        /** Scale movement down (slow down). */
+        ScaleMoveSpeedDown,
+        /** Scale movement up (speed up). */
+        ScaleMoveSpeedUp,
+
+        /** Move in eye local coordinates. */
+        MoveModeLocal,
+        /** Move in the ground plane (defined by the initial up vector). */
+        MoveModeConstrained,
+        /** Move in world coordinates. */
+        MoveModeWorld,
+        /** Cycle through the available move modes. This function is not yet
+        implemented. */
+        MoveModeCycle,
+
+        /** When this function is enabled, forward/backward movement maps to up/down
+        movement. The operation of the up/down movement varies by the current move mode. */
+        MoveModifyUpDown,
+
+        /** A button interface for moving up at the gamepad left stick rate.
+        This function is not yet implemented. */
+        MoveUpAtRate,
+        /** A button interface for moving down at the gamepad left stick rate.
+        This function is not yet implemented. */
+        MoveDownAtRate,
+
+        /** Rotate from the viewpoint (turn the viewer's head). */
+        RotateModeLocal,
+        /** Orbit around a point. */
+        RotateModeOrbit,
+        /** Roll around the current view direction vector. */
+        RotateModeRoll,
+        /** Non-Euclidean arcball. This function is not yet implemented. */
+        RotateModeArcball,
+        /** Cycle through the available rotation modes. This function is not yet
+        implemented. */
+        RotateModeCycle,
+
+        /** For unused entries in the function map. This enum should always
+        be last in the list of enums; it is used in the std::vector::resize()
+        call at init time. */
+        NoOp
+    } FunctionType;
+    static std::string asString( FunctionType func );
+    static FunctionType asFunctionType( const std::string& str );
+
+    /** Set the function for a specific unsigned int \c key. */
+    void configure( const unsigned int key, FunctionType func );
+    FunctionType getConfiguration( const unsigned int key ) const;
+
+    /** Specify that the unsigned int \c key is enabled or disabled. This is
+    generally called in response to a game pad button press. */
+    void set( const unsigned int key, bool enable=true );
+    /** Interpret the mask as a bitfield where each bit position corresponds to
+    an unsigned int bit value key, and whether that position is set or not determines
+    whether the corresponding function is enabled or disabled. */
+    void setFromBitmask( const unsigned int mask );
+
+    bool isSet( const unsigned int key ) const;
+    bool isSet( const FunctionType func ) const;
+
+    /** Clear the mapping and the current state. */
+    void reset();
+
+protected:
+    ~FunctionalMap();
+
+    typedef std::map< unsigned int, FunctionType > FunctionMapType;
+    FunctionMapType _map;
+
+    std::vector< bool > _state;
+};
+
+
+/*@}*/
 
 
 // osgwMx
