@@ -188,10 +188,11 @@ void MxCore::level()
     // Check for vurrent view dir coincident with initial up vector. If so,
     // we can't preserve the current view dir and need to set it to the
     // initial view dir.
-    if( osg::absolute< double >( _initialUp * _initialDir ) > 0.99 )
+    if( osg::absolute< double >( _initialUp * _viewDir ) > 0.99 )
         _viewDir = _initialDir;
     else
         _viewDir = _viewUp ^ getCross();
+    orthonormalize();
 }
 
 
