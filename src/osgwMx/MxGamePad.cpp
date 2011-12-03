@@ -88,7 +88,7 @@ bool MxGamePad::setLeftStick( const float x, const float y )
     
     return( true );
 }
-bool MxGamePad::setLeftStick( const float x, const float y, const double elapsedSeconds )
+bool MxGamePad::setLeftStick( const float x, const float y, const double deltaSeconds )
 {
     _leftStick.set( x, y );
 
@@ -102,7 +102,7 @@ bool MxGamePad::setLeftStick( const float x, const float y, const double elapsed
     }
     
     // How far do we go at 100% movement?
-    const float maxDistance = (float)( _leftRate * elapsedSeconds );
+    const float maxDistance = (float)( _leftRate * deltaSeconds );
 
     internalLeftStick( myX * maxDistance, myY * maxDistance );
     
@@ -153,7 +153,7 @@ bool MxGamePad::setRightStick( const float x, const float y )
     
     return( true );
 }
-bool MxGamePad::setRightStick( const float x, const float y, const double elapsedSeconds )
+bool MxGamePad::setRightStick( const float x, const float y, const double deltaSeconds )
 {
     _rightStick.set( x, y );
 
@@ -167,7 +167,7 @@ bool MxGamePad::setRightStick( const float x, const float y, const double elapse
     }
 
     // How far do we turn at 100% rotation?
-    const float maxDegrees = (float)( _rightRate * elapsedSeconds );
+    const float maxDegrees = (float)( _rightRate * deltaSeconds );
     
     internalRightStick( myX * maxDegrees, myY * maxDegrees );
     
@@ -233,6 +233,35 @@ void MxGamePad::setButtons( const unsigned int buttons )
 
     _buttons = buttons;
     _map->setFromBitmask( buttons );
+}
+
+void MxGamePad::setButtons( const unsigned int buttons, const double deltaSeconds )
+{
+    setButtons( buttons );
+
+    // How far do we go at 100% movement?
+    const float maxDistance = (float)( _leftRate * deltaSeconds );
+
+    osg::Vec3 movement;
+    if( _map->isSet( FunctionalMap::MoveUpAtRate ) )
+        movement[1] = maxDistance;
+    else if( _map->isSet( FunctionalMap::MoveDownAtRate ) )
+        movement[1] = -maxDistance;
+
+    if( _map->isSet( FunctionalMap::MoveModeWorld ) )
+    {
+        _mxCore->moveWorldCoords( movement );
+        return;
+    }
+    
+    if( _map->isSet( FunctionalMap::MoveModeConstrained ) )
+    {
+        _mxCore->moveConstrained( movement );
+        return;
+    }
+    
+    ///By default we will move in local coordinate space
+    _mxCore->move( movement );
 }
 
 

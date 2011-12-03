@@ -74,7 +74,7 @@ bool FunctionalMap_writeLocalData( const osg::Object& obj, osgDB::Output& fw )
     unsigned int key( 1 );
     int idx;
     for( idx=0; idx<32; idx++, key<<=1 )
-        fw.indent() << std::hex << key << " " <<
+        fw.indent() << std::hex << "0x" << key << " " <<
             osgwMx::FunctionalMap::asString( map.getConfiguration( key ) ) << std::endl;
 
     return( true );

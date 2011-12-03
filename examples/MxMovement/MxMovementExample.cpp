@@ -48,6 +48,8 @@ int main( int argc, char** argv )
             osgDB::readObjectFile( mapFile ) );
         if( map != NULL )
             gamePad->setFunctionalMap( map );
+        else
+            osg::notify( osg::WARN ) << "Unable to load map file \"" << mapFile << "\"" << std::endl;
     }
 
     // Set some MxCore defaults:

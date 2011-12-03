@@ -87,8 +87,8 @@ protected:
     void freeDirectInput();
     void destroyWindow();
 
-    void processButtons( const DIJOYSTATE2& devState );
-    void processSticks( const DIJOYSTATE2& devState, const double elapsedSeconds );
+    void processButtons( const DIJOYSTATE2& devState, const double deltaSeconds );
+    void processSticks( const DIJOYSTATE2& devState, const double deltaSeconds );
     void processDPad( const DIJOYSTATE2& devState );
 };
 
