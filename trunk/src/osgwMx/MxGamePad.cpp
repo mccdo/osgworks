@@ -244,9 +244,9 @@ void MxGamePad::setButtons( const unsigned int buttons, const double deltaSecond
 
     osg::Vec3 movement;
     if( _map->isSet( FunctionalMap::MoveUpAtRate ) )
-        movement[1] = maxDistance;
-    else if( _map->isSet( FunctionalMap::MoveDownAtRate ) )
         movement[1] = -maxDistance;
+    else if( _map->isSet( FunctionalMap::MoveDownAtRate ) )
+        movement[1] = maxDistance;
 
     if( _map->isSet( FunctionalMap::MoveModeWorld ) )
     {
