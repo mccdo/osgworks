@@ -86,7 +86,7 @@ MxGamePadDX::~MxGamePadDX()
     destroyWindow();
 }
 
-bool MxGamePadDX::poll( const double elapsedSeconds )
+bool MxGamePadDX::poll( const double deltaSeconds )
 {
     if( _pDIDevice == 0 )
         return( false );
@@ -109,14 +109,14 @@ bool MxGamePadDX::poll( const double elapsedSeconds )
 
     // Button pressed or not pressed could alter behavior of sticks/dpad,
     // so process buttons first.
-    processButtons( devState );
-    processSticks( devState, elapsedSeconds );
+    processButtons( devState, deltaSeconds );
+    processSticks( devState, deltaSeconds );
     processDPad( devState );
 
     return( true ); // Success.
 }
 
-void MxGamePadDX::processButtons( const DIJOYSTATE2& devState )
+void MxGamePadDX::processButtons( const DIJOYSTATE2& devState, const double deltaSeconds )
 {
     unsigned int buttons( 0 );
 
@@ -140,10 +140,10 @@ void MxGamePadDX::processButtons( const DIJOYSTATE2& devState )
 
     // Must call into base class even if all buttons are zero
     // so that base class can detect deltas (press events).
-    setButtons( buttons );
+    setButtons( buttons, deltaSeconds );
 }
 
-void MxGamePadDX::processSticks( const DIJOYSTATE2& devState, const double elapsedSeconds )
+void MxGamePadDX::processSticks( const DIJOYSTATE2& devState, const double deltaSeconds )
 {
     float x, y;
 
@@ -152,7 +152,7 @@ void MxGamePadDX::processSticks( const DIJOYSTATE2& devState, const double elaps
     // These are units to move in world coordinates per event or per frame.
     x = normalizeAxisValue( devState.lX );
     y = normalizeAxisValue( devState.lY );
-    setLeftStick( x, y, elapsedSeconds );
+    setLeftStick( x, y, deltaSeconds );
 
     // Right stick: Rotate.
     // Base class angle values are in degrees. By calling
@@ -164,7 +164,7 @@ void MxGamePadDX::processSticks( const DIJOYSTATE2& devState, const double elaps
     //    the left gamepad stick.
     x = -normalizeAxisValue( devState.lRz );
     y = normalizeAxisValue( devState.lZ );
-    setRightStick( x, y, elapsedSeconds );
+    setRightStick( x, y, deltaSeconds );
 }
 
 void MxGamePadDX::processDPad( const DIJOYSTATE2& devState )

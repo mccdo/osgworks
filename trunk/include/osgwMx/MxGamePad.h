@@ -47,7 +47,22 @@ in response to events or device state. Functions are provided for left stick
 x and y axes, right stick x and y axes, and an unsigned int button mask.
 The "DPad" (above the left stick on many game pads) is not currently supported.
 
-The base class "has a" instance of an MxCore object. Functions to set stick
+This base class "has a" FunctionalMap that maps buttons to functions. See
+setButtons() and setFunctionalMap(). This base class creates a default
+FunctionalMap with a default button-to-function mapping. Derived classes don't
+need to re-configure this mapping, but can if desired. The intention of this
+design is that the owning application will load a config file for the functional
+map that is specific to a particular game pad device and/or VR device SDK (such
+as DirectX or VR Juggler):
+
+\code
+MxGamePad::setFunctionalMap( static_cast< FunctionalMap >(
+        osgDB::readObjectFile( "my-gamepad-config.osg" ) ) );
+\endcode
+
+An example FunctionalMap config file is in data/default-gamepad.osg.
+
+This base class "has a" instance of an MxCore object. Functions to set stick
 positions and button state result in immediate calls into MxCore. The
 MxCore object is fully exposed. An application can retrieve the MxCore
 managed matrix as desired. Your MxGamePad- derived class can also call
@@ -91,10 +106,10 @@ public:
     movement rate in units/second. The movement rate for the left stick is set with
     setStickRate() (see also setStickRates()).
     
-    \param elapsedSeconds Specifies the elapsed time in seconds since the last call to
+    \param deltaSeconds Specifies the elapsed time in seconds since the last call to
     setLeftStick(float,float,double). This function computes the delta motion based on
-    \c _leftRate and \c elapsedSeconds, then scales that motion by \c x and \c y. */
-    virtual bool setLeftStick( const float x, const float y, const double elapsedSeconds );
+    \c _leftRate and \c deltaSeconds, then scales that motion by \c x and \c y. */
+    virtual bool setLeftStick( const float x, const float y, const double deltaSeconds );
 
     /** Set the right stick position.
 
@@ -120,10 +135,10 @@ public:
     rotateion rate in degrees/second. The rotation rate for the right stick is set with
     setStickRates().
     
-    \param elapsedSeconds Specifies the elapsed time in seconds since the last call to
+    \param deltaSeconds Specifies the elapsed time in seconds since the last call to
     setRightStick(float,float,double). This function computes the delta rotation based on
-    \c _rightRate and \c elapsedSeconds, then scales that rotation by \c x and \c y. */
-    virtual bool setRightStick( const float x, const float y, const double elapsedSeconds );
+    \c _rightRate and \c deltaSeconds, then scales that rotation by \c x and \c y. */
+    virtual bool setRightStick( const float x, const float y, const double deltaSeconds );
 
     /** Set the stick dead zone.
 
@@ -168,56 +183,57 @@ public:
     /** Enumerant button values. Bitwise OR enumerants that correspond to
     pressed device buttons, and pass the result to setButtons(). */
     typedef enum {
-        Button0  = ( 0x1 <<  0 ),     // Jump to world origin.
-        Button1  = ( 0x1 <<  1 ),     // Level the view.
-        Button2  = ( 0x1 <<  2 ),     // When held, left stick moves up/down.
-        Button3  = ( 0x1 <<  3 ),     // Jump to home position.
-        Button4  = ( 0x1 <<  4 ),     // Unused.
-        Button5  = ( 0x1 <<  5 ),     // Unused.
-        Button6  = ( 0x1 <<  6 ),     // When held, move speed scaled by 0.3333x.
-        Button7  = ( 0x1 <<  7 ),     // When held, move speed scaled by 3x.
-        Button8  = ( 0x1 <<  8 ),     // Move in world coordinate space.
-        Button9  = ( 0x1 <<  9 ),     // Move with the osgwMx::MxCore::moveConstrained function.
-        Button10 = ( 0x1 << 10 ),     // Rotate about a point with the right stick.
-        Button11 = ( 0x1 << 11 ),     // Rotate about the direction vector and cross vector.
-        Button12 = ( 0x1 << 12 ),     // Unused.
-        Button13 = ( 0x1 << 13 ),     // Unused.
-        Button14 = ( 0x1 << 14 ),     // Unused.
-        Button15 = ( 0x1 << 15 ),     // Unused.
-        Button16 = ( 0x1 << 16 ),     // Unused.
-        Button17 = ( 0x1 << 17 ),     // Unused.
-        Button18 = ( 0x1 << 18 ),     // Unused.
-        Button19 = ( 0x1 << 19 ),     // Unused.
-        Button20 = ( 0x1 << 20 ),     // Unused.
-        Button21 = ( 0x1 << 21 ),     // Unused.
-        Button22 = ( 0x1 << 22 ),     // Unused.
-        Button23 = ( 0x1 << 23 ),     // Unused.
-        Button24 = ( 0x1 << 24 ),     // Unused.
-        Button25 = ( 0x1 << 25 ),     // Unused.
-        Button26 = ( 0x1 << 26 ),     // Unused.
-        Button27 = ( 0x1 << 27 ),     // Unused.
-        Button28 = ( 0x1 << 28 ),     // Unused.
-        Button29 = ( 0x1 << 29 ),     // Unused.
-        Button30 = ( 0x1 << 30 ),     // Unused.
-        Button31 = ( 0x1 << 31 )      // Unused.
+        Button0  = ( 0x1 <<  0 ),
+        Button1  = ( 0x1 <<  1 ),
+        Button2  = ( 0x1 <<  2 ),
+        Button3  = ( 0x1 <<  3 ),
+        Button4  = ( 0x1 <<  4 ),
+        Button5  = ( 0x1 <<  5 ),
+        Button6  = ( 0x1 <<  6 ),
+        Button7  = ( 0x1 <<  7 ),
+        Button8  = ( 0x1 <<  8 ),
+        Button9  = ( 0x1 <<  9 ),
+        Button10 = ( 0x1 << 10 ),
+        Button11 = ( 0x1 << 11 ),
+        Button12 = ( 0x1 << 12 ),
+        Button13 = ( 0x1 << 13 ),
+        Button14 = ( 0x1 << 14 ),
+        Button15 = ( 0x1 << 15 ),
+        Button16 = ( 0x1 << 16 ),
+        Button17 = ( 0x1 << 17 ),
+        Button18 = ( 0x1 << 18 ),
+        Button19 = ( 0x1 << 19 ),
+        Button20 = ( 0x1 << 20 ),
+        Button21 = ( 0x1 << 21 ),
+        Button22 = ( 0x1 << 22 ),
+        Button23 = ( 0x1 << 23 ),
+        Button24 = ( 0x1 << 24 ),
+        Button25 = ( 0x1 << 25 ),
+        Button26 = ( 0x1 << 26 ),
+        Button27 = ( 0x1 << 27 ),
+        Button28 = ( 0x1 << 28 ),
+        Button29 = ( 0x1 << 29 ),
+        Button30 = ( 0x1 << 30 ),
+        Button31 = ( 0x1 << 31 )
     } Buttons;
     /** Set the current button state.
 
-    \param buttons A bit mask composed of MxGamePad::Buttons.
-
-    \li Top RGB Button: Jump to world origin.
-    \li Right RGB Button: Level the view.
-    \li Bottom RGB Button: When held, left stick moves up/down.
-    \li Left RGB Button: Jump to home position.
-    \li Left Shoulder Bottom: Unused.
-    \li Left Shoulder Top: Unused.
-    \li Right Shoulder Bottom: When held, move speed scales by 0.3333x.
-    \li Right Shoulder Top: When held, move speed scales by 3x.
+    Each button's function is determined by the functional map.
+    See setFunctionalMap().
 
     Note that derived classes should call setButtons even when all buttons are zero.
+
+    \param buttons A bit mask composed of MxGamePad::Buttons.
     */
     virtual void setButtons( const unsigned int buttons );
     unsigned int getButtons() const { return( _buttons ); }
+
+    /** \brief Set the button state, passing elapsed time in seconds.
+
+    Use this function when a button is mapped to a function that requires the time
+    delta, such as FunctionalMap::MoveUpAtRate or FunctionalMap::MoveDownAtRate.
+    */
+    virtual void setButtons( const unsigned int buttons, const double deltaSeconds );
 
     /** Access the mapping of buttons to functionality. */
     void setFunctionalMap( osgwMx::FunctionalMap* map ) { _map = map; }

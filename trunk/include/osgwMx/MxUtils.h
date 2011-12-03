@@ -140,11 +140,9 @@ public:
         movement. The operation of the up/down movement varies by the current move mode. */
         MoveModifyUpDown,
 
-        /** A button interface for moving up at the gamepad left stick rate.
-        This function is not yet implemented. */
+        /** A button interface for moving up at the gamepad left stick rate. */
         MoveUpAtRate,
-        /** A button interface for moving down at the gamepad left stick rate.
-        This function is not yet implemented. */
+        /** A button interface for moving down at the gamepad left stick rate. */
         MoveDownAtRate,
 
         /** Rotate from the viewpoint (turn the viewer's head). */
