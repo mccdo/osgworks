@@ -306,20 +306,20 @@ std::string FunctionalMap::asString( FunctionType func )
     case LevelView: return( "LevelView" ); break;
     case JumpToWorldOrigin: return( "JumpToWorldOrigin" ); break;
     case JumpToHomePosition: return( "JumpToHomePosition" ); break;
-    case ScaleMoveSpeedDown: return( "ScaleMoveSpeedDown" ); break;
-    case ScaleMoveSpeedUp: return( "ScaleMoveSpeedUp" ); break;
+    case MoveModifyScaleSpeedDown: return( "MoveModifyScaleSpeedDown" ); break;
+    case MoveModifyScaleSpeedUp: return( "MoveModifyScaleSpeedUp" ); break;
     case MoveModeLocal: return( "MoveModeLocal" ); break;
     case MoveModeConstrained: return( "MoveModeConstrained" ); break;
     case MoveModeWorld: return( "MoveModeWorld" ); break;
-    case MoveModeCycle: return( "MoveModeCycle" ); break;
+    case CycleMoveMode: return( "CycleMoveMode" ); break;
     case MoveModifyUpDown: return( "MoveModifyUpDown" ); break;
     case MoveUpAtRate: return( "MoveUpAtRate" ); break;
     case MoveDownAtRate: return( "MoveDownAtRate" ); break;
     case RotateModeLocal: return( "RotateModeLocal" ); break;
     case RotateModeOrbit: return( "RotateModeOrbit" ); break;
-    case RotateModeRoll: return( "RotateModeRoll" ); break;
     case RotateModeArcball: return( "RotateModeArcball" ); break;
-    case RotateModeCycle: return( "RotateModeCycle" ); break;
+    case CycleRotateMode: return( "CycleRotateMode" ); break;
+    case RotateModifyRoll: return( "RotateModifyRoll" ); break;
     default:
     case NoOp: return( "NoOp" ); break;
     }
@@ -329,22 +329,67 @@ FunctionalMap::FunctionType FunctionalMap::asFunctionType( const std::string& st
     if( str == std::string( "LevelView" ) ) return( LevelView );
     else if( str == std::string( "JumpToWorldOrigin" ) ) return( JumpToWorldOrigin );
     else if( str == std::string( "JumpToHomePosition" ) ) return( JumpToHomePosition );
-    else if( str == std::string( "ScaleMoveSpeedDown" ) ) return( ScaleMoveSpeedDown );
-    else if( str == std::string( "ScaleMoveSpeedUp" ) ) return( ScaleMoveSpeedUp );
+    else if( str == std::string( "MoveModifyScaleSpeedDown" ) ) return( MoveModifyScaleSpeedDown );
+    else if( str == std::string( "MoveModifyScaleSpeedUp" ) ) return( MoveModifyScaleSpeedUp );
     else if( str == std::string( "MoveModeLocal" ) ) return( MoveModeLocal );
     else if( str == std::string( "MoveModeConstrained" ) ) return( MoveModeConstrained );
     else if( str == std::string( "MoveModeWorld" ) ) return( MoveModeWorld );
-    else if( str == std::string( "MoveModeCycle" ) ) return( MoveModeCycle );
+    else if( str == std::string( "CycleMoveMode" ) ) return( CycleMoveMode );
     else if( str == std::string( "MoveModifyUpDown" ) ) return( MoveModifyUpDown );
     else if( str == std::string( "MoveUpAtRate" ) ) return( MoveUpAtRate );
     else if( str == std::string( "MoveDownAtRate" ) ) return( MoveDownAtRate );
     else if( str == std::string( "RotateModeLocal" ) ) return( RotateModeLocal );
     else if( str == std::string( "RotateModeOrbit" ) ) return( RotateModeOrbit );
-    else if( str == std::string( "RotateModeRoll" ) ) return( RotateModeRoll );
     else if( str == std::string( "RotateModeArcball" ) ) return( RotateModeArcball );
-    else if( str == std::string( "RotateModeCycle" ) ) return( RotateModeCycle );
+    else if( str == std::string( "CycleRotateMode" ) ) return( CycleRotateMode );
+    else if( str == std::string( "RotateModifyRoll" ) ) return( RotateModifyRoll );
     else return( NoOp );
 }
+
+bool FunctionalMap::validMoveMode( const FunctionType func )
+{
+    return( ( func == MoveModeLocal ) ||
+        ( func == MoveModeConstrained ) ||
+        ( func == MoveModeWorld ) );
+}
+bool FunctionalMap::validRotateMode( const FunctionType func )
+{
+    return( ( func == RotateModeLocal ) ||
+        ( func == RotateModeOrbit ) ||
+        ( func == RotateModeArcball ) );
+}
+
+FunctionalMap::FunctionType FunctionalMap::cycleMoveMode( const FunctionType func )
+{
+    FunctionType returnFunc = MoveModeLocal;
+    if( func == MoveModeLocal )
+        returnFunc = MoveModeConstrained;
+    else if( func == MoveModeConstrained )
+        returnFunc = MoveModeWorld;
+    else if ( func == MoveModeWorld )
+        returnFunc = MoveModeLocal;
+    else
+        osg::notify( osg::WARN ) << "Can't cycle move mode: \"" << asString( func ) << "\"" << std::endl;
+
+    osg::notify( osg::ALWAYS ) << asString( returnFunc ) << std::endl;
+    return( returnFunc );
+}
+FunctionalMap::FunctionType FunctionalMap::cycleRotateMode( const FunctionType func )
+{
+    FunctionType returnFunc = RotateModeLocal;
+    if( func == RotateModeLocal )
+        returnFunc = RotateModeOrbit;
+    else if( func == RotateModeOrbit )
+        returnFunc = RotateModeArcball;
+    else if ( func == RotateModeArcball )
+        returnFunc = RotateModeLocal;
+    else
+        osg::notify( osg::WARN ) << "Can't cycle rotate mode: \"" << asString( func ) << "\"" << std::endl;
+
+    osg::notify( osg::ALWAYS ) << asString( returnFunc ) << std::endl;
+    return( returnFunc );
+}
+
 
 void FunctionalMap::set( const unsigned int key, bool enable )
 {

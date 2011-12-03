@@ -180,6 +180,36 @@ public:
         leftRate = _leftRate; rightRate = _rightRate;
     }
 
+    /** Set the movement mode to one of the valid move modes defined
+    in the FunctionalMap::FunctionType enum.
+
+    FunctionType decalres several enums, not all of which are move types.
+    If you call this function with an enum that isn't a valud move type,
+    the function displays a warning and returns.
+
+    Default is FunctionalMap::MoveModeLocal. */
+    void setMoveMode( const FunctionalMap::FunctionType mode );
+    FunctionalMap::FunctionType getMoveMode() const
+    {
+        return( _moveMode );
+    }
+    void cycleMoveMode();
+
+    /** Set the rotation mode to one of the valid rotate modes defined
+    in the FunctionalMap::FunctionType enum.
+
+    FunctionType decalres several enums, not all of which are rotate types.
+    If you call this function with an enum that isn't a valud rotate type,
+    the function displays a warning and returns.
+
+    Default is FunctionalMap::RotateModeLocal. */
+    void setRotateMode( const FunctionalMap::FunctionType mode );
+    FunctionalMap::FunctionType getRotateMode() const
+    {
+        return( _rotateMode );
+    }
+    void cycleRotateMode();
+
     /** Enumerant button values. Bitwise OR enumerants that correspond to
     pressed device buttons, and pass the result to setButtons(). */
     typedef enum {
@@ -274,6 +304,8 @@ protected:
     osg::ref_ptr< MxCore > _mxCore;
 
     osg::ref_ptr< FunctionalMap > _map;
+    FunctionalMap::FunctionType _moveMode;
+    FunctionalMap::FunctionType _rotateMode;
 
     osg::Vec3d _rotationPoint;
 };
