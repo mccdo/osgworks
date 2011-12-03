@@ -1,16 +1,16 @@
 osgwTools::FunctionalMap {
-  0x1 JumpToWorldOrigin
+  0x1 CycleMoveMode
   0x2 LevelView
   0x4 MoveModifyUpDown
   0x8 JumpToHomePosition
-  0x10 MoveDownAtRate
-  0x20 MoveUpAtRate
-  0x40 ScaleMoveSpeedDown
-  0x80 ScaleMoveSpeedUp
+  0x10 RotateModifyRoll
+  0x20 CycleRotateMode
+  0x40 MoveModifyScaleSpeedDown
+  0x80 MoveModifyScaleSpeedUp
   0x100 MoveModeWorld
   0x200 MoveModeConstrained
   0x400 RotateModeOrbit
-  0x800 RotateModeRoll
+  0x800 NoOp
   0x1000 NoOp
   0x2000 NoOp
   0x4000 NoOp

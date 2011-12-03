@@ -122,9 +122,9 @@ public:
         JumpToHomePosition,
 
         /** Scale movement down (slow down). */
-        ScaleMoveSpeedDown,
+        MoveModifyScaleSpeedDown,
         /** Scale movement up (speed up). */
-        ScaleMoveSpeedUp,
+        MoveModifyScaleSpeedUp,
 
         /** Move in eye local coordinates. */
         MoveModeLocal,
@@ -134,9 +134,10 @@ public:
         MoveModeWorld,
         /** Cycle through the available move modes. This function is not yet
         implemented. */
-        MoveModeCycle,
+        CycleMoveMode,
 
-        /** When this function is enabled, forward/backward movement maps to up/down
+        /** \brief Movement modifier for up/down motion.
+        \detail When this function is active, left stick y-axis maps to up/down
         movement. The operation of the up/down movement varies by the current move mode. */
         MoveModifyUpDown,
 
@@ -149,13 +150,16 @@ public:
         RotateModeLocal,
         /** Orbit around a point. */
         RotateModeOrbit,
-        /** Roll around the current view direction vector. */
-        RotateModeRoll,
         /** Non-Euclidean arcball. This function is not yet implemented. */
         RotateModeArcball,
         /** Cycle through the available rotation modes. This function is not yet
         implemented. */
-        RotateModeCycle,
+        CycleRotateMode,
+
+        /** \brief Rotation modifier for barrel roll.
+        \detail When this function is active, left stick x-axis maps to rotation around the
+        view direction, and left stick y-axis becomes a no-op. */
+        RotateModifyRoll,
 
         /** For unused entries in the function map. This enum should always
         be last in the list of enums; it is used in the std::vector::resize()
@@ -164,6 +168,12 @@ public:
     } FunctionType;
     static std::string asString( FunctionType func );
     static FunctionType asFunctionType( const std::string& str );
+
+    static bool validMoveMode( const FunctionType func );
+    static bool validRotateMode( const FunctionType func );
+
+    static FunctionType cycleMoveMode( const FunctionType func );
+    static FunctionType cycleRotateMode( const FunctionType func );
 
     /** Set the function for a specific unsigned int \c key. */
     void configure( const unsigned int key, FunctionType func );

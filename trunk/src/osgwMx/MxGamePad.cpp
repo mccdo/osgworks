@@ -37,7 +37,9 @@ MxGamePad::MxGamePad()
     _deadZone( 0.f ),
     _leftRate( 1. ),
     _rightRate( 60. ),
-    _rotationPoint( osg::Vec3d( 0.f, 0.f, 0.f ) )
+    _rotationPoint( osg::Vec3d( 0.f, 0.f, 0.f ) ),
+    _moveMode( FunctionalMap::MoveModeLocal ),
+    _rotateMode( FunctionalMap::RotateModeLocal )
 {
     _mxCore = new osgwMx::MxCore;
 
@@ -47,12 +49,11 @@ MxGamePad::MxGamePad()
     _map->configure( Button1, FunctionalMap::LevelView );
     _map->configure( Button2, FunctionalMap::MoveModifyUpDown );
     _map->configure( Button3, FunctionalMap::JumpToHomePosition );
-    _map->configure( Button6, FunctionalMap::ScaleMoveSpeedDown );
-    _map->configure( Button7, FunctionalMap::ScaleMoveSpeedUp );
+    _map->configure( Button6, FunctionalMap::MoveModifyScaleSpeedDown );
+    _map->configure( Button7, FunctionalMap::MoveModifyScaleSpeedUp );
     _map->configure( Button8, FunctionalMap::MoveModeWorld );
     _map->configure( Button9, FunctionalMap::MoveModeConstrained );
     _map->configure( Button10, FunctionalMap::RotateModeOrbit );
-    _map->configure( Button11, FunctionalMap::RotateModeRoll );
 }
 MxGamePad::MxGamePad( const MxGamePad& rhs, const osg::CopyOp& copyop )
   : osg::Object( rhs, copyop ),
@@ -64,7 +65,9 @@ MxGamePad::MxGamePad( const MxGamePad& rhs, const osg::CopyOp& copyop )
     _rightRate( rhs._rightRate ),
     _rotationPoint( rhs._rotationPoint ),
     _mxCore( new osgwMx::MxCore( *( rhs._mxCore ), copyop ) ),
-    _map( new osgwMx::FunctionalMap( *( rhs._map ), copyop ) )
+    _map( new osgwMx::FunctionalMap( *( rhs._map ), copyop ) ),
+    _moveMode( rhs._moveMode ),
+    _rotateMode( rhs._rotateMode )
 {
 }
 MxGamePad::~MxGamePad()
@@ -113,27 +116,30 @@ void MxGamePad::internalLeftStick( const float x, const float y )
     // Check for forward/backward or up/down.
     osg::Vec3d movement;
     if( _map->isSet( FunctionalMap::MoveModifyUpDown ) )
+    {
         // Move left/right and up/down.
         // Positive values move up, so negate y.
         movement.set( x, -y, 0. );
+    }
     else
+    {
         // Move left/right and forwards/backwards.
         movement.set( x, 0., y );
+    }
 
-    if( _map->isSet( FunctionalMap::MoveModeWorld ) )
+    switch( getMoveMode() )
     {
-        _mxCore->moveWorldCoords( movement );
-        return;
-    }
-    
-    if( _map->isSet( FunctionalMap::MoveModeConstrained ) )
-    {
+    default:
+    case FunctionalMap::MoveModeLocal:
+        _mxCore->move( movement );
+        break;
+    case FunctionalMap::MoveModeConstrained:
         _mxCore->moveConstrained( movement );
-        return;
+        break;
+    case FunctionalMap::MoveModeWorld:
+        _mxCore->moveWorldCoords( movement );
+        break;
     }
-    
-    ///By default we will move in local coordinate space
-    _mxCore->move( movement );
 }
 
 bool MxGamePad::setRightStick( const float x, const float y )
@@ -179,36 +185,65 @@ void MxGamePad::internalRightStick( const float x, const float y )
     const double myX = osg::DegreesToRadians( x );
     const double myY = osg::DegreesToRadians( y );
 
-    if( _map->isSet( FunctionalMap::RotateModeOrbit ) )
-    {
-        if( _map->isSet( FunctionalMap::RotateModeRoll ) )
-        {
-            _mxCore->rotate( myX, _mxCore->getDir(), _rotationPoint );
-            _mxCore->rotate( myY, _mxCore->getCross(), _rotationPoint );
-            return;
-        }
-
-        _mxCore->rotate( myX, _mxCore->getUp(), _rotationPoint );
-        _mxCore->rotate( myY, _mxCore->getCross(), _rotationPoint );
-        return;
-    }
-
-    if( _map->isSet( FunctionalMap::RotateModeRoll ) )
+    if( _map->isSet( FunctionalMap::RotateModifyRoll ) )
     {
         _mxCore->rotate( myX, _mxCore->getDir() );
-        _mxCore->rotate( myY, _mxCore->getCross() );
-        return;
     }
-    
-    _mxCore->rotate( myX, _mxCore->getUp() );
-    _mxCore->rotate( myY, _mxCore->getCross() );
+    else
+    {
+        switch( getRotateMode() )
+        {
+        default:
+        case FunctionalMap::RotateModeLocal:
+            _mxCore->rotate( myX, _mxCore->getUp() );
+            _mxCore->rotate( myY, _mxCore->getCross() );
+            break;
+        case FunctionalMap::RotateModeOrbit:
+            _mxCore->rotate( myX, _mxCore->getUp(), _rotationPoint );
+            _mxCore->rotate( myY, _mxCore->getCross(), _rotationPoint );
+            break;
+        case FunctionalMap::RotateModeArcball:
+            osg::notify( osg::WARN ) << "RotateModeArcball not yet implemented." << std::endl;
+            break;
+        }
+    }
 }
+
+void MxGamePad::setMoveMode( const FunctionalMap::FunctionType mode )
+{
+    if( FunctionalMap::validMoveMode( mode ) )
+        _moveMode = mode;
+    else
+        osg::notify( osg::WARN ) << "Invalid move mode: \"" <<
+            FunctionalMap::asString( mode ) << "\"" << std::endl;
+}
+void MxGamePad::cycleMoveMode()
+{
+    setMoveMode( FunctionalMap::cycleMoveMode( getMoveMode() ) );
+}
+void MxGamePad::setRotateMode( const FunctionalMap::FunctionType mode )
+{
+    if( FunctionalMap::validRotateMode( mode ) )
+        _rotateMode = mode;
+    else
+        osg::notify( osg::WARN ) << "Invalid rotate mode: \"" <<
+            FunctionalMap::asString( mode ) << "\"" << std::endl;
+}
+void MxGamePad::cycleRotateMode()
+{
+    setRotateMode( FunctionalMap::cycleRotateMode( getRotateMode() ) );
+}
+
+
 void MxGamePad::setButtons( const unsigned int buttons )
 {
     // Determine which buttons just entered a pressed or released state.
     const unsigned int deltaPressed = ( buttons ^ _buttons ) & buttons;
     const unsigned int deltaReleased = ( buttons ^ _buttons ) & _buttons;
 
+
+    //
+    // Handle buttons that have just been pressed.
     _map->setFromBitmask( deltaPressed );
 
     if( _map->isSet( FunctionalMap::JumpToHomePosition ) )
@@ -218,18 +253,41 @@ void MxGamePad::setButtons( const unsigned int buttons )
     if( _map->isSet( FunctionalMap::LevelView ) )
         _mxCore->level();
 
+    if( _map->isSet( FunctionalMap::CycleMoveMode ) )
+        cycleMoveMode();
+    if( _map->isSet( FunctionalMap::MoveModeLocal ) )
+        setMoveMode( FunctionalMap::MoveModeLocal );
+    if( _map->isSet( FunctionalMap::MoveModeConstrained ) )
+        setMoveMode( FunctionalMap::MoveModeConstrained );
+    if( _map->isSet( FunctionalMap::MoveModeWorld ) )
+        setMoveMode( FunctionalMap::MoveModeWorld );
+
+    if( _map->isSet( FunctionalMap::CycleRotateMode ) )
+        cycleRotateMode();
+    if( _map->isSet( FunctionalMap::RotateModeLocal ) )
+        setMoveMode( FunctionalMap::RotateModeLocal );
+    if( _map->isSet( FunctionalMap::RotateModeOrbit ) )
+        setMoveMode( FunctionalMap::RotateModeOrbit );
+    if( _map->isSet( FunctionalMap::RotateModeArcball ) )
+        setMoveMode( FunctionalMap::RotateModeArcball );
+
     // Scale movement based on right shoulder button state.
-    if( _map->isSet( FunctionalMap::ScaleMoveSpeedDown ) )
+    if( _map->isSet( FunctionalMap::MoveModifyScaleSpeedDown ) )
         _mxCore->setMoveScale( osg::Vec3d( .33, .33, .33 ) );
-    else if( _map->isSet( FunctionalMap::ScaleMoveSpeedUp ) )
+    else if( _map->isSet( FunctionalMap::MoveModifyScaleSpeedUp ) )
         _mxCore->setMoveScale( osg::Vec3d( 3., 3., 3. ) );
+
+
+    //
+    // Handle buttons that have just been released.
+    _map->setFromBitmask( deltaReleased );
 
     // If either the ScaleUp or ScaleDown buttons were released, restore
     // the move speed.
-    _map->setFromBitmask( deltaReleased );
-    if( _map->isSet( FunctionalMap::ScaleMoveSpeedDown ) ||
-        _map->isSet( FunctionalMap::ScaleMoveSpeedUp ) )
+    if( _map->isSet( FunctionalMap::MoveModifyScaleSpeedDown ) ||
+        _map->isSet( FunctionalMap::MoveModifyScaleSpeedUp ) )
         _mxCore->setMoveScale( osg::Vec3d( 1., 1., 1. ) );
+
 
     _buttons = buttons;
     _map->setFromBitmask( buttons );
