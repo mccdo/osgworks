@@ -112,10 +112,22 @@ osg::Matrixd MxCore::getOrientationMatrix() const
 }
 osg::Matrixd MxCore::getInverseMatrix() const
 {
-    // TBD for efficiency, reimplement without calling invert().
-    osg::Matrixd m;
-    m.invert( getMatrix() );
+    osg::Vec3d c = getCross();
+    const osg::Vec3d& u = _viewUp;
+    const osg::Vec3d& d = _viewDir;
+
+    osg::Matrixd m = osg::Matrixd(
+        c[0], u[0], -d[0], 0.0,
+        c[1], u[1], -d[1], 0.0,
+        c[2], u[2], -d[2], 0.0,
+        0.0, 0.0, 0.0, 1.0 );
+    m = osg::Matrix::translate( -_position ) * m;
     return( m );
+
+    // Old code, for a sanity check.
+    //osg::Matrixd m1;
+    //m1.invert( getMatrix() );
+    //return( m1 );
 }
 
 void MxCore::setInitialValues( const osg::Vec3d& up, const osg::Vec3d& dir,
