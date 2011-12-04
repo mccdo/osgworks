@@ -123,37 +123,50 @@ public:
     double getRotateScale() const { return( _rotateScale ); }
 
 
-    /** Move the view position by a delta amount in world coordinate space.
-
-    Note that movement is scaled (see setMoveScale()). */
+    /** \brief Move by the scaled parameter amount.
+    \detail Scale \c delta by \c _moveScale (setMoveScale()) then add it directly
+    to the current view position \c _position. */
+    void moveLiteral( const osg::Vec3d& delta );
+    /** Synonym for moveLiteral(), provided for backwards compatibility. */
     void moveWorldCoords( const osg::Vec3d& delta );
-    /** \brief Move the view position by a delta amount in left-handed view-relative coordinates.
 
-    This is an intuitive and generally useful for movement in an arbitrary view-centric
-    coordinate system. See also moveConstrainted() for a variant to allow movement in
-    a typical up-oriented 3D environment.
+    /** \brief Move the view position in view-relative coordinates.
+    \detail This is an intuitive and generally useful for movement in an arbitrary
+    view-centric coordinate system. See also moveConstrainted() for a variant to allow
+    movement in a typical up-oriented 3D environment.
 
     \c delta[0] is movement to the right (+) or left (-), \c delta[1] is movement
     up (+) or down (-), and \c delta[2] is movement backward (+) or forward (-).
     See setMoveScale().
     
     Note that movement is scaled (see setMoveScale()). */
+    void moveLocal( const osg::Vec3d& delta );
+    /** Synonym for moveLocal(), provided for backwards compatibility. */
     void move( const osg::Vec3d& delta );
-    /** \brief Move in local coordinates constrained by the world (initial) up vector.
 
-    This is probably the most useful of the three move*() function variants, as
+    /** \brief Move in local coordinates constrained by the world (initial) up vector.
+    \detail This is probably the most useful of the move function variants, as
     it allows the user to move in a world defined by the \c _initialUp vector and
     its implied ground plane. As an example, this function allows flat horizontal
     movement even when the view is looking up or down relative to the horizon.
 
     Uses the initial up vector \c _initialUp to define a ground plan", and then
     moves in that environment as follows: \c delta[0] moves in the ground plane
-    right (+) or left (-); \c delta[1] moves along \c _viewUp in the up (+) and
+    right (+) or left (-); \c delta[1] moves along \c _initialUp in the up (+) and
     down (-) directions; \c delta[2] moves in the ground plane backward (+) or
     forward (-).
 
     Note that movement is scaled (see setMoveScale()). */
     void moveConstrained( const osg::Vec3d& delta );
+
+    /** \brief Move the view position by a delta amount in world coordinate space.
+    \detail "World coordinates" means the coordinate space defined with setInitialValues():
+    \c _initialDir is the negative z axis, \c _initialUp is the y axis, and the x axis
+    is \c _initialDir ^ \c _initialUp (cross product).
+    
+    Note that movement is scaled (see setMoveScale()). */
+    void moveWorld( const osg::Vec3d& delta );
+
 
     /** Sets the movement scale. The move() and moveWorldCoords functions perform an
     element-wise multiplication between their \c delta parameter and the specified
@@ -165,7 +178,7 @@ public:
 
     /** Get current yaw/pitch/roll angles for the current view.
     Values are computed relative to the initial up and dir vectors
-    (see setInitialValues() ). All return values are in degrees.
+    (see setInitialValues()). All return values are in degrees.
     \param yaw Heading value. 0.0 <= yaw < 360.0.
     \param pitch Elevation value. -(pi/2.0) <= pitch <= (pi/2.0).
     \param roll Twist value. 0.0 <= roll < 360.0.

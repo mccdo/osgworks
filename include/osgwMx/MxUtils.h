@@ -126,6 +126,8 @@ public:
         /** Scale movement up (speed up). */
         MoveModifyScaleSpeedUp,
 
+        /** Move in literal coordinates. */
+        MoveModeLiteral,
         /** Move in eye local coordinates. */
         MoveModeLocal,
         /** Move in the ground plane (defined by the initial up vector). */

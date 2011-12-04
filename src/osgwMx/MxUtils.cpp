@@ -308,6 +308,7 @@ std::string FunctionalMap::asString( FunctionType func )
     case JumpToHomePosition: return( "JumpToHomePosition" ); break;
     case MoveModifyScaleSpeedDown: return( "MoveModifyScaleSpeedDown" ); break;
     case MoveModifyScaleSpeedUp: return( "MoveModifyScaleSpeedUp" ); break;
+    case MoveModeLiteral: return( "MoveModeLiteral" ); break;
     case MoveModeLocal: return( "MoveModeLocal" ); break;
     case MoveModeConstrained: return( "MoveModeConstrained" ); break;
     case MoveModeWorld: return( "MoveModeWorld" ); break;
@@ -331,6 +332,7 @@ FunctionalMap::FunctionType FunctionalMap::asFunctionType( const std::string& st
     else if( str == std::string( "JumpToHomePosition" ) ) return( JumpToHomePosition );
     else if( str == std::string( "MoveModifyScaleSpeedDown" ) ) return( MoveModifyScaleSpeedDown );
     else if( str == std::string( "MoveModifyScaleSpeedUp" ) ) return( MoveModifyScaleSpeedUp );
+    else if( str == std::string( "MoveModeLiteral" ) ) return( MoveModeLiteral );
     else if( str == std::string( "MoveModeLocal" ) ) return( MoveModeLocal );
     else if( str == std::string( "MoveModeConstrained" ) ) return( MoveModeConstrained );
     else if( str == std::string( "MoveModeWorld" ) ) return( MoveModeWorld );
@@ -348,7 +350,8 @@ FunctionalMap::FunctionType FunctionalMap::asFunctionType( const std::string& st
 
 bool FunctionalMap::validMoveMode( const FunctionType func )
 {
-    return( ( func == MoveModeLocal ) ||
+    return( ( func == MoveModeLiteral ) ||
+        ( func == MoveModeLocal ) ||
         ( func == MoveModeConstrained ) ||
         ( func == MoveModeWorld ) );
 }
@@ -362,12 +365,14 @@ bool FunctionalMap::validRotateMode( const FunctionType func )
 FunctionalMap::FunctionType FunctionalMap::cycleMoveMode( const FunctionType func )
 {
     FunctionType returnFunc = MoveModeLocal;
-    if( func == MoveModeLocal )
+    if( func == MoveModeLiteral )
+        returnFunc = MoveModeLocal;
+    else if( func == MoveModeLocal )
         returnFunc = MoveModeConstrained;
     else if( func == MoveModeConstrained )
         returnFunc = MoveModeWorld;
     else if ( func == MoveModeWorld )
-        returnFunc = MoveModeLocal;
+        returnFunc = MoveModeLiteral;
     else
         osg::notify( osg::WARN ) << "Can't cycle move mode: \"" << asString( func ) << "\"" << std::endl;
 

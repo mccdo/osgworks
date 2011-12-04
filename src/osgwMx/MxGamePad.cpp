@@ -130,14 +130,19 @@ void MxGamePad::internalLeftStick( const float x, const float y )
     switch( getMoveMode() )
     {
     default:
+        osg::notify( osg::WARN ) << "Unsupported move mode: \"" << FunctionalMap::asString( getMoveMode() ) << "\"" << std::endl;
+        // Intentional fallthrough.
+    case FunctionalMap::MoveModeLiteral:
+        _mxCore->moveLiteral( movement );
+        break;
     case FunctionalMap::MoveModeLocal:
-        _mxCore->move( movement );
+        _mxCore->moveLocal( movement );
         break;
     case FunctionalMap::MoveModeConstrained:
         _mxCore->moveConstrained( movement );
         break;
     case FunctionalMap::MoveModeWorld:
-        _mxCore->moveWorldCoords( movement );
+        _mxCore->moveWorld( movement );
         break;
     }
 }
@@ -194,6 +199,8 @@ void MxGamePad::internalRightStick( const float x, const float y )
         switch( getRotateMode() )
         {
         default:
+            osg::notify( osg::WARN ) << "Unsupported rotate mode: \"" << FunctionalMap::asString( getRotateMode() ) << "\"" << std::endl;
+            // Intentional fallthrough.
         case FunctionalMap::RotateModeLocal:
             _mxCore->rotate( myX, _mxCore->getUp() );
             _mxCore->rotate( myY, _mxCore->getCross() );
