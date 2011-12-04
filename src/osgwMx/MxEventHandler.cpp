@@ -133,10 +133,10 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
         {
             if( shiftKey )
                 // Shift right mouse: move left-right and up-down.
-                _mxCore->move( osg::Vec3d( deltaX, deltaY, 0. ) * _moveScale );
+                _mxCore->moveLocal( osg::Vec3d( deltaX, deltaY, 0. ) * _moveScale );
             else
                 // Right mouse, no shift: dolly forward-backward
-                _mxCore->move( osg::Vec3d( 0., 0., deltaY ) * _moveScale );
+                _mxCore->moveLocal( osg::Vec3d( 0., 0., deltaY ) * _moveScale );
             handled = true;
         }
         _lastX = ea.getXnormalized();
