@@ -101,7 +101,7 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
             {
                 // Left mouse, shifted: pan
                 osg::Vec3d panDelta = osgwMx::pan( _scene.get(), _mxCore.get(), _panPlane, -deltaX, -deltaY );
-                _mxCore->moveWorldCoords( panDelta );
+                _mxCore->moveLiteral( panDelta );
                 handled = true;
             }
             else

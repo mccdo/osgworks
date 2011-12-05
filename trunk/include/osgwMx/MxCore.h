@@ -125,7 +125,8 @@ public:
 
     /** \brief Move by the scaled parameter amount.
     \detail Scale \c delta by \c _moveScale (setMoveScale()) then add it directly
-    to the current view position \c _position. */
+    to the current view position \c _position. This interface is used by the kbd /
+    mouse MxEventHandler to effect panning tied to the mouse position. */
     void moveLiteral( const osg::Vec3d& delta );
     /** Synonym for moveLiteral(), provided for backwards compatibility. */
     void moveWorldCoords( const osg::Vec3d& delta );

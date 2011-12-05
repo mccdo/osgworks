@@ -85,12 +85,12 @@ MxCore::~MxCore()
 
 osg::Matrixd MxCore::getMatrix() const
 {
-    osg::Vec3d c = getCross();
+    const osg::Vec3d c = getCross();
     const osg::Vec3d& u = _viewUp;
     const osg::Vec3d& d = _viewDir;
     const osg::Vec3d p = _position;
 
-    osg::Matrixd m = osg::Matrixd(
+    const osg::Matrixd m = osg::Matrixd(
         c[0], c[1], c[2], 0.0,
         u[0], u[1], u[2], 0.0,
         -d[0], -d[1], -d[2], 0.0,
@@ -99,11 +99,11 @@ osg::Matrixd MxCore::getMatrix() const
 }
 osg::Matrixd MxCore::getOrientationMatrix() const
 {
-    osg::Vec3d c = getCross();
+    const osg::Vec3d c = getCross();
     const osg::Vec3d& u = _viewUp;
     const osg::Vec3d& d = _viewDir;
 
-    osg::Matrixd m = osg::Matrixd(
+    const osg::Matrixd m = osg::Matrixd(
         c[0], c[1], c[2], 0.0,
         u[0], u[1], u[2], 0.0,
         -d[0], -d[1], -d[2], 0.0,
@@ -112,22 +112,21 @@ osg::Matrixd MxCore::getOrientationMatrix() const
 }
 osg::Matrixd MxCore::getInverseMatrix() const
 {
-    osg::Vec3d c = getCross();
+    const osg::Vec3d c = getCross();
     const osg::Vec3d& u = _viewUp;
     const osg::Vec3d& d = _viewDir;
 
-    osg::Matrixd m = osg::Matrixd(
+    const osg::Matrixd m = osg::Matrixd(
         c[0], u[0], -d[0], 0.0,
         c[1], u[1], -d[1], 0.0,
         c[2], u[2], -d[2], 0.0,
         0.0, 0.0, 0.0, 1.0 );
-    m = osg::Matrix::translate( -_position ) * m;
-    return( m );
+    return( osg::Matrix::translate( -_position ) * m );
 
     // Old code, for a sanity check.
-    //osg::Matrixd m1;
-    //m1.invert( getMatrix() );
-    //return( m1 );
+    //osg::Matrixd m;
+    //m.invert( getMatrix() );
+    //return( m );
 }
 
 void MxCore::setInitialValues( const osg::Vec3d& up, const osg::Vec3d& dir,
@@ -145,7 +144,7 @@ void MxCore::setInitialValues( const osg::Vec3d& up, const osg::Vec3d& dir,
         osg::notify( osg::WARN ) << "MxCore::setInitialValues: Up and dir vectors are nearly coincident. Results are undefined." << std::endl;
 
     // orthonormalize
-    osg::Vec3d c = _initialDir ^ _initialUp;
+    const osg::Vec3d c = _initialDir ^ _initialUp;
     _initialUp = c ^ _initialDir;
     _initialUp.normalize();
     _initialDir.normalize();
@@ -210,7 +209,7 @@ void MxCore::level()
 
 void MxCore::rotate( double angle, const osg::Vec3d& axis )
 {
-    osg::Matrix r = osg::Matrix::rotate( angle * _rotateScale, axis );
+    const osg::Matrix r = osg::Matrix::rotate( angle * _rotateScale, axis );
     _viewDir = _viewDir * r;
     _viewUp = _viewUp * r;
     orthonormalize();
@@ -218,7 +217,7 @@ void MxCore::rotate( double angle, const osg::Vec3d& axis )
 
 void MxCore::rotate( double angle, const osg::Vec3d& axis, const osg::Vec3d& point )
 {
-    osg::Matrix r = osg::Matrix::rotate( angle * _rotateScale, axis );
+    const osg::Matrix r = osg::Matrix::rotate( angle * _rotateScale, axis );
 
     _position = ( _position - point ) * r + point;
     _viewDir = _viewDir * r;
@@ -449,7 +448,7 @@ void MxCore::setClampFovyScale( bool clamp, osg::Vec2d clampFovyRange )
 
 void MxCore::orthonormalize()
 {
-    osg::Vec3d c = getCross();
+    const osg::Vec3d c = getCross();
     _viewUp = c ^ _viewDir;
     _viewDir.normalize();
     _viewUp.normalize();
