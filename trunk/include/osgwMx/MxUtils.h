@@ -37,8 +37,16 @@ namespace osgwMx
 /*@{*/
 
 
+/** Compute a field of view appropriate for rendering the entire bounding
+sphere \c bs when viewed from the specified \c distance.
+\return Field of view in radians.
+*/
 double OSGWMX_EXPORT computeInitialFOVYFromDistance( const osg::BoundingSphere& bs, const double distance );
-double OSGWMX_EXPORT computeInitialDistanceFromFOVY( const osg::BoundingSphere& bs, const double distance );
+/** Compute a viewing distance appropriate for viewing the entire bounding
+sphere \c bs with a perspective projection that uses the specified \c fovy.
+\param fovy Field of view in degrees.
+*/
+double OSGWMX_EXPORT computeInitialDistanceFromFOVY( const osg::BoundingSphere& bs, const double fovy );
 
 osg::Vec2d OSGWMX_EXPORT computeOptimalNearFar( const osg::Vec3d& position,
     const osg::BoundingSphere& bs, bool ortho );
