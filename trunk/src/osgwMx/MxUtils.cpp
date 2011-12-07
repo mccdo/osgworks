@@ -34,13 +34,13 @@ namespace osgwMx
 
 double computeInitialFOVYFromDistance( const osg::BoundingSphere& bs, const double distance )
 {
-    const double halfFOVYTangent = bs.radius() / distance;
-    const double halfFOVYAngle = atan( halfFOVYTangent );
-    return( 2. * halfFOVYAngle );
+    const double halfFOVYSine = bs.radius() / distance;
+    const double halfFOVYRadians = asin( halfFOVYSine );
+    return( 2. * halfFOVYRadians );
 }
 double computeInitialDistanceFromFOVY( const osg::BoundingSphere& bs, const double fovy )
 {
-    return( bs.radius() / tan( osg::DegreesToRadians( fovy * .5 ) ) );
+    return( bs.radius() / sin( osg::DegreesToRadians( fovy * .5 ) ) );
 }
 
 
