@@ -218,12 +218,18 @@ MxCore* MxEventHandler::getMxCore()
 {
     return( _mxCore.get() );
 }
-osg::NodeCallback* MxEventHandler::getMatrixCallback()
+
+osg::NodeCallback* MxEventHandler::getGenericMatrixCallback()
+{
+    return( getMatrixCallback() );
+}
+CameraUpdateCallback* MxEventHandler::getMatrixCallback()
 {
     if( !( _cameraUpdateCallback.valid() ) )
         _cameraUpdateCallback = new CameraUpdateCallback( _mxCore.get() );
     return( _cameraUpdateCallback.get() );
 }
+
 
 
 // osgwMx

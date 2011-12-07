@@ -84,7 +84,9 @@ public:
     void setMxCore( osgwMx::MxCore* mxCore );
     /** Get the MxCore for access to the managed matrix. */
     MxCore* getMxCore();
-    osg::NodeCallback* getMatrixCallback();
+
+    osg::NodeCallback* getGenericMatrixCallback();
+    CameraUpdateCallback* getMatrixCallback();
 
 protected:
     ~MxEventHandler();
