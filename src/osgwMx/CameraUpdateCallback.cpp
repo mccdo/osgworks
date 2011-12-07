@@ -56,13 +56,18 @@ CameraUpdateCallback::operator()( osg::Node* node, osg::NodeVisitor* nv )
     osg::Camera* cam = static_cast< osg::Camera* >( node );
 
     osg::BoundingSphere bs;
-    unsigned int idx;
-    for( idx=0; idx<cam->getNumChildren(); idx++ )
+    if( _bs.valid() )
+        bs = _bs;
+    else
     {
-        if( idx==0 )
-            bs = cam->getChild( idx )->getBound();
-        else
-            bs.expandBy( cam->getChild( idx )->getBound() );
+        unsigned int idx;
+        for( idx=0; idx<cam->getNumChildren(); idx++ )
+        {
+            if( idx==0 )
+                bs = cam->getChild( idx )->getBound();
+            else
+                bs.expandBy( cam->getChild( idx )->getBound() );
+        }
     }
 
     if( _firstUpdate )

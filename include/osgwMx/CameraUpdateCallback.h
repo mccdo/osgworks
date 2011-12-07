@@ -44,10 +44,23 @@ public:
 
     virtual void operator()( osg::Node* node, osg::NodeVisitor* nv );
 
+    /** By default, CameraUpdateCallback automatically computes an initial view distance
+    from the scene graph bound center than encompasses the entire view. Call this function
+    with 'false' before the first frame to disable auto computation of the view. Or, call
+    it after rendering has begun, passing 'true' as a parameter, to jump to the initial
+    view distance. */
+    void enableAutoComputeInitialView( bool enable ) { _firstUpdate = enable; }
+    /** When CameraUpdateCallback computes the initial view distance, it bases that
+    computation on the bounding volumes of the Camera's children. Call this function
+    before the first frame to pass in an arbitrary bounding volume for initial view
+    computation. */
+    void useBound( const osg::BoundingSphere& bs ) { _bs = bs; }
+
 protected:
     ~CameraUpdateCallback();
 
     bool _firstUpdate;
+    osg::BoundingSphere _bs;
 
     osg::ref_ptr< MxCore > _mxCore;
 };
