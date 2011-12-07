@@ -112,6 +112,15 @@ bool transparentEnable( T* nodeOrDrawable, float alpha )
 
     return( true );
 }
+    
+/** \brief Returns True if the given StateSet is configured like one of our transparent StateSets.
+ This function returns True if the Node has a StateSet, and the StateSet has the following signature:
+ \li A BlendColor StateAttribute
+ \li A BlendFunc StateAttribute
+ \li GL_BLEND is enabled
+ \li Rendering hint set to TRANSPARENT_BIN
+ */
+OSGWTOOLS_EXPORT bool isTransparent( const osg::StateSet* stateSet );
 
 /** \brief Restores opacity by undoing the effects of a prior call to transparentEnable.
 If the Node or Drawable isn't transparent (as defined by the isTransparent call),
@@ -169,15 +178,6 @@ bool transparentDisable( T* nodeOrDrawable, bool recursive=false )
 
     return( true );
 }
-
-/** \brief Returns True if the given StateSet is configured like one of our transparent StateSets.
-\It returns True if the Node has a StateSet, and the StateSet has the following signature:
-\li A BlendColor StateAttribute
-\li A BlendFunc StateAttribute
-\li GL_BLEND is enabled
-\li Rendering hint set to TRANSPARENT_BIN
-*/
-OSGWTOOLS_EXPORT bool isTransparent( const osg::StateSet* stateSet );
 
 
 
