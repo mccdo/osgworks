@@ -33,21 +33,22 @@ namespace osgwMx
 
 
 MxCore::MxCore()
-  : _viewUp( osg::Vec3d( 0., 0., 1. ) ),
-    _viewDir( osg::Vec3d( 0., 1., 0. ) ),
-    _position( osg::Vec3d( 0., 0., 0. ) ),
-    _initialUp( osg::Vec3d( 0., 0., 1. ) ),
-    _initialDir( osg::Vec3d( 0., 1., 0. ) ),
-    _initialPosition( osg::Vec3d( 0., 0., 0. ) ),
+  : _viewUp( 0., 0., 1. ),
+    _viewDir( 0., 1., 0. ),
+    _position( 0., 0., 0. ),
+    _initialUp( 0., 0., 1. ),
+    _initialDir( 0., 1., 0. ),
+    _initialPosition( 0., 0., 0. ),
+    _orbitCenter( 0., 0., 0. ),
     _rotateScale( 1. ),
-    _moveScale( osg::Vec3d( 1., 1., 1. ) ),
+    _moveScale( 1., 1., 1. ),
     _ortho( false ),
     _aspect( 1.0 ),
     _fovy( 30.0 ),
     _initialFovy( 30.0 ),
     _fovyScale( 1.1 ),
     _clampFovyScale( true ),
-    _clampFovyRange( osg::Vec2d( 5.0, 160.0 ) ),
+    _clampFovyRange( 5.0, 160.0 ),
     _orthoBottom( 0.0 ),
     _orthoTop( 0.0 )
 {
@@ -60,6 +61,7 @@ MxCore::MxCore( const MxCore& rhs, const osg::CopyOp& copyop )
     _initialUp( rhs._initialUp ),
     _initialDir( rhs._initialDir ),
     _initialPosition( rhs._initialPosition ),
+    _orbitCenter( rhs._orbitCenter ),
     _rotateScale( rhs._rotateScale ),
     _moveScale( rhs._moveScale ),
     _ortho( rhs._ortho ),
@@ -206,23 +208,45 @@ void MxCore::level()
     orthonormalize();
 }
 
+void MxCore::lookAtOrbitCenter()
+{
+    osg::Vec3d newDir = _orbitCenter - _position;
+    newDir.normalize();
 
-void MxCore::rotate( double angle, const osg::Vec3d& axis )
+    const osg::Matrix r = osg::Matrix::rotate( _viewDir, newDir );
+    _viewDir = _viewDir * r;
+    _viewUp = _viewUp * r;
+    orthonormalize();
+}
+
+
+void MxCore::rotateLocal( double angle, const osg::Vec3d& axis )
 {
     const osg::Matrix r = osg::Matrix::rotate( angle * _rotateScale, axis );
     _viewDir = _viewDir * r;
     _viewUp = _viewUp * r;
     orthonormalize();
 }
+void MxCore::rotate( double angle, const osg::Vec3d& axis )
+{
+    osg::notify( osg::WARN ) << "MxCore::rotate() is deprecated. Use rotateLocal() instead." << std::endl;
+    rotateLocal( angle, axis );
+}
 
-void MxCore::rotate( double angle, const osg::Vec3d& axis, const osg::Vec3d& point )
+void MxCore::rotateOrbit( double angle, const osg::Vec3d& axis )
 {
     const osg::Matrix r = osg::Matrix::rotate( angle * _rotateScale, axis );
 
-    _position = ( _position - point ) * r + point;
+    _position = ( _position - _orbitCenter ) * r + _orbitCenter;
     _viewDir = _viewDir * r;
     _viewUp = _viewUp * r;
     orthonormalize();
+}
+void MxCore::rotate( double angle, const osg::Vec3d& axis, const osg::Vec3d& point )
+{
+    osg::notify( osg::WARN ) << "MxCore::rotate() is deprecated. Use rotateOrbit() instead." << std::endl;
+    setOrbitCenterPoint( point );
+    rotateOrbit( angle, axis );
 }
 
 void MxCore::moveLiteral( const osg::Vec3d& delta )
@@ -230,9 +254,11 @@ void MxCore::moveLiteral( const osg::Vec3d& delta )
     const osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
         delta[1] * _moveScale[1], delta[2] * _moveScale[2] );
     _position += scaledDelta;
+    _orbitCenter += scaledDelta;
 }
 void MxCore::moveWorldCoords( const osg::Vec3d& delta )
 {
+    osg::notify( osg::WARN ) << "MxCore::moveWorldCoords() is deprecated. Use moveLiteral() instead." << std::endl;
     moveLiteral( delta );
 }
 void MxCore::moveLocal( const osg::Vec3d& delta )
@@ -240,9 +266,11 @@ void MxCore::moveLocal( const osg::Vec3d& delta )
     const osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
         delta[1] * _moveScale[1], delta[2] * _moveScale[2] );
     _position += ( scaledDelta * getOrientationMatrix() );
+    _orbitCenter += ( scaledDelta * getOrientationMatrix() );
 }
 void MxCore::move( const osg::Vec3d& delta )
 {
+    osg::notify( osg::WARN ) << "MxCore::move() is deprecated. Use moveLocal() instead." << std::endl;
     moveLocal( delta );
 }
 void MxCore::moveConstrained( const osg::Vec3d& delta )
@@ -259,6 +287,7 @@ void MxCore::moveConstrained( const osg::Vec3d& delta )
     const osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
         delta[1] * _moveScale[1], delta[2] * _moveScale[2] );
     _position += ( scaledDelta * orient );
+    _orbitCenter += ( scaledDelta * orient );
 }
 void MxCore::moveWorld( const osg::Vec3d& delta )
 {
@@ -273,8 +302,15 @@ void MxCore::moveWorld( const osg::Vec3d& delta )
 
     const osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
         delta[1] * _moveScale[1], delta[2] * _moveScale[2] );
-    _position += scaledDelta * orient;
+    _position += ( scaledDelta * orient );
+    _orbitCenter += ( scaledDelta * orient );
 }
+void MxCore::moveOrbit( const float distance )
+{
+    osg::Vec3d moveAxis = _position - _orbitCenter;
+    _position += ( moveAxis * distance * _moveScale[1] );
+}
+
 
 
 void MxCore::getYawPitchRoll( double& yaw, double& pitch, double& roll, bool rightHanded ) const

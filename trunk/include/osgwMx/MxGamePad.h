@@ -280,7 +280,10 @@ public:
     /** Set the point of rotation for the right stick rotations. This allows the
     user to press button 10 and rotate about an arbitrary point in space with 
     the right stick control.*/
-    void setRotationPoint( const osg::Vec3d& point ) { _rotationPoint = point; }
+    void setRotationPoint( const osg::Vec3d& point )
+    {
+        _mxCore->setOrbitCenterPoint( point );
+    }
     
 protected:
     virtual ~MxGamePad();
@@ -306,8 +309,6 @@ protected:
     osg::ref_ptr< FunctionalMap > _map;
     FunctionalMap::FunctionType _moveMode;
     FunctionalMap::FunctionType _rotateMode;
-
-    osg::Vec3d _rotationPoint;
 };
 
 

@@ -37,7 +37,6 @@ MxGamePad::MxGamePad()
     _deadZone( 0.f ),
     _leftRate( 1. ),
     _rightRate( 60. ),
-    _rotationPoint( osg::Vec3d( 0.f, 0.f, 0.f ) ),
     _moveMode( FunctionalMap::MoveModeLocal ),
     _rotateMode( FunctionalMap::RotateModeLocal )
 {
@@ -63,7 +62,6 @@ MxGamePad::MxGamePad( const MxGamePad& rhs, const osg::CopyOp& copyop )
     _deadZone( rhs._deadZone ),
     _leftRate( rhs._leftRate ),
     _rightRate( rhs._rightRate ),
-    _rotationPoint( rhs._rotationPoint ),
     _mxCore( new osgwMx::MxCore( *( rhs._mxCore ), copyop ) ),
     _map( new osgwMx::FunctionalMap( *( rhs._map ), copyop ) ),
     _moveMode( rhs._moveMode ),
@@ -144,6 +142,9 @@ void MxGamePad::internalLeftStick( const float x, const float y )
     case FunctionalMap::MoveModeWorld:
         _mxCore->moveWorld( movement );
         break;
+    case FunctionalMap::MoveModeOrbit:
+        _mxCore->moveOrbit( y );
+        break;
     }
 }
 
@@ -192,7 +193,7 @@ void MxGamePad::internalRightStick( const float x, const float y )
 
     if( _map->isSet( FunctionalMap::RotateModifyRoll ) )
     {
-        _mxCore->rotate( myX, _mxCore->getDir() );
+        _mxCore->rotateLocal( myX, _mxCore->getDir() );
     }
     else
     {
@@ -202,12 +203,12 @@ void MxGamePad::internalRightStick( const float x, const float y )
             osg::notify( osg::WARN ) << "Unsupported rotate mode: \"" << FunctionalMap::asString( getRotateMode() ) << "\"" << std::endl;
             // Intentional fallthrough.
         case FunctionalMap::RotateModeLocal:
-            _mxCore->rotate( myX, _mxCore->getUp() );
-            _mxCore->rotate( myY, _mxCore->getCross() );
+            _mxCore->rotateLocal( myX, _mxCore->getUp() );
+            _mxCore->rotateLocal( myY, _mxCore->getCross() );
             break;
         case FunctionalMap::RotateModeOrbit:
-            _mxCore->rotate( myX, _mxCore->getUp(), _rotationPoint );
-            _mxCore->rotate( myY, _mxCore->getCross(), _rotationPoint );
+            _mxCore->rotateOrbit( myX, _mxCore->getUp() );
+            _mxCore->rotateOrbit( myY, _mxCore->getCross() );
             break;
         case FunctionalMap::RotateModeArcball:
             osg::notify( osg::WARN ) << "RotateModeArcball not yet implemented." << std::endl;
@@ -315,7 +316,7 @@ void MxGamePad::setButtons( const unsigned int buttons, const double deltaSecond
 
     if( _map->isSet( FunctionalMap::MoveModeWorld ) )
     {
-        _mxCore->moveWorldCoords( movement );
+        _mxCore->moveWorld( movement );
         return;
     }
     
@@ -325,8 +326,8 @@ void MxGamePad::setButtons( const unsigned int buttons, const double deltaSecond
         return;
     }
     
-    ///By default we will move in local coordinate space
-    _mxCore->move( movement );
+    // By default we will move in local coordinate space
+    _mxCore->moveLocal( movement );
 }
 
 

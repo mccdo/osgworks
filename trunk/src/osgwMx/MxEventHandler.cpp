@@ -110,8 +110,8 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
                 if( ctrlKey )
                 {
                     // Left mouse, ctrl but no shift: turn head.
-                    _mxCore->rotate( deltaX, _mxCore->getUp() );
-                    _mxCore->rotate( -deltaY, _mxCore->getCross() );
+                    _mxCore->rotateLocal( deltaX, _mxCore->getUp() );
+                    _mxCore->rotateLocal( -deltaY, _mxCore->getCross() );
                     handled = true;
                 }
                 else
@@ -123,7 +123,7 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
                         osg::Vec2d( _lastX, _lastY ), osg::Vec2d( deltaX, deltaY ),
                         _mxCore->getOrientationMatrix() );
 
-                    _mxCore->rotate( angle, axis, _orbitCenter );
+                    _mxCore->rotateOrbit( angle, axis );
 
                     handled = true;
                 }
@@ -150,8 +150,9 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
             if( !_leftDragging && ctrlKey && shiftKey )
             {
                 // Parameters are NDC coordinates in range -1.0,1.0.
-                _orbitCenter = pickCenter( _scene.get(), _mxCore.get(),
+                osg::Vec3d orbitCenter = pickCenter( _scene.get(), _mxCore.get(),
                     ea.getXnormalized(), ea.getYnormalized() );
+                _mxCore->setOrbitCenterPoint( orbitCenter );
             }
             _leftDragging = false;
             _leftClick = false;
@@ -179,7 +180,7 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
         {
         case 'o': // toggle orthographic
         {
-            const double viewDistance = ( _orbitCenter - _mxCore->getPosition() ).length();
+            const double viewDistance = ( _mxCore->getOrbitCenterPoint() - _mxCore->getPosition() ).length();
             _mxCore->setOrtho( !( _mxCore->getOrtho() ), viewDistance );
             handled = true;
             break;
