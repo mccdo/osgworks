@@ -102,7 +102,6 @@ protected:
     bool _leftDragging, _leftClick;
 
     osg::Vec4d _panPlane;
-    osg::Vec3d _orbitCenter;
     double _moveScale;
 };
 

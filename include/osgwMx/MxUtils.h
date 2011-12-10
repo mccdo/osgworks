@@ -67,7 +67,7 @@ bool OSGWMX_EXPORT intersectRayPlane( osg::Vec3d& result, const osg::Vec4d& plan
 
 /** \brief Computes an angle and axis of rotation for a simulated trackball.
 
-The returned \c axis and \c angle values are intended to be passed to the MxCore::rotate() function.
+The returned \c axis and \c angle values are intended to be passed to the MxCore::rotateLocal() function.
 
 \param start The xy start position in normalized (-1 to 1 ) windows coordinates.
 \param delta The delta xy morion in normalized (-1 to 1 ) windows coordinates.
@@ -142,6 +142,9 @@ public:
         MoveModeConstrained,
         /** Move in world coordinates. */
         MoveModeWorld,
+        /** Move along a vector between the eye and the orbit center, slowing
+        when near the center and speeding up when further away. */
+        MoveModeOrbit,
         /** Cycle through the available move modes. This function is not yet
         implemented. */
         CycleMoveMode,
@@ -158,7 +161,7 @@ public:
 
         /** Rotate from the viewpoint (turn the viewer's head). */
         RotateModeLocal,
-        /** Orbit around a point. */
+        /** Orbit around the orbit center point. */
         RotateModeOrbit,
         /** Non-Euclidean arcball. This function is not yet implemented. */
         RotateModeArcball,

@@ -105,16 +105,29 @@ public:
     view dir is set to the initial view dir. */
     void level();
 
+    /** Change the view direction vector to look directly at the orbit
+    center point. */
+    void lookAtOrbitCenter();
+
     /** Changes the view direction (and possibly the up vector), but
     keeps the view position constant. To keep the up vector constant,
     pass the current up vector as the \c axis parameter. This function
     supports first person viewing. \c angle is in radians.
     See setRotateScale(). */
+    void rotateLocal( double angle, const osg::Vec3d& axis );
+    /** \deprecated Synonym for moveLiteral(), provided for backwards compatibility. */
     void rotate( double angle, const osg::Vec3d& axis );
     /** Rotates the view position about a point in world coordinates. This
     function supports an orbit-type view. \c angle is in radians.
     See setRotateScale(). */
+    void rotateOrbit( double angle, const osg::Vec3d& axis );
+    /** \deprecated Synonym for moveLiteral(), provided for backwards compatibility. */
     void rotate( double angle, const osg::Vec3d& axis, const osg::Vec3d& point );
+
+    /** Sets the orbit center point used by rotateOrbit(). The default is
+    (0,0,0), the origin. */
+    void setOrbitCenterPoint( const osg::Vec3d& orbitCenter ) { _orbitCenter = orbitCenter; }
+    osg::Vec3d getOrbitCenterPoint() const { return( _orbitCenter ); }
 
     /** Sets the rotation angle scale. The rotate() functions multiply their \c angle
     parameter by the specified \c rotateScale value before performing the rotation.
@@ -128,7 +141,7 @@ public:
     to the current view position \c _position. This interface is used by the kbd /
     mouse MxEventHandler to effect panning tied to the mouse position. */
     void moveLiteral( const osg::Vec3d& delta );
-    /** Synonym for moveLiteral(), provided for backwards compatibility. */
+    /** \deprecated Synonym for moveLiteral(), provided for backwards compatibility. */
     void moveWorldCoords( const osg::Vec3d& delta );
 
     /** \brief Move the view position in view-relative coordinates.
@@ -142,7 +155,7 @@ public:
     
     Note that movement is scaled (see setMoveScale()). */
     void moveLocal( const osg::Vec3d& delta );
-    /** Synonym for moveLocal(), provided for backwards compatibility. */
+    /** \deprecated Synonym for moveLocal(), provided for backwards compatibility. */
     void move( const osg::Vec3d& delta );
 
     /** \brief Move in local coordinates constrained by the world (initial) up vector.
@@ -168,8 +181,15 @@ public:
     Note that movement is scaled (see setMoveScale()). */
     void moveWorld( const osg::Vec3d& delta );
 
+    /** \brief Move closer to (-) or further away from (+) the orbit center point.
+    \detail Movement automaticall slows as a function of distance to \c _orbitCenter,
+    alower when close and faster when further away.
 
-    /** Sets the movement scale. The move() and moveWorldCoords functions perform an
+    Note that movement is also scaled by  setMoveScale(). */
+    void moveOrbit( const float distance );
+
+
+    /** Sets the movement scale. The move*() family of functions perform an
     element-wise multiplication between their \c delta parameter and the specified
     \c moveScale vector before performing the translatkion. The default movement
     scale vector is (1., 1., 1.) (no scaling). */
@@ -238,6 +258,7 @@ protected:
     osg::Vec3d _viewUp, _viewDir, _position;
     osg::Vec3d _initialUp, _initialDir, _initialPosition;
 
+    osg::Vec3d _orbitCenter;
     double _rotateScale;
     osg::Vec3d _moveScale;
 
