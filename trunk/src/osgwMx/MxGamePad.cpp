@@ -269,6 +269,8 @@ void MxGamePad::setButtons( const unsigned int buttons )
         setMoveMode( FunctionalMap::MoveModeConstrained );
     if( _map->isSet( FunctionalMap::MoveModeWorld ) )
         setMoveMode( FunctionalMap::MoveModeWorld );
+    if( _map->isSet( FunctionalMap::MoveModeOrbit ) )
+        setMoveMode( FunctionalMap::MoveModeOrbit );
 
     if( _map->isSet( FunctionalMap::CycleRotateMode ) )
         cycleRotateMode();
