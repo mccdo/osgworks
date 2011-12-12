@@ -26,7 +26,10 @@
 #include <osg/Object>
 #include <osg/Node>
 #include <osg/Matrixd>
+#include <osg/BoundingSphere>
+#include <osg/BoundingBox>
 #include <cmath>
+
 
 
 namespace osgwMx
@@ -104,6 +107,14 @@ public:
     vector and current view direction are nearly coincident, the
     view dir is set to the initial view dir. */
     void level();
+
+    /** Change the view direction to look at the \c bs center.
+    Then move the view position closer to or further from the
+    \c bs center in order to fit it to the current view (based
+    on \c _fovy and \c _aspect). */
+    void lookAtAndFit( const osg::BoundingSphere& bs );
+    /** Not yet implemented. */
+    void lookAtAndFit( const osg::BoundingBox& bb );
 
     /** Change the view direction vector to look directly at the orbit
     center point. */

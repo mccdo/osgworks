@@ -19,8 +19,13 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osgwMx/MxCore.h>
+#include <osgwMx/MxUtils.h>
+
+#include <osgwTools/Transform.h>
 
 #include <osg/Matrixd>
+#include <osg/BoundingSphere>
+#include <osg/BoundingBox>
 #include <osg/Math>
 #include <osg/Notify>
 
@@ -206,6 +211,98 @@ void MxCore::level()
     else
         _viewDir = _viewUp ^ getCross();
     orthonormalize();
+}
+
+void MxCore::lookAtAndFit( const osg::BoundingSphere& bs )
+{
+    // Seems like a side effect, but it duplicate's the VE-Suite code we're replacing.
+    setOrbitCenterPoint( bs.center() );
+
+    // Look at the bounding sphere center.
+    osg::Vec3d newDir = bs.center() - _position;
+    newDir.normalize();
+    setDir( newDir );
+
+    // Set the eve position distance so that the sphere fits into the minimum FOV.
+    double minFov = ( _aspect < 1. ) ? ( _aspect * _fovy ) : _fovy;
+    const double distance = osgwMx::computeInitialDistanceFromFOVY( bs, minFov );
+    setPosition( bs.center() - ( newDir * distance ) );
+}
+
+void MxCore::lookAtAndFit( const osg::BoundingBox& bb )
+{
+    // Seems like a side effect, but it duplicate's the VE-Suite code we're replacing.
+    setOrbitCenterPoint( bb.center() );
+
+    // We'll get the view matrix to project the bounding box, so pre-configure it
+    // to point at the box center. Eye position doesn't matter at this point (we
+    // compute the eye position at the end of the function).
+    osg::Vec3d newDir = bb.center() - _position;
+    newDir.normalize();
+    setDir( newDir );
+
+
+    // Ttransform the bounding box vertices into eye space,
+    // then determine their x and y extents. We'll compare the eye
+    // space bb aspect ratio against the projection _aspect to
+    // determine the critical axis to fit.
+
+    osg::ref_ptr< osg::Vec3Array > corners = new osg::Vec3Array;
+    corners->resize( 8 );
+    ( *corners )[ 0 ].set( bb._min );
+    ( *corners )[ 1 ].set( bb._max.x(), bb._min.y(), bb._min.z() );
+    ( *corners )[ 2 ].set( bb._max.x(), bb._min.y(), bb._max.z() );
+    ( *corners )[ 3 ].set( bb._min.x(), bb._min.y(), bb._max.z() );
+    ( *corners )[ 4 ].set( bb._max );
+    ( *corners )[ 5 ].set( bb._min.x(), bb._max.y(), bb._max.z() );
+    ( *corners )[ 6 ].set( bb._min.x(), bb._max.y(), bb._min.z() );
+    ( *corners )[ 7 ].set( bb._max.x(), bb._max.y(), bb._min.z() );
+
+    osgwTools::transform( getInverseMatrix(), corners.get() );
+    // The 'corners' array of bb verts are now in eye space.
+
+    // Determine max and min values for eye space x and y
+    osg::Vec2 minEC( FLT_MAX, FLT_MAX ), maxEC( FLT_MIN, FLT_MIN );
+    unsigned int idx;
+    for( idx=0; idx<8; idx++ )
+    {
+        const osg::Vec3& v( ( *corners )[ idx ] );
+        minEC[ 0 ] = osg::minimum< float >( v.x(), minEC[ 0 ] );
+        minEC[ 1 ] = osg::minimum< float >( v.y(), minEC[ 1 ] );
+        maxEC[ 0 ] = osg::maximum< float >( v.x(), maxEC[ 0 ] );
+        maxEC[ 1 ] = osg::maximum< float >( v.y(), maxEC[ 1 ] );
+    }
+    // aspect is width (x) over height (y).
+    const double ecWidth( maxEC[ 0 ] - minEC[ 0 ] );
+    const double ecHeight( maxEC[ 1 ] - minEC[ 1 ] );
+    const double ecAspect = ecWidth / ecHeight;
+
+
+    // We'll store half the extent of interest into a dummy bounding sphere's radius.
+    // We'll store the analogous fov in bestFov.
+    osg::BoundingSphere bs;
+    double bestFov;
+    if( ecAspect > _aspect )
+    {
+        // Fit eye space x to the view
+        bs.radius() = ecWidth * .5;
+        bestFov = _aspect * _fovy;
+    }
+    else
+    {
+        // Fit eye space y to the view
+        bs.radius() = ecHeight * .5;
+        bestFov = _fovy;
+    }
+
+    // The wrap-up code sets the eye position at the best distance from
+    // the bb center. Extra distance is added in to account for the fact
+    // that the input bound probably has a larger radius than the eye coord
+    // bound that we're passing to computeInitialDistanceFromFOVY().
+    const double extraDistance = bb.radius() - bs.radius();
+    const double distance = extraDistance +
+        osgwMx::computeInitialDistanceFromFOVY( bs, bestFov );
+    setPosition( bs.center() - ( newDir * distance ) );
 }
 
 void MxCore::lookAtOrbitCenter()
