@@ -43,10 +43,11 @@ sphere \c bs when viewed from the specified \c distance.
 */
 double OSGWMX_EXPORT computeInitialFOVYFromDistance( const osg::BoundingSphere& bs, const double distance );
 /** Compute a viewing distance appropriate for viewing the entire bounding
-sphere \c bs with a perspective projection that uses the specified \c fovy.
+sphere \c bs with a perspective projection. \c fov should be the minimum
+field of view, either horizontally or vertically (accounting for aspect ratio).
 \param fovy Field of view in degrees.
 */
-double OSGWMX_EXPORT computeInitialDistanceFromFOVY( const osg::BoundingSphere& bs, const double fovy );
+double OSGWMX_EXPORT computeInitialDistanceFromFOVY( const osg::BoundingSphere& bs, const double fov );
 
 osg::Vec2d OSGWMX_EXPORT computeOptimalNearFar( const osg::Vec3d& position,
     const osg::BoundingSphere& bs, bool ortho );

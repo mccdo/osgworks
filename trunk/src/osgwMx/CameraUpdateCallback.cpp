@@ -70,6 +70,10 @@ CameraUpdateCallback::operator()( osg::Node* node, osg::NodeVisitor* nv )
         }
     }
 
+    // Update the aspect ratio every frame.
+    const osg::Viewport* vp = cam->getViewport();
+    _mxCore->setAspect( vp->width() / vp->height() );
+
     if( _firstUpdate )
     {
         // Set the initial view.
@@ -81,10 +85,6 @@ CameraUpdateCallback::operator()( osg::Node* node, osg::NodeVisitor* nv )
 
         _firstUpdate = false;
     }
-
-    // Update the aspect ratio before we query the projection matrix.
-    const osg::Viewport* vp = cam->getViewport();
-    _mxCore->setAspect( vp->width() / vp->height() );
 
     cam->setViewMatrix( _mxCore->getInverseMatrix() );
     cam->setProjectionMatrix( _mxCore->computeProjection(
