@@ -27,8 +27,7 @@
 namespace osgwTools {
 
 
-osg::BoundingSphere
-transform( const osg::Matrix& m, const osg::BoundingSphere& sphere )
+osg::BoundingSphere transform( const osg::Matrix& m, const osg::BoundingSphere& sphere )
 {
     osg::BoundingSphere::vec_type xdash = sphere._center;
     xdash.x() += sphere._radius;
@@ -63,27 +62,42 @@ transform( const osg::Matrix& m, const osg::BoundingSphere& sphere )
     return( newSphere );
 }
 
-osg::BoundingBox
-transform( const osg::Matrix& m, const osg::BoundingBox& box )
+osg::BoundingBox transform( const osg::Matrix& m, const osg::BoundingBox& box )
 {
-    osg::Vec3 p0( box._min );
-    osg::Vec3 p1( box._max.x(), box._min.y(), box._min.z() );
-    osg::Vec3 p2( box._max.x(), box._min.y(), box._max.z() );
-    osg::Vec3 p3( box._min.x(), box._min.y(), box._max.z() );
-    osg::Vec3 p4( box._max );
-    osg::Vec3 p5( box._min.x(), box._max.y(), box._max.z() );
-    osg::Vec3 p6( box._min.x(), box._max.y(), box._min.z() );
-    osg::Vec3 p7( box._max.x(), box._max.y(), box._min.z() );
+    osg::ref_ptr< osg::Vec3Array > v = new osg::Vec3Array;
+    v->resize( 8 );
+    (*v)[0].set( box._min );
+    (*v)[1].set( box._max.x(), box._min.y(), box._min.z() );
+    (*v)[2].set( box._max.x(), box._min.y(), box._max.z() );
+    (*v)[3].set( box._min.x(), box._min.y(), box._max.z() );
+    (*v)[4].set( box._max );
+    (*v)[5].set( box._min.x(), box._max.y(), box._max.z() );
+    (*v)[6].set( box._min.x(), box._max.y(), box._min.z() );
+    (*v)[7].set( box._max.x(), box._max.y(), box._min.z() );
 
-    osg::BoundingBox newBox( p0 * m, p1 * m );
-    newBox.expandBy( p2 * m );
-    newBox.expandBy( p3 * m );
-    newBox.expandBy( p4 * m );
-    newBox.expandBy( p5 * m );
-    newBox.expandBy( p6 * m );
-    newBox.expandBy( p7 * m );
+    transform( m, v.get() );
+
+    osg::BoundingBox newBox( (*v)[0], (*v)[1] );
+    newBox.expandBy( (*v)[2] );
+    newBox.expandBy( (*v)[3] );
+    newBox.expandBy( (*v)[4] );
+    newBox.expandBy( (*v)[5] );
+    newBox.expandBy( (*v)[6] );
+    newBox.expandBy( (*v)[7] );
 
     return( newBox );
+}
+
+void transform( const osg::Matrix& m, osg::Vec3Array* verts, bool normalize )
+{
+    osg::Vec3Array::iterator itr;
+    for( itr = verts->begin(); itr != verts->end(); itr++ )
+    {
+        *itr = *itr * m;
+        if( normalize )
+            itr->normalize();
+    }
+    verts->dirty();
 }
 
 void transform( const osg::Matrix& m, osg::Geometry* geom )
@@ -91,15 +105,11 @@ void transform( const osg::Matrix& m, osg::Geometry* geom )
     if( geom == NULL )
         return;
 
-    osg::Vec3Array::iterator itr;
-
     // Transform the vertices by the specified matrix.
     osg::Vec3Array* v = dynamic_cast< osg::Vec3Array* >( geom->getVertexArray() );
     if( v != NULL )
     {
-        for( itr = v->begin(); itr != v->end(); itr++ )
-            *itr = *itr * m;
-        v->dirty();
+        transform( m, v );
     }
 
     // Transform the normals by the upper-left 3x3 matrix (no translation)
@@ -109,12 +119,7 @@ void transform( const osg::Matrix& m, osg::Geometry* geom )
     {
         osg::Matrix m3x3( m );
         m3x3.setTrans( 0., 0., 0. );
-        for( itr = n->begin(); itr != n->end(); itr++ )
-        {
-            *itr = *itr * m3x3;
-            itr->normalize();
-        }
-        n->dirty();
+        transform( m3x3, n, true );
     }
 
     geom->dirtyDisplayList();

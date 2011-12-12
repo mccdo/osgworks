@@ -56,6 +56,12 @@ Vertices are transformed by the matrix \c m, and normals are transformed by the 
 */
 OSGWTOOLS_EXPORT void transform( const osg::Matrix& m, osg::Geometry* geom );
 
+/** \brief Transforms a \c Vec3Array in place.
+
+Vertices are transformed by the matrix \c m.
+*/
+OSGWTOOLS_EXPORT void transform( const osg::Matrix& m, osg::Vec3Array* verts, bool normalize=false );
+
 /** \brief Transforms a \c Geode.
 
 Transforms the \c Geometry children of the \c Geode parameter.
