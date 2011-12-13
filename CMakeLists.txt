@@ -49,6 +49,9 @@ endif()
 # find the optional Directx SDK (for DirectInput game pad support).
 find_package( DirectInput QUIET )
 
+# find the optional VRPN library (for VRPN input support).
+find_package( VRPN QUIET )
+
 # Add OSG for entire project for include & lib paths
 INCLUDE_DIRECTORIES( 
     ${PROJECT_SOURCE_DIR}/include

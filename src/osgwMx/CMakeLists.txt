@@ -11,6 +11,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/MxCore.h
     ${HEADER_PATH}/MxEventHandler.h
     ${HEADER_PATH}/MxGamePad.h
+    ${HEADER_PATH}/MxSpaceBall.h
 #    ${HEADER_PATH}/MxInputAdapter.h
 #    ${HEADER_PATH}/MxMovementStyle.h
 #    ${HEADER_PATH}/MxMovementStyleGamePad.h
@@ -22,6 +23,7 @@ set( _osgwMxSourceFiles
     MxCore.cpp
     MxEventHandler.cpp
     MxGamePad.cpp
+    MxSpaceBall.cpp
 #    MxInputAdapter.cpp
 #    MxMovementStyle.cpp
 #    MxMovementStyleGamePad.cpp
@@ -29,6 +31,7 @@ set( _osgwMxSourceFiles
 )
 
 if( DIRECTINPUT_FOUND )
+	add_definitions(-DDIRECTINPUT_ENABLED)
     include_directories( ${DIRECTINPUT_INCLUDE_DIR} )
     set( DX_DEPENDENT_HEADERS
         ${HEADER_PATH}/MxGamePadDX.h
@@ -40,11 +43,25 @@ if( DIRECTINPUT_FOUND )
     )
 endif()
 
+if( VRPN_FOUND )
+	add_definitions(-DVRPN_ENABLED)
+    include_directories( ${VRPN_INCLUDES} )
+    set( VRPN_DEPENDENT_HEADERS
+        ${HEADER_PATH}/MxSpaceBallVRPN.h
+    )
+    set( VRPN_DEPENDENT_SRC
+        MxSpaceBallVRPN.cpp
+    )
+endif() #VRPN_FOUND
+
+
 add_library( ${LIB_NAME}
     ${LIB_PUBLIC_HEADERS}
     ${DX_DEPENDENT_HEADERS}
+    ${VRPN_DEPENDENT_HEADERS}
     ${_osgwMxSourceFiles}
     ${DX_DEPENDENT_SRC}
+    ${VRPN_DEPENDENT_SRC}
 )
 
 find_package( OpenGL REQUIRED )
@@ -72,6 +89,11 @@ if( BUILD_SHARED_LIBS )
     if( DIRECTINPUT_FOUND )
        target_link_libraries( ${LIB_NAME} ${DIRECTINPUT_LIBRARIES} )
     endif()
+    
+    if( VRPN_FOUND )
+       target_link_libraries( ${LIB_NAME} ${VRPN_LIBRARY} )
+    endif()
+    
 
 endif()
 

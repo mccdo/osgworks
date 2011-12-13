@@ -101,7 +101,7 @@ public:
     }
     /** Move at a specified rate.
 
-    Behavior is idential to that of setLeftStick(float,float), except that \c x and \c y
+    Behavior is identical to that of setLeftStick(float,float), except that \c x and \c y
     values are taken as normalized percentages in the range -1.0 to 1.0 of a desired
     movement rate in units/second. The movement rate for the left stick is set with
     setStickRate() (see also setStickRates()).
@@ -130,9 +130,9 @@ public:
     }
     /** Rotate at a specified rate.
 
-    Behavior is idential to that of setRightStick(float,float), except that \c x and \c y
+    Behavior is identical to that of setRightStick(float,float), except that \c x and \c y
     values are taken as normalized percentages in the range -1.0 to 1.0 of a desired
-    rotateion rate in degrees/second. The rotation rate for the right stick is set with
+    rotation rate in degrees/second. The rotation rate for the right stick is set with
     setStickRates().
     
     \param deltaSeconds Specifies the elapsed time in seconds since the last call to
@@ -183,8 +183,8 @@ public:
     /** Set the movement mode to one of the valid move modes defined
     in the FunctionalMap::FunctionType enum.
 
-    FunctionType decalres several enums, not all of which are move types.
-    If you call this function with an enum that isn't a valud move type,
+    FunctionType declares several enums, not all of which are move types.
+    If you call this function with an enum that isn't a valid move type,
     the function displays a warning and returns.
 
     Default is FunctionalMap::MoveModeLocal. */
@@ -198,8 +198,8 @@ public:
     /** Set the rotation mode to one of the valid rotate modes defined
     in the FunctionalMap::FunctionType enum.
 
-    FunctionType decalres several enums, not all of which are rotate types.
-    If you call this function with an enum that isn't a valud rotate type,
+    FunctionType declares several enums, not all of which are rotate types.
+    If you call this function with an enum that isn't a valid rotate type,
     the function displays a warning and returns.
 
     Default is FunctionalMap::RotateModeLocal. */
