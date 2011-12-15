@@ -1,5 +1,3 @@
-SET( CATEGORY Example )
-
 if( DIRECTINPUT_FOUND)
 		add_definitions(-DDIRECTINPUT_ENABLED)
 endif()
@@ -10,7 +8,7 @@ if( VRPN_FOUND)
 endif()
 
 if( DIRECTINPUT_FOUND OR VRPN_FOUND)
-   MAKE_EXECUTABLE( MxMovement
-      MxMovementExample.cpp
-   )
+    MAKE_EXECUTABLE( MxMovement
+        MxMovementExample.cpp
+    )
 endif()
