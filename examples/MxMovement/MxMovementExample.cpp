@@ -6,7 +6,8 @@
 #include <osgViewer/ViewerEventHandlers>
 
 #include <osgwMx/MxCore.h>
-#ifdef DIRECTX_ENABLED
+#include <osgwMx/MxUtils.h>
+#ifdef DIRECTINPUT_ENABLED
 #include <osgwMx/MxGamePadDX.h>
 #endif // DIRECTX_ENABLED
 #ifdef VRPN_ENABLED
@@ -42,7 +43,7 @@ int main( int argc, char** argv )
     viewer.setSceneData( root.get() );
     viewer.addEventHandler( new osgViewer::StatsHandler );
 
-#ifdef DIRECTX_ENABLED
+#ifdef DIRECTINPUT_ENABLED
 	// create a game pad input handler and data interpreter to control the view.
     osg::ref_ptr< MxGamePadDX > mxController = new MxGamePadDX;
     mxController->setStickRate( moveRate );
