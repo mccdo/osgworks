@@ -23,7 +23,7 @@
 // Mike Weiblen's osgToy http://mew.cx/osg/
 
 #include <osgwMx/MxSpaceBallVRPN.h>
-#include <osg/notify>
+#include <osg/Notify>
 
 namespace osgwMx {
 
