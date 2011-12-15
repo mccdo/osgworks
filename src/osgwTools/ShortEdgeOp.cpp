@@ -1722,7 +1722,6 @@ void ShortEdgeCollapse::setGeometry(osg::Geometry* const geometry)
         _geometry->duplicateSharedArrays();
     }
 
-    Point* testPt = new Point;
     unsigned int numVertices = geometry->getVertexArray()->getNumElements();
         
     _originalPointList.resize(numVertices);
