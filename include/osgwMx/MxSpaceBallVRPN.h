@@ -70,13 +70,13 @@ protected:
     VRPN will invoke this when new analog events arrive.
 	Must be static so it can be called as a C-style function without a this pointer.
     */
-	static void VRPN_CALLBACK MxSpaceBallVRPN::handle_analog( void* userData, const vrpn_ANALOGCB a );
+	static void VRPN_CALLBACK handle_analog( void* userData, const vrpn_ANALOGCB a );
 
     /** \brief Handle VRPN events and send device state to the base class.
     VRPN will invoke this when new button events arrive.
 	Must be static so it can be called as a C-style function without a this pointer.
     */
-	static void VRPN_CALLBACK MxSpaceBallVRPN::handle_button( void* userData, const vrpn_BUTTONCB b );
+	static void VRPN_CALLBACK handle_button( void* userData, const vrpn_BUTTONCB b );
 
     bool openVRPNDevice(const char *deviceName);
     void freeVRPNDevice();
