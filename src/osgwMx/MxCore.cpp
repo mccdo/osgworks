@@ -215,9 +215,6 @@ void MxCore::level()
 
 void MxCore::lookAtAndFit( const osg::BoundingSphere& bs )
 {
-    // Seems like a side effect, but it duplicate's the VE-Suite code we're replacing.
-    setOrbitCenterPoint( bs.center() );
-
     // Look at the bounding sphere center.
     osg::Vec3d newDir = bs.center() - _position;
     newDir.normalize();
@@ -231,9 +228,6 @@ void MxCore::lookAtAndFit( const osg::BoundingSphere& bs )
 
 void MxCore::lookAtAndFit( const osg::BoundingBox& bb )
 {
-    // Seems like a side effect, but it duplicate's the VE-Suite code we're replacing.
-    setOrbitCenterPoint( bb.center() );
-
     // We'll get the view matrix to project the bounding box, so pre-configure it
     // to point at the box center. Eye position doesn't matter at this point (we
     // compute the eye position at the end of the function).
