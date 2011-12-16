@@ -136,7 +136,7 @@ public:
     void rotate( double angle, const osg::Vec3d& axis, const osg::Vec3d& point );
 
     /** Sets the orbit center point used by rotateOrbit(). The default is
-    (0,0,0), the origin. */
+    (0,0,0), the origin. Note: The orbit center point is in world coordinates.*/
     void setOrbitCenterPoint( const osg::Vec3d& orbitCenter ) { _orbitCenter = orbitCenter; }
     osg::Vec3d getOrbitCenterPoint() const { return( _orbitCenter ); }
 
