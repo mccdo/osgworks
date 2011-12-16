@@ -3,7 +3,9 @@
 <wiki:toc />
 
 = v2.1 =
-*Status:* Not yet started.
+*Status:* Ongoing development on svn trunk.
+
+This release will introduce the new osgwMx library containing support for matrix and view manipulation, a game pad device (via DirectInput), and a space ball device (via VRPN).
 
 
 = v2.0 =
