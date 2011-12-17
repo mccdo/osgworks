@@ -275,11 +275,11 @@ void MxGamePad::setButtons( const unsigned int buttons )
     if( _map->isSet( FunctionalMap::CycleRotateMode ) )
         cycleRotateMode();
     if( _map->isSet( FunctionalMap::RotateModeLocal ) )
-        setMoveMode( FunctionalMap::RotateModeLocal );
+        setRotateMode( FunctionalMap::RotateModeLocal );
     if( _map->isSet( FunctionalMap::RotateModeOrbit ) )
-        setMoveMode( FunctionalMap::RotateModeOrbit );
+        setRotateMode( FunctionalMap::RotateModeOrbit );
     if( _map->isSet( FunctionalMap::RotateModeArcball ) )
-        setMoveMode( FunctionalMap::RotateModeArcball );
+        setRotateMode( FunctionalMap::RotateModeArcball );
 
     // Scale movement based on right shoulder button state.
     if( _map->isSet( FunctionalMap::MoveModifyScaleSpeedDown ) )
