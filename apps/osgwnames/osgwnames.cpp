@@ -82,7 +82,7 @@ main( int argc,
     osg::ArgumentParser arguments( &argc, argv );
 
     arguments.getApplicationUsage()->setApplicationName( arguments.getApplicationName() );
-    arguments.getApplicationUsage()->setDescription( arguments.getApplicationName() + " visualizes the OSG bounding volume of the loaded model(s)." );
+    arguments.getApplicationUsage()->setDescription( arguments.getApplicationName() + " displays the structure of a scene graph in human-readable form." );
     arguments.getApplicationUsage()->setCommandLineUsage( arguments.getApplicationName() + " [options] filename ..." );
 
     arguments.getApplicationUsage()->addCommandLineOption( "-O <option>", "Pass <option> to import plugin." );
