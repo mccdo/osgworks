@@ -33,6 +33,49 @@
 #endif
 
 
+/** Generates an array of xyz vertices that for a circle.
+
+Note that calling code is responsible for ensuring the returned array is deleted,
+typically by storing the returned array in sn osg::ref_ptr.
+
+\param approx Number of vertices in the circle. For example, '4' would create a square
+(vertex vectors at 90 degree angles to each other).
+\param radius Circle radius.
+\param plane Equation for the plane to hold the vertices. The circle will be centered on
+the plane's origin.
+\param close If true, the first vertex is repeated as the last vertex, and the total
+number of vertices will be ( \c approx + 1 ).
+
+Possible future change: Export this as an API routine. */
+osg::Vec3Array* generateCircleVertices( unsigned int approx, double radius, osg::Vec4 plane, bool close=false )
+{
+    // Find ideal base vector (at 90 degree angle to normalVec)
+    osg::Vec3 normalVec( plane[0], plane[1], plane[2] );
+    normalVec.normalize();
+    osg::Vec3 crossVec( 1., 0., 0. );
+    if( osg::absolute( normalVec * crossVec ) > .9 )
+        crossVec = osg::Vec3( 0., 1., 0. );
+    osg::Vec3 baseVec = normalVec ^ crossVec;
+    baseVec.normalize();
+    baseVec = ( baseVec * radius ) + ( normalVec * plane[ 3 ] );
+
+    osg::ref_ptr< osg::Vec3Array > verts = new osg::Vec3Array;
+    unsigned int totalVerts = approx + ( close ? 1 : 0 );
+    verts->resize( totalVerts );
+
+    unsigned int idx;
+	for( idx=0; idx < approx; idx++ )
+    {
+        const double angle( 2. * osg::PI * (double)idx / (double)approx );
+        osg::Matrix m( osg::Matrix::rotate( angle, normalVec ) );
+        ( *verts )[ idx ] = baseVec * m;
+    }
+    if( close )
+        ( *verts )[ idx ] = ( *verts )[ 0 ];
+
+    return( verts.release() );
+}
+
 inline unsigned int makeKey( const unsigned short a, const unsigned short b )
 {
 	if ( a < b )
@@ -571,10 +614,10 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
 
 
 static bool
-const buildCircleData (float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geom, const bool wire )
+const buildCircleData( float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geom, const bool wire )
 {
     unsigned int numSub( subdivisions );
-    unsigned int totalVerts(0);
+    unsigned int totalVerts( 0 );
     if( numSub < 3 )
         numSub = 3;
     if( numSub > 65530 )
@@ -583,13 +626,25 @@ const buildCircleData (float radius, const unsigned int subdivisions, const osg:
 		numSub = 65530; // leave headroom for a few spares
         osg::notify( osg::WARN ) << "buildCircleData: Clamping subdivisions to " << numSub << std::endl;
     }
-    totalVerts = ( (numSub+2) ); // +2: Center, and final, closing vertex
+    totalVerts = numSub;
+    if( !wire )
+        totalVerts += 2; // Closing and center vertices.
     osg::notify( osg::INFO ) << "buildCircleData: totalVerts: " << totalVerts << std::endl;
 
     // Create data arrays and configure the Geometry
-    osg::ref_ptr< osg::Vec3Array > vertices( new osg::Vec3Array );
-    vertices->resize( totalVerts );
-    geom->setVertexArray( vertices.get() );
+    osg::ref_ptr< osg::Vec3Array > vertices;
+    if( geom->getVertexArray() != NULL )
+    {
+        vertices = dynamic_cast< osg::Vec3Array* >( geom->getVertexArray() );
+        if( !( vertices.valid() ) )
+            return( false );
+    }
+    else
+    {
+        vertices = new osg::Vec3Array;
+        geom->setVertexArray( vertices.get() );
+    }
+    vertices->reserve( totalVerts );
 
     osg::ref_ptr< osg::Vec3Array > normals;
     osg::ref_ptr< osg::Vec2Array > texCoords;
@@ -605,62 +660,44 @@ const buildCircleData (float radius, const unsigned int subdivisions, const osg:
         geom->setTexCoordArray( 0, texCoords.get() );
     }
 
-    {
-        osg::Vec4Array* osgC = new osg::Vec4Array;
-        osgC->push_back( osg::Vec4( 1., 1., 1., 1. ) );
-        geom->setColorArray( osgC );
-        geom->setColorBinding( osg::Geometry::BIND_OVERALL );
-    }
+    osg::Vec4Array* osgC = new osg::Vec4Array;
+    osgC->push_back( osg::Vec4( 1., 1., 1., 1. ) );
+    geom->setColorArray( osgC );
+    geom->setColorBinding( osg::Geometry::BIND_OVERALL );
 
-    // Create the vertices, normals, and tex coords.
-    unsigned int idx( 0 );
-    unsigned int subCounter;
-    const osg::Vec3 centerVecZero( 0., 0., 0. );
+
+    unsigned int oldSize = vertices->size();
     osg::Vec3 normalVec( orientation );
     normalVec.normalize();
-
-	// center: idx=0
-	(*vertices)[ idx ] = centerVecZero;
+    {
+        osg::Vec4 plane( normalVec, 0. );
+        osg::ref_ptr< osg::Vec3Array > circle = generateCircleVertices( numSub, radius, plane );
+        vertices->insert( vertices->end(), circle->begin(), circle->end() );
+    }
+    unsigned int newSize = vertices->size();
+    if( newSize - oldSize != numSub )
+        osg::notify( osg::WARN ) << "buildCircleData: Problem generating circle vertices." << std::endl;
     if( !wire )
     {
-        (*normals)[ idx ] = normalVec;
-        (*texCoords)[ idx ].set( centerVecZero.x(), centerVecZero.y() );
-    } // if
-	idx++;
-
-    // Find ideal base vector (at 90 degree angle to normalVec)
-    osg::Vec3 crossVec( 1., 0., 0. );
-    if( osg::absolute( normalVec * crossVec ) > .9 )
-        crossVec = osg::Vec3( 0., 1., 0. );
-    osg::Vec3 baseVec = normalVec ^ crossVec;
-    baseVec.normalize();
-
-	// circle-loop
-	for( subCounter=0; subCounter<=numSub; subCounter++ )
-    {
-        const double t( (double)(subCounter) / (double)numSub );
-        const double subAngle( t * 2.0 * osg::PI);  // subAngle is in range (0,2pi) radians.
-        osg::Matrix m( osg::Matrix::rotate( subAngle, normalVec ) );
-        osg::Vec3 v( baseVec * m );
-
-        (*vertices)[ idx ] = ( v * radius );
-        //osg::notify( osg::ALWAYS ) << v << std::endl;
-
-        if( !wire )
-        {
-            (*normals)[ idx ] = normalVec;
-			const osg::Vec3 vRad(v * radius);
-            (*texCoords)[ idx ].set( vRad.x(), vRad.y() );
-        } // if
-
-        idx++;
-
+        vertices->resize( vertices->size() + 2 );
+        (*vertices)[ newSize ] = (*vertices)[ oldSize ]; // Repeat first vert as closing vert.
+        (*vertices)[ newSize+1 ] = osg::Vec3( 0., 0., 0. );
+        newSize += 2;
     }
 
-    if( idx != totalVerts )
+    // Create the normals and tex coords.
+    unsigned int idx( oldSize );
+    unsigned int subCounter;
+    if( !wire )
     {
-        osg::notify( osg::WARN ) << "buildCircleData: Error creating vertices." << std::endl;
-        osg::notify( osg::WARN ) << "  idx " << idx << " != totalVerts " << totalVerts << std::endl;
+	    for( subCounter=0; subCounter < totalVerts; subCounter++, idx++ )
+        {
+            (*normals)[ idx ] = normalVec;
+
+            const osg::Vec3& v( (*vertices)[ idx ] );
+			const osg::Vec3 vRad( v / radius );
+            (*texCoords)[ idx ].set( vRad.x(), vRad.y() );
+        } // for
     }
 
 
@@ -672,39 +709,32 @@ const buildCircleData (float radius, const unsigned int subdivisions, const osg:
 
         // Create indices -- top group of triangles
         osg::DrawElementsUShort* fan( new osg::DrawElementsUShort( GL_TRIANGLE_FAN ) );
-        fan->resize( numSub+2 ); // center, 1...n, 1 again to close
-		idx = 0;
+        fan->resize( totalVerts );
 
 		// push center
-        (*fan)[ idx ] = 0;
-		idx++;
+        (*fan)[ 0 ] = newSize - 1;
 
 		// circle loop
-		for( unsigned int subCount=0; subCount<numSub+1; subCount++ )// numsub+1 gets us start, ring and end (which duplicates start)
+        unsigned int idx, loopIdx;
+		for( loopIdx=0, idx=oldSize; loopIdx < numSub+1; loopIdx++, idx++ )
         {
-            (*fan)[ idx ] = idx;
-			idx++;
+            (*fan)[ loopIdx+1 ] = idx;
         }
         geom->addPrimitiveSet( fan );
     } // if !wire
     else
     {
         // Wire -- Use GL_LINE_LOOP
-		// we skip vertex #0 (center) when drawing the LINE_LOOP
 
         // Create indices
-        osg::DrawElementsUShort* ring;
-        ring = new osg::DrawElementsUShort( GL_LINE_LOOP );
-        ring->resize( numSub+1 );
-        unsigned int loopIdx;
-        for( loopIdx=0; loopIdx<numSub+1; loopIdx++ ) // numsub+1 gets us start, ring and end (which duplicates start)
+        osg::DrawElementsUShort* ring = new osg::DrawElementsUShort( GL_LINE_LOOP );
+        ring->resize( numSub );
+        unsigned int idx, loopIdx;
+        for( loopIdx=0, idx=oldSize; loopIdx < numSub; loopIdx++, idx++ )
         {
-
-            (*ring)[ loopIdx ] = loopIdx + 1; // skipping #0, center
-
-        } // for
+            (*ring)[ loopIdx ] = idx;
+        }
 		geom->addPrimitiveSet( ring );
-
     } // wire
 
     return( true );
@@ -1360,26 +1390,86 @@ osgwTools::makeArrow( const osg::Matrix& m, osg::Geometry* geometry )
 
 
 static bool
-buildCylinderData( const osg::Vec3& orientation, const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+buildCylinderData( const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
 {
     int subCylinders = subdivisions[ 0 ];
     if( subCylinders < 1 )
         subCylinders = 1;
-    double radiusDelta = ( radius1 - radius0 ) / subCylinders;
+    const double radiusDelta = ( radius1 - radius0 ) / subCylinders;
 
-    osg::notify( osg::WARN ) << "Cylinder: Not yet implemented." << std::endl;
+    osg::Vec3Array* vertices;
+    if( geometry->getVertexArray() != NULL )
+    {
+        vertices = dynamic_cast< osg::Vec3Array* >( geometry->getVertexArray() );
+        if( vertices == NULL )
+            return( false );
+    }
+    else
+    {
+        vertices = new osg::Vec3Array;
+        geometry->setVertexArray( vertices );
+    }
 
-    return( false );
+    osg::Vec3Array* normals;
+    if( geometry->getNormalArray() != NULL )
+    {
+        normals = dynamic_cast< osg::Vec3Array* >( geometry->getNormalArray() );
+        if( normals == NULL )
+            return( false );
+    }
+    else
+    {
+        normals = new osg::Vec3Array;
+        geometry->setNormalArray( normals );
+    }
+    geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+
+
+    osg::Vec4 plane( 0., 0., 1., 0. );
+    // Generate a set of normals that we'll map to each cylinder hoop.
+    osg::ref_ptr< osg::Vec3Array > cNorms = generateCircleVertices( subdivisions[ 1 ], 1., plane, true );
+
+    double radius;
+    int idx;
+    for( idx=0; idx <= subCylinders; idx++ )
+    {
+        plane[ 3 ] = length * (double)idx / (double)subCylinders;
+
+        radius = radius0 + ( idx * radiusDelta );
+        osg::ref_ptr< osg::Vec3Array > cVerts = generateCircleVertices( subdivisions[ 1 ], radius, plane, true );
+        vertices->insert( vertices->end(), cVerts->begin(), cVerts->end() );
+
+        normals->insert( normals->end(), cNorms->begin(), cNorms->end() );
+    }
+
+
+    // Add PrimitiveSets
+    const unsigned int vertCount = vertices->size() / ( subCylinders + 1 );
+    for( idx=0; idx < subCylinders; idx++ )
+    {
+        osg::DrawElementsUShort* deus = new osg::DrawElementsUShort( GL_TRIANGLE_STRIP );
+        unsigned int vIdx = vertCount * ( idx + 1 );
+        unsigned int innerIdx;
+        for( innerIdx = 0; innerIdx < vertCount; innerIdx++ )
+        {
+            deus->push_back( vIdx );
+            deus->push_back( vIdx - vertCount );
+            vIdx++;
+        }
+        geometry->addPrimitiveSet( deus );
+    }
+
+    return( true );
 }
 
 osg::Geometry*
-osgwTools::makeOpenCylinder( const osg::Vec3& orientation, const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+osgwTools::makeOpenCylinder( const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
 {
     osg::ref_ptr< osg::Geometry > geom( geometry );
     if( geom == NULL )
         geom = new osg::Geometry;
 
-    bool result = buildCylinderData( orientation, length, radius0, radius1, subdivisions, geometry );
+    bool result = buildCylinderData( length, radius0, radius1, subdivisions, geom.get() );
     if( !result )
     {
         osg::notify( osg::WARN ) << "makeOpenCylinder: Error during cylinder build." << std::endl;
@@ -1390,9 +1480,9 @@ osgwTools::makeOpenCylinder( const osg::Vec3& orientation, const double length, 
 }
 
 osg::Geometry*
-osgwTools::makeOpenCylinder( const osg::Matrix& m, const osg::Vec3& orientation, const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+osgwTools::makeOpenCylinder( const osg::Matrix& m, const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
 {
-    osg::Geometry* geom = osgwTools::makeOpenCylinder( orientation, length, radius0, radius1, subdivisions, geometry );
+    osg::Geometry* geom = osgwTools::makeOpenCylinder( length, radius0, radius1, subdivisions, geometry );
     if( geom != NULL )
         transform( m, geom );
     return( geom );
