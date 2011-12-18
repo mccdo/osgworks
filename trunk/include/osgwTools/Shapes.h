@@ -212,12 +212,16 @@ OSGWTOOLS_EXPORT osg::Geometry* makeArrow( const osg::Matrix& m, osg::Geometry* 
 /*@{*/
 
 /** \brief Creates an open-ended cylinder.
+
+Full documentation is To Be Done.
 */
-OSGWTOOLS_EXPORT osg::Geometry* makeOpenCylinder( const osg::Vec3& orientation=osg::Vec3(0.,0.,1.), const double length=1., const double radius0=1., const double radius1=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
+OSGWTOOLS_EXPORT osg::Geometry* makeOpenCylinder( const double length=1., const double radius0=1., const double radius1=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
 /** \brief A transformed open-ended cylinder.
+
+Full documentation is To Be Done.
 */
-OSGWTOOLS_EXPORT osg::Geometry* makeOpenCylinder( const osg::Matrix& m, const osg::Vec3& orientation=osg::Vec3(0.,0.,1.), const double length=1., const double radius0=1., const double radius1=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
+OSGWTOOLS_EXPORT osg::Geometry* makeOpenCylinder( const osg::Matrix& m, const double length=1., const double radius0=1., const double radius1=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
 /*@}*/
 

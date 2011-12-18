@@ -103,6 +103,12 @@ main( int argc,
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
 
+    geode = new osg::Geode;
+    geode->addDrawable( osgwTools::makeOpenCylinder( 1.5, .75, .5, osg::Vec2s( 2, 14 ) ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 9., 0., -3. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
+
 
     // Objects in background are transformed directly in Shapes generation code.
 
@@ -117,6 +123,11 @@ main( int argc,
     geode = new osg::Geode;
     m = osg::Matrix::rotate( .8, axis ) * osg::Matrix::translate( -3., 5., -3. );
     geode->addDrawable( osgwTools::makeArrow( m ) );
+    root->addChild( geode.get() );
+
+    geode = new osg::Geode;
+    m = osg::Matrix::rotate( .8, axis ) * osg::Matrix::translate( 9., 5., -3. );
+    geode->addDrawable( osgwTools::makeOpenCylinder( m, 1.5, .75, .5, osg::Vec2s( 2, 14 ) ) );
     root->addChild( geode.get() );
 
 
