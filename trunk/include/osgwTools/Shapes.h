@@ -223,7 +223,7 @@ OSGWTOOLS_EXPORT osg::Geometry* makeArrow( const osg::Matrix& m, osg::Geometry* 
 /*@}*/
 
 
-/** \defgroup CylinderShapes Cylinder shape generation routines */
+/** \defgroup CylinderShapes Cylinder, cone, and capsule shape generation routines */
 /*@{*/
 
 /** \brief Creates an open-ended cylinder.
@@ -249,6 +249,39 @@ OSGWTOOLS_EXPORT osg::Geometry* makeClosedCylinder( const double length=1., cons
 Full documentation is To Be Done.
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeClosedCylinder( const osg::Matrix& m, const double length=1., const double radius0=1., const double radius1=1., const bool cap0=true, const bool cap1=true, const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
+
+/** \brief Creates a wireframe cylinder.
+
+Full documentation is To Be Done.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeWireCylinder( const double length=1., const double radius0=1., const double radius1=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
+
+/** \brief Creates a transformed wireframe cylinder.
+
+Full documentation is To Be Done.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeWireCylinder( const osg::Matrix& m, const double length=1., const double radius0=1., const double radius1=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
+
+
+/** \brief Creates a solid cone.
+
+This convenience routine is identical to:
+
+\code
+makeClosedCylinder( length, radius, 0., true, false, subdivisions, geometry )( length, radius, 0, syubdivisions, geometry );
+\endcode
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeCone( const double length=1., const double radius=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
+
+/** \brief Creates a transformed solid cone.
+
+This convenience routine is identical to:
+
+\code
+makeClosedCylinder( m, length, radius, 0., true, false, subdivisions, geometry )( length, radius, 0, syubdivisions, geometry );
+\endcode
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeCone( const osg::Matrix& m, const double length=1., const double radius=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
 /*@}*/
 

@@ -105,7 +105,7 @@ main( int argc,
 
     geode = new osg::Geode;
     geode->addDrawable( osgwTools::makeCircle() );
-    mt = new osg::MatrixTransform( osg::Matrix::translate( 6., 0., 3. ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 6., 0., -3. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
 
@@ -118,6 +118,18 @@ main( int argc,
     geode = new osg::Geode;
     geode->addDrawable( osgwTools::makeClosedCylinder( 1.5, .75, .5, true, true, osg::Vec2s( 2, 14 ) ) );
     mt = new osg::MatrixTransform( osg::Matrix::translate( 9., 0., 0. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
+
+    geode = new osg::Geode;
+    geode->addDrawable( osgwTools::makeWireCylinder( 1.5, .75, .5, osg::Vec2s( 2, 14 ) ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 9., 0., 3. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
+
+    geode = new osg::Geode;
+    geode->addDrawable( osgwTools::makeCone( 1.5, .75, osg::Vec2s( 3, 12 ) ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 6., 0., 3. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
 
