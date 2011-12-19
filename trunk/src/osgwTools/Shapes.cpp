@@ -47,7 +47,8 @@ the plane's origin.
 number of vertices will be ( \c approx + 1 ).
 
 Possible future change: Export this as an API routine. */
-osg::Vec3Array* generateCircleVertices( unsigned int approx, double radius, osg::Vec4 plane, bool close=false )
+static osg::Vec3Array*
+generateCircleVertices( unsigned int approx, double radius, osg::Vec4 plane, bool close=false )
 {
     // Find ideal base vector (at 90 degree angle to normalVec)
     osg::Vec3 normalVec( plane[0], plane[1], plane[2] );
@@ -614,7 +615,7 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
 
 
 static bool
-const buildCircleData( float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geom, const bool wire )
+const buildCircleData( float radius, const unsigned int subdivisions, const osg::Vec4& plane, osg::Geometry* geom, const bool wire )
 {
     unsigned int numSub( subdivisions );
     unsigned int totalVerts( 0 );
@@ -650,14 +651,32 @@ const buildCircleData( float radius, const unsigned int subdivisions, const osg:
     osg::ref_ptr< osg::Vec2Array > texCoords;
     if( !wire )
     {
-        normals = new osg::Vec3Array;
-        normals->resize( totalVerts );
-        geom->setNormalArray( normals.get() );
+        if( geom->getNormalArray() != NULL )
+        {
+            normals = dynamic_cast< osg::Vec3Array* >( geom->getNormalArray() );
+            if( !( normals.valid() ) )
+                return( false );
+        }
+        else
+        {
+            normals = new osg::Vec3Array;
+            geom->setNormalArray( normals.get() );
+        }
+        normals->resize( normals->size() + totalVerts );
         geom->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 
-        texCoords = new osg::Vec2Array;
-        texCoords->resize( totalVerts );
-        geom->setTexCoordArray( 0, texCoords.get() );
+        if( geom->getTexCoordArray( 0 ) != NULL )
+        {
+            texCoords = dynamic_cast< osg::Vec2Array* >( geom->getTexCoordArray( 0 ) );
+            if( !( texCoords.valid() ) )
+                return( false );
+        }
+        else
+        {
+            texCoords = new osg::Vec2Array;
+            geom->setTexCoordArray( 0, texCoords.get() );
+        }
+        texCoords->resize( texCoords->size() + totalVerts );
     }
 
     osg::Vec4Array* osgC = new osg::Vec4Array;
@@ -667,10 +686,9 @@ const buildCircleData( float radius, const unsigned int subdivisions, const osg:
 
 
     unsigned int oldSize = vertices->size();
-    osg::Vec3 normalVec( orientation );
+    osg::Vec3 normalVec( plane[0], plane[1], plane[2] );
     normalVec.normalize();
     {
-        osg::Vec4 plane( normalVec, 0. );
         osg::ref_ptr< osg::Vec3Array > circle = generateCircleVertices( numSub, radius, plane );
         vertices->insert( vertices->end(), circle->begin(), circle->end() );
     }
@@ -681,7 +699,7 @@ const buildCircleData( float radius, const unsigned int subdivisions, const osg:
     {
         vertices->resize( vertices->size() + 2 );
         (*vertices)[ newSize ] = (*vertices)[ oldSize ]; // Repeat first vert as closing vert.
-        (*vertices)[ newSize+1 ] = osg::Vec3( 0., 0., 0. );
+        (*vertices)[ newSize+1 ] = osg::Vec3( plane[0], plane[1], plane[2] ) * plane[3];
         newSize += 2;
     }
 
@@ -801,17 +819,42 @@ osgwTools::makeWireAltAzSphere( const osg::Matrix& m, const float radius, const 
 
 
 
-osg::Geometry*
-osgwTools::makeWireCircle( const float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geometry)
+osg::Geometry* osgwTools::makeCircle( const osg::Vec4& plane, const float radius, const unsigned int subdivisions, osg::Geometry* geometry )
 {
     osg::ref_ptr< osg::Geometry > geom( geometry );
     if( geom == NULL )
         geom = new osg::Geometry;
 
-    bool result = buildCircleData( radius, subdivisions, orientation, geom.get(), true );
+    bool result = buildCircleData( radius, subdivisions, plane, geom.get(), false );
     if( !result )
     {
         osg::notify( osg::WARN ) << "makeCircle: Error during circle build." << std::endl;
+        return( NULL );
+    } // if
+    else
+    {
+        return( geom.release() );
+    } // else
+}
+
+osg::Geometry* osgwTools::makeCircle( const osg::Matrix& m, const osg::Vec4& plane, const float radius, const unsigned int subdivisions, osg::Geometry* geometry )
+{
+    osg::Geometry* geom = osgwTools::makeCircle( plane, radius, subdivisions, geometry );
+    if( geom != NULL )
+        transform( m, geom );
+    return( geom );
+}
+
+osg::Geometry* osgwTools::makeWireCircle( const osg::Vec4& plane, const float radius, const unsigned int subdivisions, osg::Geometry* geometry )
+{
+    osg::ref_ptr< osg::Geometry > geom( geometry );
+    if( geom == NULL )
+        geom = new osg::Geometry;
+
+    bool result = buildCircleData( radius, subdivisions, plane, geom.get(), true );
+    if( !result )
+    {
+        osg::notify( osg::WARN ) << "makeWireCircle: Error during circle build." << std::endl;
         return( NULL );
     } // if
     else
@@ -822,12 +865,11 @@ osgwTools::makeWireCircle( const float radius, const unsigned int subdivisions, 
 
         return( geom.release() );
     } // else
-} // osgwTools::makeWireCircle
+}
 
-osg::Geometry*
-osgwTools::makeWireCircle( const osg::Matrix& m, const float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geometry)
+osg::Geometry* osgwTools::makeWireCircle( const osg::Matrix& m, const osg::Vec4& plane, const float radius, const unsigned int subdivisions, osg::Geometry* geometry )
 {
-    osg::Geometry* geom = osgwTools::makeWireCircle( radius, subdivisions, orientation, geometry );
+    osg::Geometry* geom = osgwTools::makeWireCircle( plane, radius, subdivisions, geometry );
     if( geom != NULL )
         transform( m, geom );
     return( geom );
@@ -837,29 +879,29 @@ osgwTools::makeWireCircle( const osg::Matrix& m, const float radius, const unsig
 osg::Geometry*
 osgwTools::makeCircle( const float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geometry)
 {
-    osg::ref_ptr< osg::Geometry > geom( geometry );
-    if( geom == NULL )
-        geom = new osg::Geometry;
-
-    bool result = buildCircleData( radius, subdivisions, orientation, geom.get(), false );
-    if( !result )
-    {
-        osg::notify( osg::WARN ) << "makeWireCircle: Error during circle build." << std::endl;
-        return( NULL );
-    } // if
-    else
-    {
-        return( geom.release() );
-    } // else
-} // osgwTools::makeCircle
+    const osg::Vec4 plane( orientation[0], orientation[1], orientation[2], 0. );
+    return( makeCircle( plane, radius, subdivisions, geometry ) );
+}
 
 osg::Geometry*
 osgwTools::makeCircle( const osg::Matrix& m, const float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geometry)
 {
-    osg::Geometry* geom = osgwTools::makeCircle( radius, subdivisions, orientation, geometry );
-    if( geom != NULL )
-        transform( m, geom );
-    return( geom );
+    const osg::Vec4 plane( orientation[0], orientation[1], orientation[2], 0. );
+    return( makeCircle( m, plane, radius, subdivisions, geometry ) );
+}
+
+osg::Geometry*
+osgwTools::makeWireCircle( const float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geometry)
+{
+    const osg::Vec4 plane( orientation[0], orientation[1], orientation[2], 0. );
+    return( makeWireCircle( plane, radius, subdivisions, geometry ) );
+}
+
+osg::Geometry*
+osgwTools::makeWireCircle( const osg::Matrix& m, const float radius, const unsigned int subdivisions, const osg::Vec3& orientation, osg::Geometry* geometry)
+{
+    const osg::Vec4 plane( orientation[0], orientation[1], orientation[2], 0. );
+    return( makeWireCircle( m, plane, radius, subdivisions, geometry ) );
 }
 
 
@@ -1424,6 +1466,24 @@ buildCylinderData( const double length, const double radius0, const double radiu
     }
     geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 
+    osg::Vec2Array* texCoords;
+    if( geometry->getTexCoordArray( 0 ) != NULL )
+    {
+        texCoords = dynamic_cast< osg::Vec2Array* >( geometry->getTexCoordArray( 0 ) );
+        if( texCoords == NULL )
+            return( false );
+    }
+    else
+    {
+        texCoords = new osg::Vec2Array;
+        geometry->setTexCoordArray( 0, texCoords );
+    }
+
+    osg::Vec4Array* osgC = new osg::Vec4Array;
+    osgC->push_back( osg::Vec4( 1., 1., 1., 1. ) );
+    geometry->setColorArray( osgC );
+    geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+
 
     osg::Vec4 plane( 0., 0., 1., 0. );
     // Generate a set of normals that we'll map to each cylinder hoop.
@@ -1433,13 +1493,23 @@ buildCylinderData( const double length, const double radius0, const double radiu
     int idx;
     for( idx=0; idx <= subCylinders; idx++ )
     {
-        plane[ 3 ] = length * (double)idx / (double)subCylinders;
+        const double percent( (double)idx / (double)subCylinders );
+        plane[ 3 ] = length * percent;
 
         radius = radius0 + ( idx * radiusDelta );
         osg::ref_ptr< osg::Vec3Array > cVerts = generateCircleVertices( subdivisions[ 1 ], radius, plane, true );
         vertices->insert( vertices->end(), cVerts->begin(), cVerts->end() );
 
         normals->insert( normals->end(), cNorms->begin(), cNorms->end() );
+
+        const double tVal( percent );
+        texCoords->reserve( vertices->size() );
+        unsigned int tcIdx;
+        for( tcIdx = 0; tcIdx < cVerts->size(); tcIdx++ )
+        {
+            const double sVal( (double)tcIdx / (double)( cVerts->size() - 1 ) );
+            texCoords->push_back( osg::Vec2( sVal, tVal ) );
+        }
     }
 
 
@@ -1483,6 +1553,34 @@ osg::Geometry*
 osgwTools::makeOpenCylinder( const osg::Matrix& m, const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
 {
     osg::Geometry* geom = osgwTools::makeOpenCylinder( length, radius0, radius1, subdivisions, geometry );
+    if( geom != NULL )
+        transform( m, geom );
+    return( geom );
+}
+
+osg::Geometry*
+osgwTools::makeClosedCylinder( const double length, const double radius0, const double radius1, const bool cap0, const bool cap1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    osg::Geometry* geom = osgwTools::makeOpenCylinder( length, radius0, radius1, subdivisions, geometry );
+
+    if( cap0 )
+    {
+        makeCircle( radius0, subdivisions[ 1 ], osg::Vec3( 0., 0., -1. ), geom );
+    }
+
+    if( cap1 )
+    {
+        osg::Vec4 plane( 0., 0., 1., length );
+        makeCircle( plane, radius1, subdivisions[ 1 ], geom );
+    }
+
+    return( geom );
+}
+
+osg::Geometry*
+osgwTools::makeClosedCylinder( const osg::Matrix& m, const double length, const double radius0, const double radius1, const bool cap0, const bool cap1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    osg::Geometry* geom = osgwTools::makeClosedCylinder( length, radius0, radius1, cap0, cap1, subdivisions, geometry );
     if( geom != NULL )
         transform( m, geom );
     return( geom );
