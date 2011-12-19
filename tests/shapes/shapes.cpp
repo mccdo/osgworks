@@ -116,7 +116,7 @@ main( int argc,
     mt->addChild( geode.get() );
 
     geode = new osg::Geode;
-    geode->addDrawable( osgwTools::makeClosedCylinder( 1.5, .75, .5, true, true, osg::Vec2s( 2, 14 ) ) );
+    geode->addDrawable( osgwTools::makeClosedCylinder( 1.5, .6, .6, true, true, osg::Vec2s( 2, 14 ) ) );
     mt = new osg::MatrixTransform( osg::Matrix::translate( 9., 0., 0. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
@@ -130,6 +130,18 @@ main( int argc,
     geode = new osg::Geode;
     geode->addDrawable( osgwTools::makeCone( 1.5, .75, osg::Vec2s( 3, 12 ) ) );
     mt = new osg::MatrixTransform( osg::Matrix::translate( 6., 0., 3. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
+
+    geode = new osg::Geode;
+    geode->addDrawable( osgwTools::makeWireCapsule( .9, .5, osg::Vec2s( 2, 20 ) ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 6., 0., -6. ) );
+    root->addChild( mt.get() );
+    mt->addChild( geode.get() );
+
+    geode = new osg::Geode;
+    geode->addDrawable( osgwTools::makeCapsule( .9, .5, osg::Vec2s( 1, 6 ) ) );
+    mt = new osg::MatrixTransform( osg::Matrix::translate( 9., 0., -6. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
 
@@ -157,7 +169,7 @@ main( int argc,
 
     geode = new osg::Geode;
     m = osg::Matrix::rotate( .8, axis ) * osg::Matrix::translate( 9., 5., 0. );
-    geode->addDrawable( osgwTools::makeClosedCylinder( m, 1.5, .75, .5, true, true, osg::Vec2s( 2, 14 ) ) );
+    geode->addDrawable( osgwTools::makeClosedCylinder( m, 1.5, .6, .6, true, true, osg::Vec2s( 2, 14 ) ) );
     root->addChild( geode.get() );
 
 

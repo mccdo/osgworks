@@ -1680,3 +1680,171 @@ osgwTools::makeCone( const osg::Matrix& m, const double length, const double rad
 {
     return( makeClosedCylinder( m, length, radius, 0., true, false, subdivisions, geometry ) );
 }
+
+
+static bool
+buildCapsuleData( const double length, const double radius, const osg::Vec2s& subdivisions, osg::Geometry* geometry, const bool wire )
+{
+    // Note: For simplicity, subdivisions around the capsule must be at least
+    // 8 and must be even.
+    unsigned short subs = osg::maximum< unsigned short >( 8, subdivisions[ 1 ] );
+    if( subs & 0x1 )
+        subs++;
+
+    buildCylinderData( length, radius, radius, osg::Vec2s( subdivisions[ 0 ], subs ), geometry, wire );
+
+    osg::ref_ptr< osg::Vec3Array > vertices = dynamic_cast< osg::Vec3Array* >( geometry->getVertexArray() );
+    if( vertices == NULL )
+        return( false );
+
+    osg::ref_ptr< osg::Vec3Array > normals;
+    osg::ref_ptr< osg::Vec2Array > texCoords;
+    if( !wire )
+    {
+        normals = dynamic_cast< osg::Vec3Array* >( geometry->getNormalArray() );
+        if( normals == NULL )
+            return( false );
+        texCoords = dynamic_cast< osg::Vec2Array* >( geometry->getTexCoordArray( 0 ) );
+        if( texCoords == NULL )
+            return( false );
+    }
+
+
+    const unsigned int capStartIdx( vertices->size() );
+
+    int numHoops = osg::maximum< int >( ( subs >> 2 ) - 1, 1 );
+    double latDelta = osg::PI_2 / ( numHoops + 1 );
+    int idx;
+    // Capsule bottom
+    double lat( osg::PI_2 );
+    vertices->insert( vertices->end(), osg::Vec3( 0., 0., -radius ) );
+    for( idx=0; idx<numHoops; idx++ )
+    {
+        lat -= latDelta;
+        const double height = sin( lat ) * radius;
+        const double tempRad = cos( lat ) * radius;
+        const osg::Vec4 plane( 0., 0., 1., -height );
+        osg::ref_ptr< osg::Vec3Array > v = generateCircleVertices( subs, tempRad, plane, !wire );
+
+        vertices->insert( vertices->end(), v->begin(), v->end() );
+
+        if( !wire )
+        {
+            // TBD add normals and tex coords
+        }
+    }
+    // Capsule top
+    lat = 0.;
+    for( idx=0; idx<numHoops; idx++ )
+    {
+        lat += latDelta;
+        const double height = sin( lat ) * radius;
+        const double tempRad = cos( lat ) * radius;
+        const osg::Vec4 plane( 0., 0., 1., length + height );
+        osg::ref_ptr< osg::Vec3Array > v = generateCircleVertices( subs, tempRad, plane, !wire );
+
+        vertices->insert( vertices->end(), v->begin(), v->end() );
+    }
+    vertices->insert( vertices->end(), osg::Vec3( 0., 0., length + radius ) );
+
+
+    // PrimitiveSets
+    if( !wire )
+    {
+        // Solid capsule TBD
+        osg::notify( osg::WARN ) << "buildCapsuleData: Non-wire capsule is under development." << std::endl;
+        osg::notify( osg::WARN ) << "\tRendering may be incorrect." << std::endl;
+    }
+    else
+    {
+        unsigned short vIdx( (unsigned short)capStartIdx + 1 );
+        for( idx=0; idx < numHoops * 2; idx++ )
+        {
+            osg::DrawElementsUShort* deus = new osg::DrawElementsUShort( GL_LINE_LOOP );
+            deus->reserve( subs );
+            for( int count=0; count < subs; count++ )
+                deus->push_back( vIdx++ );
+            geometry->addPrimitiveSet( deus );
+        }
+
+        unsigned int topCapStart = capStartIdx + (subs * numHoops) + 1;
+        for( idx=0; idx < subs; idx++ )
+        {
+            osg::DrawElementsUShort* deus = new osg::DrawElementsUShort( GL_LINE_STRIP );
+            deus->reserve( numHoops + 2 );
+            deus->push_back( capStartIdx );
+            for( int jdx=0; jdx<numHoops; jdx++ )
+                deus->push_back( capStartIdx + ( jdx * subs ) + 1 + idx );
+            deus->push_back( idx );
+            geometry->addPrimitiveSet( deus );
+
+            deus = new osg::DrawElementsUShort( GL_LINE_STRIP );
+            deus->reserve( numHoops + 2 );
+            deus->push_back( capStartIdx - subs + idx );
+            for( int jdx=0; jdx<numHoops; jdx++ )
+                deus->push_back( topCapStart + ( jdx * subs ) + idx );
+            deus->push_back( vertices->size() - 1 );
+            geometry->addPrimitiveSet( deus );
+        }
+    }
+
+    return( true );
+}
+
+osg::Geometry*
+osgwTools::makeCapsule( const double length, const double radius, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    osg::ref_ptr< osg::Geometry > geom( geometry );
+    if( geom == NULL )
+        geom = new osg::Geometry;
+
+    bool result = buildCapsuleData( length, radius, subdivisions, geom.get(), false );
+    if( !result )
+    {
+        osg::notify( osg::WARN ) << "makeCapsule: Error during capsule build." << std::endl;
+        return( NULL );
+    }
+    else
+        return( geom.release() );
+}
+
+osg::Geometry*
+osgwTools::makeCapsule( const osg::Matrix& m, const double length, const double radius, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    osg::Geometry* geom = osgwTools::makeCapsule( length, radius, subdivisions, geometry );
+    if( geom != NULL )
+        transform( m, geom );
+    return( geom );
+}
+
+osg::Geometry*
+osgwTools::makeWireCapsule( const double length, const double radius, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    osg::ref_ptr< osg::Geometry > geom( geometry );
+    if( geom == NULL )
+        geom = new osg::Geometry;
+
+    bool result = buildCapsuleData( length, radius, subdivisions, geom.get(), true );
+    if( !result )
+    {
+        osg::notify( osg::WARN ) << "makeWireCapsule: Error during capsule build." << std::endl;
+        return( NULL );
+    }
+    else
+    {
+        // Disable lighting for wire primitives.
+        geom->getOrCreateStateSet()->setMode( GL_LIGHTING,
+            osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+
+        return( geom.release() );
+    }
+}
+
+osg::Geometry*
+osgwTools::makeWireCapsule( const osg::Matrix& m, const double length, const double radius, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    osg::Geometry* geom = osgwTools::makeWireCapsule( length, radius, subdivisions, geometry );
+    if( geom != NULL )
+        transform( m, geom );
+    return( geom );
+}
