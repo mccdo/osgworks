@@ -178,13 +178,28 @@ OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const osg::Matrix& m, const float ra
 
 
 /** \brief Creates a wireframe circle.
-
-Makes an axis-aligned wireframe circle using GL_LINE_LOOP PrimitiveSets. */
+*/
 OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
 /** \brief A transformed wireframe circle/disk.
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const osg::Matrix& m, const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
+
+/** \brief Circle/disk in an arbitrary plane.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const osg::Vec4& plane, const float radius=1., const unsigned int subdivisions=32, osg::Geometry* geometry=NULL );
+
+/** \brief Transformed circle/disk in an arbitrary plane.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const osg::Matrix& m, const osg::Vec4& plane, const float radius=1., const unsigned int subdivisions=32, osg::Geometry* geometry=NULL );
+
+/** \brief Wireframe circle in an arbitrary plane.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const osg::Vec4& plane, const float radius=1., const unsigned int subdivisions=32, osg::Geometry* geometry=NULL );
+
+/** \brie Transformed wireframe circle/disk in an arbitrary plane.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const osg::Matrix& m, const osg::Vec4& plane, const float radius=1., const unsigned int subdivisions=32, osg::Geometry* geometry=NULL );
 
 /*@}*/
 
@@ -222,6 +237,18 @@ OSGWTOOLS_EXPORT osg::Geometry* makeOpenCylinder( const double length=1., const 
 Full documentation is To Be Done.
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeOpenCylinder( const osg::Matrix& m, const double length=1., const double radius0=1., const double radius1=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
+
+/** \brief Creates an cylinder with optional end caps.
+
+Full documentation is To Be Done.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeClosedCylinder( const double length=1., const double radius0=1., const double radius1=1., const bool cap0=true, const bool cap1=true, const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
+
+/** \brief Creates a transformed cylinder with optional end caps.
+
+Full documentation is To Be Done.
+*/
+OSGWTOOLS_EXPORT osg::Geometry* makeClosedCylinder( const osg::Matrix& m, const double length=1., const double radius0=1., const double radius1=1., const bool cap0=true, const bool cap1=true, const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
 /*@}*/
 
