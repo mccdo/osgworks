@@ -1432,7 +1432,7 @@ osgwTools::makeArrow( const osg::Matrix& m, osg::Geometry* geometry )
 
 
 static bool
-buildCylinderData( const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+buildCylinderData( const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry, const bool wire )
 {
     int subCylinders = subdivisions[ 0 ];
     if( subCylinders < 1 )
@@ -1453,30 +1453,33 @@ buildCylinderData( const double length, const double radius0, const double radiu
     }
 
     osg::Vec3Array* normals;
-    if( geometry->getNormalArray() != NULL )
-    {
-        normals = dynamic_cast< osg::Vec3Array* >( geometry->getNormalArray() );
-        if( normals == NULL )
-            return( false );
-    }
-    else
-    {
-        normals = new osg::Vec3Array;
-        geometry->setNormalArray( normals );
-    }
-    geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
-
     osg::Vec2Array* texCoords;
-    if( geometry->getTexCoordArray( 0 ) != NULL )
+    if( !wire )
     {
-        texCoords = dynamic_cast< osg::Vec2Array* >( geometry->getTexCoordArray( 0 ) );
-        if( texCoords == NULL )
-            return( false );
-    }
-    else
-    {
-        texCoords = new osg::Vec2Array;
-        geometry->setTexCoordArray( 0, texCoords );
+        if( geometry->getNormalArray() != NULL )
+        {
+            normals = dynamic_cast< osg::Vec3Array* >( geometry->getNormalArray() );
+            if( normals == NULL )
+                return( false );
+        }
+        else
+        {
+            normals = new osg::Vec3Array;
+            geometry->setNormalArray( normals );
+        }
+        geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+
+        if( geometry->getTexCoordArray( 0 ) != NULL )
+        {
+            texCoords = dynamic_cast< osg::Vec2Array* >( geometry->getTexCoordArray( 0 ) );
+            if( texCoords == NULL )
+                return( false );
+        }
+        else
+        {
+            texCoords = new osg::Vec2Array;
+            geometry->setTexCoordArray( 0, texCoords );
+        }
     }
 
     osg::Vec4Array* osgC = new osg::Vec4Array;
@@ -1485,48 +1488,83 @@ buildCylinderData( const double length, const double radius0, const double radiu
     geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
 
 
-    osg::Vec4 plane( 0., 0., 1., 0. );
     // Generate a set of normals that we'll map to each cylinder hoop.
-    osg::ref_ptr< osg::Vec3Array > cNorms = generateCircleVertices( subdivisions[ 1 ], 1., plane, true );
+    osg::Vec4 plane( 0., 0., 1., 0. );
+    osg::ref_ptr< osg::Vec3Array > cNorms;
+    if( !wire )
+        cNorms = generateCircleVertices( subdivisions[ 1 ], 1., plane, true );
 
-    double radius;
     int idx;
     for( idx=0; idx <= subCylinders; idx++ )
     {
         const double percent( (double)idx / (double)subCylinders );
         plane[ 3 ] = length * percent;
 
-        radius = radius0 + ( idx * radiusDelta );
-        osg::ref_ptr< osg::Vec3Array > cVerts = generateCircleVertices( subdivisions[ 1 ], radius, plane, true );
+        const double radius = radius0 + ( idx * radiusDelta );
+        osg::ref_ptr< osg::Vec3Array > cVerts = generateCircleVertices( subdivisions[ 1 ], radius, plane, !wire );
         vertices->insert( vertices->end(), cVerts->begin(), cVerts->end() );
 
-        normals->insert( normals->end(), cNorms->begin(), cNorms->end() );
-
-        const double tVal( percent );
-        texCoords->reserve( vertices->size() );
-        unsigned int tcIdx;
-        for( tcIdx = 0; tcIdx < cVerts->size(); tcIdx++ )
+        if( !wire )
         {
-            const double sVal( (double)tcIdx / (double)( cVerts->size() - 1 ) );
-            texCoords->push_back( osg::Vec2( sVal, tVal ) );
+            normals->insert( normals->end(), cNorms->begin(), cNorms->end() );
+
+            const double tVal( percent );
+            texCoords->reserve( vertices->size() );
+            unsigned int tcIdx;
+            for( tcIdx = 0; tcIdx < cVerts->size(); tcIdx++ )
+            {
+                const double sVal( (double)tcIdx / (double)( cVerts->size() - 1 ) );
+                texCoords->push_back( osg::Vec2( sVal, tVal ) );
+            }
         }
     }
 
 
     // Add PrimitiveSets
-    const unsigned int vertCount = vertices->size() / ( subCylinders + 1 );
-    for( idx=0; idx < subCylinders; idx++ )
+
+    if( !wire )
     {
-        osg::DrawElementsUShort* deus = new osg::DrawElementsUShort( GL_TRIANGLE_STRIP );
-        unsigned int vIdx = vertCount * ( idx + 1 );
-        unsigned int innerIdx;
-        for( innerIdx = 0; innerIdx < vertCount; innerIdx++ )
+        const unsigned int vertCount = vertices->size() / ( subCylinders + 1 );
+        for( idx=0; idx < subCylinders; idx++ )
         {
-            deus->push_back( vIdx );
-            deus->push_back( vIdx - vertCount );
-            vIdx++;
+            osg::DrawElementsUShort* deus = new osg::DrawElementsUShort( GL_TRIANGLE_STRIP );
+            unsigned int vIdx = vertCount * ( idx + 1 );
+            unsigned int innerIdx;
+            for( innerIdx = 0; innerIdx < vertCount; innerIdx++ )
+            {
+                deus->push_back( vIdx );
+                deus->push_back( vIdx - vertCount );
+                vIdx++;
+            }
+            geometry->addPrimitiveSet( deus );
         }
-        geometry->addPrimitiveSet( deus );
+    }
+    else
+    {
+        const unsigned int vertCount = vertices->size() / ( subCylinders + 1 );
+        unsigned int vIdx = 0;
+        for( idx=0; idx <= subCylinders; idx++ )
+        {
+            osg::DrawElementsUShort* deus = new osg::DrawElementsUShort( GL_LINE_LOOP );
+            deus->reserve( vertCount );
+            unsigned int innerIdx;
+            for( innerIdx = 0; innerIdx < vertCount; innerIdx++ )
+            {
+                deus->push_back( vIdx );
+                vIdx++;
+            }
+            geometry->addPrimitiveSet( deus );
+        }
+
+        const unsigned int lineIndex = vertices->size() - vertCount;
+        osg::DrawElementsUShort* deusl = new osg::DrawElementsUShort( GL_LINES );
+        deusl->reserve( vertCount * 2 );
+        for( vIdx=0; vIdx<vertCount; vIdx++ )
+        {
+            deusl->push_back( vIdx );
+            deusl->push_back( vIdx + lineIndex );
+        }
+        geometry->addPrimitiveSet( deusl );
     }
 
     return( true );
@@ -1539,7 +1577,7 @@ osgwTools::makeOpenCylinder( const double length, const double radius0, const do
     if( geom == NULL )
         geom = new osg::Geometry;
 
-    bool result = buildCylinderData( length, radius0, radius1, subdivisions, geom.get() );
+    bool result = buildCylinderData( length, radius0, radius1, subdivisions, geom.get(), false );
     if( !result )
     {
         osg::notify( osg::WARN ) << "makeOpenCylinder: Error during cylinder build." << std::endl;
@@ -1562,15 +1600,27 @@ osg::Geometry*
 osgwTools::makeClosedCylinder( const double length, const double radius0, const double radius1, const bool cap0, const bool cap1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
 {
     osg::Geometry* geom = osgwTools::makeOpenCylinder( length, radius0, radius1, subdivisions, geometry );
+    if( geom == NULL )
+    {
+        osg::notify( osg::WARN ) << "makeClosedCylinder: Error during cylinder build." << std::endl;
+        return( NULL );
+    }
 
+    // Calling makeCircle does result in repeating vertices.
+    // However, this is required when rendering a solid cylinder
+    // because the normals and tex coords for those shared
+    // vertices are different.
+
+    osg::Vec4 plane( 0., 0., -1., 0. );
     if( cap0 )
     {
-        makeCircle( radius0, subdivisions[ 1 ], osg::Vec3( 0., 0., -1. ), geom );
+        makeCircle( plane, radius0, subdivisions[ 1 ], geom );
     }
 
     if( cap1 )
     {
-        osg::Vec4 plane( 0., 0., 1., length );
+        plane[2] = 1.;
+        plane[3] = length;
         makeCircle( plane, radius1, subdivisions[ 1 ], geom );
     }
 
@@ -1584,4 +1634,49 @@ osgwTools::makeClosedCylinder( const osg::Matrix& m, const double length, const 
     if( geom != NULL )
         transform( m, geom );
     return( geom );
+}
+
+osg::Geometry*
+osgwTools::makeWireCylinder( const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    osg::ref_ptr< osg::Geometry > geom( geometry );
+    if( geom == NULL )
+        geom = new osg::Geometry;
+
+    bool result = buildCylinderData( length, radius0, radius1, subdivisions, geom.get(), true );
+    if( !result )
+    {
+        osg::notify( osg::WARN ) << "makeWireCylinder: Error during cylinder build." << std::endl;
+        return( NULL );
+    }
+    else
+    {
+        // Disable lighting for wire primitives.
+        geom->getOrCreateStateSet()->setMode( GL_LIGHTING,
+            osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+
+        return( geom.release() );
+    }
+}
+
+osg::Geometry*
+osgwTools::makeWireCylinder( const osg::Matrix& m, const double length, const double radius0, const double radius1, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    osg::Geometry* geom = osgwTools::makeWireCylinder( length, radius0, radius1, subdivisions, geometry );
+    if( geom != NULL )
+        transform( m, geom );
+    return( geom );
+}
+
+
+osg::Geometry*
+osgwTools::makeCone( const double length, const double radius, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    return( makeClosedCylinder( length, radius, 0., true, false, subdivisions, geometry ) );
+}
+
+osg::Geometry*
+osgwTools::makeCone( const osg::Matrix& m, const double length, const double radius, const osg::Vec2s& subdivisions, osg::Geometry* geometry )
+{
+    return( makeClosedCylinder( m, length, radius, 0., true, false, subdivisions, geometry ) );
 }
