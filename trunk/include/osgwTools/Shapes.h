@@ -283,6 +283,15 @@ makeClosedCylinder( m, length, radius, 0., true, false, subdivisions, geometry )
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeCone( const osg::Matrix& m, const double length=1., const double radius=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
+
+OSGWTOOLS_EXPORT osg::Geometry* makeCapsule( const double length=1., const double radius=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
+
+OSGWTOOLS_EXPORT osg::Geometry* makeCapsule( const osg::Matrix& m, const double length=1., const double radius=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
+
+OSGWTOOLS_EXPORT osg::Geometry* makeWireCapsule( const double length=1., const double radius=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
+
+OSGWTOOLS_EXPORT osg::Geometry* makeWireCapsule( const osg::Matrix& m, const double length=1., const double radius=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
+
 /*@}*/
 
 /*@}*/
