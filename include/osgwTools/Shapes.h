@@ -163,41 +163,55 @@ OSGWTOOLS_EXPORT osg::Geometry* makeWireBox( const osg::Matrix& m, const osg::Ve
 /** \defgroup CircleShapes Circle generation routines */
 /*@{*/
 
-/** \brief Creates a circle or disk.
-
-Makes an axis-aligned circle (solid disk) using GL_TRIANGLE_FAN PrimitiveSets. Dimensions
-are (halfExtents*2). By default, the function creates a circle approximated with 32 segments. 
-However, you can change the approximation with the subdivision's parameter. 
-The function creates normals per vertex and texture coordinates in unit 0. The texture coordinate data
-is suitable for applying an entire texture map to the face of the disk. */
+/** \brief Creates a circle or disk. Deprecated.
+\deprecated Use makeCircle(const osg::Vec4&,const float,const unsigned int,osg::Geometry*).
+*/
 OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
-/** \brief A transformed circle/disk.
+/** \brief A transformed circle/disk. Deprecated.
+\deprecated Use makeCircle(const osg::Matrix&,const osg::Vec4&,const float,const unsigned int,osg::Geometry*).
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const osg::Matrix& m, const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
-
-/** \brief Creates a wireframe circle.
+/** \brief Creates a wireframe circle. Deprecated.
+\deprecated Use makeWireCircle(const osg::Vec4&,const float,const unsigned int,osg::Geometry*).
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
-/** \brief A transformed wireframe circle/disk.
+/** \brief A transformed wireframe circle/disk. Deprecated.
+\deprecated Use makeWireCircle(const osg::Matrix&,const osg::Vec4&,const float,const unsigned int,osg::Geometry*).
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const osg::Matrix& m, const float radius=1., const unsigned int subdivisions=32, const osg::Vec3& orientation=osg::Vec3( 0., 0., 1. ), osg::Geometry* geometry=NULL );
 
-/** \brief Circle/disk in an arbitrary plane.
+
+/** \brief Creates a circle/disk in an arbitrary plane.
+
+Makes a filled disk using a GL_TRIANGLE_FAN PrimitiveSet. The disk is centered at the origin
+projected onto \c plane, and has the specified \radius. \c subdivisions specified the number
+of triangles in the fan. The disk's normal is taken from the \c plane equation. The function
+creates normals per vertex and texture coordinates in unit 0. The texture coordinate data is
+suitable for applying an entire texture map to the face of the disk.
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const osg::Vec4& plane, const float radius=1., const unsigned int subdivisions=32, osg::Geometry* geometry=NULL );
 
-/** \brief Transformed circle/disk in an arbitrary plane.
+/** \brief A transformed circle/disk in an arbitrary plane.
+
+Equivalent to the non-transformed variant, but transforms all vertices and
+normals. See \ref Transform.
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeCircle( const osg::Matrix& m, const osg::Vec4& plane, const float radius=1., const unsigned int subdivisions=32, osg::Geometry* geometry=NULL );
 
 /** \brief Wireframe circle in an arbitrary plane.
+
+Equivalent to makeCircle(), but uses a single GL_LINE_LOOP primitive, doesn't create normals
+or texture coordinates, and disables lighting and texture mapping.
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const osg::Vec4& plane, const float radius=1., const unsigned int subdivisions=32, osg::Geometry* geometry=NULL );
 
-/** \brie Transformed wireframe circle/disk in an arbitrary plane.
+/** \brief A transformed wireframe circle/disk in an arbitrary plane.
+
+Equivalent to the non-transformed variant, but transforms all vertices and
+normals. See \ref Transform.
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireCircle( const osg::Matrix& m, const osg::Vec4& plane, const float radius=1., const unsigned int subdivisions=32, osg::Geometry* geometry=NULL );
 
@@ -228,37 +242,47 @@ OSGWTOOLS_EXPORT osg::Geometry* makeArrow( const osg::Matrix& m, osg::Geometry* 
 
 /** \brief Creates an open-ended cylinder.
 
-Full documentation is To Be Done.
+Creates a cylinder centered on the z axis with ends at z = 0 and z = \c length.
+If the end radii \c radius0 and \c radius1 are not equal, the cylinder radius
+varies linearly along the cylinger length. Element 0 of \c subdivisions controls
+the number of sub-cylinders along the cylinder length, and must be >= 1. Element
+1 of \c subdivisions controls the angular approxumation around the cylinder and
+must be >= 3.
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeOpenCylinder( const double length=1., const double radius0=1., const double radius1=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
 /** \brief A transformed open-ended cylinder.
 
-Full documentation is To Be Done.
+Equivalent to the non-transformed variant, but transforms all vertices and
+normals. See \ref Transform.
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeOpenCylinder( const osg::Matrix& m, const double length=1., const double radius0=1., const double radius1=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
 /** \brief Creates an cylinder with optional end caps.
 
-Full documentation is To Be Done.
+Calls makeOpenCylinder to create a cylinder, then calls makeCircle to create
+end caps. Control end cap creation with \c end0 and \c end1.
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeClosedCylinder( const double length=1., const double radius0=1., const double radius1=1., const bool cap0=true, const bool cap1=true, const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
 /** \brief Creates a transformed cylinder with optional end caps.
 
-Full documentation is To Be Done.
+Equivalent to the non-transformed variant, but transforms all vertices and
+normals. See \ref Transform.
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeClosedCylinder( const osg::Matrix& m, const double length=1., const double radius0=1., const double radius1=1., const bool cap0=true, const bool cap1=true, const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
 /** \brief Creates a wireframe cylinder.
 
-Full documentation is To Be Done.
+Equivalent to makeOpenCylinder, but uses line primitive types and disables both
+lighting and texture mapping.
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireCylinder( const double length=1., const double radius0=1., const double radius1=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
 /** \brief Creates a transformed wireframe cylinder.
 
-Full documentation is To Be Done.
+Equivalent to the non-transformed variant, but transforms all vertices and
+normals. See \ref Transform.
 */
 OSGWTOOLS_EXPORT osg::Geometry* makeWireCylinder( const osg::Matrix& m, const double length=1., const double radius0=1., const double radius1=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
@@ -284,12 +308,36 @@ makeClosedCylinder( m, length, radius, 0., true, false, subdivisions, geometry )
 OSGWTOOLS_EXPORT osg::Geometry* makeCone( const osg::Matrix& m, const double length=1., const double radius=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
 
+/** \brief Creates a capsule shape.
+
+A capsule is a cylinder with closed hemispherical end caps. The cylinder / capsule
+is centered on the z axis. The total capsule length is ( \c length + ( \c radius
+* 2 ) ), with ends at z = \c -radius and z = \c length + \c radius. Element 0
+of \c subdivisions controls the number of sub-cylinders along the capsule's
+cylinder body length, and must be >= 1. Element 1 of \c subdivisions controls the
+angular approxumation around the cylinder / capsule and must be >= 3.
+*/
 OSGWTOOLS_EXPORT osg::Geometry* makeCapsule( const double length=1., const double radius=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
+/** \brief A transformed capsule shape.
+
+Equivalent to the non-transformed variant, but transforms all vertices and
+normals. See \ref Transform.
+*/
 OSGWTOOLS_EXPORT osg::Geometry* makeCapsule( const osg::Matrix& m, const double length=1., const double radius=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
+/** \brief Creates a wireframe capsule shape.
+
+Equivalent to makeCapsule, but uses line primitive types and disables both
+lighting and texture mapping.
+*/
 OSGWTOOLS_EXPORT osg::Geometry* makeWireCapsule( const double length=1., const double radius=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
+/** \brief A transformed wireframe capsule shape.
+
+Equivalent to the non-transformed variant, but transforms all vertices and
+normals. See \ref Transform.
+*/
 OSGWTOOLS_EXPORT osg::Geometry* makeWireCapsule( const osg::Matrix& m, const double length=1., const double radius=1., const osg::Vec2s& subdivisions=osg::Vec2s( 1, 8 ), osg::Geometry* geometry=NULL );
 
 /*@}*/
