@@ -1718,6 +1718,11 @@ buildCapsuleData( const double length, const double radius, const osg::Vec2s& su
     // Capsule bottom
     double lat( osg::PI_2 );
     vertices->insert( vertices->end(), osg::Vec3( 0., 0., -radius ) );
+    if( !wire )
+    {
+        normals->push_back( osg::Vec3( 0., 0., -1. ) );
+        texCoords->push_back( osg::Vec2( 0., 0. ) );
+    }
     for( idx=0; idx<numHoops; idx++ )
     {
         lat -= latDelta;
@@ -1730,7 +1735,13 @@ buildCapsuleData( const double length, const double radius, const osg::Vec2s& su
 
         if( !wire )
         {
-            // TBD add normals and tex coords
+            for( unsigned int vIdx=0; vIdx < v->size(); vIdx++ )
+            {
+                osg::Vec3 normal = (*v)[ vIdx ];
+                normal.normalize();
+                normals->push_back( normal );
+                texCoords->push_back( osg::Vec2( normal[ 0 ], normal[ 1 ] ) );
+            }
         }
     }
     // Capsule top
@@ -1744,19 +1755,88 @@ buildCapsuleData( const double length, const double radius, const osg::Vec2s& su
         osg::ref_ptr< osg::Vec3Array > v = generateCircleVertices( subs, tempRad, plane, !wire );
 
         vertices->insert( vertices->end(), v->begin(), v->end() );
+
+        if( !wire )
+        {
+            // TBD add normals and tex coords
+            const osg::Vec3 center( 0., 0., length );
+            for( unsigned int vIdx=0; vIdx < v->size(); vIdx++ )
+            {
+                osg::Vec3 normal = (*v)[ vIdx ] - center;
+                normal.normalize();
+                normals->push_back( normal );
+                texCoords->push_back( osg::Vec2( normal[ 0 ], normal[ 1 ] ) );
+            }
+        }
     }
     vertices->insert( vertices->end(), osg::Vec3( 0., 0., length + radius ) );
+    if( !wire )
+    {
+        normals->push_back( osg::Vec3( 0., 0., 1. ) );
+        texCoords->push_back( osg::Vec2( 0., 0. ) );
+    }
 
 
     // PrimitiveSets
     if( !wire )
     {
-        // Solid capsule TBD
-        osg::notify( osg::WARN ) << "buildCapsuleData: Non-wire capsule is under development." << std::endl;
-        osg::notify( osg::WARN ) << "\tRendering may be incorrect." << std::endl;
+        // Solid capsule
+        int vIdx;
+
+        osg::DrawElementsUShort* deus = new osg::DrawElementsUShort( GL_TRIANGLE_FAN );
+        deus->reserve( subs + 2 );
+        deus->push_back( capStartIdx );
+        for( vIdx=subs; vIdx >= 0; vIdx-- )
+            deus->push_back( capStartIdx + vIdx + 1 );
+        geometry->addPrimitiveSet( deus );
+
+        unsigned int cylIdx = 0;
+        vIdx = 0;
+        int hIdx;
+        for( hIdx=0; hIdx < numHoops; hIdx++ )
+        {
+            deus = new osg::DrawElementsUShort( GL_TRIANGLE_STRIP );
+            deus->reserve( ( subs + 1 ) * 2 );
+            for( idx=0; idx <= subs; idx++ )
+            {
+                if( hIdx == numHoops-1 )
+                    deus->push_back( cylIdx++ );
+                else
+                    deus->push_back( capStartIdx + vIdx + subs + 2 );
+                deus->push_back( capStartIdx + vIdx + 1 );
+                vIdx++;
+            }
+            geometry->addPrimitiveSet( deus );
+        }
+
+        cylIdx = capStartIdx - subs - 1;
+        for( hIdx=0; hIdx < numHoops; hIdx++ )
+        {
+            deus = new osg::DrawElementsUShort( GL_TRIANGLE_STRIP );
+            deus->reserve( ( subs + 1 ) * 2 );
+            for( idx=0; idx <= subs; idx++ )
+            {
+                deus->push_back( capStartIdx + vIdx + 1 );
+                if( hIdx == 0 )
+                    deus->push_back( cylIdx++ );
+                else
+                    deus->push_back( capStartIdx + vIdx - subs );
+                vIdx++;
+            }
+            geometry->addPrimitiveSet( deus );
+        }
+
+        vIdx -= ( subs + 1 );
+        deus = new osg::DrawElementsUShort( GL_TRIANGLE_FAN );
+        deus->reserve( subs + 2 );
+        deus->push_back( vertices->size() - 1 );
+        for( ; capStartIdx + vIdx + 1 < vertices->size() - 1; vIdx++ )
+            deus->push_back( capStartIdx + vIdx + 1 );
+        geometry->addPrimitiveSet( deus );
     }
     else
     {
+        // Wire capsule
         unsigned short vIdx( (unsigned short)capStartIdx + 1 );
         for( idx=0; idx < numHoops * 2; idx++ )
         {
