@@ -1687,9 +1687,7 @@ buildCapsuleData( const double length, const double radius, const osg::Vec2s& su
 {
     // Note: For simplicity, subdivisions around the capsule must be at least
     // 8 and must be even.
-    unsigned short subs = osg::maximum< unsigned short >( 8, subdivisions[ 1 ] );
-    if( subs & 0x1 )
-        subs++;
+    unsigned short subs = osg::maximum< unsigned short >( 3, subdivisions[ 1 ] );
 
     buildCylinderData( length, radius, radius, osg::Vec2s( subdivisions[ 0 ], subs ), geometry, wire );
 
