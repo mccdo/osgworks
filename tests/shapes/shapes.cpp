@@ -23,8 +23,6 @@
 #include <osgDB/ReadFile>
 
 #include <osg/MatrixTransform>
-#include <osg/CullFace>
-#include <osg/PolygonMode>
 #include <osg/Texture2D>
 
 #include <osgwTools/Shapes.h>
@@ -172,6 +170,13 @@ main( int argc,
     geode->addDrawable( osgwTools::makeClosedCylinder( m, 1.5, .6, .6, true, true, osg::Vec2s( 2, 14 ) ) );
     root->addChild( geode.get() );
 
+
+    if( false ) // Enable to test texture mapping and tex coords.
+    {
+        osg::Image* image = osgDB::readImageFile( "testpattern.png" );
+        osg::Texture2D* tex = new osg::Texture2D( image );
+        root->getOrCreateStateSet()->setTextureAttributeAndModes( 0, tex );
+    }
 
     osgGA::StateSetManipulator* ssmanip = new osgGA::StateSetManipulator;
     ssmanip->setStateSet( root->getOrCreateStateSet() );

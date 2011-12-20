@@ -800,9 +800,10 @@ osgwTools::makeWireAltAzSphere( const float radius, const unsigned int subLat, c
     }
     else
     {
-        // Disable lighting for wire primitives.
-        geom->getOrCreateStateSet()->setMode( GL_LIGHTING,
-            osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+        // Disable lighting and texture mapping for wire primitives.
+        osg::StateSet* stateSet = geom->getOrCreateStateSet();
+        stateSet->setMode( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+        stateSet->setTextureMode( 0, GL_TEXTURE_2D, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
 
         return( geom.release() );
     }
@@ -859,9 +860,10 @@ osg::Geometry* osgwTools::makeWireCircle( const osg::Vec4& plane, const float ra
     } // if
     else
     {
-        // Disable lighting for wire primitives.
-        geom->getOrCreateStateSet()->setMode( GL_LIGHTING,
-            osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+        // Disable lighting and texture mapping for wire primitives.
+        osg::StateSet* stateSet = geom->getOrCreateStateSet();
+        stateSet->setMode( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+        stateSet->setTextureMode( 0, GL_TEXTURE_2D, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
 
         return( geom.release() );
     } // else
@@ -1028,7 +1030,10 @@ buildWirePlaneData( const osg::Vec3& corner, const osg::Vec3& u, const osg::Vec3
 
     geom->addPrimitiveSet( new osg::DrawArrays( GL_LINES, 0, verts->getNumElements() ) );
 
-    geom->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+    // Disable lighting and texture mapping for wire primitives.
+    osg::StateSet* stateSet = geom->getOrCreateStateSet();
+    stateSet->setMode( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+    stateSet->setTextureMode( 0, GL_TEXTURE_2D, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
 
     return( true );
 }
@@ -1289,9 +1294,10 @@ osgwTools::makeWireBox( const osg::Vec3& halfExtents, osg::Geometry* geometry )
     }
     else
     {
-        // Disable lighting for wire primitives.
-        geom->getOrCreateStateSet()->setMode( GL_LIGHTING,
-            osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+        // Disable lighting and texture mapping for wire primitives.
+        osg::StateSet* stateSet = geom->getOrCreateStateSet();
+        stateSet->setMode( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+        stateSet->setTextureMode( 0, GL_TEXTURE_2D, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
 
         return( geom.release() );
     }
@@ -1651,9 +1657,10 @@ osgwTools::makeWireCylinder( const double length, const double radius0, const do
     }
     else
     {
-        // Disable lighting for wire primitives.
-        geom->getOrCreateStateSet()->setMode( GL_LIGHTING,
-            osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+        // Disable lighting and texture mapping for wire primitives.
+        osg::StateSet* stateSet = geom->getOrCreateStateSet();
+        stateSet->setMode( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+        stateSet->setTextureMode( 0, GL_TEXTURE_2D, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
 
         return( geom.release() );
     }
@@ -1685,8 +1692,7 @@ osgwTools::makeCone( const osg::Matrix& m, const double length, const double rad
 static bool
 buildCapsuleData( const double length, const double radius, const osg::Vec2s& subdivisions, osg::Geometry* geometry, const bool wire )
 {
-    // Note: For simplicity, subdivisions around the capsule must be at least
-    // 8 and must be even.
+    // Note: For simplicity, subdivisions around the capsule must be at least 3.
     unsigned short subs = osg::maximum< unsigned short >( 3, subdivisions[ 1 ] );
 
     buildCylinderData( length, radius, radius, osg::Vec2s( subdivisions[ 0 ], subs ), geometry, wire );
@@ -1910,9 +1916,10 @@ osgwTools::makeWireCapsule( const double length, const double radius, const osg:
     }
     else
     {
-        // Disable lighting for wire primitives.
-        geom->getOrCreateStateSet()->setMode( GL_LIGHTING,
-            osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+        // Disable lighting and texture mapping for wire primitives.
+        osg::StateSet* stateSet = geom->getOrCreateStateSet();
+        stateSet->setMode( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+        stateSet->setTextureMode( 0, GL_TEXTURE_2D, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
 
         return( geom.release() );
     }
