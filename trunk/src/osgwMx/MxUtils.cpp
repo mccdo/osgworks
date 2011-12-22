@@ -139,7 +139,7 @@ bool intersect( osg::Vec3d& result, const osg::Vec3d& farPoint, osg::Node* scene
 }
 
 osg::Vec3d pan( const osg::Node* scene, const osgwMx::MxCore* mxCore,
-    const osg::Vec4d panPlane, const double ndcX, const double ndcY )
+    const osg::Vec4d panPlane, const double deltaNdcX, const double deltaNdcY )
 {
     const osg::BoundingSphere& bs = scene->getBound();
 
@@ -150,9 +150,9 @@ osg::Vec3d pan( const osg::Node* scene, const osgwMx::MxCore* mxCore,
     const double distance = zFar - zNear;
 
     // Create two points, both in NDC space, and lying on the far plane at the back
-    // of the view volume. One is the xy origin, the other with the passed xy parameters.
+    // of the view volume. One is the xy origin, the other is the passed xy parameters.
     osg::Vec4d farPoint0 = osg::Vec4d( 0., 0., 1., 1. );
-    osg::Vec4d farPoint1 = osg::Vec4d( ndcX, ndcY, 1., 1. );
+    osg::Vec4d farPoint1 = osg::Vec4d( deltaNdcX, deltaNdcY, 1., 1. );
     if( !( mxCore->getOrtho() ) )
     {
         // Not ortho, so w != 1.0. Multiply by the far plane distance.
@@ -186,12 +186,12 @@ osg::Vec3d pan( const osg::Node* scene, const osgwMx::MxCore* mxCore,
     // motion and move the view center accordingly.
     osg::Vec3d delta = result1 - result0;
     osg::notify( osg::DEBUG_FP ) << "    delta " << delta << std::endl;
-
+    
     return( delta );
 }
 
 
-osg::Vec3d pickCenter( osg::Node* scene, const osgwMx::MxCore* mxCore,
+osg::Vec3d pickPoint( osg::Node* scene, const osgwMx::MxCore* mxCore,
     const double ndcX, const double ndcY )
 {
     const osg::BoundingSphere& bs = scene->getBound();
@@ -215,7 +215,7 @@ osg::Vec3d pickCenter( osg::Node* scene, const osgwMx::MxCore* mxCore,
 
     osg::Vec3d pickResult;
     if( !( intersect( pickResult, farPoint, scene, mxCore ) ) )
-        osg::notify( osg::WARN ) << "MxUtils::pickCenter: No intersections." << std::endl;
+        osg::notify( osg::WARN ) << "MxUtils::pickPoint: No intersections." << std::endl;
 
     return( pickResult );
 }
