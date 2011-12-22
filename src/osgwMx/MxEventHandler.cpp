@@ -100,8 +100,8 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
             if( shiftKey )
             {
                 // Left mouse, shifted: pan
-                osg::Vec3d panDelta = osgwMx::pan( _scene.get(), _mxCore.get(), _panPlane, -deltaX, -deltaY );
-                _mxCore->moveLiteral( panDelta );
+                osg::Vec3d panDelta = osgwMx::pan( _scene.get(), _mxCore.get(), _panPlane, deltaX, deltaY );
+                _mxCore->moveLiteral( -panDelta );
                 handled = true;
             }
             else
@@ -150,7 +150,7 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
             if( !_leftDragging && ctrlKey && shiftKey )
             {
                 // Parameters are NDC coordinates in range -1.0,1.0.
-                osg::Vec3d orbitCenter = pickCenter( _scene.get(), _mxCore.get(),
+                osg::Vec3d orbitCenter = pickPoint( _scene.get(), _mxCore.get(),
                     ea.getXnormalized(), ea.getYnormalized() );
                 _mxCore->setOrbitCenterPoint( orbitCenter );
             }

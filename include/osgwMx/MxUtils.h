@@ -37,34 +37,143 @@ namespace osgwMx
 /*@{*/
 
 
-/** Compute a field of view appropriate for rendering the entire bounding
+/** \brief Computes an appropriate viewing field of view.
+\details Compute a field of view appropriate for rendering the entire bounding
 sphere \c bs when viewed from the specified \c distance.
 \return Field of view in radians.
 */
 double OSGWMX_EXPORT computeInitialFOVYFromDistance( const osg::BoundingSphere& bs, const double distance );
-/** Compute a viewing distance appropriate for viewing the entire bounding
+
+/** \brief Computes an appropriate viewing distance.
+\details Computes a viewing distance appropriate for viewing the entire bounding
 sphere \c bs with a perspective projection. \c fov should be the minimum
 field of view, either horizontally or vertically (accounting for aspect ratio).
 \param fovy Field of view in degrees.
 */
 double OSGWMX_EXPORT computeInitialDistanceFromFOVY( const osg::BoundingSphere& bs, const double fov );
 
-osg::Vec2d OSGWMX_EXPORT computeOptimalNearFar( const osg::Vec3d& position,
-    const osg::BoundingSphere& bs, bool ortho );
 
+/** \brief Computes optimal near and far plane distances.
+\details Computes near and far clip plane distance values that completely encompass the
+given bounding sphere \c bs. The returned near and far values are suitable for use
+in constructing an OpenGL FFP projection matrix.
+
+For perspective projections, the function computes near and far values as
+positive world coordinate unit distance values in front of \c position, the
+view position. If \c position is inside the bounding sphere \c bs, the
+computed near value is ( far / 2000. );
+
+For orthographic projections, the function computes near and far values as
+world coordinate unit distance values relative to \c position.
+
+\param position The current eye position. If \c ortho is false, the returned near
+and far distances are positive values in front of \c position along the current view
+vector.
+\param bs Returned near and far planes fit around this bounding sphere (except as
+noted above for the perspective case with \c position inside the sphere).
+\param ortho Pass true to compute near and far values for use with an orthographic
+projection matrix. The default is false (perspective projection).
+\return The returned vector contains the near value in element 0 and the
+far value in element 1.
+*/
+osg::Vec2d OSGWMX_EXPORT computeOptimalNearFar( const osg::Vec3d& position,
+    const osg::BoundingSphere& bs, bool ortho=false );
+
+
+/** \brief Computes a plane orthogonal to the view for use with panning.
+\details Mouse-based view panning requires the 3D point under the mouse pointer
+to remain constant. Use computePanPlane() and pan() together to facilitate this
+behavior.
+
+The typical application-code use case is:
+\li User depresses mouse button.
+\li Application code responds by calling computePanPlane().
+\li User drags mouse with button depressed.
+\li For each drag event, application calls pan() and passes in both the pan plane
+(obtained from computePanPlane()) and the delta NDC mouse motion. pan() returns
+the literal delta amount corresponding to that motion. The application passes this
+amount to MxCore::moveLiteral() to effect tha panning.
+
+Call computePanPlane() at the start of the pan interaction to compute
+a plane equation, then pass that plane equation to the pan() function while the
+user pans (typically with mouse drag events).
+
+computePanPlane() takes NDC x and y values as input, typically the mouse
+location normalized to the range -1 to 1 in x and y. It back-projects this point
+into world coordinates, then intersects with the \scene to obtain a world coordinate
+pick point. (If the intersection fails, computePanPlane() uses a point 10 units in
+front of the eye as the pick point.) The returned plane equation contains the pick
+point, and has a normal obtained from mxCore->getDir() (the view direction
+vector).
+
+In order to back-prokect the NDC mouse coordnate \c ndcX and \c ndcY, the function
+needs both the current view matrix and current projection matrix. The \c mxCore
+projection member variables \c _aspect, \c _fovy, and \c _ortho must be configured
+to return the projection matrix (see MxCore::computeProjection().
+
+See pan() for information on how the \c panPlane pan plane equation is used during
+panning.
+
+\param scene Used for its bounding sphere (to obtain reasonable distance values during
+back-projection). Also used for intersection testing to determine a pick point.
+\param mxCore Used to obtain the cirrent view direction and view position. \c mxCore
+must also be configured to return an appropriate projection matrix. 
+\param ndcX Initial pan x location normalized to range -1 to 1.
+\param ndcY Initial pan y location normalized to range -1 to 1.
+*/
 osg::Vec4d OSGWMX_EXPORT computePanPlane( osg::Node* scene, const osgwMx::MxCore* mxCore,
     const double ndcX, const double ndcY );
-osg::Vec3d OSGWMX_EXPORT pan( const osg::Node* scene, const osgwMx::MxCore* mxCore,
-    const osg::Vec4d panPlane, const double ndcX, const double ndcY );
 
+/** \brief Computes world coordinate movement in the given pan plane.
+\details This function computes literal xyz delta motion in the given \c panPlane. It does
+this by back-projecting the given delta NDX coordinates onto \c panPlane, along with the
+back-projection of the NDC origin onto that same plane. The returned value is the
+difference between these two projected values.
+
+pan() is designed to work with computePanPlane(). Application / device handling
+code should call computePanPlane() at the start of a pan interaction in order to
+obtain the \c panPlane plane equation. See computePanPlane() for more information.
+
+\param scene Used only for its bounding sphere in order to obtain reasonable distance
+values during back-projection.
+\param mxCore As with computePanPlane(), \c mxCore must be configured to return an
+appropriate projection matrix. pan() further uses \c mxCore to obtain the cirrent view
+direction and view position.
+\param panPlane plane equation, obtained from computePanPlane().
+\param deltaNdcX Delta x movement normalized to range -1 to 1.
+\param deltaNdcY Delta y movement normalized to range -1 to 1.
+\return Literal xyz motion vector. In the typical use case (to pan the entire scene),
+pass the negated return value to MxCore::moveLiteral().
+*/
+osg::Vec3d OSGWMX_EXPORT pan( const osg::Node* scene, const osgwMx::MxCore* mxCore,
+    const osg::Vec4d panPlane, const double deltaNdcX, const double deltaNdcY );
+
+
+/** \brief Utility routine for performing an intersection test (pick).
+\details Creates a ray from the \c mxCore view poitiion to the world coordinate
+\c farPoint, then uses osgUtil to test for an intersection with \c scene. The
+closest pick point is returned in \c result.
+\return true if an intersection occurred and \c result is valid. False if no
+intersections occurred.
+
+TBD Future work: combine pickPoint and intersect into one function. */
 bool OSGWMX_EXPORT intersect( osg::Vec3d& result, const osg::Vec3d& farPoint,
     osg::Node* scene, const osgwMx::MxCore* mxCore );
 
-osg::Vec3d OSGWMX_EXPORT pickCenter( osg::Node* scene, const osgwMx::MxCore* mxCore,
+
+/** \brief Picks a world coordinate point from NDX xy input values.
+\details This is a variant of the intersect() function that takes NDX xy values as input
+and returns the picked world coordinate point. If no intersections occurred, this function
+displays a warning and returns (0,0,0).
+
+TBD Future work: combine pickPoint and intersect into one function. */
+osg::Vec3d OSGWMX_EXPORT pickPoint( osg::Node* scene, const osgwMx::MxCore* mxCore,
     const double ndcX, const double ndcY );
 
-/** Intersect a ray with a plane. OSG doesn't appear to have this utility. */
+/** Intersects a ray with a plane. OSG doesn't appear to have this utility.
+\return True if an intersection occurred and \c result is valie. False otherwise. */
 bool OSGWMX_EXPORT intersectRayPlane( osg::Vec3d& result, const osg::Vec4d& plane, const osg::Vec3d& p0, const osg::Vec3d& p1 );
+
 
 /** \brief Computes an angle and axis of rotation for a simulated trackball.
 
@@ -151,7 +260,7 @@ public:
         CycleMoveMode,
 
         /** \brief Movement modifier for up/down motion.
-        \detail When this function is active, left stick y-axis maps to up/down
+        \details When this function is active, left stick y-axis maps to up/down
         movement. The operation of the up/down movement varies by the current move mode. */
         MoveModifyUpDown,
 
@@ -171,7 +280,7 @@ public:
         CycleRotateMode,
 
         /** \brief Rotation modifier for barrel roll.
-        \detail When this function is active, left stick x-axis maps to rotation around the
+        \details When this function is active, left stick x-axis maps to rotation around the
         view direction, and left stick y-axis becomes a no-op. */
         RotateModifyRoll,
 

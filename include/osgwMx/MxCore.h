@@ -148,7 +148,7 @@ public:
 
 
     /** \brief Move by the scaled parameter amount.
-    \detail Scale \c delta by \c _moveScale (setMoveScale()) then add it directly
+    \detailss Scale \c delta by \c _moveScale (setMoveScale()) then add it directly
     to the current view position \c _position. This interface is used by the kbd /
     mouse MxEventHandler to effect panning tied to the mouse position. */
     void moveLiteral( const osg::Vec3d& delta );
@@ -156,7 +156,7 @@ public:
     void moveWorldCoords( const osg::Vec3d& delta );
 
     /** \brief Move the view position in view-relative coordinates.
-    \detail This is an intuitive and generally useful for movement in an arbitrary
+    \details This is an intuitive and generally useful for movement in an arbitrary
     view-centric coordinate system. See also moveConstrainted() for a variant to allow
     movement in a typical up-oriented 3D environment.
 
@@ -170,7 +170,7 @@ public:
     void move( const osg::Vec3d& delta );
 
     /** \brief Move in local coordinates constrained by the world (initial) up vector.
-    \detail This is probably the most useful of the move function variants, as
+    \details This is probably the most useful of the move function variants, as
     it allows the user to move in a world defined by the \c _initialUp vector and
     its implied ground plane. As an example, this function allows flat horizontal
     movement even when the view is looking up or down relative to the horizon.
@@ -185,7 +185,7 @@ public:
     void moveConstrained( const osg::Vec3d& delta );
 
     /** \brief Move the view position by a delta amount in world coordinate space.
-    \detail "World coordinates" means the coordinate space defined with setInitialValues():
+    \details "World coordinates" means the coordinate space defined with setInitialValues():
     \c _initialDir is the negative z axis, \c _initialUp is the y axis, and the x axis
     is \c _initialDir ^ \c _initialUp (cross product).
     
@@ -193,7 +193,7 @@ public:
     void moveWorld( const osg::Vec3d& delta );
 
     /** \brief Move closer to (-) or further away from (+) the orbit center point.
-    \detail Movement automaticall slows as a function of distance to \c _orbitCenter,
+    \details Movement automaticall slows as a function of distance to \c _orbitCenter,
     alower when close and faster when further away.
 
     Note that movement is also scaled by  setMoveScale(). */
