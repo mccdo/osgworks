@@ -126,13 +126,14 @@ public:
     supports first person viewing. \c angle is in radians.
     See setRotateScale(). */
     void rotateLocal( double angle, const osg::Vec3d& axis );
-    /** \deprecated Synonym for moveLiteral(), provided for backwards compatibility. */
+    /** \deprecated Synonym for rotateLocal(), provided for backwards compatibility. */
     void rotate( double angle, const osg::Vec3d& axis );
     /** Rotates the view position about a point in world coordinates. This
     function supports an orbit-type view. \c angle is in radians.
     See setRotateScale(). */
     void rotateOrbit( double angle, const osg::Vec3d& axis );
-    /** \deprecated Synonym for moveLiteral(), provided for backwards compatibility. */
+    /** \deprecated Similar to rotateOrbit(), but with an explicit orbit center
+    point. Provided for backwards compatibility. */
     void rotate( double angle, const osg::Vec3d& axis, const osg::Vec3d& point );
 
     /** Sets the orbit center point used by rotateOrbit(). The default is
@@ -147,8 +148,8 @@ public:
     double getRotateScale() const { return( _rotateScale ); }
 
 
-    /** \brief Move by the scaled parameter amount.
-    \detailss Scale \c delta by \c _moveScale (setMoveScale()) then add it directly
+    /** \brief Move by the parameter amount.
+    \details Add \c delta directly
     to the current view position \c _position. This interface is used by the kbd /
     mouse MxEventHandler to effect panning tied to the mouse position. */
     void moveLiteral( const osg::Vec3d& delta );
