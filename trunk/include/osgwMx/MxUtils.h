@@ -92,7 +92,7 @@ The typical application-code use case is:
 \li For each drag event, application calls pan() and passes in both the pan plane
 (obtained from computePanPlane()) and the delta NDC mouse motion. pan() returns
 the literal delta amount corresponding to that motion. The application passes this
-amount to MxCore::moveLiteral() to effect tha panning.
+(negated) amount to MxCore::moveLiteral() to effect tha panning.
 
 Call computePanPlane() at the start of the pan interaction to compute
 a plane equation, then pass that plane equation to the pan() function while the

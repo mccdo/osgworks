@@ -342,10 +342,8 @@ void MxCore::rotate( double angle, const osg::Vec3d& axis, const osg::Vec3d& poi
 
 void MxCore::moveLiteral( const osg::Vec3d& delta )
 {
-    const osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
-        delta[1] * _moveScale[1], delta[2] * _moveScale[2] );
-    _position += scaledDelta;
-    _orbitCenter += scaledDelta;
+    _position += delta;
+    _orbitCenter += delta;
 }
 void MxCore::moveWorldCoords( const osg::Vec3d& delta )
 {
