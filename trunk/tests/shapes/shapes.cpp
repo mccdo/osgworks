@@ -132,13 +132,13 @@ main( int argc,
     mt->addChild( geode.get() );
 
     geode = new osg::Geode;
-    geode->addDrawable( osgwTools::makeWireCapsule( .9, .5, osg::Vec2s( 2, 12 ) ) );
+    geode->addDrawable( osgwTools::makeWireCapsule( 1.9, .5, osg::Vec2s( 2, 12 ) ) );
     mt = new osg::MatrixTransform( osg::Matrix::translate( 6., 0., -6. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );
 
     geode = new osg::Geode;
-    geode->addDrawable( osgwTools::makeCapsule( .9, .5, osg::Vec2s( 2, 12 ) ) );
+    geode->addDrawable( osgwTools::makeCapsule( 1.9, .5, osg::Vec2s( 2, 12 ) ) );
     mt = new osg::MatrixTransform( osg::Matrix::translate( 9., 0., -6. ) );
     root->addChild( mt.get() );
     mt->addChild( geode.get() );

@@ -311,8 +311,8 @@ OSGWTOOLS_EXPORT osg::Geometry* makeCone( const osg::Matrix& m, const double len
 /** \brief Creates a capsule shape.
 
 A capsule is a cylinder with closed hemispherical end caps. The cylinder / capsule
-is centered on the z axis. The total capsule length is ( \c length + ( \c radius
-* 2 ) ), with ends at z = \c -radius and z = \c length + \c radius. Element 0
+is centered on the z axis. Specify the capsule length with \c length, and the capsule
+will have ends at z = 0 and z = \c length. Element 0
 of \c subdivisions controls the number of sub-cylinders along the capsule's
 cylinder body length, and must be >= 1. Element 1 of \c subdivisions controls the
 angular approxumation around the cylinder / capsule and must be >= 3.
