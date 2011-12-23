@@ -4,45 +4,24 @@ if( BUILD_SHARED_LIBS )
     add_definitions( -DOSGWMX_LIBRARY )
 endif()
 
+
 set( HEADER_PATH ${PROJECT_SOURCE_DIR}/include/${LIB_NAME} )
-set( LIB_PUBLIC_HEADERS
-    ${HEADER_PATH}/Export.h
-    ${HEADER_PATH}/CameraUpdateCallback.h
-    ${HEADER_PATH}/MxCore.h
-    ${HEADER_PATH}/MxEventHandler.h
-    ${HEADER_PATH}/MxGamePad.h
-    ${HEADER_PATH}/MxSpaceBall.h
-#    ${HEADER_PATH}/MxInputAdapter.h
-#    ${HEADER_PATH}/MxMovementStyle.h
-#    ${HEADER_PATH}/MxMovementStyleGamePad.h
-    ${HEADER_PATH}/MxUtils.h
-)
 
-set( _osgwMxSourceFiles
-    CameraUpdateCallback.cpp
-    MxCore.cpp
-    MxEventHandler.cpp
-    MxGamePad.cpp
-    MxSpaceBall.cpp
-#    MxInputAdapter.cpp
-#    MxMovementStyle.cpp
-#    MxMovementStyleGamePad.cpp
-    MxUtils.cpp
-)
-
+set( DX_DEPENDENT_HEADERS )
+set( DX_DEPENDENT_SRC )
 if( DIRECTINPUT_FOUND )
 	add_definitions(-DDIRECTINPUT_ENABLED)
     include_directories( ${DIRECTINPUT_INCLUDE_DIR} )
     set( DX_DEPENDENT_HEADERS
         ${HEADER_PATH}/MxGamePadDX.h
-#        ${HEADER_PATH}/MxInputAdapterGamePadDirectInput.h
     )
     set( DX_DEPENDENT_SRC
         MxGamePadDX.cpp
-#        MxInputAdapterGamePadDirectInput.cpp
     )
 endif()
 
+set( VRPN_DEPENDENT_HEADERS )
+set( VRPN_DEPENDENT_SRC )
 if( VRPN_FOUND )
 	add_definitions(-DVRPN_ENABLED)
     include_directories( ${VRPN_INCLUDES} )
@@ -55,13 +34,33 @@ if( VRPN_FOUND )
 endif() #VRPN_FOUND
 
 
-add_library( ${LIB_NAME}
-    ${LIB_PUBLIC_HEADERS}
+set( LIB_PUBLIC_HEADERS
     ${DX_DEPENDENT_HEADERS}
     ${VRPN_DEPENDENT_HEADERS}
-    ${_osgwMxSourceFiles}
+    ${HEADER_PATH}/Export.h
+    ${HEADER_PATH}/CameraUpdateCallback.h
+    ${HEADER_PATH}/MxCore.h
+    ${HEADER_PATH}/MxEventHandler.h
+    ${HEADER_PATH}/MxGamePad.h
+    ${HEADER_PATH}/MxSpaceBall.h
+    ${HEADER_PATH}/MxUtils.h
+)
+
+set( _osgwMxSourceFiles
     ${DX_DEPENDENT_SRC}
     ${VRPN_DEPENDENT_SRC}
+    CameraUpdateCallback.cpp
+    MxCore.cpp
+    MxEventHandler.cpp
+    MxGamePad.cpp
+    MxSpaceBall.cpp
+    MxUtils.cpp
+)
+
+
+add_library( ${LIB_NAME}
+    ${LIB_PUBLIC_HEADERS}
+    ${_osgwMxSourceFiles}
 )
 
 find_package( OpenGL REQUIRED )
