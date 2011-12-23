@@ -1695,7 +1695,9 @@ buildCapsuleData( const double length, const double radius, const osg::Vec2s& su
     // Note: For simplicity, subdivisions around the capsule must be at least 3.
     unsigned short subs = osg::maximum< unsigned short >( 3, subdivisions[ 1 ] );
 
-    buildCylinderData( length, radius, radius, osg::Vec2s( subdivisions[ 0 ], subs ), geometry, wire );
+    const double cylinderLength = osg::maximum< double >( 0., length - radius * 2. );
+    buildCylinderData( cylinderLength, radius, radius, osg::Vec2s( subdivisions[ 0 ], subs ), geometry, wire );
+    osgwTools::transform( osg::Matrix::translate( 0., 0., radius ), geometry );
 
     osg::ref_ptr< osg::Vec3Array > vertices = dynamic_cast< osg::Vec3Array* >( geometry->getVertexArray() );
     if( vertices == NULL )
@@ -1721,7 +1723,7 @@ buildCapsuleData( const double length, const double radius, const osg::Vec2s& su
     int idx;
     // Capsule bottom
     double lat( osg::PI_2 );
-    vertices->insert( vertices->end(), osg::Vec3( 0., 0., -radius ) );
+    vertices->insert( vertices->end(), osg::Vec3( 0., 0., 0. ) );
     if( !wire )
     {
         normals->push_back( osg::Vec3( 0., 0., -1. ) );
@@ -1732,7 +1734,7 @@ buildCapsuleData( const double length, const double radius, const osg::Vec2s& su
         lat -= latDelta;
         const double height = sin( lat ) * radius;
         const double tempRad = cos( lat ) * radius;
-        const osg::Vec4 plane( 0., 0., 1., -height );
+        const osg::Vec4 plane( 0., 0., 1., radius-height );
         osg::ref_ptr< osg::Vec3Array > v = generateCircleVertices( subs, tempRad, plane, !wire );
 
         vertices->insert( vertices->end(), v->begin(), v->end() );
@@ -1742,6 +1744,7 @@ buildCapsuleData( const double length, const double radius, const osg::Vec2s& su
             for( unsigned int vIdx=0; vIdx < v->size(); vIdx++ )
             {
                 osg::Vec3 normal = (*v)[ vIdx ];
+                normal[2] -= radius;
                 normal.normalize();
                 normals->push_back( normal );
                 texCoords->push_back( osg::Vec2( normal[ 0 ], normal[ 1 ] ) );
@@ -1755,7 +1758,7 @@ buildCapsuleData( const double length, const double radius, const osg::Vec2s& su
         lat += latDelta;
         const double height = sin( lat ) * radius;
         const double tempRad = cos( lat ) * radius;
-        const osg::Vec4 plane( 0., 0., 1., length + height );
+        const osg::Vec4 plane( 0., 0., 1., length - radius + height );
         osg::ref_ptr< osg::Vec3Array > v = generateCircleVertices( subs, tempRad, plane, !wire );
 
         vertices->insert( vertices->end(), v->begin(), v->end() );
@@ -1763,7 +1766,7 @@ buildCapsuleData( const double length, const double radius, const osg::Vec2s& su
         if( !wire )
         {
             // TBD add normals and tex coords
-            const osg::Vec3 center( 0., 0., length );
+            const osg::Vec3 center( 0., 0., length - radius );
             for( unsigned int vIdx=0; vIdx < v->size(); vIdx++ )
             {
                 osg::Vec3 normal = (*v)[ vIdx ] - center;
@@ -1773,7 +1776,7 @@ buildCapsuleData( const double length, const double radius, const osg::Vec2s& su
             }
         }
     }
-    vertices->insert( vertices->end(), osg::Vec3( 0., 0., length + radius ) );
+    vertices->insert( vertices->end(), osg::Vec3( 0., 0., length ) );
     if( !wire )
     {
         normals->push_back( osg::Vec3( 0., 0., 1. ) );
