@@ -7,11 +7,13 @@
 
 #include <osgwMx/MxCore.h>
 #include <osgwMx/MxUtils.h>
+
 #ifdef DIRECTINPUT_ENABLED
-#include <osgwMx/MxGamePadDX.h>
-#endif // DIRECTX_ENABLED
+#  include <osgwMx/MxGamePadDX.h>
+#endif
+
 #ifdef VRPN_ENABLED
-#include <osgwMx/MxSpaceBallVRPN.h>
+#  include <osgwMx/MxSpaceBallVRPN.h>
 #endif // VRPN_ENABLED
 
 

@@ -78,7 +78,7 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
         _lastYPixel = ea.getY();
 
         _leftClick = ( ( ea.getButtonMask() & osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) != 0 );
-        if( _leftClick )
+        if( _leftClick && _scene.valid() )
             _panPlane = osgwMx::computePanPlane( _scene.get(), _mxCore.get(), _lastX, _lastY );
 
         handled = true;
@@ -97,7 +97,7 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
                 ( ( osg::absolute< float >( ea.getX() - _lastXPixel ) +
                     osg::absolute< float >( ea.getY() - _lastYPixel ) ) > 5 ) );
 
-            if( shiftKey )
+            if( shiftKey && _scene.valid() )
             {
                 // Left mouse, shifted: pan
                 osg::Vec3d panDelta = osgwMx::pan( _scene.get(), _mxCore.get(), _panPlane, deltaX, deltaY );
@@ -147,7 +147,7 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
     {
         if( _leftClick )
         {
-            if( !_leftDragging && ctrlKey && shiftKey )
+            if( !_leftDragging && ctrlKey && shiftKey && _scene.valid() )
             {
                 // Parameters are NDC coordinates in range -1.0,1.0.
                 osg::Vec3d orbitCenter = pickPoint( _scene.get(), _mxCore.get(),
