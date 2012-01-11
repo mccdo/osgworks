@@ -438,7 +438,7 @@ public:
 
         void removeTriangle(Triangle* const triangle)
         {
-            TriangleSet::const_iterator itr=_triangles.find(triangle);
+            TriangleSet::iterator itr=_triangles.find(triangle);
             if (itr != _triangles.end())
                 _triangles.erase(itr);
         }
