@@ -1,6 +1,6 @@
 /*************** <auto-copyright.pl BEGIN do not edit this line> **************
  *
- * osgBullet is (C) Copyright 2009-2011 by Kenneth Mark Bryden
+ * osgBullet is (C) Copyright 2009-2012 by Kenneth Mark Bryden
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
