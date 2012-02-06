@@ -22,7 +22,6 @@
 #include <osgwQuery/QueryAPI.h>
 #include <osgwQuery/QueryBenchmarks.h>
 #include <osgwTools/Shapes.h>
-#include <osgwTools/CountsVisitor.h>
 #include <osgwTools/Transform.h>
 #include <OpenThreads/ScopedLock>
 #include <osgUtil/CullVisitor>

@@ -40,6 +40,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/ShortEdgeOp.h
     ${HEADER_PATH}/SimplifierOp.h
     ${HEADER_PATH}/StateSetUtils.h
+    ${HEADER_PATH}/StateTrackingNodeVisitor.h
     ${HEADER_PATH}/TangentSpaceOp.h
     ${HEADER_PATH}/Transform.h
     ${HEADER_PATH}/TransparencyUtils.h
@@ -79,6 +80,7 @@ set( _osgwToolsSourceFiles
     ShortEdgeOp.cpp
     SimplifierOp.cpp
     StateSetUtils.cpp
+    StateTrackingNodeVisitor.cpp
     TangentSpaceOp.cpp
     Transform.cpp
     TransparencyUtils.cpp
