@@ -1,7 +1,22 @@
-//
-// Copyright (c) 2008-2009 Skew Matrix Software LLC.
-// All rights reserved.
-//
+/*************** <auto-copyright.pl BEGIN do not edit this line> **************
+ *
+ * osgWorks is (C) Copyright 2009-2012 by Kenneth Mark Bryden
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License version 2.1 as published by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osgwTools/CountsVisitor.h>
 #include <osgwTools/StateSetUtils.h>
@@ -32,7 +47,7 @@ static ModeCounter mc;
 
 
 CountsVisitor::CountsVisitor( osg::NodeVisitor::TraversalMode mode )
-  : osg::NodeVisitor( mode ),
+  : osgwTools::StateTrackingNodeVisitor( mode ),
     _countUserMode( false ),
     _countUserAttr( false )
 {
@@ -547,31 +562,6 @@ CountsVisitor::apply( osg::Geode& node )
     popStateSet();
 }
 
-
-void CountsVisitor::pushStateSet( osg::StateSet* ss )
-{
-    if( ss == NULL )
-        ss = new osg::StateSet;
-
-    if( _stateStack.size() > 0 )
-    {
-        osg::StateSet* oldTop = _stateStack.back().get();
-        osg::StateSet* newTop = new osg::StateSet( *oldTop );
-        newTop->merge( *ss );
-        _stateStack.push_back( newTop );
-    }
-    else
-    {
-        _stateStack.push_back( ss );
-    }
-}
-void CountsVisitor::popStateSet()
-{
-    if( _stateStack.size() > 0 )
-        _stateStack.pop_back();
-    else
-        osg::notify( osg::WARN ) << "osgw: CountsVisitor: State stack underflow." << std::endl;
-}
 
 bool CountsVisitor::isSet( GLenum stateItem, osg::StateSet* ss )
 {

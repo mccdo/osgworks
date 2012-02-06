@@ -22,6 +22,7 @@
 #define __OSGWTOOLS_COUNTS_VISITOR_H__
 
 #include <osgwTools/Export.h>
+#include <osgwTools/StateTrackingNodeVisitor.h>
 #include <osg/NodeVisitor>
 #include <deque>
 #include <set>
@@ -40,7 +41,7 @@ so that we can accumulate counts for multiple modes and attributes. There needs 
 analogous system for adding texture modes and attributes. The dump() method should be able
 to display an arbitrary GLenum mode as ASCII string (without a dependency on GLU).
 */
-class OSGWTOOLS_EXPORT CountsVisitor : public osg::NodeVisitor
+class OSGWTOOLS_EXPORT CountsVisitor : public osgwTools::StateTrackingNodeVisitor
 {
 public:
     CountsVisitor( osg::NodeVisitor::TraversalMode mode = osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN );
@@ -72,10 +73,6 @@ public:
     unsigned int getNumDrawablesUserModeOff() const;
 
 protected:
-    std::deque< osg::ref_ptr< osg::StateSet > > _stateStack;
-    void pushStateSet( osg::StateSet* ss );
-    void popStateSet();
-
     bool isSet( GLenum stateItem, osg::StateSet* ss );
     bool isEnabled( GLenum stateItem, osg::StateSet* ss );
 
