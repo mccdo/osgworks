@@ -71,16 +71,25 @@ TangentSpaceOp::operator()( osg::Geometry& geom )
     _tsg->generate( &geom, _normalMapTextureUnit );
 
     if( geom.getVertexAttribArray( _normalIndex ) == NULL )
+    {
+        osg::ref_ptr< osg::Vec4Array > ptr( new osg::Vec4Array( *(_tsg->getNormalArray()) ) );
         geom.setVertexAttribData( _normalIndex,
-            osg::Geometry::ArrayData( _tsg->getNormalArray(), osg::Geometry::BIND_PER_VERTEX ) );
+            osg::Geometry::ArrayData( ptr.get(), osg::Geometry::BIND_PER_VERTEX ) );
+    }
 
     if( geom.getVertexAttribArray( _tangentIndex ) == NULL )
+    {
+        osg::ref_ptr< osg::Vec4Array > ptr( new osg::Vec4Array( *(_tsg->getTangentArray()) ) );
         geom.setVertexAttribData( _tangentIndex,
-            osg::Geometry::ArrayData( _tsg->getTangentArray(), osg::Geometry::BIND_PER_VERTEX ) );
+            osg::Geometry::ArrayData( ptr.get(), osg::Geometry::BIND_PER_VERTEX ) );
+    }
 
     if( geom.getVertexAttribArray( _binormalIndex ) == NULL )
+    {
+        osg::ref_ptr< osg::Vec4Array > ptr( new osg::Vec4Array( *(_tsg->getBinormalArray()) ) );
         geom.setVertexAttribData( _binormalIndex,
-            osg::Geometry::ArrayData( _tsg->getBinormalArray(), osg::Geometry::BIND_PER_VERTEX ) );
+            osg::Geometry::ArrayData( ptr.get(), osg::Geometry::BIND_PER_VERTEX ) );
+    }
 
     return( &geom );
 }
