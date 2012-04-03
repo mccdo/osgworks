@@ -396,8 +396,22 @@ void MxCore::moveWorld( const osg::Vec3d& delta )
 }
 void MxCore::moveOrbit( const float distance )
 {
-    osg::Vec3d moveAxis = _position - _orbitCenter;
-    _position += ( moveAxis * distance * _moveScale[1] );
+#if 1
+   // Original, optimized code
+   osg::Vec3d moveAxis = _position - _orbitCenter;
+   _position += ( moveAxis * distance * _moveScale[1] );
+#else
+   // For debugging
+   const osg::Vec3d oldPos = _position;
+   osg::Vec3d moveAxis = _position - _orbitCenter;
+   _position += ( moveAxis * distance * _moveScale[1] );
+
+   osg::notify( osg::NOTICE ) << "moveOrbit:\n" <<
+       "\torbit center: " << _orbitCenter << "\n" <<
+       "\told pos: " << oldPos << "\n" <<
+       "\tnew pos: " << _position << "\n" <<
+       "\tdistance: " << (oldPos-_position).length() << std::endl;
+#endif
 }
 
 
