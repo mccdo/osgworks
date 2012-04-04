@@ -32,13 +32,3 @@ INSTALL(
     DESTINATION ${INSTALL_INCDIR}/${LIB_NAME}
     COMPONENT libosgworks-dev
 )
-
-if(MSVC)
-    install(
-        DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\${CMAKE_INSTALL_CONFIG_NAME}/
-        DESTINATION lib
-        USE_SOURCE_PERMISSIONS
-        COMPONENT libosgworks-dev
-        FILES_MATCHING PATTERN "*.pdb"
-    )
-endif(MSVC)
