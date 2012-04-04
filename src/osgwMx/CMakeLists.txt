@@ -77,7 +77,7 @@ if( BUILD_SHARED_LIBS )
     )
 
     if( WIN32 )
-        set( RELATIVE_LIB_PATH ../../lib/ )
+        set( RELATIVE_LIB_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/\${CMAKE_INSTALL_CONFIG_NAME}/ )
     endif()
     # osgwMx depends on osgwTools
     target_link_libraries( ${LIB_NAME}
