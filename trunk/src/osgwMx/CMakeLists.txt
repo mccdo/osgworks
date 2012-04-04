@@ -76,13 +76,10 @@ if( BUILD_SHARED_LIBS )
         ${OPENGL_LIBRARIES}
     )
 
-    if( WIN32 )
-        set( RELATIVE_LIB_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/\${CMAKE_INSTALL_CONFIG_NAME}/ )
-    endif()
     # osgwMx depends on osgwTools
     target_link_libraries( ${LIB_NAME}
         optimized "osgwTools"
-        debug "${RELATIVE_LIB_PATH}osgwTools${CMAKE_DEBUG_POSTFIX}"
+        debug "osgwTools"
     )
 
     if( DIRECTINPUT_FOUND )
