@@ -114,3 +114,5 @@ if(MSVC)
         FILES_MATCHING PATTERN "*.pdb"
     )
 endif(MSVC)
+
+install(EXPORT osgworks-targets DESTINATION lib)
