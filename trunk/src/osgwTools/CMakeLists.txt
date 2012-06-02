@@ -6,6 +6,9 @@ endif()
 
 
 set( HEADER_PATH ${PROJECT_SOURCE_DIR}/include/${LIB_NAME} )
+
+configure_file( "${HEADER_PATH}/Version.h.in" "${HEADER_PATH}/Version.h" @ONLY)
+
 set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/Export.h
     ${HEADER_PATH}/AbsoluteModelTransform.h
