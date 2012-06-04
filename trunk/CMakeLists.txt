@@ -2,7 +2,8 @@
 CMAKE_MINIMUM_REQUIRED( VERSION 2.8 )
 PROJECT( osgWorks )
 
-# Please keep in sync with Version.h
+# Note: These values are used by include/osgwTools/Version.in
+# to generate the Version.h file.
 set( OSGWORKS_VERSION 2.00.02 )
 set( OSGWORKS_MAJOR_VERSION 2 )
 set( OSGWORKS_MINOR_VERSION 0 )
