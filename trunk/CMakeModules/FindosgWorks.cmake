@@ -30,7 +30,7 @@ SET(osgWorks_DIR_MESSAGE "osgWorks not found.  Set the osgWorks_DIR cmake cache 
 # command will have already loaded osgWorksConfig.cmake and set osgWorks_FOUND.
 IF(NOT osgWorks_FOUND)
   FIND_PACKAGE(osgWorks QUIET NO_MODULE)
-ENDIF()
+ENDIF(NOT osgWorks_FOUND)
 
 #-----------------------------------------------------------------------------
 IF(NOT osgWorks_FOUND)
@@ -42,4 +42,4 @@ IF(NOT osgWorks_FOUND)
       MESSAGE(STATUS ${osgWorks_DIR_MESSAGE})
     ENDIF(NOT osgWorks_FIND_QUIETLY)
   ENDIF(osgWorks_FIND_REQUIRED)
-ENDIF(osgWorks_FOUND)
+ENDIF(NOT osgWorks_FOUND)
