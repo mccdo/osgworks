@@ -18,7 +18,7 @@ if(EXISTS "${PACKAGE_PREFIX_DIR}/CMakeCache.txt")
     # Our library dependencies (contains definitions for IMPORTED targets)
     include("${PACKAGE_PREFIX_DIR}/lib/osgWorksLibraryDepends.cmake")
 else()
-    set_and_check(OSGWORKS_INCLUDE_DIRS "@PACKAGE_CONF_REL_INCLUDE_DIR@")
+    set_and_check(OSGWORKS_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include")
     # The osgWorks targets file.
     if(EXISTS "${PACKAGE_PREFIX_DIR}/lib/osgworks-targets.cmake")
         include("${PACKAGE_PREFIX_DIR}/lib/osgworks-targets.cmake")
