@@ -1,6 +1,6 @@
 # - Config file for the osgWorks package
 # It defines the following variables
-#  OSGWORKS_INCLUDE_DIRS - include directories for FooBar
+#  OSGWORKS_INCLUDE_DIRS - include directories for osgWorks
 #  OSGWORKS_LIBRARIES    - libraries to link against
 #  OSGWORKS_EXECUTABLE   - the bar executable
 
