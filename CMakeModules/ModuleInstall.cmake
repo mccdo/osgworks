@@ -30,8 +30,7 @@ INSTALL(
 # FIXME: Do not run for OS X framework
 INSTALL(
     FILES        ${LIB_PUBLIC_HEADERS}
+    #EXPORT osgworks-targets
     DESTINATION ${INSTALL_INCDIR}/${LIB_NAME}
     COMPONENT libosgworks-dev
 )
-
-#    EXPORT osgworks-targets

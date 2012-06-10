@@ -9,7 +9,7 @@ set( OSGWORKS_MAJOR_VERSION 2 )
 set( OSGWORKS_MINOR_VERSION 0 )
 set( OSGWORKS_SUB_VERSION 2 )
 
-SET( CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}" )
+SET( CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules" ${CMAKE_MODULE_PATH} )
 
 
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
@@ -119,4 +119,42 @@ if(MSVC)
     )
 endif(MSVC)
 
+# The interesting stuff goes here
+# ===============================
+
+# Add all targets to the build-tree export set
+export(TARGETS osgwTools osgwQuery osgwMx
+  FILE "${PROJECT_BINARY_DIR}/lib/osgWorksLibraryDepends.cmake")
+
+# Export the package for use from the build-tree
+# (this registers the build-tree with a global CMake-registry)
+export(PACKAGE osgWorks)
+
+# Create a osgWorksBuildTreeSettings.cmake file for the use from the build tree
+configure_file(osgWorksBuildTreeSettings.cmake.in
+  "${PROJECT_BINARY_DIR}/lib/osgWorksBuildTreeSettings.cmake" @ONLY)
+
+#configure_file(osgWorksConfig.cmake.in
+#  "${PROJECT_BINARY_DIR}/lib/osgWorksConfig.cmake" @ONLY)
+configure_file(osgWorksConfigVersion.cmake.in
+  "${PROJECT_BINARY_DIR}/lib/osgWorksConfigVersion.cmake" @ONLY)
+configure_file(UseosgWorks.cmake.in
+  "${PROJECT_BINARY_DIR}/lib/UseosgWorks.cmake" @ONLY)
+
+# Install the export set for use with the install-tree
 install(EXPORT osgworks-targets DESTINATION lib)
+
+include( CMakePackageConfigHelpers )
+# Create the osgWorksConfig.cmake and osgWorksConfigVersion files
+file(RELATIVE_PATH CONF_REL_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/lib"
+   "${CMAKE_INSTALL_PREFIX}/include")
+
+configure_package_config_file( 
+    osgWorksConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/lib/osgWorksConfig.cmake
+    INSTALL_DESTINATION lib
+    PATH_VARS CONF_REL_INCLUDE_DIR )
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/osgWorksConfig.cmake 
+              ${CMAKE_CURRENT_BINARY_DIR}/lib/osgWorksConfigVersion.cmake
+              ${CMAKE_CURRENT_BINARY_DIR}/lib/UseosgWorks.cmake
+        DESTINATION lib )
