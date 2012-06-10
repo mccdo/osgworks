@@ -1,0 +1,29 @@
+# - Config file for the osgWorks package
+# It defines the following variables
+#  OSGWORKS_INCLUDE_DIRS - include directories for FooBar
+#  OSGWORKS_LIBRARIES    - libraries to link against
+#  OSGWORKS_EXECUTABLE   - the bar executable
+
+@PACKAGE_INIT@
+
+# These are IMPORTED targets created by osgWorksLibraryDepends.cmake
+set(OSGWORKS_LIBRARIES "osgwTools;osgwQuery;osgwMx" )
+set(OSGWORKS_EXECUTABLE test)
+
+# Compute paths
+# get_filename_component(OSGWORKS_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+if(EXISTS "${PACKAGE_PREFIX_DIR}/CMakeCache.txt")
+    # In build tree
+    include("${PACKAGE_PREFIX_DIR}/lib/osgWorksBuildTreeSettings.cmake")
+    # Our library dependencies (contains definitions for IMPORTED targets)
+    include("${PACKAGE_PREFIX_DIR}/lib/osgWorksLibraryDepends.cmake")
+else()
+    set_and_check(OSGWORKS_INCLUDE_DIRS "@PACKAGE_CONF_REL_INCLUDE_DIR@")
+    # The osgWorks targets file.
+    if(EXISTS "${PACKAGE_PREFIX_DIR}/lib/osgworks-targets.cmake")
+        include("${PACKAGE_PREFIX_DIR}/lib/osgworks-targets.cmake")
+    endif()
+endif()
+
+# The location of the UseosgWorks.cmake file.
+set(osgWorks_USE_FILE "${PACKAGE_PREFIX_DIR}/lib/UseosgWorks.cmake")
