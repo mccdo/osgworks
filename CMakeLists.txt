@@ -119,6 +119,12 @@ if(MSVC)
     )
 endif(MSVC)
 
+# Install the CMake find script for osgWorks
+install( FILES "extra/FindosgWorks.cmake"
+    DESTINATION "share/${CMAKE_PROJECT_NAME}/extra"
+    COMPONENT libosgworks
+)
+
 # The interesting stuff goes here
 # ===============================
 
