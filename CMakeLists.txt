@@ -109,6 +109,8 @@ if( DOXYGEN_FOUND )
     add_subdirectory( doc/images )
 endif()
 
+# On windows provide the user with the pdb files 
+# for debugging if they are present
 if(MSVC)
     install(
         DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\${CMAKE_INSTALL_CONFIG_NAME}/
@@ -125,8 +127,9 @@ install( FILES "extra/FindosgWorks.cmake"
     COMPONENT libosgworks
 )
 
-# The interesting stuff goes here
-# ===============================
+#
+# Create and install all of the auto find tools
+# =============================================
 
 # Add all targets to the build-tree export set
 export(TARGETS osgwTools osgwQuery osgwMx
