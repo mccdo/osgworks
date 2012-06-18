@@ -56,7 +56,7 @@ MACRO( MAKE_EXECUTABLE EXENAME )
         ${OSG_LIBRARIES}
         ${OPENGL_gl_LIBRARY}
     )
-    if( CATEGORY STREQUAL "App" )
+    if( ${CATEGORY} STREQUAL "App" )
         install(
             TARGETS ${EXENAME}
             RUNTIME DESTINATION bin COMPONENT libosgworks
