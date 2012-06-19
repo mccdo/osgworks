@@ -167,3 +167,25 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/osgWorksConfig.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/lib/osgWorksConfigVersion.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/lib/UseosgWorks.cmake
         DESTINATION lib )
+
+#
+# Setup the fpc auto detection files
+if(WIN32)
+    set(OSGWORKS_FPC_LIBRARIES "/libpath:\"\${libdir}\" osgwControls.lib osgwMx.lib osgwTools.lib osgwQuery.lib")
+    set(OSGWORKS_FPC_INCLUDES "/I\"\${includedir}\"")
+else(WIN32)
+    set(OSGWORKS_FPC_INCLUDES "-I\${includedir}")
+    if(APPLE)
+        set(OSGWORKS_FPC_LIBRARIES "-L\${libdir} -losgwControls.dyld -losgwMx.dyld -losgwTools.dyld -losgwQuery.dyld")
+    else(APPLE)
+        set(OSGWORKS_FPC_LIBRARIES "-L\${libdir} -losgwControls.so -losgwMx.so -losgwTools.so -losgwQuery.so")
+    endif(APPLE)
+endif(WIN32)
+
+configure_file(extra/osgworks.fpc.in
+  "${PROJECT_BINARY_DIR}/lib/flagpoll/osgworks.fpc" @ONLY)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/flagpoll/osgworks.fpc
+        DESTINATION lib/flagpoll )
+
+
