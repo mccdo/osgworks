@@ -19,7 +19,7 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osgwTools/TangentSpaceOp.h>
-#include <osgUtil/TangentSpaceGenerator>
+#include <osgwTools/TangentSpaceGeneratorDouble.h>
 #include <osg/Geometry>
 #include <osg/CopyOp>
 #include <osg/io_utils>
@@ -34,7 +34,7 @@ TangentSpaceOp::TangentSpaceOp()
     _binormalIndex( 7 ),
     _normalIndex( 15 )
 {
-    _tsg = new osgUtil::TangentSpaceGenerator;
+    _tsg = new TangentSpaceGeneratorDouble;
 }
 TangentSpaceOp::TangentSpaceOp( const unsigned int normalMapTextureUnit, const unsigned int tangentIndex, const unsigned int binormalIndex, const unsigned int normalIndex )
   : _normalMapTextureUnit( normalMapTextureUnit ),
@@ -42,7 +42,7 @@ TangentSpaceOp::TangentSpaceOp( const unsigned int normalMapTextureUnit, const u
     _binormalIndex( binormalIndex ),
     _normalIndex( normalIndex )
 {
-    _tsg = new osgUtil::TangentSpaceGenerator;
+    _tsg = new TangentSpaceGeneratorDouble;
 }
 TangentSpaceOp::TangentSpaceOp( const TangentSpaceOp& rhs, const osg::CopyOp& copyOp )
   : _normalMapTextureUnit( rhs._normalMapTextureUnit ),
