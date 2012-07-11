@@ -44,6 +44,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/SimplifierOp.h
     ${HEADER_PATH}/StateSetUtils.h
     ${HEADER_PATH}/StateTrackingNodeVisitor.h
+    ${HEADER_PATH}/TangentSpaceGeneratorDouble.h
     ${HEADER_PATH}/TangentSpaceOp.h
     ${HEADER_PATH}/Transform.h
     ${HEADER_PATH}/TransparencyUtils.h
@@ -84,6 +85,7 @@ set( _osgwToolsSourceFiles
     SimplifierOp.cpp
     StateSetUtils.cpp
     StateTrackingNodeVisitor.cpp
+    TangentSpaceGeneratorDouble.cpp
     TangentSpaceOp.cpp
     Transform.cpp
     TransparencyUtils.cpp
