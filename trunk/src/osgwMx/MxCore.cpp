@@ -128,7 +128,7 @@ osg::Matrixd MxCore::getInverseMatrix() const
         c[1], u[1], -d[1], 0.0,
         c[2], u[2], -d[2], 0.0,
         0.0, 0.0, 0.0, 1.0 );
-    return( osg::Matrix::translate( -_position ) * m );
+    return( osg::Matrixd::translate( -_position ) * m );
 
     // Old code, for a sanity check.
     //osg::Matrixd m;
@@ -177,26 +177,26 @@ void MxCore::reset()
     setOrtho( false );
 }
 
-void MxCore::setByMatrix( const osg::Matrix& m )
+void MxCore::setByMatrix( const osg::Matrixd& m )
 {
     _viewUp.set( m( 1, 0 ), m( 1, 1 ), m( 1, 2 ) );
     _viewDir.set( -m( 2, 0 ), -m( 2, 1 ), -m( 2, 2 ) );
     _position.set( m( 3, 0 ), m( 3, 1 ), m( 3, 2 ) );
     orthonormalize();
 }
-void MxCore::setByInverseMatrix( const osg::Matrix& m )
+void MxCore::setByInverseMatrix( const osg::Matrixd& m )
 {
-    setByMatrix( osg::Matrix::inverse( m ) );
+    setByMatrix( osg::Matrixd::inverse( m ) );
 }
-void MxCore::setOrientationByMatrix( const osg::Matrix& m )
+void MxCore::setOrientationByMatrix( const osg::Matrixd& m )
 {
     _viewUp.set( m( 1, 0 ), m( 1, 1 ), m( 1, 2 ) );
     _viewDir.set( -m( 2, 0 ), -m( 2, 1 ), -m( 2, 2 ) );
     orthonormalize();
 }
-void MxCore::setOrientationByInverseMatrix( const osg::Matrix& m )
+void MxCore::setOrientationByInverseMatrix( const osg::Matrixd& m )
 {
-    setOrientationByMatrix( osg::Matrix::inverse( m ) );
+    setOrientationByMatrix( osg::Matrixd::inverse( m ) );
 }
 
 void MxCore::level()
@@ -304,7 +304,7 @@ void MxCore::lookAtOrbitCenter()
     osg::Vec3d newDir = _orbitCenter - _position;
     newDir.normalize();
 
-    const osg::Matrix r = osg::Matrix::rotate( _viewDir, newDir );
+    const osg::Matrixd r = osg::Matrixd::rotate( _viewDir, newDir );
     _viewDir = _viewDir * r;
     _viewUp = _viewUp * r;
     orthonormalize();
@@ -313,7 +313,7 @@ void MxCore::lookAtOrbitCenter()
 
 void MxCore::rotateLocal( double angle, const osg::Vec3d& axis )
 {
-    const osg::Matrix r = osg::Matrix::rotate( angle * _rotateScale, axis );
+    const osg::Matrixd r = osg::Matrixd::rotate( angle * _rotateScale, axis );
     _viewDir = _viewDir * r;
     _viewUp = _viewUp * r;
     orthonormalize();
@@ -326,7 +326,7 @@ void MxCore::rotate( double angle, const osg::Vec3d& axis )
 
 void MxCore::rotateOrbit( double angle, const osg::Vec3d& axis )
 {
-    const osg::Matrix r = osg::Matrix::rotate( angle * _rotateScale, axis );
+    const osg::Matrixd r = osg::Matrixd::rotate( angle * _rotateScale, axis );
 
     _position = ( _position - _orbitCenter ) * r + _orbitCenter;
     _viewDir = _viewDir * r;
@@ -367,7 +367,7 @@ void MxCore::moveConstrained( const osg::Vec3d& delta )
     const osg::Vec3d c = getCross();
     const osg::Vec3d& u = _initialUp;
     const osg::Vec3d back = c ^ u;
-    const osg::Matrix orient(
+    const osg::Matrixd orient(
         c[ 0 ], c[ 1 ], c[ 2 ], 0.,
         u[ 0 ], u[ 1 ], u[ 2 ], 0.,
         back[ 0 ], back[ 1 ], back[ 2 ], 0.,
@@ -383,7 +383,7 @@ void MxCore::moveWorld( const osg::Vec3d& delta )
     const osg::Vec3d& u = _initialUp;
     const osg::Vec3d& d = _initialDir;
     const osg::Vec3d c = d ^ u;
-    const osg::Matrix orient(
+    const osg::Matrixd orient(
         c[ 0 ], c[ 1 ], c[ 2 ], 0.,
         u[ 0 ], u[ 1 ], u[ 2 ], 0.,
         -d[ 0 ], -d[ 1 ], -d[ 2 ], 0.,
