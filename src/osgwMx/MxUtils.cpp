@@ -72,7 +72,7 @@ osg::Vec4d computePanPlane( osg::Node* scene, const osgwMx::MxCore* mxCore,
 {
     const osg::BoundingSphere& bs = scene->getBound();
 
-    osg::Matrix proj = mxCore->computeProjection(
+    osg::Matrixd proj = mxCore->computeProjection(
         osgwMx::computeOptimalNearFar( mxCore->getPosition(), bs, mxCore->getOrtho() ) );
 
     // Assume ortho, where ndc far plane == 1 and w always == 1.
@@ -88,7 +88,7 @@ osg::Vec4d computePanPlane( osg::Node* scene, const osgwMx::MxCore* mxCore,
 
     // Get inverse view & proj matrices to back-transform the clip coord far point.
     osg::Matrixd v = mxCore->getMatrix(); // This is the inverse of the view matrix.
-    osg::Matrix p = osg::Matrix::inverse( proj );
+    osg::Matrixd p = osg::Matrixd::inverse( proj );
 
     osg::Vec4d wc = farPoint * p * v;
     osg::Vec3d wcFarPoint( wc.x(), wc.y(), wc.z() );
@@ -164,8 +164,8 @@ osg::Vec3d pan( const osg::Node* scene, const osgwMx::MxCore* mxCore,
     // Get inverse view & proj matrices to back-transform the
     // two clip coord far points into world space.
     osg::Matrixd v = mxCore->getMatrix(); // This is the inverse of the view matrix.
-    osg::Matrix proj = mxCore->computeProjection( nearFar );
-    osg::Matrix p = osg::Matrix::inverse( proj );
+    osg::Matrixd proj = mxCore->computeProjection( nearFar );
+    osg::Matrixd p = osg::Matrixd::inverse( proj );
 
     osg::Vec4d wc0 = farPoint0 * p * v;
     osg::Vec4d wc1 = farPoint1 * p * v;
@@ -207,8 +207,8 @@ osg::Vec3d pickPoint( osg::Node* scene, const osgwMx::MxCore* mxCore,
 
     // Get inverse view & proj matrices to back-transform the clip coord point.
     const osg::Matrixd v = mxCore->getMatrix();
-    const osg::Matrix proj = mxCore->computeProjection( nearFar );
-    osg::Matrix p = osg::Matrix::inverse( proj );
+    const osg::Matrixd proj = mxCore->computeProjection( nearFar );
+    osg::Matrixd p = osg::Matrixd::inverse( proj );
 
     osg::Vec4d wc = ccFarPoint * p * v;
     osg::Vec3d farPoint( wc.x(), wc.y(), wc.z() );
@@ -246,7 +246,7 @@ bool intersectRayPlane( osg::Vec3d& result, const osg::Vec4d& plane, const osg::
 
 void computeTrackball( double& angle, osg::Vec3d& axis,
     const osg::Vec2d& start, const osg::Vec2d& delta,
-    const osg::Matrix& orientMat, const double sensitivity )
+    const osg::Matrixd& orientMat, const double sensitivity )
 {
     // Take the spin direction 'delta' and rotate it 90 degrees
     // to get our base axis (still in the window plane).

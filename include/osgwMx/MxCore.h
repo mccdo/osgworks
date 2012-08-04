@@ -24,7 +24,6 @@
 
 #include <osgwMx/Export.h>
 #include <osg/Object>
-#include <osg/Node>
 #include <osg/Matrixd>
 #include <osg/BoundingSphere>
 #include <osg/BoundingBox>
@@ -90,13 +89,13 @@ public:
     const osg::Vec3d& getPosition() const { return( _position ); }
 
     /** \brief Sets the current up, dir, and position from \c m. */
-    void setByMatrix( const osg::Matrix& m );
+    void setByMatrix( const osg::Matrixd& m );
     /** \brief Same as setByMatrix(), but assume \c m is an inverse or view matrix. */
-    void setByInverseMatrix( const osg::Matrix& m );
+    void setByInverseMatrix( const osg::Matrixd& m );
     /** \brief Sets the current up and dir (position is ignored) from \c m. */
-    void setOrientationByMatrix( const osg::Matrix& m );
+    void setOrientationByMatrix( const osg::Matrixd& m );
     /** \brief Same as setOrientationByMatrix(), but assume \c m is an inverse or view matrix. */
-    void setOrientationByInverseMatrix( const osg::Matrix& m );
+    void setOrientationByInverseMatrix( const osg::Matrixd& m );
 
     /** Convenience routine to return the cross product of \c _viewDir and \c _viewUp.
     */
