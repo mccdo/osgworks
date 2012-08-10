@@ -503,8 +503,6 @@ void MxCore::updateFovy( osg::Matrixd& proj ) const
         double left, right, bottom, top, near, far;
         proj.getFrustum( left, right, bottom, top, near, far );
 
-        const double fovLeft = atan( left / near );
-        const double fovRight = atan( right / near );
         const double fovBottom = atan( bottom / near );
         const double fovTop = atan( top / near );
 
