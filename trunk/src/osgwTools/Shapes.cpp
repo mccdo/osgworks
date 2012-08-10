@@ -614,7 +614,7 @@ buildAltAzSphereData( const float radius, const unsigned int subLat, const unsig
 
 
 static bool
-const buildCircleData( float radius, const unsigned int subdivisions, const osg::Vec4& plane, osg::Geometry* geom, const bool wire )
+buildCircleData( float radius, const unsigned int subdivisions, const osg::Vec4& plane, osg::Geometry* geom, const bool wire )
 {
     unsigned int numSub( subdivisions );
     unsigned int totalVerts( 0 );
