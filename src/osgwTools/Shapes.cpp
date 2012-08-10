@@ -208,7 +208,6 @@ buildGeodesicSphereData( const float radius, const unsigned int subdivisions, os
     *indexPtr++ = 10;
     *indexPtr++ = 3;
 
-    GLuint _idxStart = 0;
     GLuint _idxEnd = 11;
 
 
