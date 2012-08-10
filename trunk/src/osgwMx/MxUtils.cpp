@@ -113,7 +113,7 @@ osg::Vec4d computePanPlane( osg::Node* scene, const osgwMx::MxCore* mxCore,
 
 bool intersect( osg::Vec3d& result, const osg::Vec3d& farPoint, osg::Node* scene, const osgwMx::MxCore* mxCore )
 {
-    if( ( scene == NULL ) )
+    if( scene == NULL )
     {
         osg::notify( osg::WARN ) << "MxUtil::intersect: _scene == NULL." << std::endl;
         return( false );
