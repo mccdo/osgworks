@@ -32,15 +32,15 @@ namespace osgwTools
 
 LODCreationNodeVisitor::LODCreationNodeVisitor(GeodeReducableCallback* reducableCallback )
   : osg::NodeVisitor( osg::NodeVisitor::TRAVERSE_ALL_CHILDREN ),
-    _geodesLocated( 0 ),
-    _geodesProcessed( 0 ),
-    _minTestVertices( 100 ), 
-    _minTestPrimitives( 100 ),
-    _minRetentionPercent( .01f ),
     _decIgnoreBoundaries( false ),
     _smoothing( false ),
     _triStrip( false ),
     _attemptMerge( false ),
+    _geodesLocated( 0 ),
+    _geodesProcessed( 0 ),
+    _minTestVertices( 100 ),
+    _minTestPrimitives( 100 ),
+    _minRetentionPercent( .01f ),
     _geodeReducableCallback( reducableCallback )
 {
     // default values for geometry reduction
