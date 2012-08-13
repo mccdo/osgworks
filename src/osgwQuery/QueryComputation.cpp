@@ -382,18 +382,19 @@ osg::Geometry* QueryComputation::initQueryDrawable( osg::NodeVisitor* nv )
 
 QueryDrawCallback::QueryDrawCallback()
   : osg::Drawable::DrawCallback(),
-    _nd( NULL ),
     _queryActive( false ),
     _wasOccluded( false ),
-    _queryObject( new QueryObject() )
+    _queryObject( new QueryObject() ),
+    _nd( NULL )
 {
 }
+
 QueryDrawCallback::QueryDrawCallback( const QueryDrawCallback& rhs, const osg::CopyOp& copyop )
   : osg::Drawable::DrawCallback( rhs ),
-    _nd( rhs._nd ),
     _queryActive( rhs._queryActive ),
     _wasOccluded( rhs._wasOccluded ),
-    _queryObject( rhs._queryObject )
+    _queryObject( rhs._queryObject ),
+    _nd( rhs._nd )
 {
 }
 
