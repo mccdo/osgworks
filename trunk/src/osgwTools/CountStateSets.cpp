@@ -35,13 +35,14 @@ namespace osgwTools
 
 CountStateSets::CountStateSets( bool removeEmptyStateSets, const osg::NodeVisitor::TraversalMode travMode )
   : osg::NodeVisitor( travMode ),
-    _removeEmptyStateSets( removeEmptyStateSets ),
     _uniqueStateSets( 0 ),
     _sharedStateSets( 0 ),
     _emptyStateSets( 0 ),
-    _removedStateSets( 0 )
+    _removedStateSets( 0 ),
+    _removeEmptyStateSets( removeEmptyStateSets )
 {
 }
+
 CountStateSets::~CountStateSets()
 {
 }

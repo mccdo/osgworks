@@ -260,14 +260,15 @@ private:
 /* \endcond */
 
 SliderControl::SliderControl()
-  : _currentValue( 0. ),
-    _playMode( STOP ),
-    _root(new osg::Group ),
-    _h(25),
+  : _h(25),
+    _time( 1.f ),
     _simTime(0),
-    _time( 1.f )
+    _root(new osg::Group ),
+    _currentValue( 0. ),
+    _playMode( STOP )
 {
 }
+
 SliderControl::~SliderControl()
 {
 }

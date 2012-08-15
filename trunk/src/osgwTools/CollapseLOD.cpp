@@ -37,8 +37,8 @@ CollapseLOD::CollapseLOD(NodeSelectorCallback *SelectorCallback, const CollapseM
     _LODsLocated(0),
     _LODsProcessed(0),
     _depth(0),
-    _selectorCallback(SelectorCallback),
-    _collapseMode(collapseMode)
+    _collapseMode(collapseMode),
+    _selectorCallback(SelectorCallback)
 {
     if( _selectorCallback==NULL )
         _selectorCallback = new HighestLODChildSelectorCallback;
