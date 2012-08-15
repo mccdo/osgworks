@@ -34,12 +34,13 @@ namespace osgwTools
 
 RemoveProgram::RemoveProgram( bool removePrograms, bool removeUniforms, const osg::NodeVisitor::TraversalMode travMode )
   : osg::NodeVisitor( travMode ),
-    _removePrograms( removePrograms ),
-    _removeUniforms( removeUniforms ),
     _programCount( 0 ),
-    _uniformCount( 0 )
+    _uniformCount( 0 ),
+    _removePrograms( removePrograms ),
+    _removeUniforms( removeUniforms )
 {
 }
+
 RemoveProgram::~RemoveProgram()
 {
 }
