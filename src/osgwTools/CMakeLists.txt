@@ -47,6 +47,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/TangentSpaceGeneratorDouble.h
     ${HEADER_PATH}/TangentSpaceOp.h
     ${HEADER_PATH}/Transform.h
+    ${HEADER_PATH}/TransformUtils.h
     ${HEADER_PATH}/TransparencyUtils.h
     ${HEADER_PATH}/Uniqifier.h
     ${HEADER_PATH}/Version.h
@@ -88,6 +89,7 @@ set( _osgwToolsSourceFiles
     TangentSpaceGeneratorDouble.cpp
     TangentSpaceOp.cpp
     Transform.cpp
+    TransformUtils.cpp
     TransparencyUtils.cpp
     Uniqifier.cpp
     Version.cpp

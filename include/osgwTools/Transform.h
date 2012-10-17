@@ -19,7 +19,7 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #ifndef __OSGWTOOLS_TRANSFORM_H__
-#define __OSGWTOOLS_TRANSFORM_H__1
+#define __OSGWTOOLS_TRANSFORM_H__ 1
 
 
 #include "osgwTools/Export.h"
