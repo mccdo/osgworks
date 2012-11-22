@@ -16,9 +16,9 @@ The osgWorks CMake system should find the OSG dependency automatically if it's i
 
 osgWorks's CMake system uses a CMake helper script to assist in finding OSG. This script is designed to work with the cmake-gui executable (but can also be used with the command line version of smake).
 
-To use the GUI, issue the 'cmake-gui' command. After the first 'Configure', the GUI should display the OSGInstallType pulldown menu. Open it and select Default Installation, Alternate Installation, or Source And Build Tree. Then select 'Configure' again. The CMake GUI will prompt you for additional directory information based on your pulldown menu selection. Supply the requested directory information and select 'Configure' again. 
+To use the GUI, issue the `cmake-gui` command. After the first `Configure`, the GUI should display the OSGInstallType pulldown menu. Open it and select Default Installation, Alternate Installation, or Source And Build Tree. Then select `Configure` again. The CMake GUI will prompt you for additional directory information based on your pulldown menu selection. Supply the requested directory information and select `Configure` again.
 
-After clicking 'Generate', use your project files / makefiles to build osgWorks.
+After clicking `Generate`, use your project files / makefiles to build osgWorks.
 
 = Installing osgWorks =
 
