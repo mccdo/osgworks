@@ -12,9 +12,7 @@ The osgWorks build system requires [http://www.cmake.org/ CMake] v2.6.4 or later
 
 Like !OpenSceneGraph, osgWorks uses [http://www.cmake.org/ CMake].
 
-The osgWorks CMake system should find the OSG dependency automatically if it's installed on your system in a standard/typical location. If the CMake system fails to find OSG, it's usually because OSG is installed in a non-typical location, or you're using OSG from a source tree.
-
-osgWorks's CMake system uses a CMake helper script to assist in finding OSG. This script is designed to work with the cmake-gui executable (but can also be used with the command line version of smake).
+The osgWorks CMake system should find the OSG dependency automatically if it's installed on your system in a standard/typical location. If the CMake system fails to find OSG, it's usually because OSG is installed in a non-typical location, or you're using OSG from a source tree. osgWorks' CMake system uses a CMake helper script to assist in finding OSG. This script is designed to work with the cmake-gui executable (but can also be used with the command line version of cmake).
 
 To use the GUI, issue the `cmake-gui` command. After the first `Configure`, the GUI should display the OSGInstallType pulldown menu. Open it and select Default Installation, Alternate Installation, or Source And Build Tree. Then select `Configure` again. The CMake GUI will prompt you for additional directory information based on your pulldown menu selection. Supply the requested directory information and select `Configure` again.
 
