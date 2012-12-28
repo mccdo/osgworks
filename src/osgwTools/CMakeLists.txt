@@ -14,6 +14,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/AbsoluteModelTransform.h
     ${HEADER_PATH}/CallbackSupport.h
     ${HEADER_PATH}/CameraConfigObject.h
+    ${HEADER_PATH}/CollapseLOD.h
     ${HEADER_PATH}/CountStateSets.h
     ${HEADER_PATH}/CountsVisitor.h
     ${HEADER_PATH}/DataLoader.h
@@ -24,11 +25,11 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/ForceFlattenTransforms.h
     ${HEADER_PATH}/GeometryModifier.h
     ${HEADER_PATH}/GeometryOperation.h
-    ${HEADER_PATH}/CollapseLOD.h
+    ${HEADER_PATH}/InsertRemove.h
     ${HEADER_PATH}/LODCreationNodeVisitor.h
+    ${HEADER_PATH}/MultiCameraProjectionMatrix.h
     ${HEADER_PATH}/NodePathUtils.h
     ${HEADER_PATH}/NodeUtils.h
-    ${HEADER_PATH}/InsertRemove.h
     ${HEADER_PATH}/ParallelVisitor.h
     ${HEADER_PATH}/PrimitiveSetConversion.h
     ${HEADER_PATH}/Quat.h
@@ -57,6 +58,7 @@ set( _osgwToolsSourceFiles
     AbsoluteModelTransform.cpp
     CallbackSupport.cpp
     CameraConfigObject.cpp
+    CollapseLOD.cpp
     CountStateSets.cpp
     CountsVisitor.cpp
     DecimatorOp.cpp
@@ -65,11 +67,11 @@ set( _osgwToolsSourceFiles
     ForceFlattenTransforms.cpp
     GeometryModifier.cpp
     GeometryOperation.cpp
-    CollapseLOD.cpp
+    InsertRemove.cpp
     LODCreationNodeVisitor.cpp
+    MultiCameraProjectionMatrix.cpp
     NodePathUtils.cpp
     NodeUtils.cpp
-    InsertRemove.cpp
     ParallelVisitor.cpp
     PluginLoader.cpp
     PrimitiveSetConversion.cpp
