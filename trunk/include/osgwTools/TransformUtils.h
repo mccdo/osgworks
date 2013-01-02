@@ -31,7 +31,7 @@ namespace osgwTools
 {
 
 
-/** \defgroup Utilities for working with Matrices
+/** \defgroup MatrixUtils Utilities for working with Matrices
 
 */
 /*@{*/

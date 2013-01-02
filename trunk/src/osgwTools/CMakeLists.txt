@@ -40,6 +40,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/RemoveLOD.h
     ${HEADER_PATH}/RemoveProgram.h
     ${HEADER_PATH}/ScreenCapture.h
+    ${HEADER_PATH}/SerializerSupport.h
     ${HEADER_PATH}/Shapes.h
     ${HEADER_PATH}/ShortEdgeOp.h
     ${HEADER_PATH}/SimplifierOp.h
