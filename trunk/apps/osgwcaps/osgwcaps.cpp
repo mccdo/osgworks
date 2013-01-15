@@ -30,13 +30,8 @@ struct SimpleContext
     SimpleContext()
     {
         osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
-        traits->x = 0;
-        traits->y = 0;
         traits->width = 1;
         traits->height = 1;
-        traits->windowDecoration = false;
-        traits->doubleBuffer = false;
-        traits->sharedContext = 0;
         traits->pbuffer = true;
 
         _gc = osg::GraphicsContext::createGraphicsContext(traits.get());
@@ -80,7 +75,7 @@ int main( int argc, char** argv )
 
     SimpleContext context;
 
-    osgwTools::Capabilities caps( context._gc.get() );
+    osgwTools::Capabilities caps;
     caps.dump( osg::notify( osg::ALWAYS ) );
 
 

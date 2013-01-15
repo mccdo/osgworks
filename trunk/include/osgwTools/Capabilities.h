@@ -35,24 +35,26 @@ namespace osgwTools
 
 
 /** \class Capabilities Capabilities.h <osgwTools/Capabilities.h>
-\brief
-\details Requires a current context.
-*/
+\brief Queries and displays graphivs capabilities.
+\details The constructor must be invoked while a context is current.
+The constructor queries the OSG version and various OpenGL parameters
+and stores them in the Capabilities struct. The app can examine each
+field directly, or call Capabilities::dump() to display the values to
+a std::stream. */
 struct OSGWTOOLS_EXPORT Capabilities
 {
-    Capabilities( osg::GraphicsContext* gc );
+    Capabilities();
     ~Capabilities();
 
     void dump( std::ostream& ostr );
 
 
-    std::string _osgWorksVersion;
     std::string _osgVersion;
 
     std::string _glVersion;
     std::string _glVendor;
     std::string _glRenderer;
-    float _glslVersion;
+    std::string _glslVersion;
 
     GLint _texSize;
     GLint _3DTexSize;
