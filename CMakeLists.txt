@@ -70,6 +70,8 @@ include( CMakeMacros )
 
 include( FindOSGHelper )
 
+find_package( OpenGL )
+
 find_package( Boost )
 if( Boost_FOUND )
     add_definitions( -DBOOST_FOUND )
@@ -252,5 +254,4 @@ configure_file(extra/osgworks.fpc.in
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/flagpoll/osgworks.fpc
         DESTINATION lib/flagpoll )
-
 

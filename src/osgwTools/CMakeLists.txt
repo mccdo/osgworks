@@ -14,6 +14,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/AbsoluteModelTransform.h
     ${HEADER_PATH}/CallbackSupport.h
     ${HEADER_PATH}/CameraConfigObject.h
+    ${HEADER_PATH}/Capabilities.h
     ${HEADER_PATH}/CollapseLOD.h
     ${HEADER_PATH}/CountStateSets.h
     ${HEADER_PATH}/CountsVisitor.h
@@ -59,6 +60,7 @@ set( _osgwToolsSourceFiles
     AbsoluteModelTransform.cpp
     CallbackSupport.cpp
     CameraConfigObject.cpp
+    Capabilities.cpp
     CollapseLOD.cpp
     CountStateSets.cpp
     CountsVisitor.cpp
@@ -105,6 +107,7 @@ add_library( ${LIB_NAME}
 if( BUILD_SHARED_LIBS )
     target_link_libraries( ${LIB_NAME}
         ${OSG_LIBRARIES}
+        ${OPENGL_gl_LIBRARY}
     )
 endif()
 
