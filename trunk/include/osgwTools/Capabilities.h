@@ -40,13 +40,18 @@ namespace osgwTools
 The constructor queries the OSG version and various OpenGL parameters
 and stores them in the Capabilities struct. The app can examine each
 field directly, or call Capabilities::dump() to display the values to
-a std::stream. */
+a std::stream.
+
+See CapabilitiesSingleton.
+*/
 struct OSGWTOOLS_EXPORT Capabilities
 {
     Capabilities();
     ~Capabilities();
 
-    void dump( std::ostream& ostr );
+    void query();
+
+    void dump( std::ostream& ostr ) const;
 
 
     std::string _osgVersion;
@@ -65,6 +70,26 @@ struct OSGWTOOLS_EXPORT Capabilities
     GLint _texCoords;
     GLint _vertexAttribs;
     GLint _drawBuffers;
+};
+
+
+/** \class CapabilitiesSingleton Capabilities.h <osgwTools/Capabilities.h>
+\brief Obtain Capabilities value without requiring a current context.
+\details When the singleton instance is first allocated and constructed,
+it creates its own pbuffer context to initialize its Capabilities member
+variable. */
+class OSGWTOOLS_EXPORT CapabilitiesSingleton
+{
+public:
+    static CapabilitiesSingleton* instance();
+
+    const Capabilities* getCaps() const;
+
+protected:
+    CapabilitiesSingleton();
+    ~CapabilitiesSingleton();
+
+    Capabilities* _caps;
 };
 
 

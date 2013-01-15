@@ -21,6 +21,9 @@
 #include <osgwTools/Capabilities.h>
 #include <osgwTools/Version.h>
 
+#include <osgViewer/GraphicsWindow>
+#include <osgViewer/Version>
+
 #include <osg/Version>
 #include <osg/GL>
 #include <osg/GL2Extensions>
@@ -34,6 +37,14 @@ namespace osgwTools
 
 
 Capabilities::Capabilities()
+{
+    query();
+}
+Capabilities::~Capabilities()
+{
+}
+
+void Capabilities::query()
 {
     // Error check. Most OpenGL implementations return an error
     // GL_INVALID_OPERATION if there is no current context.
@@ -64,11 +75,8 @@ Capabilities::Capabilities()
     glGetIntegerv( GL_MAX_VERTEX_ATTRIBS, &_vertexAttribs );
     glGetIntegerv( GL_MAX_DRAW_BUFFERS, &_drawBuffers );
 }
-Capabilities::~Capabilities()
-{
-}
 
-void Capabilities::dump( std::ostream& ostr )
+void Capabilities::dump( std::ostream& ostr ) const
 {
     ostr << getVersionString() << std::endl;
     ostr << "OSG version: " << _osgVersion << std::endl;
@@ -90,6 +98,75 @@ void Capabilities::dump( std::ostream& ostr )
     ostr << "    GL_MAX_TEXTURE_COORDS: " << _texCoords << std::endl;
     ostr << "    GL_MAX_VERTEX_ATTRIBS: " << _vertexAttribs << std::endl;
     ostr << "    GL_DRAW_BUFFERS: " << _drawBuffers << std::endl;
+}
+
+
+
+CapabilitiesSingleton* CapabilitiesSingleton::instance()
+{
+    static CapabilitiesSingleton* s_instance( new CapabilitiesSingleton() );
+    return( s_instance );
+}
+
+const Capabilities* CapabilitiesSingleton::getCaps() const
+{
+    return( _caps );
+}
+
+CapabilitiesSingleton::CapabilitiesSingleton()
+{
+    struct SimpleContext
+    {
+        SimpleContext()
+        {
+            osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
+            traits->width = 1;
+            traits->height = 1;
+            traits->pbuffer = true;
+
+            _gc = osg::GraphicsContext::createGraphicsContext(traits.get());
+
+            if (!_gc)
+            {
+                osg::notify(osg::INFO)<<"Failed to create pbuffer, failing back to normal graphics window."<<std::endl;
+                
+                traits->pbuffer = false;
+                _gc = osg::GraphicsContext::createGraphicsContext(traits.get());
+            }
+
+            if (_gc.valid()) 
+            {
+                _gc->realize();
+                _gc->makeCurrent();
+                if (dynamic_cast<osgViewer::GraphicsWindow*>(_gc.get()))
+                {
+                    osg::notify(osg::INFO)<<"Realized graphics window for OpenGL operations."<<std::endl;
+                }
+                else
+                {
+                    osg::notify(osg::INFO)<<"Realized pbuffer for OpenGL operations."<<std::endl;
+                }
+            }
+            else
+            {
+                osg::notify(osg::WARN)<<"Failed to create GC."<<std::endl;
+            }
+        }
+        
+        osg::ref_ptr<osg::GraphicsContext> _gc;
+    };
+
+
+    // Bizarre... Must call this function, or context creation will fail.
+    ::osgViewerGetVersion();
+
+
+    SimpleContext context;
+    _caps = new Capabilities();
+}
+CapabilitiesSingleton::~CapabilitiesSingleton()
+{
+    delete _caps;
 }
 
 
