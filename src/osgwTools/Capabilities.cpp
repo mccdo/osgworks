@@ -33,26 +33,26 @@ namespace osgwTools
 {
 
 
-Capabilities::Capabilities( osg::GraphicsContext* gc )
+Capabilities::Capabilities()
 {
-    _osgWorksVersion = osgwTools::getVersionString();
+    // Error check. Most OpenGL implementations return an error
+    // GL_INVALID_OPERATION if there is no current context.
+    GLenum error( glGetError() );
+    if( error != GL_NO_ERROR )
+    {
+        osg::notify( osg::WARN ) << "Error " << std::hex << error << " in osgwTools::Capabilities constructor." << std::endl;
+        if( error == GL_INVALID_OPERATION )
+        {
+            osg::notify( osg::WARN ) << "This could indicate that there is no current OpenGL context." << std::endl;
+        }
+    }
+
     _osgVersion = osgGetVersion();
 
     _glVersion = (const char*)( glGetString( GL_VERSION ) );
     _glVendor = (const char*)( glGetString( GL_VENDOR ) );
     _glRenderer = (const char*)( glGetString( GL_RENDERER ) );
-
-    if( gc == NULL )
-    {
-        osg::notify( osg::WARN ) << "Must specify a non-NULL GC." << std::endl;
-        _glslVersion = 0.f;
-    }
-    else
-    {
-        unsigned int id = gc->getState()->getContextID();
-        const osg::GL2Extensions* gl2 = osg::GL2Extensions::Get( id, true );
-        _glslVersion = gl2->getLanguageVersion();
-    }
+    _glslVersion = (const char*)( glGetString( GL_SHADING_LANGUAGE_VERSION ) );
 
     glGetIntegerv( GL_MAX_TEXTURE_SIZE, &_texSize );
     glGetIntegerv( GL_MAX_3D_TEXTURE_SIZE, &_3DTexSize );
@@ -70,14 +70,14 @@ Capabilities::~Capabilities()
 
 void Capabilities::dump( std::ostream& ostr )
 {
-    ostr << _osgWorksVersion << std::endl;
+    ostr << getVersionString() << std::endl;
     ostr << "OSG version: " << _osgVersion << std::endl;
 
     ostr << "  Queryable strings ----------------------------------------" << std::endl;
     ostr << "    GL_VERSION: " << _glVersion << std::endl;
     ostr << "    GL_VENDOR: " << _glVendor << std::endl;
     ostr << "    GL_RENDERER: " << _glRenderer << std::endl;
-    ostr << "    GLSL version: " << _glslVersion << std::endl;
+    ostr << "    GL_SHADING_LANGUAGE_VERSION: " << _glslVersion << std::endl;
 
     ostr << "  Texture implementation constants -------------------------" << std::endl;
     ostr << "    GL_MAX_TEXTURE_SIZE: " << _texSize << std::endl;
