@@ -73,7 +73,7 @@ void Capabilities::dump( std::ostream& ostr )
     ostr << _osgWorksVersion << std::endl;
     ostr << "OSG version: " << _osgVersion << std::endl;
 
-    ostr << "  Queriable strings ----------------------------------------" << std::endl;
+    ostr << "  Queryable strings ----------------------------------------" << std::endl;
     ostr << "    GL_VERSION: " << _glVersion << std::endl;
     ostr << "    GL_VENDOR: " << _glVendor << std::endl;
     ostr << "    GL_RENDERER: " << _glRenderer << std::endl;
