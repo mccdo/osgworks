@@ -49,8 +49,13 @@ struct OSGWTOOLS_EXPORT Capabilities
     Capabilities();
     ~Capabilities();
 
+    /** \brief Query values.
+    \details Apps should not need to call this function directly, as
+    it is invoked by the constructor. */
     void query();
 
+    /** \brief Dump queried values to the specified std::ostream.
+    */
     void dump( std::ostream& ostr ) const;
 
 
@@ -74,7 +79,7 @@ struct OSGWTOOLS_EXPORT Capabilities
 
 
 /** \class CapabilitiesSingleton Capabilities.h <osgwTools/Capabilities.h>
-\brief Obtain Capabilities value without requiring a current context.
+\brief Obtain Capabilities values without requiring a current context.
 \details When the singleton instance is first allocated and constructed,
 it creates its own pbuffer context to initialize its Capabilities member
 variable. */

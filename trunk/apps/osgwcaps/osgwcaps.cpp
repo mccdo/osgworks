@@ -18,75 +18,23 @@
  *
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
-#include <osgViewer/GraphicsWindow>
-#include <osgViewer/Version>
-
 #include <osgwTools/Capabilities.h>
-
-
-
-struct SimpleContext
-{
-    SimpleContext()
-    {
-        osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
-        traits->width = 1;
-        traits->height = 1;
-        traits->pbuffer = true;
-
-        _gc = osg::GraphicsContext::createGraphicsContext(traits.get());
-
-        if (!_gc)
-        {
-            osg::notify(osg::INFO)<<"Failed to create pbuffer, failing back to normal graphics window."<<std::endl;
-                
-            traits->pbuffer = false;
-            _gc = osg::GraphicsContext::createGraphicsContext(traits.get());
-        }
-
-        if (_gc.valid()) 
-        {
-            _gc->realize();
-            _gc->makeCurrent();
-            if (dynamic_cast<osgViewer::GraphicsWindow*>(_gc.get()))
-            {
-                osg::notify(osg::INFO)<<"Realized graphics window for OpenGL operations."<<std::endl;
-            }
-            else
-            {
-                osg::notify(osg::INFO)<<"Realized pbuffer for OpenGL operations."<<std::endl;
-            }
-        }
-        else
-        {
-            osg::notify(osg::WARN)<<"Failed to create GC."<<std::endl;
-        }
-    }
-        
-    osg::ref_ptr<osg::GraphicsContext> _gc;
-};
 
 
 int main( int argc, char** argv )
 {
-    // Bizarre... Must call this function, or context creation will fail.
-    ::osgViewerGetVersion();
-
-
-    SimpleContext context;
-
-    osgwTools::Capabilities caps;
-    caps.dump( osg::notify( osg::ALWAYS ) );
-
+    osgwTools::CapabilitiesSingleton::instance()->getCaps()->dump( osg::notify( osg::ALWAYS ) );
 
     return( 0 );
 }
 
 
 
-/** \page osgwcomp The osgwcomp Application
-osgwcomp compares the structure of two scene graphs using the \ref ParallelVisitor.
+/** \page osgwcaps The osgwcaps Application
+osgwcaps queries the graphics system for basic capabilities
+and displays the results to OSG's ALWAYS notification level.
 
-Further documentation for osgwcomp is TBD.
+Internally, osgwcaps uses the osgwTools::CapabilitiesSingleton. See also
+the osgwTools::Capabilities struct.
 
 */
