@@ -78,8 +78,11 @@ MACRO( ADD_EXECUTABLE_INTERNAL TRGTNAME )
     ENDIF(WIN32)
 ENDMACRO( ADD_EXECUTABLE_INTERNAL TRGTNAME )
 
-MACRO( LINK_INTERNAL TRGTNAME )
-    FOREACH(LINKLIB ${ARGN})
-        TARGET_LINK_LIBRARIES( ${TRGTNAME} optimized "${LINKLIB}" debug "${LINKLIB}" )
-    ENDFOREACH(LINKLIB)
-ENDMACRO( LINK_INTERNAL TRGTNAME )
+macro( LINK_INTERNAL TRGTNAME )
+    foreach( LINKLIB ${ARGN} )
+        target_link_libraries( ${TRGTNAME} optimized "${LINKLIB}" debug "${LINKLIB}" )
+    endforeach()
+    target_link_libraries( ${TRGTNAME}
+        ${OPENGL_gl_LIBRARY}
+    )
+endmacro()
