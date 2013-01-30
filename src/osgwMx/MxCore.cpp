@@ -46,7 +46,6 @@ MxCore::MxCore()
     _initialPosition( 0., 0., 0. ),
     _orientedUp( 0., 0., 1. ),
     _orientedDir( 0., 1., 0. ),
-    _orientedPosition( 0., 0., 0. ),
     _orbitCenter( 0., 0., 0. ),
     _rotateScale( 1. ),
     _moveScale( 1., 1., 1. ),
@@ -71,7 +70,6 @@ MxCore::MxCore( const MxCore& rhs, const osg::CopyOp& copyop )
     _initialPosition( rhs._initialPosition ),
     _orientedUp( rhs._orientedUp ),
     _orientedDir( rhs._orientedDir ),
-    _orientedPosition( rhs._orientedPosition ),
     _orbitCenter( rhs._orbitCenter ),
     _rotateScale( rhs._rotateScale ),
     _moveScale( rhs._moveScale ),
@@ -184,12 +182,10 @@ void MxCore::reset()
 }
 
 
-void MxCore::setOriented( const osg::Vec3d& up, const osg::Vec3d& dir,
-    const osg::Vec3d& pos )
+void MxCore::setOriented( const osg::Vec3d& up, const osg::Vec3d& dir )
 {
     _orientedUp = up;
     _orientedDir = dir;
-    _orientedPosition = pos;
 
     // Error check.
     _orientedUp.normalize();
@@ -203,16 +199,14 @@ void MxCore::setOriented( const osg::Vec3d& up, const osg::Vec3d& dir,
     _orientedUp.normalize();
     _orientedDir.normalize();
 }
-void MxCore::setOriented( const osg::Vec3d& dir, const osg::Vec3d& pos )
+void MxCore::setOriented( const osg::Vec3d& dir )
 {
-    setOriented( _orientedUp, dir, pos );
+    setOriented( _orientedUp, dir );
 }
-void MxCore::getOriented( osg::Vec3d& up, osg::Vec3d& dir,
-    osg::Vec3d& pos )
+void MxCore::getOriented( osg::Vec3d& up, osg::Vec3d& dir )
 {
     up = _orientedUp;
     dir = _orientedDir;
-    pos = _orientedPosition;
 }
 
 

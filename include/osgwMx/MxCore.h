@@ -110,21 +110,18 @@ public:
     initial values (see setInitialValues()), and disables orthographic projection. */
     void reset();
 
-    /** \brief Set the oriented up, dir, and position vectors.
+    /** \brief Set the oriented up and dir vectors.
     \details These values are used with the moveOriented() method.
-    In typical usage, an application tracks the position and orientation
+    In typical usage, an application tracks orientation
     of a handheld device, sets that information with this method, then
     calls moveOriented() to move in this coordinate system
 
-    \c up defaults to (0., 0., 1.), \c dir defaults to (0., 1., 0.),
-    and \c pos defaults to (0., 0., 0.). */
-    void setOriented( const osg::Vec3d& up, const osg::Vec3d& dir,
-        const osg::Vec3d& pos );
-    /** \override Changes the dir and position vectors only. */
-    void setOriented( const osg::Vec3d& dir, const osg::Vec3d& pos );
-    /** \brief Get the oriented up, dir, and position vectors. */
-    void getOriented( osg::Vec3d& up, osg::Vec3d& dir,
-        osg::Vec3d& pos );
+    \c up defaults to (0., 0., 1.) and \c dir defaults to (0., 1., 0.). */
+    void setOriented( const osg::Vec3d& up, const osg::Vec3d& dir );
+    /** \override Changes the dir vector only. */
+    void setOriented( const osg::Vec3d& dir );
+    /** \brief Get the oriented up and dir vectors. */
+    void getOriented( osg::Vec3d& up, osg::Vec3d& dir );
 
 
     /** \brief Access the current view up vector. */
@@ -260,7 +257,7 @@ public:
 
     \c delta[1] is movement along the oriented up vector. Positive values move
     along that vector, and negative in the opposite direction. \c delta[2] moves
-    similarly along the oriented dir vector. \c delta[0] moves along the cross
+    similarly, but along the negated dir vector. \c delta[0] moves along the cross
     product of the oriented dir and up vectors.
 
     Note that movement is scaled (see setMoveScale()). */
@@ -376,7 +373,7 @@ protected:
 
     osg::Vec3d _viewUp, _viewDir, _position;
     osg::Vec3d _initialUp, _initialDir, _initialPosition;
-    osg::Vec3d _orientedUp, _orientedDir, _orientedPosition;
+    osg::Vec3d _orientedUp, _orientedDir;
 
     osg::Vec3d _orbitCenter;
     double _rotateScale;
