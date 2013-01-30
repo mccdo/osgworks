@@ -68,7 +68,7 @@ public:
 
     When using MxCore to control a view, access the view matrix using
     the getInverseMatrix() method. The return value is suitable for use
-    with osg::Camera::setViewMatrix();
+    with osg::Camera::setViewMatrix(); */
     /**\{*/
 
     /** \brief Get a transform matrix.
@@ -88,7 +88,7 @@ public:
 
     /** \name Basis and Origin Access
     \details This section contains method for modifying orientation
-    and position.
+    and position. */
     /**\{*/
 
     /** \brief Set the initial up, dir, and position vectors, and fovy.
@@ -310,7 +310,10 @@ public:
 
 
     /** \name Projection Matrix Controls
-    \details TBD */
+    \details Use computeProjection() to obtain a projection matrix based on
+    state specified with the following interface. Possible projection matrix
+    state values include the aspect ratio, field of view in Y, and a Boolean
+    toggle for orthographic mode. */
     /**\{*/
 
     /** \brief Specify whether or not to use an orthographic projection.
