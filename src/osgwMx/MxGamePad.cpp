@@ -139,6 +139,9 @@ void MxGamePad::internalLeftStick( const float x, const float y )
     case FunctionalMap::MoveModeConstrained:
         _mxCore->moveConstrained( movement );
         break;
+    case FunctionalMap::MoveModeOriented:
+        _mxCore->moveOriented( movement );
+        break;
     case FunctionalMap::MoveModeWorld:
         _mxCore->moveWorld( movement );
         break;
@@ -267,6 +270,8 @@ void MxGamePad::setButtons( const unsigned int buttons )
         setMoveMode( FunctionalMap::MoveModeLocal );
     if( _map->isSet( FunctionalMap::MoveModeConstrained ) )
         setMoveMode( FunctionalMap::MoveModeConstrained );
+    if( _map->isSet( FunctionalMap::MoveModeOriented ) )
+        setMoveMode( FunctionalMap::MoveModeOriented );
     if( _map->isSet( FunctionalMap::MoveModeWorld ) )
         setMoveMode( FunctionalMap::MoveModeWorld );
     if( _map->isSet( FunctionalMap::MoveModeOrbit ) )
@@ -321,10 +326,14 @@ void MxGamePad::setButtons( const unsigned int buttons, const double deltaSecond
         _mxCore->moveWorld( movement );
         return;
     }
-    
     if( _map->isSet( FunctionalMap::MoveModeConstrained ) )
     {
         _mxCore->moveConstrained( movement );
+        return;
+    }
+    if( _map->isSet( FunctionalMap::MoveModeOriented ) )
+    {
+        _mxCore->moveOriented( movement );
         return;
     }
     

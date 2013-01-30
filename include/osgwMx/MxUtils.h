@@ -253,6 +253,8 @@ public:
         MoveModeLocal,
         /** Move in the ground plane (defined by the initial up vector). */
         MoveModeConstrained,
+        /** Move in the oriented coordinate system. */
+        MoveModeOriented,
         /** Move in world coordinates. */
         MoveModeWorld,
         /** Move along a vector between the eye and the orbit center, slowing
