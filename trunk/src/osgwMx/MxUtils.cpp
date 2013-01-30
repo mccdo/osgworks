@@ -311,6 +311,7 @@ std::string FunctionalMap::asString( FunctionType func )
     case MoveModeLiteral: return( "MoveModeLiteral" ); break;
     case MoveModeLocal: return( "MoveModeLocal" ); break;
     case MoveModeConstrained: return( "MoveModeConstrained" ); break;
+    case MoveModeOriented: return( "MoveModeOriented" ); break;
     case MoveModeWorld: return( "MoveModeWorld" ); break;
     case MoveModeOrbit: return( "MoveModeOrbit" ); break;
     case CycleMoveMode: return( "CycleMoveMode" ); break;
@@ -336,6 +337,7 @@ FunctionalMap::FunctionType FunctionalMap::asFunctionType( const std::string& st
     else if( str == std::string( "MoveModeLiteral" ) ) return( MoveModeLiteral );
     else if( str == std::string( "MoveModeLocal" ) ) return( MoveModeLocal );
     else if( str == std::string( "MoveModeConstrained" ) ) return( MoveModeConstrained );
+    else if( str == std::string( "MoveModeOriented" ) ) return( MoveModeOriented );
     else if( str == std::string( "MoveModeWorld" ) ) return( MoveModeWorld );
     else if( str == std::string( "MoveModeOrbit" ) ) return( MoveModeOrbit );
     else if( str == std::string( "CycleMoveMode" ) ) return( CycleMoveMode );
@@ -355,6 +357,7 @@ bool FunctionalMap::validMoveMode( const FunctionType func )
     return( ( func == MoveModeLiteral ) ||
         ( func == MoveModeLocal ) ||
         ( func == MoveModeConstrained ) ||
+        ( func == MoveModeOriented ) ||
         ( func == MoveModeWorld ) ||
         ( func == MoveModeOrbit ) );
 }
@@ -373,6 +376,8 @@ FunctionalMap::FunctionType FunctionalMap::cycleMoveMode( const FunctionType fun
     else if( func == MoveModeLocal )
         returnFunc = MoveModeConstrained;
     else if( func == MoveModeConstrained )
+        returnFunc = MoveModeOriented;
+    else if( func == MoveModeOriented )
         returnFunc = MoveModeWorld;
     else if ( func == MoveModeWorld )
         returnFunc = MoveModeOrbit;

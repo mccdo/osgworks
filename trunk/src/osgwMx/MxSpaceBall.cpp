@@ -146,6 +146,9 @@ void MxSpaceBall::internalTranslate( const float x, const float y, const float z
     case FunctionalMap::MoveModeConstrained:
         _mxCore->moveConstrained( movement );
         break;
+    case FunctionalMap::MoveModeOriented:
+        _mxCore->moveOriented( movement );
+        break;
     case FunctionalMap::MoveModeWorld:
         _mxCore->moveWorld( movement );
         break;
@@ -232,6 +235,8 @@ void MxSpaceBall::setButtons( const unsigned int buttons )
         setMoveMode( FunctionalMap::MoveModeLocal );
     if( _map->isSet( FunctionalMap::MoveModeConstrained ) )
         setMoveMode( FunctionalMap::MoveModeConstrained );
+    if( _map->isSet( FunctionalMap::MoveModeOriented ) )
+        setMoveMode( FunctionalMap::MoveModeOriented );
     if( _map->isSet( FunctionalMap::MoveModeWorld ) )
         setMoveMode( FunctionalMap::MoveModeWorld );
 
@@ -280,18 +285,22 @@ void MxSpaceBall::setButtons( const unsigned int buttons, const double deltaSeco
 
     if( _map->isSet( FunctionalMap::MoveModeWorld ) )
     {
-        _mxCore->moveWorldCoords( movement );
+        _mxCore->moveWorld( movement );
         return;
     }
-    
     if( _map->isSet( FunctionalMap::MoveModeConstrained ) )
     {
         _mxCore->moveConstrained( movement );
         return;
     }
-    
+    if( _map->isSet( FunctionalMap::MoveModeOriented ) )
+    {
+        _mxCore->moveOriented( movement );
+        return;
+    }
+
     ///By default we will move in local coordinate space
-    _mxCore->move( movement );
+    _mxCore->moveLocal( movement );
 }
 
 

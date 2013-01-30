@@ -44,6 +44,9 @@ MxCore::MxCore()
     _initialUp( 0., 0., 1. ),
     _initialDir( 0., 1., 0. ),
     _initialPosition( 0., 0., 0. ),
+    _orientedUp( 0., 0., 1. ),
+    _orientedDir( 0., 1., 0. ),
+    _orientedPosition( 0., 0., 0. ),
     _orbitCenter( 0., 0., 0. ),
     _rotateScale( 1. ),
     _moveScale( 1., 1., 1. ),
@@ -66,6 +69,9 @@ MxCore::MxCore( const MxCore& rhs, const osg::CopyOp& copyop )
     _initialUp( rhs._initialUp ),
     _initialDir( rhs._initialDir ),
     _initialPosition( rhs._initialPosition ),
+    _orientedUp( rhs._orientedUp ),
+    _orientedDir( rhs._orientedDir ),
+    _orientedPosition( rhs._orientedPosition ),
     _orbitCenter( rhs._orbitCenter ),
     _rotateScale( rhs._rotateScale ),
     _moveScale( rhs._moveScale ),
@@ -176,6 +182,39 @@ void MxCore::reset()
     _fovy = _initialFovy;
     setOrtho( false );
 }
+
+
+void MxCore::setOriented( const osg::Vec3d& up, const osg::Vec3d& dir,
+    const osg::Vec3d& pos )
+{
+    _orientedUp = up;
+    _orientedDir = dir;
+    _orientedPosition = pos;
+
+    // Error check.
+    _orientedUp.normalize();
+    _orientedDir.normalize();
+    if( osg::absolute< double >( _orientedUp * _orientedDir ) > 0.99 )
+        osg::notify( osg::WARN ) << "MxCore::setOriented: Up and dir vectors are nearly coincident. Results are undefined." << std::endl;
+
+    // orthonormalize
+    const osg::Vec3d c = _orientedDir ^ _orientedUp;
+    _orientedUp = c ^ _orientedDir;
+    _orientedUp.normalize();
+    _orientedDir.normalize();
+}
+void MxCore::setOriented( const osg::Vec3d& dir, const osg::Vec3d& pos )
+{
+    setOriented( _orientedUp, dir, pos );
+}
+void MxCore::getOriented( osg::Vec3d& up, osg::Vec3d& dir,
+    osg::Vec3d& pos )
+{
+    up = _orientedUp;
+    dir = _orientedDir;
+    pos = _orientedPosition;
+}
+
 
 void MxCore::setByMatrix( const osg::Matrixd& m )
 {
@@ -318,11 +357,6 @@ void MxCore::rotateLocal( double angle, const osg::Vec3d& axis )
     _viewUp = _viewUp * r;
     orthonormalize();
 }
-void MxCore::rotate( double angle, const osg::Vec3d& axis )
-{
-    osg::notify( osg::WARN ) << "MxCore::rotate() is deprecated. Use rotateLocal() instead." << std::endl;
-    rotateLocal( angle, axis );
-}
 
 void MxCore::rotateOrbit( double angle, const osg::Vec3d& axis )
 {
@@ -333,22 +367,11 @@ void MxCore::rotateOrbit( double angle, const osg::Vec3d& axis )
     _viewUp = _viewUp * r;
     orthonormalize();
 }
-void MxCore::rotate( double angle, const osg::Vec3d& axis, const osg::Vec3d& point )
-{
-    osg::notify( osg::WARN ) << "MxCore::rotate() is deprecated. Use rotateOrbit() instead." << std::endl;
-    setOrbitCenterPoint( point );
-    rotateOrbit( angle, axis );
-}
 
 void MxCore::moveLiteral( const osg::Vec3d& delta )
 {
     _position += delta;
     _orbitCenter += delta;
-}
-void MxCore::moveWorldCoords( const osg::Vec3d& delta )
-{
-    osg::notify( osg::WARN ) << "MxCore::moveWorldCoords() is deprecated. Use moveLiteral() instead." << std::endl;
-    moveLiteral( delta );
 }
 void MxCore::moveLocal( const osg::Vec3d& delta )
 {
@@ -357,15 +380,26 @@ void MxCore::moveLocal( const osg::Vec3d& delta )
     _position += ( scaledDelta * getOrientationMatrix() );
     _orbitCenter += ( scaledDelta * getOrientationMatrix() );
 }
-void MxCore::move( const osg::Vec3d& delta )
-{
-    osg::notify( osg::WARN ) << "MxCore::move() is deprecated. Use moveLocal() instead." << std::endl;
-    moveLocal( delta );
-}
 void MxCore::moveConstrained( const osg::Vec3d& delta )
 {
     const osg::Vec3d c = getCross();
     const osg::Vec3d& u = _initialUp;
+    const osg::Vec3d back = c ^ u;
+    const osg::Matrixd orient(
+        c[ 0 ], c[ 1 ], c[ 2 ], 0.,
+        u[ 0 ], u[ 1 ], u[ 2 ], 0.,
+        back[ 0 ], back[ 1 ], back[ 2 ], 0.,
+        0., 0., 0., 1. );
+
+    const osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
+        delta[1] * _moveScale[1], delta[2] * _moveScale[2] );
+    _position += ( scaledDelta * orient );
+    _orbitCenter += ( scaledDelta * orient );
+}
+void MxCore::moveOriented( const osg::Vec3d& delta )
+{
+    const osg::Vec3d c = _orientedUp ^ _orientedDir;
+    const osg::Vec3d& u = _orientedUp;
     const osg::Vec3d back = c ^ u;
     const osg::Matrixd orient(
         c[ 0 ], c[ 1 ], c[ 2 ], 0.,
