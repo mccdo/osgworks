@@ -201,6 +201,10 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
         }
         break;
     }
+    default:
+    {
+        break;
+    }
     }
 
     if( handled )
