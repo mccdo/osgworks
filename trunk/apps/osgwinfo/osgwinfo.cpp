@@ -75,6 +75,9 @@ including counts of various node and object types, state information,
 vertex information, and statistics. The values displayed are useful for
 identifying and eliminating performance bottlenecks.
 
+Internally, osgwinfo uses the osgwTools::CountsVisitor to gather information
+from the scene graph.
+
 \section clp Command Line Parameters
 <table border="0">
   <tr>
