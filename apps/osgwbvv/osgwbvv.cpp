@@ -34,7 +34,6 @@
 #include <osg/PolygonMode>
 #include <osg/Point>
 #include <osg/BlendFunc>
-#include "osgwTools/Shapes.h"
 
 #include <osg/io_utils>
 

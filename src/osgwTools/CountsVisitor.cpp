@@ -75,6 +75,44 @@ unsigned int CountsVisitor::getNumDrawablesUserModeOff() const
     return( _drawUserModeOff );
 }
 
+float CountsVisitor::getChildrenPerNode()
+{
+    const unsigned int allNodes( _nodes+_groups+_lods+_pagedLods+_switches+_sequences+_transforms+_matrixTransforms+_dofTransforms );
+    if( allNodes > 0 )
+        return( (float)_totalChildren / (float)allNodes );
+    else
+        return( 0.f );
+}
+float CountsVisitor::getDrawablesPerGeode()
+{
+    if( _geodes > 0 )
+        return( (float)_totalDrawables / (float)_geodes );
+    else
+        return( 0.f );
+}
+float CountsVisitor::getDrawablesPerNode()
+{
+    const unsigned int allNodes( _nodes+_groups+_lods+_pagedLods+_switches+_sequences+_transforms+_matrixTransforms+_dofTransforms );
+    if( allNodes > 0 )
+        return( (float)_totalDrawables / (float)allNodes );
+    else
+        return( 0.f );
+}
+float CountsVisitor::getPrimitiveSetsPerGeometry()
+{
+    if( _geometries > 0 )
+        return( (float) _primitiveSets / (float) _geometries );
+    else
+        return( 0.f );
+}
+float CountsVisitor::getVerticesPerGeometry()
+{
+    if( _geometries > 0 )
+        return( (float) _vertices / (float) _geometries );
+    else
+        return( 0.f );
+}
+
 void CountsVisitor::setUserMode( GLenum userMode )
 {
     _userMode = userMode;
@@ -158,55 +196,57 @@ void
 CountsVisitor::dump( std::ostream& ostr )
 {
     ostr << std::endl;
-    ostr << "         OSG Object \tCount\tUnique" << std::endl;
-    ostr << "         ---------- \t-----\t------" << std::endl;
-    ostr << "             Groups \t" << _groups << "\t" << _uGroups.size() << std::endl;
-    ostr << "               LODs \t" << _lods << "\t" << _uLods.size() << std::endl;
-    ostr << "          PagedLODs \t" << _pagedLods << "\t" << _uPagedLods.size() << std::endl;
-    ostr << "           Switches \t" << _switches << "\t" << _uSwitches.size() << std::endl;
-    ostr << "          Sequences \t" << _sequences << "\t" << _uSequences.size() << std::endl;
-    ostr << "   MatrixTransforms \t" << _matrixTransforms << "\t" << _uMatrixTransforms.size() << std::endl;
-    ostr << "      DOFTransforms \t" << _dofTransforms << "\t" << _uDofTransforms.size() << std::endl;
-    ostr << "   Other Transforms \t" << _transforms << "\t" << _uTransforms.size() << std::endl;
-    ostr << "             Geodes \t" << _geodes << "\t" << _uGeodes.size() << std::endl;
-    ostr << "        Other Nodes \t" << _nodes << "\t" << _uNodes.size() << std::endl;
-    ostr << "    Empty StateSets \t" << _emptyStateSets << std::endl;
-    ostr << "    Total StateSets \t" << _stateSets << "\t" << _uStateSets.size() << std::endl;
-    ostr << "           Programs \t" << _programs << "\t" << _uPrograms.size() << std::endl;
-    ostr << "           Uniforms \t" << _uniforms << "\t" << _uUniforms.size() << std::endl;
+    ostr << "           OSG Object \tCount\tUnique" << std::endl;
+    ostr << "           ---------- \t-----\t------" << std::endl;
+    ostr << "               Groups \t" << _groups << "\t" << _uGroups.size() << std::endl;
+    ostr << "                 LODs \t" << _lods << "\t" << _uLods.size() << std::endl;
+    ostr << "            PagedLODs \t" << _pagedLods << "\t" << _uPagedLods.size() << std::endl;
+    ostr << "             Switches \t" << _switches << "\t" << _uSwitches.size() << std::endl;
+    ostr << "            Sequences \t" << _sequences << "\t" << _uSequences.size() << std::endl;
+    ostr << "     MatrixTransforms \t" << _matrixTransforms << "\t" << _uMatrixTransforms.size() << std::endl;
+    ostr << "        DOFTransforms \t" << _dofTransforms << "\t" << _uDofTransforms.size() << std::endl;
+    ostr << "     Other Transforms \t" << _transforms << "\t" << _uTransforms.size() << std::endl;
+    ostr << "               Geodes \t" << _geodes << "\t" << _uGeodes.size() << std::endl;
+    ostr << "          Other Nodes \t" << _nodes << "\t" << _uNodes.size() << std::endl;
+    ostr << "      Empty StateSets \t" << _emptyStateSets << std::endl;
+    ostr << "      Total StateSets \t" << _stateSets << "\t" << _uStateSets.size() << std::endl;
+    ostr << "             Programs \t" << _programs << "\t" << _uPrograms.size() << std::endl;
+    ostr << "             Uniforms \t" << _uniforms << "\t" << _uUniforms.size() << std::endl;
     if( _countUserMode )
-        ostr << "         User Modes \t" << _totalUserModes << std::endl;
+        ostr << "           User Modes \t" << _totalUserModes << std::endl;
     if( _countUserAttr )
-        ostr << "    User Attributes \t" << _totalUserAttrs << std::endl;
-    ostr << "   Total Attributes \t" << _attributes << "\t" << _uAttributes.size() << std::endl;
-    ostr << "        Total Modes \t" << _modes << std::endl;
-    ostr << "           Textures \t" << _textures << "\t" << _uTextures.size() << std::endl;
-    ostr << "Total TexAttributes \t" << _texAttributes << "\t" << _uTexAttributes.size() << std::endl;
-    ostr << "     Total TexModes \t" << _texModes << std::endl;
-    ostr << "    NULL Geometries \t" << _nullGeometries << std::endl;
-    ostr << "   Total Geometries \t" << _geometries << "\t" << _uGeometries.size() << std::endl;
-    ostr << "              Texts \t" << _texts << "\t" << _uTexts.size() << std::endl;
-    ostr << "    Other Drawables \t" << _drawables << "\t" << _uDrawables.size() << std::endl;
-    ostr << "    Totol Drawables \t" << _totalDrawables << std::endl;
-    ostr << "         DrawArrays \t" << _drawArrays << "\t" << _uDrawArrays.size() << std::endl;
-    ostr << "Total PrimitiveSets \t" << _primitiveSets << "\t" << _uPrimitiveSets.size() << std::endl;
+        ostr << "      User Attributes \t" << _totalUserAttrs << std::endl;
+    ostr << "     Total Attributes \t" << _attributes << "\t" << _uAttributes.size() << std::endl;
+    ostr << "          Total Modes \t" << _modes << std::endl;
+    ostr << "             Textures \t" << _textures << "\t" << _uTextures.size() << std::endl;
+    ostr << "  Total TexAttributes \t" << _texAttributes << "\t" << _uTexAttributes.size() << std::endl;
+    ostr << "       Total TexModes \t" << _texModes << std::endl;
+    ostr << "      NULL Geometries \t" << _nullGeometries << std::endl;
+    ostr << "     Total Geometries \t" << _geometries << "\t" << _uGeometries.size() << std::endl;
+    ostr << "                Texts \t" << _texts << "\t" << _uTexts.size() << std::endl;
+    ostr << "      Other Drawables \t" << _drawables << "\t" << _uDrawables.size() << std::endl;
+    ostr << "      Totol Drawables \t" << _totalDrawables << std::endl;
+    ostr << "  Drawables per Geode \t" << getDrawablesPerGeode() << std::endl;
+    ostr << "   Drawables per Node \t" << getDrawablesPerNode() << std::endl;
+    ostr << "           DrawArrays \t" << _drawArrays << "\t" << _uDrawArrays.size() << std::endl;
+    ostr << "  Total PrimitiveSets \t" << _primitiveSets << "\t" << _uPrimitiveSets.size() << std::endl;
+    ostr << "    PrimSets per Geom \t" << getPrimitiveSetsPerGeometry() << std::endl;
     if( _countUserMode )
     {
         ostr << "Drawables with user Modes:" << std::endl;
-        ostr << "            Enabled \t" << _drawUserModeOn << std::endl;
-        ostr << "           Disabled \t" << _drawUserModeOff << std::endl;
-        ostr << "            Not set \t" << _drawUserModeNotSet << std::endl;
+        ostr << "              Enabled \t" << _drawUserModeOn << std::endl;
+        ostr << "             Disabled \t" << _drawUserModeOff << std::endl;
+        ostr << "              Not set \t" << _drawUserModeNotSet << std::endl;
     }
 
     if (_slowPathGeometries)
-        ostr << "Slow path Geometries: " << _slowPathGeometries << std::endl;
-    float avgChildren = (float)_totalChildren / (float)(_nodes+_groups+_lods+_pagedLods+_switches+_sequences+_transforms+_matrixTransforms+_dofTransforms);
-    ostr << "Average children per node: " << avgChildren << std::endl;
+        ostr << "      Slow Path Geoms \t" << _slowPathGeometries << std::endl;
+    ostr << "    Children per Node \t" << getChildrenPerNode() << std::endl;
 
-    ostr << "Total vertices: " << _vertices << std::endl;
-    ostr << "Max depth: " << _maxDepth << std::endl;
+    ostr << "       Total Vertices \t" << _vertices << std::endl;
+    ostr << "    Vertices per Geom \t" << getVerticesPerGeometry() << std::endl;
+    ostr << "            Max Depth \t" << _maxDepth << std::endl;
 }
-
 
 void CountsVisitor::apply( osg::Drawable* draw )
 {
