@@ -72,6 +72,12 @@ public:
     unsigned int getTotalDrawables() const;
     unsigned int getNumDrawablesUserModeOff() const;
 
+    float getChildrenPerNode();
+    float getDrawablesPerGeode();
+    float getDrawablesPerNode();
+    float getPrimitiveSetsPerGeometry();
+    float getVerticesPerGeometry();
+
 protected:
     bool isSet( GLenum stateItem, osg::StateSet* ss );
     bool isEnabled( GLenum stateItem, osg::StateSet* ss );
