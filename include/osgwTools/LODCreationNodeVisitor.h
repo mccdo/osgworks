@@ -44,7 +44,7 @@ public:
 	Override to implement the desired behavior. */
 	virtual bool testGeodeReducable( osg::Geode *geode, unsigned int minVertices, unsigned int minPrimitives ) const
     {
-        return NULL;
+        return false;
     } // testGeodeReducable
 
     virtual ~GeodeReducableCallback() {}
