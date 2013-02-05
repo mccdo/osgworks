@@ -74,7 +74,9 @@ See the \ref Plugins module description.
 
 \section AppsSection Applications
 \ref osgwbvv visualizes OSG bounding volumes. \n
+\ref osgwcaps displays OpenGL / graphics card capabilities. \n
 \ref osgwcomp compares the structure of two scene graphs. \n
+\ref osgwinfo displays scene graph contents and statistical information. \n
 \ref osgwnames displays the structure of a scene graph. \n
 \ref osgwnormalmap maps the specified normal map to the loaded file. \n
 \ref osgwwhich locates OSG data files and shared libraries.
