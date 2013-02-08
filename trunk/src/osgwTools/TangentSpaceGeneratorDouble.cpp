@@ -337,9 +337,9 @@ void TangentSpaceGeneratorDouble::compute(osg::PrimitiveSet *pset,
             (T3.length() == 0) && (B3.length() == 0) )
         {
             osg::notify( osg::WARN ) << "Bad tangent space." << std::endl;
-            osg::notify( osg::WARN ) << "  " << uv1 << std::endl;
-            osg::notify( osg::WARN ) << "  " << uv2 << std::endl;
-            osg::notify( osg::WARN ) << "  " << uv3 << std::endl;
+            osg::notify( osg::WARN ) << " iA " << iA << " uv1 " << uv1 << std::endl;
+            osg::notify( osg::WARN ) << " iB " << iB << " uv2 " << uv2 << std::endl;
+            osg::notify( osg::WARN ) << " iC " << iC << " uv3 " << uv3 << std::endl;
         }
 
         osg::Vec3d tempvec;
