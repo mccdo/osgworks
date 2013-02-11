@@ -39,7 +39,7 @@ namespace osgwMx
 \brief A GUI-independent class for managing model, view, and projection matrices.
 \details TBD.
 
-MxCore support multiple tupes of move modes to translate the position:
+MxCore support multiple types of move modes to translate the position:
 \li moveLiteral() Add the delta directly to the current position.
 \li moveLocal() Move in eye-local coordinates.
 \li moveConstrained() Move in eye-local, constrained to a ground plane.
