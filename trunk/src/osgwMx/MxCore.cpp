@@ -392,7 +392,7 @@ void MxCore::moveConstrained( const osg::Vec3d& delta )
 }
 void MxCore::moveOriented( const osg::Vec3d& delta )
 {
-    const osg::Vec3d c = _orientedUp ^ _orientedDir;
+    const osg::Vec3d c = _orientedDir ^ _orientedUp;
     const osg::Vec3d& u = _orientedUp;
     const osg::Vec3d back = c ^ u;
     const osg::Matrixd orient(
