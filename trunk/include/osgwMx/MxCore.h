@@ -255,13 +255,18 @@ public:
     system independent of world and local coordinates. In a typical use case, it
     is used for movement along the direction vector of a tracked device.
 
+    If \c orientedToWorld is true, movement is in the concatenation of the
+    local and oriented coordinate systems.
+
+    If \c orientedToWorld is false, movement is in the oriented coordinate system
+    only, as follows:
     \c delta[1] is movement along the oriented up vector. Positive values move
     along that vector, and negative in the opposite direction. \c delta[2] moves
     similarly, but along the negated dir vector. \c delta[0] moves along the cross
     product of the oriented dir and up vectors.
 
     Note that movement is scaled (see setMoveScale()). */
-    void moveOriented( const osg::Vec3d& delta );
+    void moveOriented( const osg::Vec3d& delta, const bool orientedToWorld=true );
 
     /** \brief Move the view position by a delta amount in world coordinate space.
     \details "World coordinates" means the coordinate space defined with setInitialValues():

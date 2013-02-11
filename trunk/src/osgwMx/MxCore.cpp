@@ -184,8 +184,9 @@ void MxCore::reset()
 
 void MxCore::setOriented( const osg::Vec3d& up, const osg::Vec3d& dir )
 {
-    _orientedUp = up;
-    _orientedDir = dir;
+    const osg::Matrixd orient( getOrientationMatrix() );
+    _orientedUp = up * orient;
+    _orientedDir = dir * orient;
 
     // Error check.
     _orientedUp.normalize();
@@ -390,16 +391,29 @@ void MxCore::moveConstrained( const osg::Vec3d& delta )
     _position += ( scaledDelta * orient );
     _orbitCenter += ( scaledDelta * orient );
 }
-void MxCore::moveOriented( const osg::Vec3d& delta )
+void MxCore::moveOriented( const osg::Vec3d& delta, const bool orientedToWorld )
 {
     const osg::Vec3d c = _orientedDir ^ _orientedUp;
     const osg::Vec3d& u = _orientedUp;
-    const osg::Vec3d back = c ^ u;
-    const osg::Matrixd orient(
+    const osg::Vec3d& d = _orientedDir;
+    osg::Matrixd orient(
         c[ 0 ], c[ 1 ], c[ 2 ], 0.,
         u[ 0 ], u[ 1 ], u[ 2 ], 0.,
-        back[ 0 ], back[ 1 ], back[ 2 ], 0.,
+        -d[ 0 ], -d[ 1 ], -d[ 2 ], 0.,
         0., 0., 0., 1. );
+    if( orientedToWorld )
+    {
+        const osg::Vec3d cl = getCross();
+        const osg::Vec3d& ul = _viewUp;
+        const osg::Vec3d& dl = _viewDir;
+
+        const osg::Matrixd l2w(
+            cl[0], cl[1], cl[2], 0.0,
+            dl[0], dl[1], dl[2], 0.0,
+            ul[0], ul[1], ul[2], 0.0,
+            0.0, 0.0, 0.0, 1.0 );
+        orient = orient * l2w;
+    }
 
     const osg::Vec3d scaledDelta( delta[0] * _moveScale[0],
         delta[1] * _moveScale[1], delta[2] * _moveScale[2] );
