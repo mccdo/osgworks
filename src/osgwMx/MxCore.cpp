@@ -184,9 +184,8 @@ void MxCore::reset()
 
 void MxCore::setOriented( const osg::Vec3d& up, const osg::Vec3d& dir )
 {
-    const osg::Matrixd orient( getOrientationMatrix() );
-    _orientedUp = up * orient;
-    _orientedDir = dir * orient;
+    _orientedUp = up;
+    _orientedDir = dir;
 
     // Error check.
     _orientedUp.normalize();
