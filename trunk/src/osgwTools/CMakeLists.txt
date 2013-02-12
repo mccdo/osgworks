@@ -28,6 +28,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/GeometryOperation.h
     ${HEADER_PATH}/InsertRemove.h
     ${HEADER_PATH}/LODCreationNodeVisitor.h
+    ${HEADER_PATH}/MeshOptimizers.h
     ${HEADER_PATH}/MultiCameraProjectionMatrix.h
     ${HEADER_PATH}/NodePathUtils.h
     ${HEADER_PATH}/NodeUtils.h
@@ -72,6 +73,7 @@ set( _osgwToolsSourceFiles
     GeometryOperation.cpp
     InsertRemove.cpp
     LODCreationNodeVisitor.cpp
+    MeshOptimizers.cpp
     MultiCameraProjectionMatrix.cpp
     NodePathUtils.cpp
     NodeUtils.cpp
