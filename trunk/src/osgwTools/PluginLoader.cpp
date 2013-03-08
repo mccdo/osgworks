@@ -30,11 +30,14 @@
 // Works around a shortcoming in the osgDB::Registry. If there are two different
 // plugins supporting two different formats that both use the same extension (such
 // as ".skel") then one of them needs to be loaded explicitly in order for read
-// operations to always succeed. This class explicitly loads a .skel plugin. We
-// don't really care which one it finds and loads, as long as it succeeds. A
-// static variable is declared below. The constructor should be invoked when the
-// executable and shared library are loaded, before main() starts to
-// execite.
+// operations to always succeed.
+//
+// Also serves as a convenience for osgWorks-based apps so that they don't have
+// to manually load these plugins.
+//
+// This class explicitly loads the skeleton and OSGObjects plugins. A static
+// variable is declared below. The constructor should be invoked when the
+// executable and shared library are loaded, before main() starts to execite.
 //
 /* \cond */
 class PluginLoader
@@ -42,35 +45,50 @@ class PluginLoader
 public:
     PluginLoader()
     {
-        // Register the ".skel" slias for the skeleton plugin.
-        osgDB::Registry::instance()->addFileExtensionAlias( "skel", "skeleton" );
+        struct MyPluginInfo {
+            MyPluginInfo( const std::string& ext, const std::string& name )
+                : _ext( ext ), _name( name ) {}
+            std::string _ext, _name;
+        };
+        MyPluginInfo mpiVec[] = {
+            MyPluginInfo( "skel", "skeleton" ),
+            MyPluginInfo( "*", "osgobjects" )
+        };
 
-        const std::string libName( osgDB::Registry::instance()->createLibraryNameForExtension( "skeleton" ) );
-        std::ostream& ostr( osg::notify( osg::INFO ) );
+        for( unsigned int idx=0; idx<sizeof( mpiVec ) / sizeof( MyPluginInfo ); ++idx )
+        {
+            const MyPluginInfo& mpi( mpiVec[ idx ] );
+
+            // Register the plugin name alias.
+            osgDB::Registry::instance()->addFileExtensionAlias( mpi._ext, mpi._name );
+
+            const std::string libName( osgDB::Registry::instance()->createLibraryNameForExtension( mpi._name ) );
+            std::ostream& ostr( osg::notify( osg::INFO ) );
 
 #if( OSGWORKS_OSG_VERSION >= 20800 )
-        osgDB::Registry::LoadStatus stat( osgDB::Registry::instance()->loadLibrary( libName ) );
-        ostr << ".skeleton plugin lib name: \"" << libName << "\" ";
-        switch( stat ) {
-        case osgDB::Registry::NOT_LOADED:
-            ostr << " NOT_LOADED" << std::endl;
-            break;
-        case osgDB::Registry::PREVIOUSLY_LOADED:
-            ostr << " PREVIOUSLY_LOADED" << std::endl;
-            break;
-        case osgDB::Registry::LOADED:
-            ostr << " LOADED" << std::endl;
-            break;
-        default:
-            ostr << " Unknown load status" << std::endl;
-            break;
-        }
+            osgDB::Registry::LoadStatus stat( osgDB::Registry::instance()->loadLibrary( libName ) );
+            ostr << mpi._name << " plugin lib name: \"" << libName << "\" ";
+            switch( stat ) {
+            case osgDB::Registry::NOT_LOADED:
+                ostr << " NOT_LOADED" << std::endl;
+                break;
+            case osgDB::Registry::PREVIOUSLY_LOADED:
+                ostr << " PREVIOUSLY_LOADED" << std::endl;
+                break;
+            case osgDB::Registry::LOADED:
+                ostr << " LOADED" << std::endl;
+                break;
+            default:
+                ostr << " Unknown load status" << std::endl;
+                break;
+            }
 #else
-        // No Registry::LoadStatus before OSG v2.8.
-        bool stat( osgDB::Registry::instance()->loadLibrary( libName ) );
-        ostr << ".skeleton plugin lib name: \"" << libName << "\" " <<
-            (stat ? "Loaded" : "Failed to load") << std::endl;
+            // No Registry::LoadStatus before OSG v2.8.
+            bool stat( osgDB::Registry::instance()->loadLibrary( libName ) );
+            ostr << mpi._name << " plugin lib name: \"" << libName << "\" " <<
+                (stat ? "Loaded" : "Failed to load") << std::endl;
 #endif
+        }
     }
     ~PluginLoader()
     {
