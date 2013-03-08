@@ -18,8 +18,8 @@
  *
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
-#ifndef __OSGWTOOLS_OSGDB_SKELETON__
-#define __OSGWTOOLS_OSGDB_SKELETON__ 1
+#ifndef __OSGWTOOLS_OSGDB_OSG_OBJECTS__
+#define __OSGWTOOLS_OSGDB_OSG_OBJECTS__ 1
 
 
 #include <osgDB/ReaderWriter>
@@ -28,28 +28,23 @@
 
 
 /** \addtogroup Plugins
-osgwTools contains three plugins, osgdb_osgwTools for dot OSG file support of
-various classes in the osgwTools library, osgdb_osgobjects for dot OSG file
-support of core OSG Object-derived classes that OSG fails to support directly
-(such as Array), and osgdb_skeleton, a plugin for
-writing scene graph hierarchy information.
 @{*/
 
-/** \addtogroup Skeleton
+/** \addtogroup OSGObjects
 @{*/
 
 /** \brief Runs the RemoveData visitor on the scene graph before exporting it.
 */
-class ReaderWriterSkeleton : public osgDB::ReaderWriter
+class ReaderWriterOSGObjects : public osgDB::ReaderWriter
 {
 public:
-    ReaderWriterSkeleton();
-    ~ReaderWriterSkeleton();
+    ReaderWriterOSGObjects();
+    ~ReaderWriterOSGObjects();
 
     const char* className() const;
 
-    virtual osgDB::ReaderWriter::ReadResult readNode( const std::string& fileName, const Options* options=NULL ) const;
-    virtual osgDB::ReaderWriter::WriteResult writeNode( const osg::Node& node, const std::string& fileName, const Options* options=NULL ) const;
+    virtual osgDB::ReaderWriter::ReadResult readObject( const std::string& fileName, const Options* options=NULL ) const;
+    virtual osgDB::ReaderWriter::WriteResult writeObject( const osg::Object& object, const std::string& fileName, const Options* options=NULL ) const;
 
 protected:
 };
@@ -59,5 +54,5 @@ protected:
 /**@}*/
 
 
-// __OSGWTOOLS_OSGDB_SKELETON__
+// __OSGWTOOLS_OSGDB_OSG_OBJECTS__
 #endif
