@@ -645,6 +645,11 @@ ReaderWriterOSGObjects::readObject( const std::string& fileName, const Options* 
     osgDB::Input istr;
     istr.attach( &ifstr );
 
+    // Force a read to check for eof.
+    istr[0].getNoNestedBrackets();
+    if( istr.eof() )
+        return( ReadResult::FILE_NOT_FOUND );
+
     osg::Array* array( Array_readLocalData( istr ) );
     if( array != NULL )
         return( array );
