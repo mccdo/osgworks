@@ -16,5 +16,5 @@ ADD_SUBDIRECTORY( testqueryguthe )
 ADD_SUBDIRECTORY( testqueryobject )
 ADD_SUBDIRECTORY( testuniqifier )
 ADD_SUBDIRECTORY( testvisitors )
+ADD_SUBDIRECTORY( testypr )
 ADD_SUBDIRECTORY( transform )
-
