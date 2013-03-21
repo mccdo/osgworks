@@ -23,6 +23,8 @@
 #include <osg/Matrix>
 #include <osg/Vec3>
 
+#include <osg/Notify>
+
 
 namespace osgwTools
 {
@@ -36,6 +38,9 @@ makeHPRQuat( osg::Vec3 rotAngles )
 osg::Quat
 makeHPRQuat( double h, double p, double r )
 {
+    OSG_NOTICE << "makeHPRQuat() is deprecated. Use TBD instead." << std::endl;
+
+
     // Given h, p, and r angles in degrees, build a Quat to affect these rotatiions.
     // We do this by creating a Matrix that contains correctly-oriented x, y, and
     // z axes. Then we create the Quat from the Matrix.

@@ -18,8 +18,9 @@
  *
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
-#include <osgwTools/Quat.h>
+#include <osgwTools/Orientation.h>
 #include <osgwMx/MxCore.h>
+#include <osgwTools/Quat.h>
 
 #include <osg/Quat>
 #include <osg/Matrix>
@@ -121,6 +122,24 @@ int main( int argc, char** argv )
         {
             OSG_FATAL << "MxCore::getYawPitchRoll failed right-handed roll computation: ";
             OSG_FATAL << roll << " != " << r << std::endl;
+            return( 1 );
+        }
+    }
+
+
+    OSG_ALWAYS << "Testing Orientation: Create transforms from YPR." << std::endl;
+    {
+        osg::ref_ptr< osgwTools::Orientation > orient( new osgwTools::Orientation() );
+
+        osg::Vec3d vec( 60., 0., 0. );
+        osg::Quat a( orient->getQuat( vec ) );
+
+        osg::Quat b( osgwTools::makeHPRQuat( vec ) );
+
+        if( !( epsCompare( a, b ) ) )
+        {
+            OSG_FATAL << "Orientation: failed backwards compatibility test: ";
+            OSG_FATAL << a << " != " << b << std::endl;
             return( 1 );
         }
     }

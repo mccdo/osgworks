@@ -32,6 +32,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/MultiCameraProjectionMatrix.h
     ${HEADER_PATH}/NodePathUtils.h
     ${HEADER_PATH}/NodeUtils.h
+    ${HEADER_PATH}/Orientation.h
     ${HEADER_PATH}/ParallelVisitor.h
     ${HEADER_PATH}/PrimitiveSetConversion.h
     ${HEADER_PATH}/Quat.h
@@ -77,6 +78,7 @@ set( _osgwToolsSourceFiles
     MultiCameraProjectionMatrix.cpp
     NodePathUtils.cpp
     NodeUtils.cpp
+    Orientation.cpp
     ParallelVisitor.cpp
     PluginLoader.cpp
     PrimitiveSetConversion.cpp
