@@ -118,7 +118,7 @@ public:
 
     \c up defaults to (0., 0., 1.) and \c dir defaults to (0., 1., 0.). */
     void setOriented( const osg::Vec3d& up, const osg::Vec3d& dir );
-    /** \override Changes the dir vector only. */
+    /** \overload */
     void setOriented( const osg::Vec3d& dir );
     /** \brief Get the oriented up and dir vectors. */
     void getOriented( osg::Vec3d& up, osg::Vec3d& dir );
@@ -128,21 +128,21 @@ public:
     void setUp( const osg::Vec3d& up ) { _viewUp = up; }
     /** \brief Access the current view up vector. */
     osg::Vec3d getUp() { return( _viewUp ); }
-    /** \override */
+    /** \overload */
     const osg::Vec3d& getUp() const { return( _viewUp ); }
 
     /** \brief Access the current view direction vector. */
     void setDir( const osg::Vec3d& dir ) { _viewDir = dir; }
     /** \brief Access the current view direction vector. */
     osg::Vec3d getDir() { return( _viewDir ); }
-    /** \override */
+    /** \overload */
     const osg::Vec3d& getDir() const { return( _viewDir ); }
 
     /** \brief Access the current view position). */
     void setPosition( const osg::Vec3d& newPos ) { _position = newPos; }
     /** \brief Access the current view position). */
     osg::Vec3d getPosition() { return( _position ); }
-    /** \override */
+    /** \overload */
     const osg::Vec3d& getPosition() const { return( _position ); }
 
     /** \brief Sets the current up, dir, and position from \c m. */
@@ -292,7 +292,7 @@ public:
     void setMoveScale( const osg::Vec3d& moveScale ) { _moveScale = moveScale; }
     /** \brief Get the movement scale. */
     osg::Vec3d getMoveScale() { return( _moveScale ); }
-    /** \override */
+    /** \overload */
     const osg::Vec3d& getMoveScale() const { return( _moveScale ); }
 
     /** \brief Get current yaw/pitch/roll angles for the current view.
