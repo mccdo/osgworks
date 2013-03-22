@@ -44,12 +44,12 @@ assumes left-handed and z-up, so:
   \li p rotates aroung the x' axis
   \li r rotates around the y'' axis
 
-\deprecated Please use TBD instead.
+\deprecated Please use Orientation instead.
 */
 OSGWTOOLS_EXPORT osg::Quat makeHPRQuat( double h, double p, double r );
 
 /** \overload
-\deprecated Please use TBD instead.
+\deprecated Please use Orientation instead.
 */
 OSGWTOOLS_EXPORT osg::Quat makeHPRQuat( osg::Vec3 rotAngles );
 
