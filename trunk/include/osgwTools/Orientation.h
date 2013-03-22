@@ -46,7 +46,23 @@ public:
 
     META_Object(osgwTools,Orientation);
 
+
+    /** \brief Set the base vectors.
+    \details Determines the default basis corresponding
+    to yaw = 0., pitch = 0., and roll = 0.
+    \li Yaw is computed as rotation around \c baseUp.
+    \li Pitch is computed as rotation around \c baseDir ^ \c baseUp.
+    \li Roll is computed as rotation around \c baseDir.
+
+    This function normalizes the vectors before storing them internally.
+    getBasis() returns the normalized values, not the original values.
+
+    By default, \c baseDir = (0.,1.,0.) and baseUp = (0.,0.,1.).
+    */
     void setBasis( const osg::Vec3d& baseDir, const osg::Vec3d& baseUp );
+    /** \brief Get the base vectors.
+    \details Returns the normalized base vectors as set with
+    setBasis() */
     void getBasis( osg::Vec3d& baseDir, osg::Vec3d& baseUp ) const;
 
     /** \brief Set right- or left-handed coordinate system.
@@ -70,33 +86,42 @@ public:
 
 
     /** \brief Create an orientation quat.
-    \details
+    \details \c ypr contains angles in degrees.
     */
     osg::Quat getQuat( const osg::Vec3d& ypr );
     /** \overload */
     osg::Quat getQuat( const double yaw, const double pitch, const double roll );
     /** \brief Make an existing quat into an orientation quat.
-    \details
+    \details \c ypr contains angles in degrees.
     */
     void makeQuat( osg::Quat& result, const osg::Vec3d& ypr );
     /** \overload */
     void makeQuat( osg::Quat& result, const double yaw, const double pitch, const double roll );
     /** \brief Create an orientation matrix.
-    \details
+    \details \c ypr contains angles in degrees.
     */
     osg::Matrix getMatrix( const osg::Vec3d& ypr );
     /** \overload */
     osg::Matrix getMatrix( const double yaw, const double pitch, const double roll );
     /** \brief Make an existing matrix into an orientation matrix.
-    \details
+    \details \c ypr contains angles in degrees.
     */
     void makeMatrix( osg::Matrix& result, const osg::Vec3d& ypr );
     /** \overload */
     void makeMatrix( osg::Matrix& result, const double yaw, const double pitch, const double roll );
 
+
+    osg::Vec3d getYPR( const osg::Quat& q ) const;
+    void getYPR( const osg::Quat& q, double& yaw, double& pitch, double& roll ) const;
+    osg::Vec3d getYPR( const osg::Matrix& m ) const;
+    void getYPR( const osg::Matrix& m, double& yaw, double& pitch, double& roll ) const;
+
 protected:
     virtual ~Orientation();
 
+    /** \brief Normalize angle into range 0.0 <= angle < 360.0.
+    \details This function accounts for the coordinate system.
+    */
     double normalizeAngle( const double degreesIn );
 
     osg::Vec3d _baseDir, _baseUp, _baseCross;
