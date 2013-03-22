@@ -34,6 +34,12 @@
     #define OSGWTOOLS_EXPORT
 #endif
 
+//This is ripped straight from wxWidgets
+#if defined(_MSC_VER)
+#define osgwDEPRECATED(x) __declspec(deprecated) x
+#else
+#define osgwDEPRECATED(x) x __attribute__ ((deprecated))
+#endif
 
 // __OSGWTOOLS_EXPORT__
 #endif

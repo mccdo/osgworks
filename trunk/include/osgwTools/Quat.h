@@ -46,12 +46,12 @@ assumes left-handed and z-up, so:
 
 \deprecated Please use Orientation instead.
 */
-OSGWTOOLS_EXPORT osg::Quat makeHPRQuat( double h, double p, double r );
+osgwDEPRECATED( OSGWTOOLS_EXPORT osg::Quat makeHPRQuat( double h, double p, double r ) );
 
 /** \overload
 \deprecated Please use Orientation instead.
 */
-OSGWTOOLS_EXPORT osg::Quat makeHPRQuat( osg::Vec3 rotAngles );
+osgwDEPRECATED( OSGWTOOLS_EXPORT osg::Quat makeHPRQuat( osg::Vec3 rotAngles ) );
 
 /*@}*/
 
