@@ -476,7 +476,7 @@ void MxCore::getYawPitchRoll( double& yaw, double& pitch, double& roll, bool rig
     right = _initialDir ^ _initialUp;
     const double dotDirRight = projectedDir * right;
     // Dot product of two unit vectors is the cosine of the angle between them.
-    const double dotDirNorth = projectedDir * _initialDir;
+    const double dotDirNorth = osg::clampBetween<double>( projectedDir * _initialDir, -1., 1. );
     double yawRad = acos( dotDirNorth );
     if( dotDirRight > 0. )
         yawRad = osg::PI + ( osg::PI - yawRad );
@@ -490,7 +490,7 @@ void MxCore::getYawPitchRoll( double& yaw, double& pitch, double& roll, bool rig
     // Pitch
 
     const double dotDirUp = _viewDir * _initialUp;
-    const double dotUpUp = _viewUp * _initialUp;
+    const double dotUpUp = osg::clampBetween<double>( _viewUp * _initialUp, -1., 1. );
     double pitchRad = acos( osg::absolute< double >( dotUpUp ) );
     if( dotDirUp < 0. )
         pitchRad *= -1.;
@@ -507,7 +507,7 @@ void MxCore::getYawPitchRoll( double& yaw, double& pitch, double& roll, bool rig
     right = _viewDir ^ projectedBaseUp;
     const double dotUpRight = _viewUp * right;
     // Dot product of two unit vectors is the cosine of the angle between them.
-    const double dotUp = projectedBaseUp * _viewUp;
+    const double dotUp = osg::clampBetween<double>( projectedBaseUp * _viewUp, -1., 1. );
     double rollRad = acos( dotUp );
     if( dotUpRight > 0. )
         rollRad = osg::PI + ( osg::PI - rollRad );
