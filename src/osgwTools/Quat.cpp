@@ -38,7 +38,7 @@ makeHPRQuat( osg::Vec3 rotAngles )
 osg::Quat
 makeHPRQuat( double h, double p, double r )
 {
-    OSG_NOTICE << "makeHPRQuat() is deprecated. Use TBD instead." << std::endl;
+    OSG_NOTICE << "makeHPRQuat() is deprecated. Use Orientation instead." << std::endl;
 
 
     // Given h, p, and r angles in degrees, build a Quat to affect these rotatiions.
