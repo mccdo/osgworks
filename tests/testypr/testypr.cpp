@@ -127,7 +127,7 @@ int main( int argc, char** argv )
     }
 
 
-    OSG_ALWAYS << "Testing Orientation: Create transforms from YPR." << std::endl;
+    OSG_ALWAYS << "Testing backwards compat: Create Quat from YPR." << std::endl;
     {
         osg::ref_ptr< osgwTools::Orientation > orient( new osgwTools::Orientation() );
 
@@ -138,8 +138,30 @@ int main( int argc, char** argv )
 
         if( !( epsCompare( a, b ) ) )
         {
-            OSG_FATAL << "Orientation: failed backwards compatibility test: ";
+            OSG_FATAL << "Orientation: failed 'make Quat' compat test: ";
             OSG_FATAL << a << " != " << b << std::endl;
+            return( 1 );
+        }
+    }
+
+
+    OSG_ALWAYS << "Testing backwards compat: YPR from Matrix." << std::endl;
+    {
+        osg::ref_ptr< osgwTools::Orientation > orient( new osgwTools::Orientation() );
+        osg::ref_ptr< osgwMx::MxCore > mxc( new osgwMx::MxCore() );
+
+        osg::Matrix m( osg::Matrix::rotate( osg::DegreesToRadians( -20. ), osg::Vec3d( 1., 0., 0. ) ) );
+        const osg::Vec3d result0( orient->getYPR( m ) );
+
+        mxc->setByMatrix( m );
+        double y, p, r;
+        mxc->getYawPitchRoll(y, p, r );
+        const osg::Vec3d result1( y, p, r );
+
+        if( !( epsCompare( result0, result1 ) ) )
+        {
+            OSG_FATAL << "Orientation: failed 'extract YPR' compat test: ";
+            OSG_FATAL << result0 << " != " << result1 << std::endl;
             return( 1 );
         }
     }

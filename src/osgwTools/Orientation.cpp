@@ -141,6 +141,90 @@ void Orientation::makeMatrix( osg::Matrix& result, const double yaw, const doubl
                 0., 0., 0., 1. );
 }
 
+
+osg::Vec3d Orientation::getYPR( const osg::Quat& q ) const
+{
+    osg::Matrix m;
+    m.set( q );
+    return( getYPR( m ) );
+}
+void Orientation::getYPR( const osg::Quat& q, double& yaw, double& pitch, double& roll ) const
+{
+    osg::Matrix m;
+    m.set( q );
+    getYPR( m, yaw, pitch, roll );
+}
+osg::Vec3d Orientation::getYPR( const osg::Matrix& m ) const
+{
+    osg::Vec3d ypr;
+    getYPR( m, ypr[0], ypr[1], ypr[2] );
+    return( ypr );
+}
+void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, double& roll ) const
+{
+    const osg::Vec3d up( m(1,0), m(1,1), m(1,2) );
+    const osg::Vec3d dir( -m(2,0), -m(2,1), -m(2,2) );
+
+    // Temp var for cross products.
+    osg::Vec3d right;
+
+    const osg::Vec3d viewDirXBaseUp( dir ^ _baseUp );
+    const double twoPi( 2. * osg::PI );
+
+
+    // Yaw
+
+    // Compute view direction, projected into plane defined by base up.
+    // TBD what if _viewDir and _initialUp are coincident?
+    osg::Vec3d projectedDir = _baseUp ^ viewDirXBaseUp;
+    projectedDir.normalize();
+    // Is the vector pointing to the left of north, or to the right?
+    right = _baseDir ^ _baseUp;
+    const double dotDirRight = projectedDir * right;
+    // Dot product of two unit vectors is the cosine of the angle between them.
+    const double dotDirNorth = osg::clampBetween<double>( projectedDir * _baseDir, -1., 1. );
+    double yawRad = acos( dotDirNorth );
+    if( dotDirRight > 0. )
+        yawRad = osg::PI + ( osg::PI - yawRad );
+    if( !_rightHanded )
+        yawRad = twoPi - yawRad;
+    if( yawRad == twoPi )
+        yawRad = 0.;
+    yaw = osg::RadiansToDegrees( yawRad );
+
+
+    // Pitch
+
+    const double dotDirUp = dir * _baseUp;
+    const double dotUpUp = osg::clampBetween<double>( up * _baseUp, -1., 1. );
+    double pitchRad = acos( osg::absolute< double >( dotUpUp ) );
+    if( dotDirUp < 0. )
+        pitchRad *= -1.;
+    pitch = osg::RadiansToDegrees( pitchRad );
+
+
+    // Roll
+
+    // Compute base up projected onto plane defined by view direction.
+    // TBD what if _viewDir and _initialUp are coincident?
+    osg::Vec3d projectedBaseUp = viewDirXBaseUp ^ dir;
+    projectedBaseUp.normalize();
+    // Is the view up vector pointing to the left of the projected base up, or to the right?
+    right = dir ^ projectedBaseUp;
+    const double dotUpRight = up * right;
+    // Dot product of two unit vectors is the cosine of the angle between them.
+    const double dotUp = osg::clampBetween<double>( projectedBaseUp * up, -1., 1. );
+    double rollRad = acos( dotUp );
+    if( dotUpRight > 0. )
+        rollRad = osg::PI + ( osg::PI - rollRad );
+    if( !_rightHanded )
+        rollRad = twoPi - rollRad;
+    if( rollRad == twoPi )
+        rollRad = 0.;
+    roll = osg::RadiansToDegrees( rollRad );
+}
+
+
 double Orientation::normalizeAngle( const double degreesIn )
 {
     double result = osg::DegreesToRadians( degreesIn );
@@ -154,6 +238,7 @@ double Orientation::normalizeAngle( const double degreesIn )
 
     return( result );
 }
+
 
 // namespace osgwTools
 }
