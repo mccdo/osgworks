@@ -189,7 +189,7 @@ void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, doub
     up = qRoll * up;
     cross = viewDirXBaseUp;
 
-    roll = normalizeAngle( osg::RadiansToDegrees( rollRad ), true );
+    roll = normalizeAngle( osg::RadiansToDegrees( rollRad ), !_rightHanded );
 
 
     // Pitch
@@ -206,7 +206,7 @@ void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, doub
     osg::Quat qPitch( pitchRad, cross );
     dir = qPitch * dir;
 
-    pitch = normalizeAngle( osg::RadiansToDegrees( pitchRad ), true );
+    pitch = normalizeAngle( osg::RadiansToDegrees( pitchRad ), !_rightHanded );
 
 
     // Yaw
@@ -215,10 +215,9 @@ void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, doub
     const double dotDirDir = osg::clampBetween<double>( dir * _baseDir, -1., 1. );
     double yawRad( acos( dotDirDir ) );
     // Adjust if we yawed left.
-    const osg::Vec3d baseCross( _baseDir ^ _baseUp );
-    if( dir * baseCross < 0. )
+    if( dir * _baseCross < 0. )
         yawRad = -yawRad;
-    yaw = normalizeAngle( osg::RadiansToDegrees( yawRad ), true );
+    yaw = normalizeAngle( osg::RadiansToDegrees( yawRad ), !_rightHanded );
 }
 
 
