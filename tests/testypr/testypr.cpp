@@ -103,7 +103,7 @@ int main( int argc, char** argv )
         osg::Vec3d result( y, p, r );
         if( !( epsCompare( result, osg::Vec3d( 0., 0., 0. ) ) ) )
         {
-            OSG_FATAL << "MxCore::getYawPitchRoll failed getting defaults:";
+            OSG_FATAL << "MxCore::getYawPitchRoll failed getting defaults: ";
             OSG_FATAL << result << " should be all zeros. " << std::endl;
             return( 1 );
         }
