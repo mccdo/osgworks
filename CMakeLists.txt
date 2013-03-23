@@ -4,10 +4,10 @@ PROJECT( osgWorks )
 
 # Note: These values are used by include/osgwTools/Version.in
 # to generate the Version.h file.
-set( OSGWORKS_VERSION 2.00.03 )
+set( OSGWORKS_VERSION 2.00.04 )
 set( OSGWORKS_MAJOR_VERSION 2 )
 set( OSGWORKS_MINOR_VERSION 0 )
-set( OSGWORKS_SUB_VERSION 3 )
+set( OSGWORKS_SUB_VERSION 4 )
 
 SET( CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules" ${CMAKE_MODULE_PATH} )
 

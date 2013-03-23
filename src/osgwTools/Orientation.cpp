@@ -183,17 +183,13 @@ void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, doub
     const double dotCrossBaseUp( cross * _baseUp );
     if( dotCrossBaseUp < 0. )
         rollRad = -rollRad;
-    //if( rollRad != 0. )
-    {
-        // Adjust the up and cross vectors accordingly.
-        osg::Quat qRoll( rollRad, dir );
-        up = qRoll * up;
-        cross = viewDirXBaseUp;
 
-        roll = normalizeAngle( osg::RadiansToDegrees( rollRad ), true );
-    }
-    //else
-      //  roll = 0.;
+    // Adjust the up and cross vectors accordingly.
+    osg::Quat qRoll( rollRad, dir );
+    up = qRoll * up;
+    cross = viewDirXBaseUp;
+
+    roll = normalizeAngle( osg::RadiansToDegrees( rollRad ), true );
 
 
     // Pitch
@@ -205,16 +201,12 @@ void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, doub
     const osg::Vec3d baseUpCrossUp( _baseUp ^ up );
     if( baseUpCrossUp * cross > 0. )
         pitchRad = -pitchRad;
-    //if( pitchRad != 0. )
-    {
-        osg::Quat qPitch( pitchRad, cross );
-        dir = qPitch * dir;
-        up = _baseUp;
 
-        pitch = normalizeAngle( osg::RadiansToDegrees( pitchRad ), true );
-    }
-    //else
-      //  pitch = 0.;
+    // Adjust the dir and up vectors accordingly.
+    osg::Quat qPitch( pitchRad, cross );
+    dir = qPitch * dir;
+
+    pitch = normalizeAngle( osg::RadiansToDegrees( pitchRad ), true );
 
 
     // Yaw

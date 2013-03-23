@@ -248,7 +248,7 @@ int main( int argc, char** argv )
     }
 
 
-    OSG_ALWAYS << "Testing backwards compat: Create Quat from YPR." << std::endl;
+    OSG_ALWAYS << "Testing (deprecated) makeHPRQuat() backwards compat." << std::endl;
     {
         osg::ref_ptr< osgwTools::Orientation > orient( new osgwTools::Orientation() );
 
@@ -259,14 +259,14 @@ int main( int argc, char** argv )
 
         if( !( epsCompare( a, b ) ) )
         {
-            OSG_FATAL << "Failed 'make Quat' compat test: ";
+            OSG_FATAL << "Failed makeHPRQuat() compat test: ";
             OSG_FATAL << a << " != " << b << std::endl;
             return( 1 );
         }
     }
 
 
-    OSG_ALWAYS << "Testing backwards compat: YPR from Matrix." << std::endl;
+    OSG_ALWAYS << "Testing MxCore backwards compat." << std::endl;
     if( true )
     {
         OSG_ALWAYS << "\tSkipping (known failure)." << std::endl;
@@ -286,7 +286,7 @@ int main( int argc, char** argv )
 
         if( !( epsCompare( result0, result1 ) ) )
         {
-            OSG_FATAL << "Failed 'extract YPR' compat test: ";
+            OSG_FATAL << "Failed 'Failed MxCore compat test: ";
             OSG_FATAL << result0 << " != " << result1 << std::endl;
             return( 1 );
         }
