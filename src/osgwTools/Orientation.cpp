@@ -117,19 +117,19 @@ void Orientation::makeMatrix( osg::Matrix& result, const double yaw, const doubl
     // First, create x, y, and z axes that represent the yaw, pitch, and roll angles.
     //   Rotate x and y axes by yaw.
     osg::Vec3d z( _baseUp );
-    double angle = normalizeAngle( yaw );
+    double angle = osg::DegreesToRadians( normalizeAngle( yaw ) );
     osg::Quat qHeading( angle, z );
     osg::Vec3 x = qHeading * _baseCross;
     osg::Vec3 y = qHeading * _baseDir;
 
     //   Rotate z and y axes by the pitch.
-    angle = normalizeAngle( pitch );
+    angle = osg::DegreesToRadians( normalizeAngle( pitch ) );
     osg::Quat qPitch( angle, x );
     y = qPitch * y;
     z = qPitch * z;
 
     //   Rotate x and z axes by the roll.
-    angle = normalizeAngle( roll );
+    angle = osg::DegreesToRadians( normalizeAngle( roll ) );
     osg::Quat qRoll( angle, y );
     x = qRoll * x;
     z = qRoll * z;
@@ -162,78 +162,89 @@ osg::Vec3d Orientation::getYPR( const osg::Matrix& m ) const
 }
 void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, double& roll ) const
 {
-    const osg::Vec3d up( m(1,0), m(1,1), m(1,2) );
-    const osg::Vec3d dir( -m(2,0), -m(2,1), -m(2,2) );
-
-    // Temp var for cross products.
-    osg::Vec3d right;
-
-    const osg::Vec3d viewDirXBaseUp( dir ^ _baseUp );
-    const double twoPi( 2. * osg::PI );
-
-
-    // Yaw
-
-    // Compute view direction, projected into plane defined by base up.
-    // TBD what if _viewDir and _initialUp are coincident?
-    osg::Vec3d projectedDir = _baseUp ^ viewDirXBaseUp;
-    projectedDir.normalize();
-    // Is the vector pointing to the left of north, or to the right?
-    right = _baseDir ^ _baseUp;
-    const double dotDirRight = projectedDir * right;
-    // Dot product of two unit vectors is the cosine of the angle between them.
-    const double dotDirNorth = osg::clampBetween<double>( projectedDir * _baseDir, -1., 1. );
-    double yawRad = acos( dotDirNorth );
-    if( dotDirRight > 0. )
-        yawRad = osg::PI + ( osg::PI - yawRad );
-    if( !_rightHanded )
-        yawRad = twoPi - yawRad;
-    if( yawRad == twoPi )
-        yawRad = 0.;
-    yaw = osg::RadiansToDegrees( yawRad );
-
-
-    // Pitch
-
-    const double dotDirUp = dir * _baseUp;
-    const double dotUpUp = osg::clampBetween<double>( up * _baseUp, -1., 1. );
-    double pitchRad = acos( osg::absolute< double >( dotUpUp ) );
-    if( dotDirUp < 0. )
-        pitchRad *= -1.;
-    pitch = osg::RadiansToDegrees( pitchRad );
+    osg::Vec3d cross( m(0,0), m(0,1), m(0,2) );
+    cross.normalize();
+    osg::Vec3d dir( m(1,0), m(1,1), m(1,2) );
+    dir.normalize();
+    osg::Vec3d up( m(2,0), m(2,1), m(2,2) );
+    up.normalize();
 
 
     // Roll
 
-    // Compute base up projected onto plane defined by view direction.
-    // TBD what if _viewDir and _initialUp are coincident?
-    osg::Vec3d projectedBaseUp = viewDirXBaseUp ^ dir;
-    projectedBaseUp.normalize();
-    // Is the view up vector pointing to the left of the projected base up, or to the right?
-    right = dir ^ projectedBaseUp;
-    const double dotUpRight = up * right;
-    // Dot product of two unit vectors is the cosine of the angle between them.
-    const double dotUp = osg::clampBetween<double>( projectedBaseUp * up, -1., 1. );
-    double rollRad = acos( dotUp );
-    if( dotUpRight > 0. )
-        rollRad = osg::PI + ( osg::PI - rollRad );
-    if( !_rightHanded )
-        rollRad = twoPi - rollRad;
-    if( rollRad == twoPi )
-        rollRad = 0.;
-    roll = osg::RadiansToDegrees( rollRad );
+    // Compute cross vector projected onto plane defined by _baseUp.
+    // Then compute angle to rotate the cross vector into that plane.
+    // viewDirXBaseUp *is* the destination cross vector.
+    osg::Vec3d viewDirXBaseUp( dir ^ _baseUp );
+    viewDirXBaseUp.normalize();
+    const double dotProjectedCross = osg::clampBetween<double>( cross * viewDirXBaseUp, -1., 1. );
+    double rollRad( acos( dotProjectedCross ) );
+    // Is cross below the plane defined by _baseUp?
+    const double dotCrossBaseUp( cross * _baseUp );
+    if( dotCrossBaseUp < 0. )
+        rollRad = -rollRad;
+    //if( rollRad != 0. )
+    {
+        // Adjust the up and cross vectors accordingly.
+        osg::Quat qRoll( rollRad, dir );
+        up = qRoll * up;
+        cross = viewDirXBaseUp;
+
+        roll = normalizeAngle( osg::RadiansToDegrees( rollRad ), true );
+    }
+    //else
+      //  roll = 0.;
+
+
+    // Pitch
+
+    // Compute the angle between the up and _baseUp vectors.
+    const double dotUpUp = osg::clampBetween<double>( up * _baseUp, -1., 1. );
+    double pitchRad( acos( dotUpUp ) );
+    // Adjust if we pitched backwards.
+    const osg::Vec3d baseUpCrossUp( _baseUp ^ up );
+    if( baseUpCrossUp * cross > 0. )
+        pitchRad = -pitchRad;
+    //if( pitchRad != 0. )
+    {
+        osg::Quat qPitch( pitchRad, cross );
+        dir = qPitch * dir;
+        up = _baseUp;
+
+        pitch = normalizeAngle( osg::RadiansToDegrees( pitchRad ), true );
+    }
+    //else
+      //  pitch = 0.;
+
+
+    // Yaw
+
+    // Compute the angle between the dir and _baseDir vectors.
+    const double dotDirDir = osg::clampBetween<double>( dir * _baseDir, -1., 1. );
+    double yawRad( acos( dotDirDir ) );
+    // Adjust if we yawed left.
+    const osg::Vec3d baseCross( _baseDir ^ _baseUp );
+    if( dir * baseCross < 0. )
+        yawRad = -yawRad;
+    yaw = normalizeAngle( osg::RadiansToDegrees( yawRad ), true );
 }
 
 
-double Orientation::normalizeAngle( const double degreesIn )
+double Orientation::normalizeAngle( const double degreesIn, const bool convertHanded )
 {
-    double result = osg::DegreesToRadians( degreesIn );
+    double result( degreesIn );
+
+    // Check for epsilon near zero.
+    const double eps( 0.000005 );
+    if( ( result < eps ) && ( result > -eps ) )
+        return( 0. );
+
     while( result < 0. )
         result += 360.;
     while( result > 360. )
         result -= 360.;
 
-    if( _rightHanded )
+    if( convertHanded && ( result > 0. ) )
         result = 360. - result;
 
     return( result );

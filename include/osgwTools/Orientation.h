@@ -54,6 +54,15 @@ public:
     \li Pitch is computed as rotation around \c baseDir ^ \c baseUp.
     \li Roll is computed as rotation around \c baseDir.
 
+    Given yaw = 0., pitch = 0., and roll = 0, the values returned by
+    getMatrix() would be:
+    \code
+    baseDir ^ baseUp  0.0
+         baseDir      0.0
+         baseUp       0.0
+    0.0   0.0   0.0   1.0
+    \endcode
+
     This function normalizes the vectors before storing them internally.
     getBasis() returns the normalized values, not the original values.
 
@@ -122,7 +131,7 @@ protected:
     /** \brief Normalize angle into range 0.0 <= angle < 360.0.
     \details This function accounts for the coordinate system.
     */
-    double normalizeAngle( const double degreesIn );
+    static double normalizeAngle( const double degreesIn, bool convertHanded=false );
 
     osg::Vec3d _baseDir, _baseUp, _baseCross;
     bool _rightHanded;
