@@ -34,7 +34,7 @@ Orientation::Orientation()
     : _yawAxis( 0., 0., 1. ),
       _pitchAxis( 1., 0., 0. ),
       _rollAxis( 0., 1., 0. ),
-      _rightHanded( false )
+      _rightHanded( true )
 {
 }
 Orientation::Orientation( const Orientation& rhs, const osg::CopyOp copyop )
@@ -118,19 +118,19 @@ void Orientation::makeMatrix( osg::Matrix& result, const double yaw, const doubl
     // Rotate the base vectors by yaw, pitch, and roll.
     //   Rotate pitchAxis and rollAxis by yaw.
     osg::Vec3d yawAxis( _yawAxis );
-    double angle = osg::DegreesToRadians( normalizeAngle( yaw ) );
+    double angle = osg::DegreesToRadians( normalizeAngle( yaw, !_rightHanded ) );
     osg::Quat qHeading( angle, yawAxis );
     osg::Vec3 pitchAxis = qHeading * _pitchAxis;
     osg::Vec3 rollAxis = qHeading * _rollAxis;
 
     //   Rotate yawAxis  and rollAxis by pitch.
-    angle = osg::DegreesToRadians( normalizeAngle( pitch ) );
+    angle = osg::DegreesToRadians( normalizeAngle( pitch, !_rightHanded ) );
     osg::Quat qPitch( angle, pitchAxis );
     rollAxis = qPitch * rollAxis;
     yawAxis = qPitch * yawAxis;
 
     //   Rotate yawAxis and pitchAxis by roll.
-    angle = osg::DegreesToRadians( normalizeAngle( roll ) );
+    angle = osg::DegreesToRadians( normalizeAngle( roll, !_rightHanded ) );
     osg::Quat qRoll( angle, rollAxis );
     pitchAxis = qRoll * pitchAxis;
     yawAxis = qRoll * yawAxis;
@@ -192,7 +192,7 @@ void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, doub
     yawAxisIn = qRoll * yawAxisIn;
     pitchAxisIn = rollXyaw;
 
-    roll = normalizeAngle( osg::RadiansToDegrees( rollRad ), !_rightHanded );
+    roll = normalizeAngle( osg::RadiansToDegrees( rollRad ), _rightHanded );
 
 
     // Pitch
@@ -209,7 +209,7 @@ void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, doub
     osg::Quat qPitch( pitchRad, pitchAxisIn );
     rollAxisIn = qPitch * rollAxisIn;
 
-    pitch = normalizeAngle( osg::RadiansToDegrees( pitchRad ), !_rightHanded );
+    pitch = normalizeAngle( osg::RadiansToDegrees( pitchRad ), _rightHanded );
 
 
     // Yaw
@@ -220,7 +220,7 @@ void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, doub
     // Adjust if we yawed left.
     if( rollAxisIn * _pitchAxis < 0. )
         yawRad = -yawRad;
-    yaw = normalizeAngle( osg::RadiansToDegrees( yawRad ), !_rightHanded );
+    yaw = normalizeAngle( osg::RadiansToDegrees( yawRad ), _rightHanded );
 }
 
 

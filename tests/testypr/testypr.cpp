@@ -246,6 +246,20 @@ int main( int argc, char** argv )
             OSG_FATAL << orig << "YPR: " << result << std::endl << m;
             return( 1 );
         }
+
+
+        orient->setRightHanded( false );
+        angles.set( 0., 18., 0. );
+        m = orient->getMatrix( angles );
+        // Extract YPR from that matrix...
+        result = orient->getYPR( m );
+        // YPRs must match.
+        if( !( epsCompare( angles, result ) ) )
+        {
+            OSG_FATAL << "Failed left-handed pitch test: ";
+            OSG_FATAL << angles << " != " << result << std::endl;
+            return( 1 );
+        }
     }
 
 
