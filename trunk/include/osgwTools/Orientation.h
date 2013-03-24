@@ -86,8 +86,8 @@ public:
 
     See setBasis() to set the axes of rotation.
 
-    Default is false (left-handed). */
-    void setRightHanded( const bool rightHanded );
+    Default is true (right-handed). */
+    void setRightHanded( const bool rightHanded=true );
     bool getRightHanded() const;
 
 
