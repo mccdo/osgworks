@@ -48,31 +48,33 @@ public:
 
 
     /** \brief Set the base vectors.
-    \details Determines the default basis corresponding
-    to yaw = 0., pitch = 0., and roll = 0.
-    \li Yaw is computed as rotation around \c baseUp.
-    \li Pitch is computed as rotation around \c baseDir ^ \c baseUp.
-    \li Roll is computed as rotation around \c baseDir.
+    \details Sets the axes of rotation for YPR rotation, and determines
+    the default basis corresponding to yaw = 0., pitch = 0., and
+    roll = 0.
+    \li Yaw is computed as rotation around \c yawAxis.
+    \li Pitch is computed as rotation around \c pitchAxis.
+    \li Roll is computed as rotation around \c rollAxis.
 
     Given yaw = 0., pitch = 0., and roll = 0, the values returned by
     getMatrix() would be:
     \code
-    baseDir ^ baseUp  0.0
-         baseDir      0.0
-         baseUp       0.0
+       pitchAxis      0.0
+        yawAxis       0.0
+       rollAxis       0.0
     0.0   0.0   0.0   1.0
     \endcode
 
     This function normalizes the vectors before storing them internally.
     getBasis() returns the normalized values, not the original values.
 
-    By default, \c baseDir = (0.,1.,0.) and baseUp = (0.,0.,1.).
+    By default, \c yawAxis = (0.,0.,1.), \c pitchAxis = (1.,0.,0.),
+    and rollAxis = (0.,1.,0..).
     */
-    void setBasis( const osg::Vec3d& baseDir, const osg::Vec3d& baseUp );
+    void setBasis( const osg::Vec3d& yawAxis, const osg::Vec3d& pitchAxis, const osg::Vec3d& rollAxis );
     /** \brief Get the base vectors.
     \details Returns the normalized base vectors as set with
     setBasis() */
-    void getBasis( osg::Vec3d& baseDir, osg::Vec3d& baseUp ) const;
+    void getBasis( osg::Vec3d& yawAxis, osg::Vec3d& pitchAxis, osg::Vec3d& rollAxis ) const;
 
     /** \brief Set right- or left-handed coordinate system.
     \details Determines the rotational direction of angles.
@@ -82,12 +84,7 @@ public:
     rotation, and your other fingers indicate the direction of
     rotation). If false, angles indicate clockwise rotation.
 
-    Axes of rotation are:
-    \li baseUp, for yaw.
-    \li baseDir^baseUp, for pitch.
-    \li baseDir, for roll.
-
-    See setBasis() to set the baseUp and baseDir vectors.
+    See setBasis() to set the axes of rotation.
 
     Default is false (left-handed). */
     void setRightHanded( const bool rightHanded );
@@ -133,7 +130,7 @@ protected:
     */
     static double normalizeAngle( const double degreesIn, bool convertHanded=false );
 
-    osg::Vec3d _baseDir, _baseUp, _baseCross;
+    osg::Vec3d _yawAxis, _pitchAxis, _rollAxis;
     bool _rightHanded;
 };
 

@@ -130,6 +130,7 @@ int main( int argc, char** argv )
     YPRManip* yprManip = new YPRManip( root.get() );
 
     osgViewer::Viewer viewer;
+    viewer.setUpViewInWindow( 20., 30., 1027., 768. );
     viewer.addEventHandler( yprManip );
     viewer.setSceneData( root.get() );
     return( viewer.run() );
