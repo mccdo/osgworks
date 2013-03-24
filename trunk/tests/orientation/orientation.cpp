@@ -38,7 +38,9 @@ public:
         : _mt( mt ),
           _ypr( 0., 0., 0. ),
           _orient( new osgwTools::Orientation() )
-    {}
+    {
+        _mt->setMatrix( _orient->getMatrix( _ypr ) );
+    }
 
     bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
     {

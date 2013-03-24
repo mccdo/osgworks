@@ -137,8 +137,8 @@ void Orientation::makeMatrix( osg::Matrix& result, const double yaw, const doubl
 
     // Use transformed base vectors to create an orientation matrix.
     result.set( pitchAxis[0], pitchAxis[1], pitchAxis[2], 0.,
-                rollAxis[0], rollAxis[1], rollAxis[2], 0.,
                 yawAxis[0], yawAxis[1], yawAxis[2], 0.,
+                rollAxis[0], rollAxis[1], rollAxis[2], 0.,
                 0., 0., 0., 1. );
 }
 
@@ -165,10 +165,10 @@ void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, doub
 {
     osg::Vec3d pitchAxisIn( m(0,0), m(0,1), m(0,2) );
     pitchAxisIn.normalize();
-    osg::Vec3d rollAxisIn( m(1,0), m(1,1), m(1,2) );
-    rollAxisIn.normalize();
-    osg::Vec3d yawAxisIn( m(2,0), m(2,1), m(2,2) );
+    osg::Vec3d yawAxisIn( m(1,0), m(1,1), m(1,2) );
     yawAxisIn.normalize();
+    osg::Vec3d rollAxisIn( m(2,0), m(2,1), m(2,2) );
+    rollAxisIn.normalize();
 
 
     // Roll
@@ -177,6 +177,8 @@ void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, doub
     // Then compute angle to rotate pitchAxisIn into that plane.
     // rollXyaw *is* the destination pitchAxisIn vector.
     osg::Vec3d rollXyaw( rollAxisIn ^ _yawAxis );
+    if( rollXyaw * _pitchAxis < 0. )
+        rollXyaw = -rollXyaw;
     rollXyaw.normalize();
     const double dotPitch = osg::clampBetween<double>( pitchAxisIn * rollXyaw, -1., 1. );
     double rollRad( acos( dotPitch ) );
