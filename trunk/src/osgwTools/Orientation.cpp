@@ -115,30 +115,30 @@ void Orientation::makeMatrix( osg::Matrix& result, const double yaw, const doubl
     // Given yaw, pitch, and roll angles in degrees, build a Quat to affect these rotatiions.
     // We do this by setting the Matrix with correctly-oriented x, y, and z axes.
 
-    // First, create x, y, and z axes that represent the yaw, pitch, and roll angles.
-    //   Rotate x and y axes by yaw.
-    osg::Vec3d z( _yawAxis );
+    // Rotate the base vectors by yaw, pitch, and roll.
+    //   Rotate pitchAxis and rollAxis by yaw.
+    osg::Vec3d yawAxis( _yawAxis );
     double angle = osg::DegreesToRadians( normalizeAngle( yaw ) );
-    osg::Quat qHeading( angle, z );
-    osg::Vec3 x = qHeading * _pitchAxis;
-    osg::Vec3 y = qHeading * _rollAxis;
+    osg::Quat qHeading( angle, yawAxis );
+    osg::Vec3 pitchAxis = qHeading * _pitchAxis;
+    osg::Vec3 rollAxis = qHeading * _rollAxis;
 
-    //   Rotate z and y axes by the pitch.
+    //   Rotate yawAxis  and rollAxis by pitch.
     angle = osg::DegreesToRadians( normalizeAngle( pitch ) );
-    osg::Quat qPitch( angle, x );
-    y = qPitch * y;
-    z = qPitch * z;
+    osg::Quat qPitch( angle, pitchAxis );
+    rollAxis = qPitch * rollAxis;
+    yawAxis = qPitch * yawAxis;
 
-    //   Rotate x and z axes by the roll.
+    //   Rotate yawAxis and pitchAxis by roll.
     angle = osg::DegreesToRadians( normalizeAngle( roll ) );
-    osg::Quat qRoll( angle, y );
-    x = qRoll * x;
-    z = qRoll * z;
+    osg::Quat qRoll( angle, rollAxis );
+    pitchAxis = qRoll * pitchAxis;
+    yawAxis = qRoll * yawAxis;
 
-    // Use x, y, and z axes to create an orientation matrix.
-    result.set( x[0], x[1], x[2], 0.,
-                y[0], y[1], y[2], 0.,
-                z[0], z[1], z[2], 0.,
+    // Use transformed base vectors to create an orientation matrix.
+    result.set( pitchAxis[0], pitchAxis[1], pitchAxis[2], 0.,
+                rollAxis[0], rollAxis[1], rollAxis[2], 0.,
+                yawAxis[0], yawAxis[1], yawAxis[2], 0.,
                 0., 0., 0., 1. );
 }
 
