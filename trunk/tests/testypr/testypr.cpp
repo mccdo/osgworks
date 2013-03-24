@@ -141,31 +141,30 @@ int main( int argc, char** argv )
     OSG_ALWAYS << "Testing Orientation class consistency and correctness." << std::endl;
     {
         osg::ref_ptr< osgwTools::Orientation > orient( new osgwTools::Orientation() );
-        osg::Vec3d baseDir, baseUp;
-        orient->getBasis( baseDir, baseUp );
-        const osg::Vec3d baseCross = baseDir ^ baseUp;
+        osg::Vec3d yawAxis, pitchAxis, rollAxis;
+        orient->getBasis( yawAxis, pitchAxis, rollAxis );
 
         osg::Matrix m( orient->getMatrix( 0., 0., 0. ) );
         const osg::Vec3d def0( m(0,0), m(0,1), m(0,2) );
         const osg::Vec3d def1( m(1,0), m(1,1), m(1,2) );
         const osg::Vec3d def2( m(2,0), m(2,1), m(2,2) );
         // Make sure default (ypr=0.) generates correct default matrix.
-        if( !( epsCompare( def0, baseCross ) ) )
+        if( !( epsCompare( def0, pitchAxis ) ) )
         {
             OSG_FATAL << "Failed: Default test, row 0: ";
-            OSG_FATAL << def0 << " != " << baseCross << std::endl;
+            OSG_FATAL << def0 << " != " << pitchAxis << std::endl;
             return( 1 );
         }
-        if( !( epsCompare( def1, baseDir ) ) )
+        if( !( epsCompare( def1, rollAxis ) ) )
         {
             OSG_FATAL << "Failed: Default test, row 1: ";
-            OSG_FATAL << def1 << " != " << baseUp << std::endl;
+            OSG_FATAL << def1 << " != " << rollAxis << std::endl;
             return( 1 );
         }
-        if( !( epsCompare( def2, baseUp ) ) )
+        if( !( epsCompare( def2, yawAxis ) ) )
         {
             OSG_FATAL << "Failed: Default test, row 2: ";
-            OSG_FATAL << def2 << " != " << baseDir << std::endl;
+            OSG_FATAL << def2 << " != " << yawAxis << std::endl;
             return( 1 );
         }
 
@@ -174,10 +173,10 @@ int main( int argc, char** argv )
         m = orient->getMatrix( angles );
         const osg::Vec3d row1( m(1,0), m(1,1), m(1,2) );
         // Matrix row 1 (0-based) must match baseDir after a roll.
-        if( !( epsCompare( row1, baseDir ) ) )
+        if( !( epsCompare( row1, rollAxis ) ) )
         {
             OSG_FATAL << "Failed: Roll creates matrix with bad row1: ";
-            OSG_FATAL << row1 << " != " << baseDir << std::endl;
+            OSG_FATAL << row1 << " != " << rollAxis << std::endl;
             return( 1 );
         }
         // Extract YPR from that matrix...

@@ -31,16 +31,16 @@ namespace osgwTools
 
 
 Orientation::Orientation()
-    : _baseDir( 0., 1., 0. ),
-      _baseUp( 0., 0., 1. ),
-      _baseCross( 1., 0., 0. ),
+    : _yawAxis( 0., 0., 1. ),
+      _pitchAxis( 1., 0., 0. ),
+      _rollAxis( 0., 1., 0. ),
       _rightHanded( false )
 {
 }
 Orientation::Orientation( const Orientation& rhs, const osg::CopyOp copyop )
-    : _baseDir( rhs._baseDir ),
-      _baseUp( rhs._baseUp ),
-      _baseCross( rhs._baseCross ),
+    : _yawAxis( rhs._yawAxis ),
+      _pitchAxis( rhs._pitchAxis ),
+      _rollAxis( rhs._rollAxis ),
       _rightHanded( rhs._rightHanded )
 {
 }
@@ -49,21 +49,22 @@ Orientation::~Orientation()
 }
 
 
-void Orientation::setBasis( const osg::Vec3d& baseDir, const osg::Vec3d& baseUp )
+void Orientation::setBasis( const osg::Vec3d& yawAxis, const osg::Vec3d& pitchAxis, const osg::Vec3d& rollAxis )
 {
-    _baseDir = baseDir;
-    _baseDir.normalize();
+    _yawAxis = yawAxis;
+    _yawAxis.normalize();
 
-    _baseCross = _baseDir ^ baseUp;
-    _baseCross.normalize();
+    _pitchAxis = pitchAxis;
+    _pitchAxis.normalize();
 
-    _baseUp = _baseCross ^ _baseDir;
-    _baseUp.normalize();
+    _rollAxis = rollAxis;
+    _rollAxis.normalize();
 }
-void Orientation::getBasis( osg::Vec3d& baseDir, osg::Vec3d& baseUp ) const
+void Orientation::getBasis( osg::Vec3d& yawAxis, osg::Vec3d& pitchAxis, osg::Vec3d& rollAxis ) const
 {
-    baseDir = _baseDir;
-    baseUp = _baseUp;
+    yawAxis = _yawAxis;
+    pitchAxis = _pitchAxis;
+    rollAxis = _rollAxis;
 }
 void Orientation::setRightHanded( const bool rightHanded )
 {
@@ -116,11 +117,11 @@ void Orientation::makeMatrix( osg::Matrix& result, const double yaw, const doubl
 
     // First, create x, y, and z axes that represent the yaw, pitch, and roll angles.
     //   Rotate x and y axes by yaw.
-    osg::Vec3d z( _baseUp );
+    osg::Vec3d z( _yawAxis );
     double angle = osg::DegreesToRadians( normalizeAngle( yaw ) );
     osg::Quat qHeading( angle, z );
-    osg::Vec3 x = qHeading * _baseCross;
-    osg::Vec3 y = qHeading * _baseDir;
+    osg::Vec3 x = qHeading * _pitchAxis;
+    osg::Vec3 y = qHeading * _rollAxis;
 
     //   Rotate z and y axes by the pitch.
     angle = osg::DegreesToRadians( normalizeAngle( pitch ) );
@@ -162,60 +163,60 @@ osg::Vec3d Orientation::getYPR( const osg::Matrix& m ) const
 }
 void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, double& roll ) const
 {
-    osg::Vec3d cross( m(0,0), m(0,1), m(0,2) );
-    cross.normalize();
-    osg::Vec3d dir( m(1,0), m(1,1), m(1,2) );
-    dir.normalize();
-    osg::Vec3d up( m(2,0), m(2,1), m(2,2) );
-    up.normalize();
+    osg::Vec3d pitchAxisIn( m(0,0), m(0,1), m(0,2) );
+    pitchAxisIn.normalize();
+    osg::Vec3d rollAxisIn( m(1,0), m(1,1), m(1,2) );
+    rollAxisIn.normalize();
+    osg::Vec3d yawAxisIn( m(2,0), m(2,1), m(2,2) );
+    yawAxisIn.normalize();
 
 
     // Roll
 
-    // Compute cross vector projected onto plane defined by _baseUp.
-    // Then compute angle to rotate the cross vector into that plane.
-    // viewDirXBaseUp *is* the destination cross vector.
-    osg::Vec3d viewDirXBaseUp( dir ^ _baseUp );
-    viewDirXBaseUp.normalize();
-    const double dotProjectedCross = osg::clampBetween<double>( cross * viewDirXBaseUp, -1., 1. );
-    double rollRad( acos( dotProjectedCross ) );
-    // Is cross below the plane defined by _baseUp?
-    const double dotCrossBaseUp( cross * _baseUp );
-    if( dotCrossBaseUp < 0. )
+    // Compute pitchAxisIn projected onto plane defined by _yawAxis.
+    // Then compute angle to rotate pitchAxisIn into that plane.
+    // rollXyaw *is* the destination pitchAxisIn vector.
+    osg::Vec3d rollXyaw( rollAxisIn ^ _yawAxis );
+    rollXyaw.normalize();
+    const double dotPitch = osg::clampBetween<double>( pitchAxisIn * rollXyaw, -1., 1. );
+    double rollRad( acos( dotPitch ) );
+    // Is pitchAxisIn below the plane defined by _yawAxis?
+    const double pitchDotUp( pitchAxisIn * _yawAxis );
+    if( pitchDotUp < 0. )
         rollRad = -rollRad;
 
-    // Adjust the up and cross vectors accordingly.
-    osg::Quat qRoll( rollRad, dir );
-    up = qRoll * up;
-    cross = viewDirXBaseUp;
+    // Adjust the yawAxisIn and pitchAxisIn vectors accordingly.
+    osg::Quat qRoll( rollRad, rollAxisIn );
+    yawAxisIn = qRoll * yawAxisIn;
+    pitchAxisIn = rollXyaw;
 
     roll = normalizeAngle( osg::RadiansToDegrees( rollRad ), !_rightHanded );
 
 
     // Pitch
 
-    // Compute the angle between the up and _baseUp vectors.
-    const double dotUpUp = osg::clampBetween<double>( up * _baseUp, -1., 1. );
-    double pitchRad( acos( dotUpUp ) );
+    // Compute the angle between the yawAxisIn and _yawAxis vectors.
+    const double dotYaw = osg::clampBetween<double>( yawAxisIn * _yawAxis, -1., 1. );
+    double pitchRad( acos( dotYaw ) );
     // Adjust if we pitched backwards.
-    const osg::Vec3d baseUpCrossUp( _baseUp ^ up );
-    if( baseUpCrossUp * cross > 0. )
+    const osg::Vec3d yawXYaw( _yawAxis ^ yawAxisIn );
+    if( yawXYaw * pitchAxisIn > 0. )
         pitchRad = -pitchRad;
 
-    // Adjust the dir and up vectors accordingly.
-    osg::Quat qPitch( pitchRad, cross );
-    dir = qPitch * dir;
+    // Adjust the rollAxisIn and yawAxisIn vectors accordingly.
+    osg::Quat qPitch( pitchRad, pitchAxisIn );
+    rollAxisIn = qPitch * rollAxisIn;
 
     pitch = normalizeAngle( osg::RadiansToDegrees( pitchRad ), !_rightHanded );
 
 
     // Yaw
 
-    // Compute the angle between the dir and _baseDir vectors.
-    const double dotDirDir = osg::clampBetween<double>( dir * _baseDir, -1., 1. );
-    double yawRad( acos( dotDirDir ) );
+    // Compute the angle between the rollAxisIn and _rollAxis vectors.
+    const double dotRoll = osg::clampBetween<double>( rollAxisIn * _rollAxis, -1., 1. );
+    double yawRad( acos( dotRoll ) );
     // Adjust if we yawed left.
-    if( dir * _baseCross < 0. )
+    if( rollAxisIn * _pitchAxis < 0. )
         yawRad = -yawRad;
     yaw = normalizeAngle( osg::RadiansToDegrees( yawRad ), !_rightHanded );
 }
