@@ -36,7 +36,7 @@
 
 ReaderWriterOSGObjects::ReaderWriterOSGObjects()
 {
-    supportsExtension( "osg", "Supports reading and writing unsupported OSG Objects such as Array." );
+    supportsExtension( "osgarray", "Supports reading and writing unsupported osg::Array Objects." );
 }
 ReaderWriterOSGObjects::~ReaderWriterOSGObjects()
 {
