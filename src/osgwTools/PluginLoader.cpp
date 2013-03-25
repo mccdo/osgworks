@@ -52,7 +52,7 @@ public:
         };
         MyPluginInfo mpiVec[] = {
             MyPluginInfo( "skel", "skeleton" ),
-            MyPluginInfo( "*", "osgobjects" )
+            MyPluginInfo( "osgarray", "osgobjects" )
         };
 
         for( unsigned int idx=0; idx<sizeof( mpiVec ) / sizeof( MyPluginInfo ); ++idx )
