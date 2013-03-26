@@ -44,7 +44,7 @@ namespace osgwTools
 class OSGWTOOLS_EXPORT RemoveLOD : public osg::NodeVisitor
 {
 public:
-    RemoveLOD( const osg::NodeVisitor::TraversalMode travMode=osg::NodeVisitor::TRAVERSE_ALL_CHILDREN );
+    osgwDEPRECATED( RemoveLOD( const osg::NodeVisitor::TraversalMode travMode=osg::NodeVisitor::TRAVERSE_ALL_CHILDREN ) );
     ~RemoveLOD();
 
     virtual void apply( osg::LOD& node );
