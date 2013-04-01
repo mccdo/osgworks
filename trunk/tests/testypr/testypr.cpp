@@ -141,44 +141,25 @@ int main( int argc, char** argv )
     OSG_ALWAYS << "Testing Orientation class consistency and correctness." << std::endl;
     {
         osg::ref_ptr< osgwTools::Orientation > orient( new osgwTools::Orientation() );
-        osg::Vec3d yawAxis, pitchAxis, rollAxis;
-        orient->getBasis( yawAxis, pitchAxis, rollAxis );
 
         osg::Matrix m( orient->getMatrix( 0., 0., 0. ) );
-        const osg::Vec3d def0( m(0,0), m(0,1), m(0,2) );
-        const osg::Vec3d def1( m(1,0), m(1,1), m(1,2) );
-        const osg::Vec3d def2( m(2,0), m(2,1), m(2,2) );
-        // Make sure default (ypr=0.) generates correct default matrix.
-        if( !( epsCompare( def0, pitchAxis ) ) )
+        if( !( m.isIdentity() ) )
         {
-            OSG_FATAL << "Failed: Default test, row 0: ";
-            OSG_FATAL << def0 << " != " << pitchAxis << std::endl;
+            OSG_FATAL << "Failed: identity matrix default test: ";
+            OSG_FATAL << m << std::endl;
             return( 1 );
         }
-        if( !( epsCompare( def1, yawAxis ) ) )
+        osg::Quat q( orient->getQuat( 0., 0., 0. ) );
+        if( q != osg::Quat() )
         {
-            OSG_FATAL << "Failed: Default test, row 1: ";
-            OSG_FATAL << def1 << " != " << yawAxis << std::endl;
-            return( 1 );
-        }
-        if( !( epsCompare( def2, rollAxis ) ) )
-        {
-            OSG_FATAL << "Failed: Default test, row 2: ";
-            OSG_FATAL << def2 << " != " << rollAxis << std::endl;
+            OSG_FATAL << "Failed: identity quaternion default test: ";
+            OSG_FATAL << q << std::endl;
             return( 1 );
         }
 
         // Create a matrix from YPR...
         osg::Vec3d angles( 0., 0., 60. );
         m = orient->getMatrix( angles );
-        const osg::Vec3d row2( m(2,0), m(2,1), m(2,2) );
-        // Matrix row 2 (0-based) must match rollAxis after a roll.
-        if( !( epsCompare( row2, rollAxis ) ) )
-        {
-            OSG_FATAL << "Failed: Roll creates matrix with bad row2: ";
-            OSG_FATAL << row2 << " != " << rollAxis << std::endl;
-            return( 1 );
-        }
         // Extract YPR from that matrix...
         osg::Vec3d result( orient->getYPR( m ) );
         // YPRs must match.
@@ -261,6 +242,60 @@ int main( int argc, char** argv )
             return( 1 );
         }
     }
+
+
+    OSG_ALWAYS << "Testing with identity YPR axes." << std::endl;
+    {
+        osg::ref_ptr< osgwTools::Orientation > orient( new osgwTools::Orientation() );
+        const osg::Vec3d xAxis( 1., 0., 0. );
+        const osg::Vec3d yAxis( 0., 1., 0. );
+        const osg::Vec3d zAxis( 0., 0., 1. );
+        orient->setBasis( yAxis, xAxis, zAxis );
+
+        // Create a matrix from YPR...
+        osg::Vec3d angles( 0., 0., 60. );
+        osg::Matrix m = orient->getMatrix( angles );
+        const osg::Vec3d row2( m(2,0), m(2,1), m(2,2) );
+        // Matrix row 2 (0-based) must be the +z unit vector.
+        if( !( epsCompare( row2, zAxis ) ) )
+        {
+            OSG_FATAL << "Failed: Roll creates matrix with bad row2: ";
+            OSG_FATAL << row2 << " != " << zAxis << std::endl;
+            return( 1 );
+        }
+    }
+
+
+    OSG_ALWAYS << "Quadrant test." << std::endl;
+    if( true )
+    {
+        OSG_ALWAYS << "\tSkipping (known failure)." << std::endl;
+    }
+    else
+    {
+        osg::ref_ptr< osgwTools::Orientation > orient( new osgwTools::Orientation() );
+        double theta[4] = { 41., 131., 221., 311. };
+
+        for( unsigned int yIdx=0; yIdx<4; ++yIdx )
+        {
+            for( unsigned int pIdx=0; pIdx<4; ++pIdx )
+            {
+                for( unsigned int rIdx=0; rIdx<4; ++rIdx )
+                {
+                    const osg::Vec3d angles( theta[yIdx], theta[pIdx], theta[rIdx] );
+                    osg::Matrix m = orient->getMatrix( angles );
+                    osg::Vec3d ypr( orient->getYPR( m ) );
+                    if( !( epsCompare( angles, ypr ) ) )
+                    {
+                        OSG_FATAL << "Failed: with angles: " << angles << "; ";
+                        OSG_FATAL << "got result: " << ypr << std::endl;
+                        return( 1 );
+                    }
+                }
+            }
+        }
+    }
+
 
 
     OSG_ALWAYS << "Testing (deprecated) makeHPRQuat() backwards compat." << std::endl;

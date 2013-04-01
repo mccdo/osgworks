@@ -130,8 +130,11 @@ protected:
     */
     static double normalizeAngle( const double degreesIn, bool convertHanded=false );
 
-    osg::Vec3d _yawAxis, _pitchAxis, _rollAxis;
     bool _rightHanded;
+
+    osg::Vec3d _yawAxis, _pitchAxis, _rollAxis;
+    osg::Matrix _basis, _basisInv;
+    bool _basisRight;
 };
 
 

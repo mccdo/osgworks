@@ -31,11 +31,12 @@ namespace osgwTools
 
 
 Orientation::Orientation()
-    : _yawAxis( 0., 0., 1. ),
-      _pitchAxis( 1., 0., 0. ),
-      _rollAxis( 0., 1., 0. ),
-      _rightHanded( true )
+    : _rightHanded( true )
 {
+    setBasis( osg::Vec3d( 0., 0., 1. ), // yawAxis
+        osg::Vec3d( 1., 0., 0. ), // pitchAxis
+        osg::Vec3d( 0., 1., 0. ) // rollAxis
+        );
 }
 Orientation::Orientation( const Orientation& rhs, const osg::CopyOp copyop )
     : _yawAxis( rhs._yawAxis ),
@@ -43,6 +44,7 @@ Orientation::Orientation( const Orientation& rhs, const osg::CopyOp copyop )
       _rollAxis( rhs._rollAxis ),
       _rightHanded( rhs._rightHanded )
 {
+    setBasis( _yawAxis, _pitchAxis, _rollAxis );
 }
 Orientation::~Orientation()
 {
@@ -59,6 +61,23 @@ void Orientation::setBasis( const osg::Vec3d& yawAxis, const osg::Vec3d& pitchAx
 
     _rollAxis = rollAxis;
     _rollAxis.normalize();
+
+    // Determine whether the basis axes are right- or left-handed.
+    _basisRight = ( ( _rollAxis ^ _yawAxis ) * _pitchAxis > 0. );
+
+    // Save the basis and inverse basis matrices.
+    _basis.set(
+        _pitchAxis[0], _pitchAxis[1], _pitchAxis[2], 0.,
+        _yawAxis[0], _yawAxis[1], _yawAxis[2], 0.,
+        _rollAxis[0], _rollAxis[1], _rollAxis[2], 0.,
+        0., 0., 0., 1.
+        );
+    _basisInv.set(
+        _pitchAxis[0], _yawAxis[0], _rollAxis[0], 0.,
+        _pitchAxis[1], _yawAxis[1], _rollAxis[1], 0.,
+        _pitchAxis[2], _yawAxis[2], _rollAxis[2], 0.,
+        0., 0., 0., 1.
+        );
 }
 void Orientation::getBasis( osg::Vec3d& yawAxis, osg::Vec3d& pitchAxis, osg::Vec3d& rollAxis ) const
 {
@@ -136,10 +155,15 @@ void Orientation::makeMatrix( osg::Matrix& result, const double yaw, const doubl
     yawAxis = qRoll * yawAxis;
 
     // Use transformed base vectors to create an orientation matrix.
-    result.set( pitchAxis[0], pitchAxis[1], pitchAxis[2], 0.,
-                yawAxis[0], yawAxis[1], yawAxis[2], 0.,
-                rollAxis[0], rollAxis[1], rollAxis[2], 0.,
-                0., 0., 0., 1. );
+    const osg::Matrixd totalTransform(
+        pitchAxis[0], pitchAxis[1], pitchAxis[2], 0.,
+        yawAxis[0], yawAxis[1], yawAxis[2], 0.,
+        rollAxis[0], rollAxis[1], rollAxis[2], 0.,
+        0., 0., 0., 1.
+        );
+
+    // Remove the basis transform from the total transform.
+    result.set( _basisInv * totalTransform );
 }
 
 
@@ -163,11 +187,14 @@ osg::Vec3d Orientation::getYPR( const osg::Matrix& m ) const
 }
 void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, double& roll ) const
 {
-    osg::Vec3d pitchAxisIn( m(0,0), m(0,1), m(0,2) );
+    // Add in the basis vectors.
+    const osg::Matrix inMat( _basis * m );
+
+    osg::Vec3d pitchAxisIn( inMat(0,0), inMat(0,1), inMat(0,2) );
     pitchAxisIn.normalize();
-    osg::Vec3d yawAxisIn( m(1,0), m(1,1), m(1,2) );
+    osg::Vec3d yawAxisIn( inMat(1,0), inMat(1,1), inMat(1,2) );
     yawAxisIn.normalize();
-    osg::Vec3d rollAxisIn( m(2,0), m(2,1), m(2,2) );
+    osg::Vec3d rollAxisIn( inMat(2,0), inMat(2,1), inMat(2,2) );
     rollAxisIn.normalize();
 
 

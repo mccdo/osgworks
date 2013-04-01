@@ -39,7 +39,6 @@ public:
           _ypr( 0., 0., 0. ),
           _orient( new osgwTools::Orientation() )
     {
-        _mt->setMatrix( _orient->getMatrix( _ypr ) );
     }
 
     bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
@@ -94,13 +93,23 @@ int main( int argc, char** argv )
     osg::ref_ptr< osg::Vec4Array > c;
     osg::Geometry* geom;
 
-    const osg::Vec3d baseX( 1., 0., 0. );
-    const osg::Vec3d baseD( 0., 1., 0. );
-    const osg::Vec3d baseU( 0., 0., 1. );
+    const osg::Vec3d baseUp( 0., 0., 1. );
+    const osg::Vec3d baseRight( 1., 0., 0. );
+    const osg::Vec3d baseDir( 0., 1., 0. );
+
+    m.set( 1., 0., 0., 0.,
+        0., 1., 0., 0.,
+        baseUp[0], baseUp[1], baseUp[2], 0.,
+        0., 0., 0., 1. );
+    c = new osg::Vec4Array(); c->resize( 1 );
+    (*c)[0].set( 0., 0., 1., 1. );
+    geom = osgwTools::makeArrow( m );
+    geom->setColorArray( c.get() );
+    geode->addDrawable( geom );
 
     m.set( 0., 0., 1., 0.,
         0., 1., 0., 0.,
-        baseX[0], baseX[1], baseX[2], 0.,
+        baseRight[0], baseRight[1], baseRight[2], 0.,
         0., 0., 0., 1. );
     c = new osg::Vec4Array(); c->resize( 1 );
     (*c)[0].set( 1., 0., 0., 1. );
@@ -110,20 +119,10 @@ int main( int argc, char** argv )
 
     m.set( 1., 0., 0., 0.,
         0., 0., 1., 0.,
-        baseD[0], baseD[1], baseD[2], 0.,
+        baseDir[0], baseDir[1], baseDir[2], 0.,
         0., 0., 0., 1. );
     c = new osg::Vec4Array(); c->resize( 1 );
     (*c)[0].set( 0., 1., 0., 1. );
-    geom = osgwTools::makeArrow( m );
-    geom->setColorArray( c.get() );
-    geode->addDrawable( geom );
-
-    m.set( 1., 0., 0., 0.,
-        0., 1., 0., 0.,
-        baseU[0], baseU[1], baseU[2], 0.,
-        0., 0., 0., 1. );
-    c = new osg::Vec4Array(); c->resize( 1 );
-    (*c)[0].set( 0., 0., 1., 1. );
     geom = osgwTools::makeArrow( m );
     geom->setColorArray( c.get() );
     geode->addDrawable( geom );
