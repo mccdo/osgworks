@@ -54,7 +54,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
 {
     int entry = fr[0].getNoNestedBrackets();
 
-    const char* arrayName = fr[0].getStr();
+    const std::string arrayName = fr[0].getStr();
 
     unsigned int capacity = 0;
     fr[1].getUInt(capacity);
@@ -65,7 +65,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
 
     osg::Array* return_array = 0;
 
-    if (strcmp(arrayName,"ByteArray")==0)
+    if ( arrayName == "ByteArray" )
     {
         osg::ByteArray* array = new osg::ByteArray;
         array->reserve(capacity);
@@ -83,7 +83,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
 
         return_array = array;
     }
-    else if (strcmp(arrayName,"ShortArray")==0)
+    else if ( arrayName == "ShortArray" )
     {
         osg::ShortArray* array = new osg::ShortArray;
         array->reserve(capacity);
@@ -100,7 +100,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"IntArray")==0)
+    else if ( arrayName == "IntArray" )
     {
         osg::IntArray* array = new osg::IntArray;
         array->reserve(capacity);
@@ -117,7 +117,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"UByteArray")==0)
+    else if ( arrayName == "UByteArray" )
     {
         osg::UByteArray* array = new osg::UByteArray;
         array->reserve(capacity);
@@ -134,7 +134,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"UShortArray")==0)
+    else if ( arrayName == "UShortArray" )
     {
         osg::UShortArray* array = new osg::UShortArray;
         array->reserve(capacity);
@@ -151,7 +151,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"UIntArray")==0)
+    else if ( arrayName == "UIntArray" )
     {
         osg::UIntArray* array = new osg::UIntArray;
         array->reserve(capacity);
@@ -168,7 +168,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"UVec4bArray")==0 || strcmp(arrayName,"Vec4ubArray")==0)
+    else if ( ( arrayName == "UVec4bArray" ) || ( arrayName == "Vec4ubArray" ) )
     {
         osg::Vec4ubArray* array = new osg::Vec4ubArray;
         array->reserve(capacity);
@@ -188,7 +188,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"FloatArray")==0)
+    else if ( arrayName == "FloatArray" )
     {
         osg::FloatArray* array = new osg::FloatArray;
         array->reserve(capacity);
@@ -205,7 +205,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"DoubleArray")==0)
+    else if ( arrayName == "DoubleArray" )
     {
         osg::DoubleArray* array = new osg::DoubleArray;
         array->reserve(capacity);
@@ -222,7 +222,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"Vec2Array")==0)
+    else if ( arrayName == "Vec2Array" )
     {
         osg::Vec2Array* array = new osg::Vec2Array;
         array->reserve(capacity);
@@ -239,7 +239,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"Vec2dArray")==0)
+    else if ( arrayName == "Vec2dArray" )
     {
         osg::Vec2dArray* array = new osg::Vec2dArray;
         array->reserve(capacity);
@@ -256,7 +256,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"Vec3Array")==0)
+    else if ( arrayName == "Vec3Array" )
     {
         osg::Vec3Array* array = new osg::Vec3Array;
         array->reserve(capacity);
@@ -273,7 +273,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"Vec3dArray")==0)
+    else if ( arrayName == "Vec3dArray" )
     {
         osg::Vec3dArray* array = new osg::Vec3dArray;
         array->reserve(capacity);
@@ -290,7 +290,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"Vec4Array")==0)
+    else if ( arrayName == "Vec4Array" )
     {
         osg::Vec4Array* array = new osg::Vec4Array;
         array->reserve(capacity);
@@ -307,7 +307,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"Vec4dArray")==0)
+    else if ( arrayName == "Vec4dArray" )
     {
         osg::Vec4dArray* array = new osg::Vec4dArray;
         array->reserve(capacity);
@@ -324,7 +324,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"Vec2bArray")==0)
+    else if ( arrayName == "Vec2bArray" )
     {
         osg::Vec2bArray* array = new osg::Vec2bArray;
         array->reserve(capacity);
@@ -342,7 +342,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"Vec3bArray")==0)
+    else if ( arrayName == "Vec3bArray" )
     {
         osg::Vec3bArray* array = new osg::Vec3bArray;
         array->reserve(capacity);
@@ -361,7 +361,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"Vec4bArray")==0)
+    else if ( arrayName == "Vec4bArray" )
     {
         osg::Vec4bArray* array = new osg::Vec4bArray;
         array->reserve(capacity);
@@ -381,7 +381,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"Vec2sArray")==0)
+    else if ( arrayName == "Vec2sArray" )
     {
         osg::Vec2sArray* array = new osg::Vec2sArray;
         array->reserve(capacity);
@@ -399,7 +399,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"Vec3sArray")==0)
+    else if ( arrayName == "Vec3sArray" )
     {
         osg::Vec3sArray* array = new osg::Vec3sArray;
         array->reserve(capacity);
@@ -418,7 +418,7 @@ osg::Array* Array_readLocalData( osgDB::Input& fr)
         ++fr;
         return_array = array;
     }
-    else if (strcmp(arrayName,"Vec4sArray")==0)
+    else if ( arrayName == "Vec4sArray" )
     {
         osg::Vec4sArray* array = new osg::Vec4sArray;
         array->reserve(capacity);
