@@ -274,7 +274,7 @@ int main( int argc, char** argv )
     else
     {
         osg::ref_ptr< osgwTools::Orientation > orient( new osgwTools::Orientation() );
-        double theta[4] = { 41., 131., 221., 311. };
+        const double theta[4] = { 41., 131., 221., 311. };
 
         for( unsigned int yIdx=0; yIdx<4; ++yIdx )
         {
@@ -299,19 +299,52 @@ int main( int argc, char** argv )
 
 
     OSG_ALWAYS << "Testing (deprecated) makeHPRQuat() backwards compat." << std::endl;
-    if( true )
-    {
-        OSG_ALWAYS << "\tSkipping (known failure)." << std::endl;
-    }
-    else
     {
         osg::ref_ptr< osgwTools::Orientation > orient( new osgwTools::Orientation() );
 
         osg::Vec3d vec( 60., 0., 0. );
         osg::Quat a( orient->getQuat( vec ) );
-
         osg::Quat b( osgwTools::makeHPRQuat( vec ) );
+        if( !( epsCompare( a, b ) ) )
+        {
+            OSG_FATAL << "Failed makeHPRQuat() compat test: ";
+            OSG_FATAL << a << " != " << b << std::endl;
+            return( 1 );
+        }
 
+        vec.set( 0., 50., 0. );
+        a = orient->getQuat( vec );
+        b = osgwTools::makeHPRQuat( vec );
+        if( !( epsCompare( a, b ) ) )
+        {
+            OSG_FATAL << "Failed makeHPRQuat() compat test: ";
+            OSG_FATAL << a << " != " << b << std::endl;
+            return( 1 );
+        }
+
+        vec.set( 0., 0., 40. );
+        a = orient->getQuat( vec );
+        b = osgwTools::makeHPRQuat( vec );
+        if( !( epsCompare( a, b ) ) )
+        {
+            OSG_FATAL << "Failed makeHPRQuat() compat test: ";
+            OSG_FATAL << a << " != " << b << std::endl;
+            return( 1 );
+        }
+
+        vec.set( 50., 0., 40. );
+        a = orient->getQuat( vec );
+        b = osgwTools::makeHPRQuat( vec );
+        if( !( epsCompare( a, b ) ) )
+        {
+            OSG_FATAL << "Failed makeHPRQuat() compat test: ";
+            OSG_FATAL << a << " != " << b << std::endl;
+            return( 1 );
+        }
+
+        vec.set( 50., 30., 0. );
+        a = orient->getQuat( vec );
+        b = osgwTools::makeHPRQuat( vec );
         if( !( epsCompare( a, b ) ) )
         {
             OSG_FATAL << "Failed makeHPRQuat() compat test: ";
