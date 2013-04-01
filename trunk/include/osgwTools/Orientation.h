@@ -137,6 +137,23 @@ protected:
     bool _basisRight;
 };
 
+///A helper method to make a quat from yaw, pitch, and roll.
+///\note Yaw, pitch, and roll are in degrees.
+///\note This conversion assumes a right handed coordinate system
+OSGWTOOLS_EXPORT osg::Quat makeQuat( double h, double p, double r )
+{
+    osg::ref_ptr< osgwTools::Orientation > orient = new osgwTools::Orientation();
+    return( orient->getQuat( h, p, r ) );
+}
+
+///A helper method to get yaw, pitch, and roll from a quat
+///\note Yaw, pitch, and roll are in degrees.
+///\note This conversion assumes a right handed coordinate system
+OSGWTOOLS_EXPORT osg::Vec3d getYPR( const osg::Quat& q )
+{
+    osg::ref_ptr< osgwTools::Orientation > orient = new osgwTools::Orientation();
+    return( orient->getYPR( q ) );
+}
 
 // namespace osgwTools
 }
