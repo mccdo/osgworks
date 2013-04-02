@@ -271,6 +271,17 @@ double Orientation::normalizeAngle( const double degreesIn, const bool convertHa
     return( result );
 }
 
+osg::Quat makeQuat( double h, double p, double r )
+{
+    osg::ref_ptr< osgwTools::Orientation > orient = new osgwTools::Orientation();
+    return( orient->getQuat( h, p, r ) );
+}
+
+osg::Vec3d getYPR( const osg::Quat& q )
+{
+    osg::ref_ptr< osgwTools::Orientation > orient = new osgwTools::Orientation();
+    return( orient->getYPR( q ) );
+}
 
 // namespace osgwTools
 }
