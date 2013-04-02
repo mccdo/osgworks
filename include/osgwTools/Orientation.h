@@ -116,13 +116,21 @@ public:
     /** \overload */
     void makeMatrix( osg::Matrix& result, const double yaw, const double pitch, const double roll );
 
-
+    ///Get yaw, pitch, and roll from the specified quat
+    ///\param q The quat of interest
+    ///\return The yaw, pitch, and roll in degrees
     osg::Vec3d getYPR( const osg::Quat& q ) const;
+    ///\overload void getYPR( const osg::Quat& q, double& yaw, double& pitch, double& roll ) const
     void getYPR( const osg::Quat& q, double& yaw, double& pitch, double& roll ) const;
+    ///Get yaw, pitch, and roll from the matrix
+    ///\param m Pure rotation matrix
+    ///\return The yaw, pitch, and roll in degrees
     osg::Vec3d getYPR( const osg::Matrix& m ) const;
+    ///\overload void getYPR( const osg::Matrix& m, double& yaw, double& pitch, double& roll ) const
     void getYPR( const osg::Matrix& m, double& yaw, double& pitch, double& roll ) const;
 
 protected:
+    ///Destructor
     virtual ~Orientation();
 
     /** \brief Normalize angle into range 0.0 <= angle < 360.0.
