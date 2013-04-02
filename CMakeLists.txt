@@ -4,7 +4,7 @@ PROJECT( osgWorks )
 
 # Note: These values are used by include/osgwTools/Version.in
 # to generate the Version.h file.
-set( OSGWORKS_VERSION 2.00.04 )
+set( OSGWORKS_VERSION 2.01.00 )
 set( OSGWORKS_MAJOR_VERSION 2 )
 set( OSGWORKS_MINOR_VERSION 1 )
 set( OSGWORKS_SUB_VERSION 0 )
