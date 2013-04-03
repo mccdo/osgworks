@@ -265,6 +265,38 @@ int main( int argc, char** argv )
     }
 
 
+    OSG_ALWAYS << "Right angles test." << std::endl;
+    if( true )
+    {
+        OSG_ALWAYS << "\tSkipping (known failure)." << std::endl;
+    }
+    else
+    {
+        osg::ref_ptr< osgwTools::Orientation > orient( new osgwTools::Orientation() );
+        const double theta[4] = { 0., 90., 180., 270. };
+
+        for( unsigned int yIdx=0; yIdx<4; ++yIdx )
+        {
+            for( unsigned int pIdx=0; pIdx<4; ++pIdx )
+            {
+                for( unsigned int rIdx=0; rIdx<4; ++rIdx )
+                {
+                    const osg::Vec3d anglesA( theta[yIdx], theta[pIdx], theta[rIdx] );
+                    osg::Matrix a = orient->getMatrix( anglesA );
+                    osg::Vec3d anglesB( orient->getYPR( a ) );
+                    osg::Matrix b = orient->getMatrix( anglesB );
+                    if( !( epsCompare( a, b ) ) )
+                    {
+                        OSG_FATAL << "Failed: Input angles: " << anglesA << "; output angles: " << anglesB << std::endl;
+                        OSG_FATAL << "  Matrix A: " << a << "  Matrix B: " << b << std::endl;
+                        return( 1 );
+                    }
+                }
+            }
+        }
+    }
+
+
     OSG_ALWAYS << "Quadrant test." << std::endl;
     if( true )
     {
