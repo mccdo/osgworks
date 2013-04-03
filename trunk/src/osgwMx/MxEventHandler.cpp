@@ -189,7 +189,7 @@ bool MxEventHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionA
         {
             double y, p, r;
             _mxCore->getYawPitchRoll( y, p, r );
-            osg::notify( osg::ALWAYS ) << "Yaw: " << y << "\tPitch: " << p << "\tRoll: " << r << std::endl;
+            osg::notify( osg::ALWAYS ) << "Yaw: " << y << "   Pitch: " << p << "   Roll: " << r << std::endl;
             break;
         }
         case ' ': // Reset to initial values.

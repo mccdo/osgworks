@@ -22,6 +22,7 @@
 #include <osgwMx/MxUtils.h>
 
 #include <osgwTools/Transform.h>
+#include <osgwTools/Orientation.h>
 
 #include <osg/Matrixd>
 #include <osg/BoundingSphere>
@@ -459,6 +460,23 @@ void MxCore::moveOrbit( const float distance )
 
 void MxCore::getYawPitchRoll( double& yaw, double& pitch, double& roll, bool rightHanded ) const
 {
+#if 1
+    osg::Matrix m( getOrientationMatrix() );
+    // Reverse the view vector.
+    m(2,0) = -m(2,0);
+    m(2,1) = -m(2,1);
+    m(2,2) = -m(2,2);
+
+    // Orientation class assumes matrix contains only the delta transform
+    // from base vectors to ypr, so subtract out the default orientation.
+    const osg::Matrixd baseInv( 1., 0., 0., 0.,
+        0., 0., 1., 0.,
+        0., 1., 0., 0.,
+        0., 0., 0., 1. );
+
+    osg::ref_ptr< osgwTools::Orientation > orient( new osgwTools::Orientation() );
+    orient->getYPR( baseInv * m, yaw, pitch, roll );
+#else
     // Temp var for cross products.
     osg::Vec3d right;
 
@@ -516,6 +534,7 @@ void MxCore::getYawPitchRoll( double& yaw, double& pitch, double& roll, bool rig
     if( rollRad == twoPi )
         rollRad = 0.;
     roll = osg::RadiansToDegrees( rollRad );
+#endif
 }
 
 

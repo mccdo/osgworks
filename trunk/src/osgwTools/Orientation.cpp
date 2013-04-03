@@ -197,46 +197,57 @@ void Orientation::getYPR( const osg::Matrix& m, double& yaw, double& pitch, doub
     osg::Vec3d rollAxisIn( inMat(2,0), inMat(2,1), inMat(2,2) );
     rollAxisIn.normalize();
 
+    const bool yawOnly( yawAxisIn == _yawAxis );
 
     // Roll
 
     // Compute pitchAxisIn projected onto plane defined by _yawAxis.
     // Then compute angle to rotate pitchAxisIn into that plane.
     // rollXyaw *is* the destination pitchAxisIn vector.
-    osg::Vec3d rollXyaw( rollAxisIn ^ _yawAxis );
-    if( rollXyaw * _pitchAxis < 0. )
-        rollXyaw = -rollXyaw;
-    rollXyaw.normalize();
-    const double dotPitch = osg::clampBetween<double>( pitchAxisIn * rollXyaw, -1., 1. );
-    double rollRad( acos( dotPitch ) );
-    // Is pitchAxisIn below the plane defined by _yawAxis?
-    const double pitchDotUp( pitchAxisIn * _yawAxis );
-    if( pitchDotUp < 0. )
-        rollRad = -rollRad;
+    if( yawOnly )
+        roll = 0.;
+    else
+    {
+        osg::Vec3d rollXyaw( rollAxisIn ^ _yawAxis );
+        if( rollXyaw * _pitchAxis < 0. )
+            rollXyaw = -rollXyaw;
+        rollXyaw.normalize();
+        const double dotPitch = osg::clampBetween<double>( pitchAxisIn * rollXyaw, -1., 1. );
+        double rollRad( acos( dotPitch ) );
+        // Is pitchAxisIn below the plane defined by _yawAxis?
+        const double pitchDotUp( pitchAxisIn * _yawAxis );
+        if( pitchDotUp < 0. )
+            rollRad = -rollRad;
 
-    // Adjust the yawAxisIn and pitchAxisIn vectors accordingly.
-    osg::Quat qRoll( rollRad, rollAxisIn );
-    yawAxisIn = qRoll * yawAxisIn;
-    pitchAxisIn = rollXyaw;
+        // Adjust the yawAxisIn and pitchAxisIn vectors accordingly.
+        osg::Quat qRoll( rollRad, rollAxisIn );
+        yawAxisIn = qRoll * yawAxisIn;
+        pitchAxisIn = rollXyaw;
 
-    roll = normalizeAngle( osg::RadiansToDegrees( rollRad ), _rightHanded );
+        roll = normalizeAngle( osg::RadiansToDegrees( rollRad ), _rightHanded );
+    }
 
 
     // Pitch
 
     // Compute the angle between the yawAxisIn and _yawAxis vectors.
-    const double dotYaw = osg::clampBetween<double>( yawAxisIn * _yawAxis, -1., 1. );
-    double pitchRad( acos( dotYaw ) );
-    // Adjust if we pitched backwards.
-    const osg::Vec3d yawXYaw( _yawAxis ^ yawAxisIn );
-    if( yawXYaw * pitchAxisIn > 0. )
-        pitchRad = -pitchRad;
+    if( yawOnly )
+        pitch = 0.;
+    else
+    {
+        const double dotYaw = osg::clampBetween<double>( yawAxisIn * _yawAxis, -1., 1. );
+        double pitchRad( acos( dotYaw ) );
+        // Adjust if we pitched backwards.
+        const osg::Vec3d yawXYaw( _yawAxis ^ yawAxisIn );
+        if( yawXYaw * pitchAxisIn > 0. )
+            pitchRad = -pitchRad;
 
-    // Adjust the rollAxisIn and yawAxisIn vectors accordingly.
-    osg::Quat qPitch( pitchRad, pitchAxisIn );
-    rollAxisIn = qPitch * rollAxisIn;
+        // Adjust the rollAxisIn and yawAxisIn vectors accordingly.
+        osg::Quat qPitch( pitchRad, pitchAxisIn );
+        rollAxisIn = qPitch * rollAxisIn;
 
-    pitch = normalizeAngle( osg::RadiansToDegrees( pitchRad ), _rightHanded );
+        pitch = normalizeAngle( osg::RadiansToDegrees( pitchRad ), _rightHanded );
+    }
 
 
     // Yaw
