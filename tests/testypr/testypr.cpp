@@ -119,7 +119,7 @@ int main( int argc, char** argv )
         mxc->getInitialValues( baseUp, baseDir, basePos, baseFovY );
 
         double roll = osg::RadiansToDegrees( ::acos( newUp * baseUp ) );
-        if( !( epsCompare( roll, r ) ) )
+        if( !( epsCompare( 360. - roll, r ) ) )
         {
             OSG_FATAL << "MxCore::getYawPitchRoll failed roll computation: ";
             OSG_FATAL << roll << " != " << r << std::endl;
@@ -128,7 +128,6 @@ int main( int argc, char** argv )
 
 
         mxc->getYawPitchRoll( y, p, r, true );
-        roll = 360. - roll;
         if( !( epsCompare( roll, r ) ) )
         {
             OSG_FATAL << "MxCore::getYawPitchRoll failed right-handed roll computation: ";
@@ -282,13 +281,14 @@ int main( int argc, char** argv )
             {
                 for( unsigned int rIdx=0; rIdx<4; ++rIdx )
                 {
-                    const osg::Vec3d angles( theta[yIdx], theta[pIdx], theta[rIdx] );
-                    osg::Matrix m = orient->getMatrix( angles );
-                    osg::Vec3d ypr( orient->getYPR( m ) );
-                    if( !( epsCompare( angles, ypr ) ) )
+                    const osg::Vec3d anglesA( theta[yIdx], theta[pIdx], theta[rIdx] );
+                    osg::Matrix a = orient->getMatrix( anglesA );
+                    osg::Vec3d anglesB( orient->getYPR( a ) );
+                    osg::Matrix b = orient->getMatrix( anglesB );
+                    if( !( epsCompare( a, b ) ) )
                     {
-                        OSG_FATAL << "Failed: with angles: " << angles << "; ";
-                        OSG_FATAL << "got result: " << ypr << std::endl;
+                        OSG_FATAL << "Failed: Input angles: " << anglesA << "; output angles: " << anglesB << std::endl;
+                        OSG_FATAL << "  Matrix A: " << a << "  Matrix B: " << b << std::endl;
                         return( 1 );
                     }
                 }

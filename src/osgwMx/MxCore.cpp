@@ -475,6 +475,7 @@ void MxCore::getYawPitchRoll( double& yaw, double& pitch, double& roll, bool rig
         0., 0., 0., 1. );
 
     osg::ref_ptr< osgwTools::Orientation > orient( new osgwTools::Orientation() );
+    orient->setRightHanded( rightHanded );
     orient->getYPR( baseInv * m, yaw, pitch, roll );
 #else
     // Temp var for cross products.
