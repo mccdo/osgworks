@@ -460,7 +460,7 @@ void MxCore::moveOrbit( const float distance )
 
 void MxCore::getYawPitchRoll( double& yaw, double& pitch, double& roll, bool rightHanded ) const
 {
-#if 1
+#if 0
     osg::Matrix m( getOrientationMatrix() );
     // Reverse the view vector.
     m(2,0) = -m(2,0);
