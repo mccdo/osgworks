@@ -11,6 +11,15 @@ set( OSGWORKS_SUB_VERSION 0 )
 
 SET( CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules" ${CMAKE_MODULE_PATH} )
 
+IF(UNIX AND NOT WIN32 AND NOT APPLE)
+  IF(CMAKE_SIZEOF_VOID_P MATCHES "8")
+      SET(LIB_POSTFIX "64" CACHE STRING "suffix for 32/64 dir placement")
+      MARK_AS_ADVANCED(LIB_POSTFIX)
+  ENDIF()
+ENDIF()
+IF(NOT DEFINED LIB_POSTFIX)
+    SET(LIB_POSTFIX "")
+ENDIF()
 
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib )
@@ -181,7 +190,7 @@ endif()
 if(MSVC)
     install(
         DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\${CMAKE_INSTALL_CONFIG_NAME}/
-        DESTINATION lib
+        DESTINATION lib${LIB_POSTFIX}
         USE_SOURCE_PERMISSIONS
         COMPONENT libosgworks-dev
         FILES_MATCHING PATTERN "*.pdb"
@@ -218,22 +227,22 @@ configure_file(UseosgWorks.cmake.in
   "${PROJECT_BINARY_DIR}/lib/UseosgWorks.cmake" @ONLY)
 
 # Install the export set for use with the install-tree
-install(EXPORT osgworks-targets DESTINATION lib)
+install(EXPORT osgworks-targets DESTINATION lib${LIB_POSTFIX})
 
 include( CMakePackageConfigHelpers )
 # Create the osgWorksConfig.cmake and osgWorksConfigVersion files
-file(RELATIVE_PATH CONF_REL_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/lib"
+file(RELATIVE_PATH CONF_REL_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_POSTFIX}"
    "${CMAKE_INSTALL_PREFIX}/include")
 
 configure_package_config_file( 
     osgWorksConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/lib/osgWorksConfig.cmake
-    INSTALL_DESTINATION lib
+    INSTALL_DESTINATION lib${LIB_POSTFIX}
     PATH_VARS CONF_REL_INCLUDE_DIR )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/osgWorksConfig.cmake 
               ${CMAKE_CURRENT_BINARY_DIR}/lib/osgWorksConfigVersion.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/lib/UseosgWorks.cmake
-        DESTINATION lib )
+        DESTINATION lib${LIB_POSTFIX} )
 
 #
 # Setup the fpc auto detection files
@@ -253,5 +262,5 @@ configure_file(extra/osgworks.fpc.in
   "${PROJECT_BINARY_DIR}/lib/flagpoll/osgworks.fpc" @ONLY)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/flagpoll/osgworks.fpc
-        DESTINATION lib/flagpoll )
+        DESTINATION lib${LIB_POSTFIX}/flagpoll )
 
