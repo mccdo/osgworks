@@ -119,7 +119,7 @@ int main( int argc, char** argv )
         mxc->getInitialValues( baseUp, baseDir, basePos, baseFovY );
 
         double roll = osg::RadiansToDegrees( ::acos( newUp * baseUp ) );
-        if( !( epsCompare( 360. - roll, r ) ) )
+        if( !( epsCompare( roll, r ) ) )
         {
             OSG_FATAL << "MxCore::getYawPitchRoll failed roll computation: ";
             OSG_FATAL << roll << " != " << r << std::endl;
@@ -128,7 +128,7 @@ int main( int argc, char** argv )
 
 
         mxc->getYawPitchRoll( y, p, r, true );
-        if( !( epsCompare( roll, r ) ) )
+        if( !( epsCompare( 360. - roll, r ) ) )
         {
             OSG_FATAL << "MxCore::getYawPitchRoll failed right-handed roll computation: ";
             OSG_FATAL << roll << " != " << r << std::endl;
