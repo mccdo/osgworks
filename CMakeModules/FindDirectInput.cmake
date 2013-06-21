@@ -10,6 +10,14 @@
 # Created by Cedric Pinson.
 #
 
+set( _dxArch )
+if( DIRECTINPUT_ARCH_x64 )
+    set( _dxArch "x64" )
+else()
+    set( _dxArch "x86" )
+endif()
+
+
 SET( DIRECTINPUT_FOUND FALSE )
 
 IF( WIN32 )
@@ -26,17 +34,17 @@ IF( WIN32 )
     
     FIND_LIBRARY( DIRECTINPUT_LIBRARY dinput7.lib dinput8.lib
                   PATHS
-                  ${DIRECTINPUT_ROOT_DIR}/lib/x86
+                  ${DIRECTINPUT_ROOT_DIR}/lib/${_dxArch}
     )
     
     FIND_LIBRARY( DIRECTINPUT_GUID_LIBRARY dxguid.lib
                   PATHS
-                  ${DIRECTINPUT_ROOT_DIR}/lib/x86
+                  ${DIRECTINPUT_ROOT_DIR}/lib/${_dxArch}
     )
     
     FIND_LIBRARY( DIRECTINPUT_ERR_LIBRARY dxerr.lib
                   PATHS
-                  ${DIRECTINPUT_ROOT_DIR}/lib/x86
+                  ${DIRECTINPUT_ROOT_DIR}/lib/${_dxArch}
     )
     
     SET( DIRECTINPUT_LIBRARIES
