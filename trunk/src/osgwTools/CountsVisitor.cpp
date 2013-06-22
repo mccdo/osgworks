@@ -20,6 +20,7 @@
 
 #include <osgwTools/CountsVisitor.h>
 #include <osgwTools/StateSetUtils.h>
+#include <osgwTools/Version.h>
 #include <osg/LOD>
 #include <osg/PagedLOD>
 #include <osg/Switch>
@@ -281,8 +282,11 @@ void CountsVisitor::apply( osg::Drawable* draw )
         osg::ref_ptr<osg::Object> rp = (osg::Object*)geom;
         _uGeometries.insert( rp );
 
+        // current OSG doesn't have slow path in osg::Geometry anymore
+#if( OSGWORKS_OSG_VERSION < 30108 ) 
         if (!geom->areFastPathsUsed())
             _slowPathGeometries++;
+#endif        
 
         if( geom->getNumPrimitiveSets() > 0 )
         {

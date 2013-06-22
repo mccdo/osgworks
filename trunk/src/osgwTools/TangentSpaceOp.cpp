@@ -20,6 +20,7 @@
 
 #include <osgwTools/TangentSpaceOp.h>
 #include <osgwTools/TangentSpaceGeneratorDouble.h>
+#include <osgwTools/Version.h>
 #include <osg/Geometry>
 #include <osg/CopyOp>
 #include <osg/io_utils>
@@ -73,22 +74,36 @@ TangentSpaceOp::operator()( osg::Geometry& geom )
     if( geom.getVertexAttribArray( _normalIndex ) == NULL )
     {
         osg::ref_ptr< osg::Vec4Array > ptr( new osg::Vec4Array( *(_tsg->getNormalArray()) ) );
+
+#if( OSGWORKS_OSG_VERSION < 30108 )
         geom.setVertexAttribData( _normalIndex,
             osg::Geometry::ArrayData( ptr.get(), osg::Geometry::BIND_PER_VERTEX ) );
+#else
+        geom.setVertexAttribArray( _normalIndex, ptr.get());
+#endif        
     }
 
     if( geom.getVertexAttribArray( _tangentIndex ) == NULL )
     {
         osg::ref_ptr< osg::Vec4Array > ptr( new osg::Vec4Array( *(_tsg->getTangentArray()) ) );
+#if( OSGWORKS_OSG_VERSION < 30108 )
         geom.setVertexAttribData( _tangentIndex,
             osg::Geometry::ArrayData( ptr.get(), osg::Geometry::BIND_PER_VERTEX ) );
+#else
+        geom.setVertexAttribArray( _tangentIndex, ptr.get());
+#endif        
+ 
     }
 
     if( geom.getVertexAttribArray( _binormalIndex ) == NULL )
     {
         osg::ref_ptr< osg::Vec4Array > ptr( new osg::Vec4Array( *(_tsg->getBinormalArray()) ) );
+#if( OSGWORKS_OSG_VERSION < 30108 )
         geom.setVertexAttribData( _binormalIndex,
             osg::Geometry::ArrayData( ptr.get(), osg::Geometry::BIND_PER_VERTEX ) );
+#else
+        geom.setVertexAttribArray( _binormalIndex, ptr.get());
+#endif        
     }
 
     return( &geom );

@@ -48,6 +48,7 @@
 
 #include <iostream>
 
+#include <osgwTools/Version.h>
 #include <osg/Geometry>
 #include <osg/Math>
 #include <osg/PrimitiveSet>
@@ -307,14 +308,16 @@ void IndexMeshVisitor::makeMesh(Geometry& geom)
     // nothing to index
     if (!numSurfacePrimitives || !numNonIndexedPrimitives) return;
 
+#if( OSGWORKS_OSG_VERSION < 30108 )    
     // check to see if vertex attributes indices exists, if so expand them to remove them
+    // This was removed from OSG 3.1.8 upwards
     if (geom.suitableForOptimization())
     {
         // removing coord indices
         OSG_INFO<<"TriStripVisitor::stripify(Geometry&): Removing attribute indices"<<std::endl;
         geom.copyToAndOptimize(geom);
     }
-
+#endif
 
     // compute duplicate vertices
 
