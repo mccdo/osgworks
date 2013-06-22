@@ -19,6 +19,7 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osgwTools/ShortEdgeOp.h>
+#include <osgwTools/Version.h>
 #include <osg/TriangleIndexFunctor>
 #include <osg/BoundingBox>
 #include <osgUtil/SmoothingVisitor>
@@ -1706,13 +1707,16 @@ void ShortEdgeCollapse::setGeometry(osg::Geometry* const geometry)
 {
     _geometry = geometry;
     
+#if( OSGWORKS_OSG_VERSION < 30108 )    
     // check to see if vertex attributes indices exists, if so expand them to remove them
+    // This was removed from OSG 3.1.8 upwards
     if (_geometry->suitableForOptimization())
     {
         // removing coord indices
         osg::notify(osg::INFO)<<"ShortEdgeCollapse::setGeometry(..): Removing attribute indices"<<std::endl;
         _geometry->copyToAndOptimize(*_geometry);
     }
+#endif    
     
     // check to see arrays are shared
     if (_geometry->containsSharedArrays())

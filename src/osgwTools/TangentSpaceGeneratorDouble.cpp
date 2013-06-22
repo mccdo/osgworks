@@ -22,6 +22,7 @@
 
 #include <osgwTools/TangentSpaceGeneratorDouble.h>
 
+#include <osgwTools/Version.h>
 #include <osg/Notify>
 #include <osg/io_utils>
 
@@ -47,13 +48,16 @@ TangentSpaceGeneratorDouble::TangentSpaceGeneratorDouble(const TangentSpaceGener
 
 void TangentSpaceGeneratorDouble::generate(osg::Geometry *geo, int normal_map_tex_unit)
 {
+#if( OSGWORKS_OSG_VERSION < 30108 )    
     // check to see if vertex attributes indices exists, if so expand them to remove them
+    // This was removed from OSG 3.1.8 upwards    
     if (geo->suitableForOptimization())
     {
         // removing coord indices so we don't have to deal with them in the binormal code.
         osg::notify(osg::INFO)<<"TangentSpaceGeneratorDouble::generate(Geometry*,int): Removing attribute indices"<<std::endl;
         geo->copyToAndOptimize(*geo);
     }
+#endif
 
     const osg::Array *vx = geo->getVertexArray();
     const osg::Array *nx = geo->getNormalArray();

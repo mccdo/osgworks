@@ -19,6 +19,7 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osgwTools/DecimatorOp.h>
+#include <osgwTools/Version.h>
 #include <osg/TriangleIndexFunctor>
 #include <osgUtil/SmoothingVisitor>
 #include <osgUtil/TriStripVisitor>
@@ -1471,13 +1472,16 @@ void HalfEdgeCollapse::setGeometry(osg::Geometry* geometry)
 {
     _geometry = geometry;
     
+#if( OSGWORKS_OSG_VERSION < 30108 )    
     // check to see if vertex attributes indices exists, if so expand them to remove them
+    // This was removed from OSG 3.1.8 upwards
     if (_geometry->suitableForOptimization())
     {
         // removing coord indices
         osg::notify(osg::INFO)<<"HalfEdgeCollapse::setGeometry(..): Removing attribute indices"<<std::endl;
         _geometry->copyToAndOptimize(*_geometry);
     }
+#endif    
     
     // check to see arrays are shared
     if (_geometry->containsSharedArrays())
