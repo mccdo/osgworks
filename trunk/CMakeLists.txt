@@ -206,7 +206,7 @@ install( FILES "extra/FindosgWorks.cmake"
 # =============================================
 
 # Add all targets to the build-tree export set
-export(TARGETS osgwTools osgwQuery osgwMx
+export(TARGETS osgwTools osgwQuery osgwMx osgwControls
   FILE "${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}/osgWorksLibraryDepends.cmake")
 
 # Export the package for use from the build-tree
