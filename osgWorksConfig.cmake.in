@@ -7,7 +7,7 @@
 @PACKAGE_INIT@
 
 # These are IMPORTED targets created by osgWorksLibraryDepends.cmake
-set(OSGWORKS_LIBRARIES "osgwTools;osgwQuery;osgwMx" )
+set(OSGWORKS_LIBRARIES "osgwTools;osgwQuery;osgwMx;osgwControls" )
 set(OSGWORKS_EXECUTABLE test)
 
 # Compute paths
