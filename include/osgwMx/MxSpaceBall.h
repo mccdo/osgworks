@@ -32,7 +32,7 @@
 namespace osgwMx {
 
 
-/** \class MxSpaceBall MxSpaceBall.h <osgwx/MxSpaceBall.h>
+/** \class MxSpaceBall MxSpaceBall.h <osgwMx/MxSpaceBall.h>
 \brief A base class to support various SpaceBall SDKs.
 
 To support a new SDK, such as VR Juggler, derive a class from MxSpaceBall.

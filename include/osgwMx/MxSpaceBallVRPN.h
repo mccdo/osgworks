@@ -37,7 +37,7 @@
 namespace osgwMx {
 
 
-/** \class MxSpaceBallVRPN MxSpaceBallVRPN.h <osgwx/MxSpaceBallVRPN.h>
+/** \class MxSpaceBallVRPN MxSpaceBallVRPN.h <osgwMx/MxSpaceBallVRPN.h>
 \brief A DirectInput implementation of the MxSpaceBall class.
 */
 class OSGWMX_EXPORT MxSpaceBallVRPN : public MxSpaceBall

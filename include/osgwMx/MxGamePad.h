@@ -32,7 +32,7 @@
 namespace osgwMx {
 
 
-/** \class MxGamePad MxGamePad.h <osgwx/MxGamePad.h>
+/** \class MxGamePad MxGamePad.h <osgwMx/MxGamePad.h>
 \brief A base class to support various GamePad SDKs.
 
 To support a new SDK, such as VR Juggler, derive a class from MxGamePad.
