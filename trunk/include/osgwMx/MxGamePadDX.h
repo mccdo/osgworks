@@ -34,7 +34,7 @@
 namespace osgwMx {
 
 
-/** \class MxGamePadDX MxGamePadDX.h <osgwx/MxGamePadDX.h>
+/** \class MxGamePadDX MxGamePadDX.h <osgwMx/MxGamePadDX.h>
 \brief A DirectInput implementation of the MxGamePad class.
 */
 class OSGWMX_EXPORT MxGamePadDX : public MxGamePad
