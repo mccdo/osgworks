@@ -53,6 +53,9 @@ public:
     virtual osg::Geometry* operator()( osg::Geometry& geom );
 
 protected:
+    /** \brief Determines if the given \c geom requires processing.
+    Returns true if it requires processing, false otherwise. */
+    bool needsConversion( const osg::Geometry& geom );
 };
 
 
