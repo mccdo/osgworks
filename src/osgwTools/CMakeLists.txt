@@ -54,6 +54,7 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/Transform.h
     ${HEADER_PATH}/TransformUtils.h
     ${HEADER_PATH}/TransparencyUtils.h
+    ${HEADER_PATH}/Trianglizer.h
     ${HEADER_PATH}/Uniqifier.h
     ${HEADER_PATH}/Version.h
 )
@@ -100,6 +101,7 @@ set( _osgwToolsSourceFiles
     Transform.cpp
     TransformUtils.cpp
     TransparencyUtils.cpp
+    Trianglizer.cpp
     Uniqifier.cpp
     Version.cpp
 )
