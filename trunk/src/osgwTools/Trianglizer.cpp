@@ -31,6 +31,14 @@ Trianglizer::Trianglizer()
     : GeometryOperation()
 {
 }
+Trianglizer::Trianglizer( const Trianglizer& rhs, const osg::CopyOp& copyop )
+    : GeometryOperation()
+{
+}
+Trianglizer::~Trianglizer()
+{
+}
+
 
 void convertDA( osg::ref_ptr< osg::DrawElementsUInt > master,
                osg::Geometry::PrimitiveSetList& newPSL,
@@ -323,13 +331,13 @@ osg::Geometry* Trianglizer::operator()( osg::Geometry& geom )
     for( unsigned int idx=0; idx < geom.getNumPrimitiveSets(); ++idx )
     {
         osg::ref_ptr< osg::PrimitiveSet > primSet( oldPSL[ idx ] );
-        if( primSet->getType() != osg::PrimitiveSet::DrawArraysPrimitiveType )
+        if( primSet->getType() == osg::PrimitiveSet::DrawArraysPrimitiveType )
             convertDA( master, newPSL, primSet );
-        else if( primSet->getType() != osg::PrimitiveSet::DrawElementsUBytePrimitiveType )
+        else if( primSet->getType() == osg::PrimitiveSet::DrawElementsUBytePrimitiveType )
             convertDEUB( master, newPSL, primSet );
-        else if( primSet->getType() != osg::PrimitiveSet::DrawElementsUShortPrimitiveType )
+        else if( primSet->getType() == osg::PrimitiveSet::DrawElementsUShortPrimitiveType )
             convertDEUS( master, newPSL, primSet );
-        else if( primSet->getType() != osg::PrimitiveSet::DrawElementsUIntPrimitiveType )
+        else if( primSet->getType() == osg::PrimitiveSet::DrawElementsUIntPrimitiveType )
             convertDEUI( master, newPSL, primSet );
         else
             // DrawArrayLengths

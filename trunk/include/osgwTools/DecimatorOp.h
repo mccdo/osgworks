@@ -34,10 +34,9 @@ For more information, see \ref geomopt
 class OSGWTOOLS_EXPORT DecimatorOp : public GeometryOperation
 {
 public:
-
     DecimatorOp(double sampleRatio=1.0, double maximumError=FLT_MAX);
-
     DecimatorOp( const DecimatorOp& rhs, const osg::CopyOp& copyOp=osg::CopyOp::SHALLOW_COPY );
+
     META_Object(osgwTools,DecimatorOp);
 
 
