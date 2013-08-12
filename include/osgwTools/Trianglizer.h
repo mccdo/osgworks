@@ -49,10 +49,15 @@ class OSGWTOOLS_EXPORT Trianglizer : public GeometryOperation
 {
 public:
     Trianglizer();
+    Trianglizer( const Trianglizer& rhs, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY );
+
+    META_Object(osgwTools,Trianglizer);
 
     virtual osg::Geometry* operator()( osg::Geometry& geom );
 
 protected:
+    virtual ~Trianglizer();
+
     /** \brief Determines if the given \c geom requires processing.
     Returns true if it requires processing, false otherwise. */
     bool needsConversion( const osg::Geometry& geom );
