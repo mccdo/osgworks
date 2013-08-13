@@ -129,7 +129,7 @@ osg::Vec4d OSGWMX_EXPORT computePanPlane( osg::Node* scene, const osgwMx::MxCore
 
 /** \brief Computes world coordinate movement in the given pan plane.
 \details This function computes literal xyz delta motion in the given \c panPlane. It does
-this by back-projecting the given delta NDX coordinates onto \c panPlane, along with the
+this by back-projecting the given delta NDC coordinates onto \c panPlane, along with the
 back-projection of the NDC origin onto that same plane. The returned value is the
 difference between these two projected values.
 
