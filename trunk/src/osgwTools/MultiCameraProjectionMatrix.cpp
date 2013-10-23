@@ -132,7 +132,12 @@ thread ID. This class uses a Mutex for thread safety. */
 class SubCameraClampCB : public osg::Camera::ClampProjectionMatrixCallback
 {
 public:
-    SubCameraClampCB() {}
+    SubCameraClampCB()
+    {
+    }
+    ~SubCameraClampCB()
+    {
+    }
 
     virtual bool clampProjectionMatrixImplementation( osg::Matrixf& projection, double& znear, double& zfar ) const
     {
@@ -207,7 +212,11 @@ public:
     RootCameraClampCB( SubCameraClampCB* subCB, osg::StateSet* stateSet )
       : _subCB( subCB ),
         _stateSet( stateSet )
-    {}
+    {
+    }
+    ~RootCameraClampCB()
+    {
+    }
 
     virtual bool clampProjectionMatrixImplementation( osg::Matrixf& projection, double& znear, double& zfar ) const
     {
@@ -287,7 +296,7 @@ void MultiCameraProjectionMatrix::operator()( osg::Node* node, osg::NodeVisitor*
         osg::Camera* rootCam( cv->getRenderStage()->getCamera() );
         if( rootCam->getClampProjectionMatrixCallback() == NULL )
         {
-            osg::StateSet* stateSet( rootCam->getOrCreateStateSet() );
+            osg::StateSet* stateSet( node->getOrCreateStateSet() );
             RootCameraClampCB* rootClamp( new RootCameraClampCB( subClamp, stateSet ) );
             rootCam->setClampProjectionMatrixCallback( rootClamp );
         }
