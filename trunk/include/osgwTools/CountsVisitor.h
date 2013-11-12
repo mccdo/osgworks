@@ -28,6 +28,10 @@
 #include <set>
 #include <iostream>
 
+namespace osg {
+    class Geometry;
+}
+
 
 namespace osgwTools
 {
@@ -64,7 +68,7 @@ public:
     void apply( osg::MatrixTransform& node );
     void apply( osg::Geode& node );
 
-    void apply( osg::Drawable* draw );
+    void apply( const osg::Geode& node, osg::Drawable* draw );
     void apply( osg::StateSet* stateSet );
 
     unsigned int getVertices() const;
@@ -79,6 +83,8 @@ public:
     float getVerticesPerGeometry();
 
 protected:
+    void dumpNodePath( std::ostream& ostr, const osg::NodePath& np );
+
     bool isSet( GLenum stateItem, osg::StateSet* ss );
     bool isEnabled( GLenum stateItem, osg::StateSet* ss );
 
@@ -150,6 +156,24 @@ protected:
     ObjectSet _uTextures;
     ObjectSet _uPrimitiveSets;
     ObjectSet _uDrawArrays;
+
+    void numChildrenCheck( const osg::Group& node );
+    osg::NodePath _maxChildren;
+    unsigned int _minChildrenCount, _maxChildrenCount;
+
+    void numGeometryCheck( const osg::Geode& node );
+    osg::NodePath _maxGeometry;
+    unsigned int _minGeometryCount, _maxGeometryCount;
+
+    void numPrimSetCheck( const osg::Geode& node, osg::Geometry* geom );
+    osg::NodePath _maxPrimSet;
+    osg::Geometry* _maxPrimSetGeom;
+    unsigned int _minPrimSetCount, _maxPrimSetCount;
+
+    void numVerticesCheck( const osg::Geode& node, osg::Geometry* geom, const unsigned int numVerts );
+    osg::NodePath _minVertices;
+    osg::Geometry* _minVerticesGeom;
+    unsigned int _minVerticesCount, _maxVerticesCount;
 };
 
 // osgwTools
