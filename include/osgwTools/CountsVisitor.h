@@ -24,7 +24,7 @@
 #include <osgwTools/Export.h>
 #include <osgwTools/StateTrackingNodeVisitor.h>
 #include <osg/NodeVisitor>
-#include <deque>
+#include <vector>
 #include <set>
 #include <iostream>
 
@@ -77,6 +77,7 @@ public:
     unsigned int getNumDrawablesUserModeOff() const;
 
     float getChildrenPerNode();
+    float getChildrenPerGroup();
     float getDrawablesPerGeode();
     float getDrawablesPerNode();
     float getPrimitiveSetsPerGeometry();
@@ -157,20 +158,27 @@ protected:
     ObjectSet _uPrimitiveSets;
     ObjectSet _uDrawArrays;
 
+    typedef std::vector< double > DoubleVec;
+    void stats( double& mean, double& median, double& stdev, DoubleVec& v );
+
     void numChildrenCheck( const osg::Group& node );
+    DoubleVec _childrenPerGroup;
     osg::NodePath _maxChildren;
     unsigned int _minChildrenCount, _maxChildrenCount;
 
-    void numGeometryCheck( const osg::Geode& node );
-    osg::NodePath _maxGeometry;
-    unsigned int _minGeometryCount, _maxGeometryCount;
+    void numDrawableCheck( const osg::Geode& node );
+    DoubleVec _drawablesPerGeode;
+    osg::NodePath _maxDrawable;
+    unsigned int _minDrawableCount, _maxDrawableCount;
 
     void numPrimSetCheck( const osg::Geode& node, osg::Geometry* geom );
+    DoubleVec _primSetsPerGeom;
     osg::NodePath _maxPrimSet;
     osg::Geometry* _maxPrimSetGeom;
     unsigned int _minPrimSetCount, _maxPrimSetCount;
 
     void numVerticesCheck( const osg::Geode& node, osg::Geometry* geom, const unsigned int numVerts );
+    DoubleVec _vertsPerGeom;
     osg::NodePath _minVertices;
     osg::Geometry* _minVerticesGeom;
     unsigned int _minVerticesCount, _maxVerticesCount;
