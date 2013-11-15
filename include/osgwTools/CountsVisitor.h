@@ -132,7 +132,9 @@ protected:
     unsigned int _drawUserModeNotSet;
 
     unsigned int _totalChildren;
+#if( OSGWORKS_OSG_VERSION < 30108 )
     unsigned int _slowPathGeometries;
+#endif
 
     typedef std::set< osg::ref_ptr<osg::Object> > ObjectSet;
     ObjectSet _uNodes;

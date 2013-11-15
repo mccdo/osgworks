@@ -19,7 +19,10 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include "osgwTools/LODCreationNodeVisitor.h"
-#include "osgwTools/ShortEdgeOp.h"
+#include <osgwTools/Version.h>
+#if( OSGWORKS_OSG_VERSION < 30109 )
+#  include "osgwTools/ShortEdgeOp.h"
+#endif
 #include <osgwTools/GeometryModifier.h>
 #include <osg/NodeVisitor>
 #include <osg/LOD>
@@ -100,6 +103,7 @@ unsigned int LODCreationNodeVisitor::finishProcessingGeodes(void)
             float shortEdgeFeature = curFeaturePercent * currentDiameter;
             if( shortEdgeFeature > 0.f )
             {
+#if( OSGWORKS_OSG_VERSION < 30109 )
                 osg::Geode* geodeCopy = new osg::Geode( *currentGeode, osg::CopyOp::DEEP_COPY_ALL );
                 osgwTools::ShortEdgeOp* seOp = new osgwTools::ShortEdgeOp;
                 // this formula is used to prevent too much visual degradation which could otherwise result from blind setting of max feature size
@@ -117,6 +121,7 @@ unsigned int LODCreationNodeVisitor::finishProcessingGeodes(void)
                 modifier.setDrawableMerge( _attemptMerge );
                 geodeCopy->accept( modifier );
                 lodNode->addChild( geodeCopy );
+#endif
             }
             else
                 lodNode->addChild( currentGeode.get() );
