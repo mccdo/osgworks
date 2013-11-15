@@ -176,7 +176,9 @@ CountsVisitor::reset()
     _drawUserModeNotSet = 0;
 
     _totalChildren = 0;
+#if( OSGWORKS_OSG_VERSION < 30108 )
     _slowPathGeometries = 0;
+#endif
 
     _uNodes.clear();
     _uGroups.clear();
@@ -270,8 +272,10 @@ CountsVisitor::dump( std::ostream& ostr )
         ostr << "              Not set \t" << _drawUserModeNotSet << std::endl;
     }
 
+#if( OSGWORKS_OSG_VERSION < 30108 )
     if (_slowPathGeometries)
         ostr << "      Slow Path Geoms \t" << _slowPathGeometries << std::endl;
+#endif
 
     ostr << "       Total Vertices \t" << _vertices << std::endl;
     ostr << "            Max Depth \t" << _maxDepth << std::endl;
@@ -353,11 +357,11 @@ void CountsVisitor::apply( const osg::Geode& node, osg::Drawable* draw )
         osg::ref_ptr<osg::Object> rp = (osg::Object*)geom;
         _uGeometries.insert( rp );
 
-        // current OSG doesn't have slow path in osg::Geometry anymore
-#if( OSGWORKS_OSG_VERSION < 30108 ) 
+#if( OSGWORKS_OSG_VERSION < 30108 )
+        // OSG removed slow paths in 3.1.8 tag.
         if (!geom->areFastPathsUsed())
             _slowPathGeometries++;
-#endif        
+#endif
 
         numPrimSetCheck( node, geom );
         unsigned int localVertices( 0 );
