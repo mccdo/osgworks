@@ -14,7 +14,7 @@ A source package for v3.0 is available.
 
 [https://drive.google.com/file/d/0B2kjcsFgFhsONkpvZklsM0F4ODQ/edit?usp=sharing osgWorks-v03_00_00.zip]
 
-Use this URL to checkout a v2.0 source tree:
+Use this URL to checkout a v3.0 source tree:
 
 `http://osgworks.googlecode.com/svn/tags/osgWorks_03_00_00`
 
