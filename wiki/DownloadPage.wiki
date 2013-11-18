@@ -3,21 +3,20 @@
 <wiki:toc />
 
 
-= v2.0 Current Release =
+= v3.0 Current Release =
 
-Released 26 Oct 2011, v2.0 is the current stable release.
+Released 18 Nov 2013, v3.0 is the current stable release.
+
 
 == Source ==
 
-Source packages for v2.0 are available.
+A source package for v3.0 is available.
 
-[http://osgworks.googlecode.com/files/osgWorks_02_00_00.zip osgWorks_02_00_00.zip]
-
-[http://osgworks.googlecode.com/files/osgWorks_02_00_00.tar.gz osgWorks_02_00_00.tar.gz]
+[https://drive.google.com/file/d/0B2kjcsFgFhsONkpvZklsM0F4ODQ/edit?usp=sharing osgWorks-v03_00_00.zip]
 
 Use this URL to checkout a v2.0 source tree:
 
-`http://osgworks.googlecode.com/svn/tags/osgWorks_02_00_00`
+`http://osgworks.googlecode.com/svn/tags/osgWorks_03_00_00`
 
 
 == Binaries ==
@@ -30,6 +29,23 @@ Sorry, binary packages are not currently available.
 Checkout the osgWorks current development source code from svn:
 
 `http://osgworks.googlecode.com/svn/trunk`
+
+
+= v2.0 =
+
+Released 26 Oct 2011.
+
+== Source ==
+
+Source packages for v2.0 are available.
+
+[http://osgworks.googlecode.com/files/osgWorks_02_00_00.zip osgWorks_02_00_00.zip]
+
+[http://osgworks.googlecode.com/files/osgWorks_02_00_00.tar.gz osgWorks_02_00_00.tar.gz]
+
+Use this URL to checkout a v2.0 source tree:
+
+`http://osgworks.googlecode.com/svn/tags/osgWorks_02_00_00`
 
 
 = v1.1 =
