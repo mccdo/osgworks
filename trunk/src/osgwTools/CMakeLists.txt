@@ -93,10 +93,9 @@ set( _osgwToolsSourceFiles
     Version.cpp
 )
 
-unset( _osgwToolsHeaderFilesPre319 )
 unset( _osgwToolsSourceFilesPre319 )
 if( ${OPENSCENEGRAPH_VERSION} VERSION_LESS "3.1.9" )
-    set( _osgwToolsHeaderFilesPre319
+    list( APPEND LIB_PUBLIC_HEADERS
         ${HEADER_PATH}/DecimatorOp.h
         ${HEADER_PATH}/MeshOptimizers.h
         ${HEADER_PATH}/ShortEdgeOp.h
@@ -114,7 +113,6 @@ endif()
 
 add_library( ${LIB_NAME}
     ${LIB_PUBLIC_HEADERS}
-    ${_osgwToolsHeaderFilesPre319}
     ${_osgwToolsSourceFiles}
     ${_osgwToolsSourceFilesPre319}
 )
