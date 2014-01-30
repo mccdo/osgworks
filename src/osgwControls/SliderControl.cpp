@@ -69,7 +69,7 @@ class ButtonPickHandler : public osgGA::GUIEventHandler
 {   
 public:
     ButtonPickHandler(SliderControl* sc){_sc = sc;}
-    bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
+    virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, osg::Object*, osg::NodeVisitor* )
     {
         osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>( &aa);
         if(!viewer) return false;
@@ -99,11 +99,19 @@ public:
         osgGA::EventVisitor* ev = dynamic_cast<osgGA::EventVisitor*>(nv);
         if (ev && ev->getActionAdapter() && !ev->getEvents().empty())
         {
+            osgGA::GUIActionAdapter& aa( *(ev->getActionAdapter()) );
             for(osgGA::EventQueue::Events::iterator itr = ev->getEvents().begin();
                 itr != ev->getEvents().end();
                 ++itr)
             {
-                    handleWithCheckAgainstIgnoreHandledEventsMask(*(*itr), *(ev->getActionAdapter()), node, nv);
+                osgGA::GUIEventAdapter& ea( *( (*itr)->asGUIEventAdapter() ) );
+                // handleWithCheckAgainstIgnoreHandledEventsMask( ea, aa, node, nv);
+                {
+                    // Code stolen from GUIEventHandler::handleWithCheckAgainstIgnoreHandledEventsMask,
+                    // which was deprecated approximately OSG v3.3.1.
+                    bool handled = handle( ea, aa, node, nv );
+                    if (handled) ea.setHandled(true);
+                }
             }
         }
         traverse(node, nv);
@@ -160,7 +168,7 @@ class SliderPickHandler : public osgGA::GUIEventHandler
 {   
 public:
     SliderPickHandler(SliderControl* sc){_sc = sc;_active = false;}
-    bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
+    virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, osg::Object* object, osg::NodeVisitor*)
     {
         osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>( &aa);
         if(!viewer) return false;
@@ -208,11 +216,19 @@ public:
         osgGA::EventVisitor* ev = dynamic_cast<osgGA::EventVisitor*>(nv);
         if (ev && ev->getActionAdapter() && !ev->getEvents().empty())
         {
+            osgGA::GUIActionAdapter& aa( *(ev->getActionAdapter()) );
             for(osgGA::EventQueue::Events::iterator itr = ev->getEvents().begin();
                 itr != ev->getEvents().end();
                 ++itr)
             {
-                    handleWithCheckAgainstIgnoreHandledEventsMask(*(*itr), *(ev->getActionAdapter()), node, nv);
+                osgGA::GUIEventAdapter& ea( *( (*itr)->asGUIEventAdapter() ) );
+                //handleWithCheckAgainstIgnoreHandledEventsMask(*(*itr), *(ev->getActionAdapter()), node, nv);
+                {
+                    // Code stolen from GUIEventHandler::handleWithCheckAgainstIgnoreHandledEventsMask,
+                    // which was deprecated approximately OSG v3.3.1.
+                    bool handled = handle( ea, aa, node, nv );
+                    if (handled) ea.setHandled(true);
+                }
             }
         }
         traverse(node, nv);
