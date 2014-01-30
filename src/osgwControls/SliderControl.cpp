@@ -104,14 +104,17 @@ public:
                 itr != ev->getEvents().end();
                 ++itr)
             {
+#if( OSGWORKS_OSG_VERSION < 30300 )
+                handleWithCheckAgainstIgnoreHandledEventsMask( *(*itr), aa, node, nv);
+#else
                 osgGA::GUIEventAdapter& ea( *( (*itr)->asGUIEventAdapter() ) );
-                // handleWithCheckAgainstIgnoreHandledEventsMask( ea, aa, node, nv);
                 {
                     // Code stolen from GUIEventHandler::handleWithCheckAgainstIgnoreHandledEventsMask,
                     // which was deprecated approximately OSG v3.3.1.
                     bool handled = handle( ea, aa, node, nv );
                     if (handled) ea.setHandled(true);
                 }
+#endif
             }
         }
         traverse(node, nv);
@@ -221,14 +224,17 @@ public:
                 itr != ev->getEvents().end();
                 ++itr)
             {
+#if( OSGWORKS_OSG_VERSION < 30300 )
+                handleWithCheckAgainstIgnoreHandledEventsMask(*(*itr), aa, node, nv);
+#else
                 osgGA::GUIEventAdapter& ea( *( (*itr)->asGUIEventAdapter() ) );
-                //handleWithCheckAgainstIgnoreHandledEventsMask(*(*itr), *(ev->getActionAdapter()), node, nv);
                 {
                     // Code stolen from GUIEventHandler::handleWithCheckAgainstIgnoreHandledEventsMask,
                     // which was deprecated approximately OSG v3.3.1.
                     bool handled = handle( ea, aa, node, nv );
                     if (handled) ea.setHandled(true);
                 }
+#endif
             }
         }
         traverse(node, nv);
