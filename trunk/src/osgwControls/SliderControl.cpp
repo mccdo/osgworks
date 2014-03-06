@@ -18,6 +18,7 @@
  *
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
+#include "osgwTools/Version.h"
 #include "osgwControls/SliderControl.h"
 #include <osg/NodeCallback>
 #include <osgGA/EventVisitor>
