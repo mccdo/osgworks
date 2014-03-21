@@ -285,10 +285,10 @@ int main( int argc, char** argv )
     osg::ref_ptr< osg::Node > model = osgDB::readNodeFiles( arguments );
     if( model.get() == NULL )
     {
-        osg::notify( osg::FATAL ) << "Unable to load model." << std::endl;
-        arguments.getApplicationUsage()->
-            write( osg::notify( osg::FATAL ), osg::ApplicationUsage::COMMAND_LINE_OPTION );
-        return( 1 );
+        osg::ref_ptr< osg::Geometry > geom( osgwTools::makeAltAzSphere() );
+        osg::ref_ptr< osg::Geode > geode( new osg::Geode() );
+        geode->addDrawable( geom.get() );
+        model = (osg::Node*)( geode.get() );
     }
 
     root->addChild( model.get() );
