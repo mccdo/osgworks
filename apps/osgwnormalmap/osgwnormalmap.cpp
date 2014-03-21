@@ -322,11 +322,14 @@ int main( int argc, char** argv )
 
 /** \page osgwnormalmap The osgwnormalmap Application
 osgwnormalmap maps the specified normal map to the loaded file. We're assuming
-that texture unit 0 contains the base texture for the model.
+that texture coordinates are assigned to unit 0 i  the model.
 
 \code
-C:\Projects>osgwnormalmap --normal file.dds --height file2.dds file.ive
+> osgwnormalmap --normal file.dds --height file2.dds <filename>
 \endcode
+
+if \c <filename> is missing, osgwnormalmap uses a proceduraclly
+generated sphere as the model. (See osgwTools::makeAltAzSphere()).
 
 \section clp Command Line Parameters
 <table border="0">
