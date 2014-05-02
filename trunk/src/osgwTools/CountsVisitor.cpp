@@ -39,6 +39,7 @@
 #include <map>
 #include <numeric>
 
+#include <cmath>
 
 namespace osgwTools
 {
