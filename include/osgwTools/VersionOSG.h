@@ -18,38 +18,29 @@
  *
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
-#include "osgwTools/Version.h"
-#include <string>
-#include <sstream>
-
-namespace osgwTools {
+#ifndef __OSGWTOOLS_VERSION_OSG_H__
+#define __OSGWTOOLS_VERSION_OSG_H__ 1
 
 
-unsigned int
-getVersionNumber()
-{
-    return( OSGWORKS_VERSION );
-}
+
+/** \addtogroup Version */
+/*@{*/
+
+/** \brief OSG version number as an integer
+
+This macro provides the same functionality as 
+OSGWORKS_VERSION, but instead encodes the OSG version
+number as an integer.
+OSG didn't provide a useful compile-time version
+comparison macro until after the 2.9.6 and 2.8.2 releases.
+\see OSGWORKS_VERSION */
+#define OSGWORKS_OSG_VERSION ( \
+        ( OPENSCENEGRAPH_MAJOR_VERSION * 10000 ) + \
+        ( OPENSCENEGRAPH_MINOR_VERSION * 100 ) + \
+        OPENSCENEGRAPH_PATCH_VERSION )
+
+/*@}*/
 
 
-static std::string s_osgworks_version( "" );
-
-std::string
-getVersionString()
-{
-    if( s_osgworks_version.empty() )
-    {
-        std::ostringstream oStr;
-        oStr << std::string( "osgWorks version " ) <<
-            OSGWORKS_MAJOR_VERSION << "." <<
-            OSGWORKS_MINOR_VERSION << "." <<
-            OSGWORKS_SUB_VERSION << " (" <<
-            getVersionNumber() << ").";
-        s_osgworks_version = oStr.str();
-    }
-    return( s_osgworks_version );
-}
-
-
-// namespace osgwTools
-}
+// __OSGWTOOLS_VERSION_OSG_H__
+#endif
