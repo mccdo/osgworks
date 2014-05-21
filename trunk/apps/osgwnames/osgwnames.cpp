@@ -135,7 +135,7 @@ main( int argc,
     }
 
     if( arguments.read( "-v" ) || arguments.read( "--version" ) )
-        osg::notify( osg::ALWAYS ) << osgwTools::getVersionString() << std::endl << std::endl;
+        osg::notify( osg::ALWAYS ) << OSGWORKS_VERSION_STRING << std::endl << std::endl;
 
 
     osg::ref_ptr< osg::Node > root = osgDB::readNodeFiles( arguments );
