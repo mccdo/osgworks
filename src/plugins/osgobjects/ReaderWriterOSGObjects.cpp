@@ -666,11 +666,14 @@ ReaderWriterOSGObjects::writeObject( const osg::Object& obj, const std::string& 
     if( !acceptsExtension( ext ) )
         return( WriteResult::FILE_NOT_HANDLED );
 
+    bool result( false );
     osg::Object* nonConstObj( const_cast< osg::Object* >( &obj ) );
     osg::Array* array( dynamic_cast< osg::Array* >( nonConstObj ) );
-    osgDB::Output ostr( fileName.c_str() );
-
-    bool result( Array_writeLocalData( *array, ostr ) );
+    if( array != NULL )
+    {
+        osgDB::Output ostr( fileName.c_str() );
+        result = Array_writeLocalData( *array, ostr );
+    }
 
     return( result ? WriteResult::FILE_SAVED : WriteResult::ERROR_IN_WRITING_FILE );
 }

@@ -64,7 +64,7 @@ AbsoluteModelTransform::computeLocalToWorldMatrix( osg::Matrix& matrix, osg::Nod
             osg::notify( osg::INFO ) << "AbsoluteModelTransform: NodeVisitor is not CullVisitor; can't get view." << std::endl;
         else
         {
-            osgUtil::CullVisitor* cv = dynamic_cast< osgUtil::CullVisitor* >( nv );
+            osgUtil::CullVisitor* cv = static_cast< osgUtil::CullVisitor* >( nv );
 #ifdef SCENEVIEW_ANAGLYPHIC_STEREO_SUPPORT
             // If OSG_STEREO=ON is in the environment, SceneView hides the view matrix
             // in a stack rather than placing it in a Camera node. Enable this code
@@ -104,7 +104,7 @@ AbsoluteModelTransform::computeWorldToLocalMatrix( osg::Matrix& matrix, osg::Nod
             osg::notify( osg::NOTICE ) << "AbsoluteModelTransform: NodeVisitor is not CullVisitor; can't get invView." << std::endl;
         else
         {
-            osgUtil::CullVisitor* cv = dynamic_cast< osgUtil::CullVisitor* >( nv );
+            osgUtil::CullVisitor* cv = static_cast< osgUtil::CullVisitor* >( nv );
 #ifdef SCENEVIEW_ANAGLYPHIC_STEREO_SUPPORT
             // If OSG_STEREO=ON is in the environment, SceneView hides the view matrix
             // in a stack rather than placing it in a Camera node. Enable this code

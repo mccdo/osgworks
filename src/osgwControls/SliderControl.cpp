@@ -54,7 +54,15 @@ public:
     {
         //osg::notify(osg::ALWAYS)<<"visited"<<std::endl;
         osg::Geode* g = dynamic_cast<osg::Geode*> (node);
+        if( g == NULL )
+        {
+            OSG_WARN << "TextCallback got non-osg::Geode" << std::endl;
+        }
         osgText::Text* t = dynamic_cast<osgText::Text*> (g->getDrawable(0));
+        if( t == NULL )
+        {
+            OSG_WARN << "TextCallback got non-osgText::Text" << std::endl;
+        }
         char text [16];
         sprintf(text, "%.2f",_sc->getCurrentValue());
         t->setText(text);
@@ -171,7 +179,13 @@ private:
 class SliderPickHandler : public osgGA::GUIEventHandler
 {   
 public:
-    SliderPickHandler(SliderControl* sc){_sc = sc;_active = false;}
+    SliderPickHandler(SliderControl* sc)
+        : _active( false ),
+        _mx( 0. ), _my( 0. ),
+        _pm( SliderControl::PlayMode::STOP ),
+        _sc( sc )
+    {
+    }
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, osg::Object* object, osg::NodeVisitor*)
     {
         osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>( &aa);
@@ -283,12 +297,16 @@ private:
 /* \endcond */
 
 SliderControl::SliderControl()
-  : _h(25),
-    _time( 1.f ),
-    _simTime(0),
-    _root(new osg::Group ),
+  : _w( 200.f ),
+    _h( 25.f ),
+    _minVal( 0. ),
+    _maxVal( 1. ),
+    _time( 1. ),
+    _simTime( 0. ),
+    _root( new osg::Group() ),
     _currentValue( 0. ),
-    _playMode( STOP )
+    _playMode( STOP ),
+    _loop( false )
 {
 }
 
