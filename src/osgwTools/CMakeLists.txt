@@ -7,6 +7,7 @@ endif()
 
 set( HEADER_PATH ${PROJECT_SOURCE_DIR}/include/${LIB_NAME} )
 
+configure_file( "${HEADER_PATH}/Version.h.in" "${HEADER_PATH}/Version.h" @ONLY)
 
 set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/Export.h
@@ -50,7 +51,6 @@ set( LIB_PUBLIC_HEADERS
     ${HEADER_PATH}/Trianglizer.h
     ${HEADER_PATH}/Uniqifier.h
     ${HEADER_PATH}/Version.h
-    ${HEADER_PATH}/VersionOSG.h
 )
 set( _osgwToolsSourceFiles
     AbsoluteModelTransform.cpp
@@ -90,6 +90,7 @@ set( _osgwToolsSourceFiles
     TransparencyUtils.cpp
     Trianglizer.cpp
     Uniqifier.cpp
+    Version.cpp
 )
 
 unset( _osgwToolsSourceFilesPre319 )
