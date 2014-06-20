@@ -78,7 +78,7 @@ void Capabilities::query()
 
 void Capabilities::dump( std::ostream& ostr ) const
 {
-    ostr << getVersionString() << std::endl;
+    ostr << OSGWORKS_VERSION_STRING << std::endl;
     ostr << "OSG version: " << _osgVersion << std::endl;
 
     ostr << "  Queryable strings ----------------------------------------" << std::endl;
