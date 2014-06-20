@@ -1,14 +1,15 @@
 # # # # # #  project setup  # # # # # #
 CMAKE_MINIMUM_REQUIRED( VERSION 2.8.8 )
+PROJECT( osgWorks )
+
+# Note: These values are used by include/osgwTools/Version.in
+# to generate the Version.h file.
+set( OSGWORKS_VERSION 3.00.00 )
+set( OSGWORKS_MAJOR_VERSION 3 )
+set( OSGWORKS_MINOR_VERSION 0 )
+set( OSGWORKS_SUB_VERSION 1 )
+
 SET( CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules" ${CMAKE_MODULE_PATH} )
-include( CMakeUtilities )
-
-_projectName( osgWorks )
-
-_projectVersion( 3 1 0 ZEROPAD
-    HEADER_SOURCE ${PROJECT_SOURCE_DIR}/include/osgwTools/Version.h.in
-    HEADER_DEST ${PROJECT_SOURCE_DIR}/include/osgwTools/Version.h )
-
 
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib )
