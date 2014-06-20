@@ -191,8 +191,8 @@ void AddQueries::addDataToNodePath( osg::NodePath& np, unsigned int numVertices,
     osg::NodePath::reverse_iterator rit;
     for( rit=np.rbegin(); rit!=np.rend(); rit++ )
     {
-        osg::NodeCallback* cb = (*rit)->getCullCallback();
-        QueryCullCallback* qcc = dynamic_cast< QueryCullCallback* >( cb );
+        QueryCullCallback* qcc = dynamic_cast< QueryCullCallback* >(
+            (*rit)->getCullCallback() );
 
         osgwQuery::QueryComputation* nd( NULL );
         if( qcc != NULL )
@@ -221,8 +221,8 @@ void AddQueries::addDataToNodePath( osg::NodePath& np, unsigned int numVertices,
 
 void RemoveQueries::apply( osg::Node& node )
 {
-    osg::NodeCallback* cb = node.getCullCallback();
-    QueryCullCallback* qcc = dynamic_cast< QueryCullCallback* >( cb );
+    QueryCullCallback* qcc = dynamic_cast< QueryCullCallback* >(
+        node.getCullCallback() );
 
     if( qcc != NULL )
         node.setCullCallback( NULL );
