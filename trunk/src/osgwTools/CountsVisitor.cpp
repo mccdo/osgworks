@@ -608,10 +608,12 @@ CountsVisitor::apply( osg::PagedLOD& node )
 {
     pushStateSet( node.getStateSet() );
 
+    /*
     osg::Group* grp = node.getParent(0);
     osg::Group* gPar = NULL;
     if (grp)
         gPar = grp->getParent(0);
+    */
     apply( node.getStateSet() );
 
     _pagedLods++;

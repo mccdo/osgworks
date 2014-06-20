@@ -159,7 +159,7 @@ ReducerOp::makeMap( VertToTriMap& v2t, const osg::Geometry& geom )
         {
             indexes = new unsigned int[ idxCount ];
             allocated = true;
-            const osg::DrawArrays* da = dynamic_cast< const osg::DrawArrays* >( ps );
+            const osg::DrawArrays* da = static_cast< const osg::DrawArrays* >( ps );
             unsigned int dai( da->getFirst() );
             while( jdx < idxCount )
                 indexes[ jdx++ ] = dai++;
@@ -628,7 +628,8 @@ ReducerOp::deleteVertex( unsigned int removeIdx, const TriList& tl, VertToTriMap
         v2tmit = v2t.find( tri._v2 );
         if( v2tmit == v2t.end() )
             osg::notify( osg::ALWAYS ) << "Can't find vertex in v2t." << std::endl;
-        v2tmit->second.push_back( tri );
+        else
+            v2tmit->second.push_back( tri );
     }
 }
 
@@ -754,7 +755,8 @@ ReducerOp::reduce( osg::Geometry& geom )
                 target = v2t.find( tri._v2 );
                 if( target == v2t.end() )
                     osg::notify( osg::ALWAYS ) << "Can't find vertex in v2t." << std::endl;
-                removeTri( tri, target->second );
+                else
+                    removeTri( tri, target->second );
             }
         }
 
