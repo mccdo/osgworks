@@ -23,6 +23,7 @@
 
 
 #include <osgwQuery/Export.h>
+#include <osgwTools/Version.h>
 #include <osg/Referenced>
 #include <osg/GL>
 
@@ -56,6 +57,21 @@
 // v3.3 / GL_ARB_timer_query
 #ifndef GL_TIME_ELAPSED
 #  define GL_TIME_ELAPSED 0x88BF
+#endif
+
+#if( OSGWORKS_OSG_VERSION >= 30302 )
+    // This is copy and paste from OSG v3.3.1 osg/GL header file.
+    // It was removed in v3.3.2 when the osg/GL header was revamped.
+
+    #if !defined(GL_EXT_timer_query) && !defined(OSG_GL3_AVAILABLE)
+        #ifdef _WIN32
+            typedef          __int64 GLint64EXT;
+            typedef unsigned __int64 GLuint64EXT;
+        #else
+            typedef long long int GLint64EXT;
+            typedef unsigned long long int GLuint64EXT;
+        #endif
+    #endif
 #endif
 
 
