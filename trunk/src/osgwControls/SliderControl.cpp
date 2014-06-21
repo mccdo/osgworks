@@ -182,7 +182,7 @@ public:
     SliderPickHandler(SliderControl* sc)
         : _active( false ),
         _mx( 0. ), _my( 0. ),
-        _pm( SliderControl::PlayMode::STOP ),
+        _pm( SliderControl::STOP ),
         _sc( sc )
     {
     }
