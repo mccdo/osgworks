@@ -22,9 +22,9 @@
 #define __OSGWTOOLS_FBO_UTILS_H__ 1
 
 
+#include <osg/Version>
 #include "osgwTools/Export.h"
 #include <osg/FrameBufferObject>
-
 
 
 namespace osgwTools
@@ -93,6 +93,16 @@ OSG versions.
 
 
 
+#if OSG_MIN_VERSION_REQUIRED( 3,3,3 )
+GLvoid OSGWTOOLS_EXPORT glGenFramebuffers( osg::GLExtensions* fboExt, GLsizei n, GLuint* framebuffer );
+GLvoid OSGWTOOLS_EXPORT glDeleteFramebuffers( osg::GLExtensions* fboExt, GLsizei n, GLuint* framebuffer );
+GLvoid OSGWTOOLS_EXPORT glBindFramebuffer( osg::GLExtensions* fboExt, GLenum target, GLuint framebuffer );
+
+GLvoid OSGWTOOLS_EXPORT glFramebufferTexture2D( osg::GLExtensions* fboExt, GLenum target, GLenum attachment,
+            GLenum textarget, GLuint texture, GLint level );
+GLvoid OSGWTOOLS_EXPORT glBlitFramebuffer(  osg::GLExtensions* fboExt, GLint srcX0, GLint srcY0, GLint srcX1,
+            GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter );
+#else
 GLvoid OSGWTOOLS_EXPORT glGenFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* framebuffer );
 GLvoid OSGWTOOLS_EXPORT glDeleteFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* framebuffer );
 GLvoid OSGWTOOLS_EXPORT glBindFramebuffer( osg::FBOExtensions* fboExt, GLenum target, GLuint framebuffer );
@@ -101,7 +111,7 @@ GLvoid OSGWTOOLS_EXPORT glFramebufferTexture2D( osg::FBOExtensions* fboExt, GLen
             GLenum textarget, GLuint texture, GLint level );
 GLvoid OSGWTOOLS_EXPORT glBlitFramebuffer(  osg::FBOExtensions* fboExt, GLint srcX0, GLint srcY0, GLint srcX1,
             GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter );
-
+#endif
 
 /*@}*/
 

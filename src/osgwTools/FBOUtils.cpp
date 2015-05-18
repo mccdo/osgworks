@@ -30,7 +30,11 @@ namespace osgwTools
 #define OSG_FBO_CHANGE_VERSION 20906
 
 
+#if OSG_MIN_VERSION_REQUIRED(3,3,3)
+GLvoid glGenFramebuffers( osg::GLExtensions* fboExt, GLsizei n, GLuint* framebuffer )
+#else
 GLvoid glGenFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* framebuffer )
+#endif
 {
 #if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_VERSION )
     fboExt->glGenFramebuffers( n, framebuffer );
@@ -39,7 +43,11 @@ GLvoid glGenFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* framebu
 #endif
 }
 
+#if OSG_MIN_VERSION_REQUIRED(3,3,3)
+GLvoid glDeleteFramebuffers( osg::GLExtensions* fboExt, GLsizei n, GLuint* framebuffer )
+#else
 GLvoid glDeleteFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* framebuffer )
+#endif
 {
 #if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_VERSION )
     fboExt->glDeleteFramebuffers( n, framebuffer );
@@ -48,7 +56,11 @@ GLvoid glDeleteFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* fram
 #endif
 }
 
+#if OSG_MIN_VERSION_REQUIRED(3,3,3)
+GLvoid glBindFramebuffer( osg::GLExtensions* fboExt, GLenum target, GLuint framebuffer )
+#else
 GLvoid glBindFramebuffer( osg::FBOExtensions* fboExt, GLenum target, GLuint framebuffer )
+#endif
 {
 #if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_VERSION )
     fboExt->glBindFramebuffer( target, framebuffer );
@@ -58,8 +70,13 @@ GLvoid glBindFramebuffer( osg::FBOExtensions* fboExt, GLenum target, GLuint fram
 }
 
 
+#if OSG_MIN_VERSION_REQUIRED(3,3,3)
+GLvoid glFramebufferTexture2D( osg::GLExtensions* fboExt, GLenum target, GLenum attachment,
+            GLenum textarget, GLuint texture, GLint level )
+#else
 GLvoid glFramebufferTexture2D( osg::FBOExtensions* fboExt, GLenum target, GLenum attachment,
             GLenum textarget, GLuint texture, GLint level )
+#endif
 {
 #if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_VERSION )
     fboExt->glFramebufferTexture2D( target, attachment, textarget, texture, level );
@@ -68,8 +85,13 @@ GLvoid glFramebufferTexture2D( osg::FBOExtensions* fboExt, GLenum target, GLenum
 #endif
 }
 
+#if OSG_MIN_VERSION_REQUIRED(3,3,3)
+GLvoid glBlitFramebuffer( osg::GLExtensions* fboExt, GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1,
+            GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter )
+#else
 GLvoid glBlitFramebuffer( osg::FBOExtensions* fboExt, GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1,
             GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter )
+#endif
 {
 #if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_VERSION )
     fboExt->glBlitFramebuffer( srcX0, srcY0, srcX1, srcY1,
