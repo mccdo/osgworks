@@ -87,16 +87,6 @@ public:
 
     virtual void apply( osg::Node& node )
     {
-#if( OSGWORKS_OSG_VERSION >= 30501 )
-        if( node.asDrawable() != NULL )
-        {
-            // In OSG v3.05.01 (and perhaps earlier?), Drawables
-            // are now Nodes. For backwards compatibility, don't
-            // count them. Uniqifier currently doesn't operate on
-            // them, so counting them would cause the test to fail.
-            return;
-        }
-#endif
         _totalNodes++;
         _uniqueNodes.insert( &node );
         traverse( node );

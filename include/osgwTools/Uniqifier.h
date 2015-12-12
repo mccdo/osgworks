@@ -67,11 +67,13 @@ OSGWTOOLS_EXPORT osg::NodePath uniqify( const osg::NodePath& np );
 
 Note regarding Geometry and Drawable Handling
 
-Around OSG v3.5.1, Geode was made to derive from Group, and Drawable made to
-derive from Node, such that Geodes have Drawable children. Prior to this change,
-the Uniqifier visitor did not make Drawables unique, as they were data, not
-Nodes. For backwards compatibility, Uniqifier still treats Drawables as data
-and makes no attempt to make them unique.
+Around OSG v3.3.2, Geode was made to derive from Group, and Drawable made to
+derive from Node, such that Geodes have Drawable children. osgWorks v3.00.02
+treats Drawables as Node objects, which means the Uniqifier ensures that all
+Drawables are made unique. Prior to osgWorks v3.00.02, Drawables are treated as
+data rather than Node objects, which is just how OSG treated them prior to this
+change. As a result, pre-v3.00.02 osgWorks does not create unique Drawables.
+Drawables that are shared by multiple Geodes will remain shared after Uniqification.
 */
 class OSGWTOOLS_EXPORT Uniqifier : public osg::NodeVisitor
 {
@@ -80,7 +82,9 @@ public:
 
     virtual void apply( osg::Node& node );
     virtual void apply( osg::Group& node );
+#if( OSGWORKS_OSG_VERSION < 30302 )
     virtual void apply( osg::Geode& node );
+#endif
 
 protected:
 };
