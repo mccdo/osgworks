@@ -18,6 +18,7 @@
  *
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
+#include <osgwTools/Version.h>
 #include <osgwTools/Uniqifier.h>
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
@@ -86,6 +87,16 @@ public:
 
     virtual void apply( osg::Node& node )
     {
+#if( OSGWORKS_OSG_VERSION >= 30501 )
+        if( node.asDrawable() != NULL )
+        {
+            // In OSG v3.05.01 (and perhaps earlier?), Drawables
+            // are now Nodes. For backwards compatibility, don't
+            // count them. Uniqifier currently doesn't operate on
+            // them, so counting them would cause the test to fail.
+            return;
+        }
+#endif
         _totalNodes++;
         _uniqueNodes.insert( &node );
         traverse( node );
@@ -151,12 +162,14 @@ int main( int argc, char** argv )
     nc.reset();
     root->accept( nc );
 
-    // Pass/fail condition. The total number of nodes should not
-    // have changed. But the Uniqifier should have changed the
+    // Pass/fail condition. (a) The total number of nodes should not
+    // have changed. But (b) the Uniqifier should have changed the
     // number of unique nodes so that it is not the same as the
-    // total number of nodes.
+    // total number of nodes, and (c) the new number of unique nodes
+    // should be greater than the previous number of unique nodes.
     bool passed( ( nc._totalNodes == preUniqifyNumNodes ) &&
-        ( nc._uniqueNodes.size() == preUniqifyNumNodes ) );
+        ( nc._uniqueNodes.size() == nc._totalNodes ) &&
+        ( nc._uniqueNodes.size() > preUniqifyUniqueNodes ) );
 
 
     if( !passed )

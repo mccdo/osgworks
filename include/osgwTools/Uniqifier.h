@@ -22,6 +22,7 @@
 #define __OSGWTOOLS_UNIQIFIER_H__ 1
 
 #include <osgwTools/Export.h>
+#include <osgwTools/Version.h>
 #include <osg/NodeVisitor>
 
 
@@ -29,7 +30,7 @@ namespace osgwTools
 {
 
 
-/** \defgroup uniqifiers Node Uniqification Tools
+/** \defgroup uniqifiers Node Uniquification Tools
 \brief Tools to eliminate shared nodes and multiparenting.
 
 These tools make shallow copies of shared nodes, all shared nodes in a NodePath, and
@@ -42,20 +43,20 @@ and the decorator design pattern can't be used (for whatever reason). */
 /*@{*/
 
     
-/** \brief Uniqify a shared Node.
+/** \brief Uniquify a shared Node.
 
 Remove \c child from \c parent's child list and replace it
 with a shallow copy of \c child.
 \return The address of the new shallow copy of \c child. */
 OSGWTOOLS_EXPORT osg::Node* uniqify( osg::Node* child, osg::Group* parent );
 
-/** \brief Uniqify a NodePath to eliminate all shared Nodes.
+/** \brief Uniquify a NodePath to eliminate all shared Nodes.
 
 Starting with the second Node in \c np, iterate over \c np
-and call uniqify(osg::Node*,osg::Group*) so that the entire
+and call uniquify(osg::Node*,osg::Group*) so that the entire
 NodePath contains no multiparenting.
 
-Because uniqify(osg::Node*,osg::Group*) creates shallow copies
+Because uniquify(osg::Node*,osg::Group*) creates shallow copies
 with new addresses, \c np is invalid after this operation. Use
 the return value instead.
 \return A new NodePath that references the created nodes. */
@@ -63,6 +64,14 @@ OSGWTOOLS_EXPORT osg::NodePath uniqify( const osg::NodePath& np );
 
 /** \class Uniqifier Uniqifier.h <osgwTools/Uniqifier.h>
 \brief Eliminates multiparenting by turning shared nodes into unique nodes.
+
+Note regarding Geometry and Drawable Handling
+
+Around OSG v3.5.1, Geode was made to derive from Group, and Drawable made to
+derive from Node, such that Geodes have Drawable children. Prior to this change,
+the Uniqifier visitor did not make Drawables unique, as they were data, not
+Nodes. For backwards compatibility, Uniqifier still treats Drawables as data
+and makes no attempt to make them unique.
 */
 class OSGWTOOLS_EXPORT Uniqifier : public osg::NodeVisitor
 {

@@ -77,8 +77,12 @@ Uniqifier::Uniqifier( osg::NodeVisitor::TraversalMode mode )
 
 void Uniqifier::apply( osg::Node& node )
 {
+#if( OSGWORKS_OSG_VERSION < 30501 )
     // Unusual. A node that is neither a Group nor a Geode.
     osg::notify( osg::WARN ) << "Uniqifier: apply(osg::Node&)" << std::endl;
+    // But, for OSG v3.5.1 and later, not so unusual. Drawables
+    // and Geometries fall into this category.
+#endif
 
     traverse( node );
 }
