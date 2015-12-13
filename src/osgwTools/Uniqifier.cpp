@@ -77,8 +77,12 @@ Uniqifier::Uniqifier( osg::NodeVisitor::TraversalMode mode )
 
 void Uniqifier::apply( osg::Node& node )
 {
+#if( OSGWORKS_OSG_VERSION < 30302 )
     // Unusual. A node that is neither a Group nor a Geode.
     osg::notify( osg::WARN ) << "Uniqifier: apply(osg::Node&)" << std::endl;
+    // But, for OSG v3.5.1 and later, not so unusual. Drawables
+    // and Geometries fall into this category.
+#endif
 
     traverse( node );
 }
@@ -107,11 +111,17 @@ void Uniqifier::apply( osg::Group& node )
 
     traverse( node );
 }
+#if( OSGWORKS_OSG_VERSION < 30302 )
+// Prior to the OSG change that made Geode derive from Group,
+// back when Geode derived from Node instead, it was OK to have
+// this no-op stub function. But now we must comment it out and
+// let apply(Group&) handle the Geode objects.
 void Uniqifier::apply( osg::Geode& node )
 {
     // Nothing to do here.
     traverse( node );
 }
+#endif
 
 
 // osgwTools

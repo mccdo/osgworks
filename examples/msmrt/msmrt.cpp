@@ -50,7 +50,11 @@ public:
     {
         osg::State& state = *renderInfo.getState();
         const unsigned int ctx = state.getContextID();
+#if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_2_VERSION )
+        osg::GLExtensions* fboExt = osg::GLExtensions::Get( ctx, true );
+#else
         osg::FBOExtensions* fboExt = osg::FBOExtensions::instance( ctx, true );
+#endif
 
         PerContextInfo& ctxInfo( _contextInfo[ ctx ] );
         if( ctxInfo.__glGetFramebufferAttachmentParameteriv == NULL )

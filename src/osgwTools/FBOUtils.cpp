@@ -27,10 +27,15 @@ namespace osgwTools
 {
 
 
+// Version in which OSG removed "EXT" off of FBO commands.
+// (E.g., "glGenFramebuffersEXT" became "glGenFramebuffers".
 #define OSG_FBO_CHANGE_VERSION 20906
+// Version in which OSG moved FBO commands from osg::FBOExtensions object
+// to osg::GLExtensions object, and removed FBOExtensions object altogether.
+#define OSG_FBO_CHANGE_2_VERSION 30303
 
 
-#if OSG_MIN_VERSION_REQUIRED(3,3,3)
+#if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_2_VERSION )
 GLvoid glGenFramebuffers( osg::GLExtensions* fboExt, GLsizei n, GLuint* framebuffer )
 #else
 GLvoid glGenFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* framebuffer )
@@ -43,7 +48,7 @@ GLvoid glGenFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* framebu
 #endif
 }
 
-#if OSG_MIN_VERSION_REQUIRED(3,3,3)
+#if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_2_VERSION )
 GLvoid glDeleteFramebuffers( osg::GLExtensions* fboExt, GLsizei n, GLuint* framebuffer )
 #else
 GLvoid glDeleteFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* framebuffer )
@@ -56,7 +61,7 @@ GLvoid glDeleteFramebuffers( osg::FBOExtensions* fboExt, GLsizei n, GLuint* fram
 #endif
 }
 
-#if OSG_MIN_VERSION_REQUIRED(3,3,3)
+#if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_2_VERSION )
 GLvoid glBindFramebuffer( osg::GLExtensions* fboExt, GLenum target, GLuint framebuffer )
 #else
 GLvoid glBindFramebuffer( osg::FBOExtensions* fboExt, GLenum target, GLuint framebuffer )
@@ -70,7 +75,7 @@ GLvoid glBindFramebuffer( osg::FBOExtensions* fboExt, GLenum target, GLuint fram
 }
 
 
-#if OSG_MIN_VERSION_REQUIRED(3,3,3)
+#if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_2_VERSION )
 GLvoid glFramebufferTexture2D( osg::GLExtensions* fboExt, GLenum target, GLenum attachment,
             GLenum textarget, GLuint texture, GLint level )
 #else
@@ -85,7 +90,7 @@ GLvoid glFramebufferTexture2D( osg::FBOExtensions* fboExt, GLenum target, GLenum
 #endif
 }
 
-#if OSG_MIN_VERSION_REQUIRED(3,3,3)
+#if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_2_VERSION )
 GLvoid glBlitFramebuffer( osg::GLExtensions* fboExt, GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1,
             GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter )
 #else

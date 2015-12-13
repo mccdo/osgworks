@@ -93,7 +93,7 @@ OSG versions.
 
 
 
-#if OSG_MIN_VERSION_REQUIRED( 3,3,3 )
+#if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_2_VERSION )
 GLvoid OSGWTOOLS_EXPORT glGenFramebuffers( osg::GLExtensions* fboExt, GLsizei n, GLuint* framebuffer );
 GLvoid OSGWTOOLS_EXPORT glDeleteFramebuffers( osg::GLExtensions* fboExt, GLsizei n, GLuint* framebuffer );
 GLvoid OSGWTOOLS_EXPORT glBindFramebuffer( osg::GLExtensions* fboExt, GLenum target, GLuint framebuffer );
