@@ -23,7 +23,7 @@
 
 
 #include <osg/Version>
-#include "osgwTools/Export.h"
+#include <osgwTools/Version.h>
 #include <osg/FrameBufferObject>
 
 
@@ -40,6 +40,12 @@ OSG versions.
 */
 /*@{*/
 
+// Version in which OSG removed "EXT" off of FBO commands.
+// (E.g., "glGenFramebuffersEXT" became "glGenFramebuffers".
+#define OSG_FBO_CHANGE_VERSION 20906
+// Version in which OSG moved FBO commands from osg::FBOExtensions object
+// to osg::GLExtensions object, and removed FBOExtensions object altogether.
+#define OSG_FBO_CHANGE_2_VERSION 30303
 
 #ifndef GL_FRAMEBUFFER
 #  define GL_FRAMEBUFFER 0x8D40

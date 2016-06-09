@@ -19,21 +19,11 @@
  *************** <auto-copyright.pl END do not edit this line> ***************/
 
 #include <osgwTools/FBOUtils.h>
-#include <osgwTools/Version.h>
 #include <osg/FrameBufferObject>
 
 
 namespace osgwTools
 {
-
-
-// Version in which OSG removed "EXT" off of FBO commands.
-// (E.g., "glGenFramebuffersEXT" became "glGenFramebuffers".
-#define OSG_FBO_CHANGE_VERSION 20906
-// Version in which OSG moved FBO commands from osg::FBOExtensions object
-// to osg::GLExtensions object, and removed FBOExtensions object altogether.
-#define OSG_FBO_CHANGE_2_VERSION 30303
-
 
 #if( OSGWORKS_OSG_VERSION >= OSG_FBO_CHANGE_2_VERSION )
 GLvoid glGenFramebuffers( osg::GLExtensions* fboExt, GLsizei n, GLuint* framebuffer )
