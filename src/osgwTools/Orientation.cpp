@@ -21,6 +21,7 @@
 #include "osgwTools/Orientation.h"
 #include <osg/Quat>
 #include <osg/Matrix>
+#include <osg/Version>
 #include <osg/Vec3>
 
 #include <osg/Notify>
@@ -169,14 +170,24 @@ void Orientation::makeMatrix( osg::Matrix& result, const double yaw, const doubl
 
 osg::Vec3d Orientation::getYPR( const osg::Quat& q ) const
 {
+#if OSG_VERSION_LESS_OR_EQUAL(3, 5, 0)
     osg::Matrix m;
     m.set( q );
+#else
+    osg::Matrix m(q);
+#endif
+
     return( getYPR( m ) );
 }
 void Orientation::getYPR( const osg::Quat& q, double& yaw, double& pitch, double& roll ) const
 {
+#if OSG_VERSION_LESS_OR_EQUAL(3, 5, 0)
     osg::Matrix m;
     m.set( q );
+#else
+    osg::Matrix m(q);
+#endif
+
     getYPR( m, yaw, pitch, roll );
 }
 osg::Vec3d Orientation::getYPR( const osg::Matrix& m ) const
