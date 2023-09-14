@@ -61,7 +61,13 @@ GeometryModifier::apply( osg::Geode& geode )
     {
         osgUtil::Optimizer::MergeGeometryVisitor mgv;
         mgv.setTargetMaximumNumberOfVertices(1000000);
+
+        // https://github.com/openscenegraph/OpenSceneGraph/commit/e0f7d3241af56751fa8e70922c1a17511aeb16cc
+        #if( OSGWORKS_OSG_VERSION >= 30506 )
+        mgv.mergeGroup(geode);
+        #else
         mgv.mergeGeode(geode);
+        #endif
     }
 
     for(unsigned int i=0;i<geode.getNumDrawables();++i)
